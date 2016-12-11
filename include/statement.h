@@ -24,6 +24,14 @@ struct counter_stmt {
 
 extern struct stmt *counter_stmt_alloc(const struct location *loc);
 
+struct exthdr_stmt {
+	struct expr			*expr;
+	struct expr			*val;
+};
+
+extern struct stmt *exthdr_stmt_alloc(const struct location *loc,
+				      struct expr *payload, struct expr *expr);
+
 struct payload_stmt {
 	struct expr			*expr;
 	struct expr			*val;
@@ -220,6 +228,7 @@ struct xt_stmt {
  * @STMT_QUOTA:		quota statement
  * @STMT_NOTRACK:	notrack statement
  * @STMT_OBJREF:	stateful object reference statement
+ * @STMT_EXTHDR:	extension header statement
  */
 enum stmt_types {
 	STMT_INVALID,
@@ -244,6 +253,7 @@ enum stmt_types {
 	STMT_QUOTA,
 	STMT_NOTRACK,
 	STMT_OBJREF,
+	STMT_EXTHDR,
 };
 
 /**
@@ -285,6 +295,7 @@ struct stmt {
 
 	union {
 		struct expr		*expr;
+		struct exthdr_stmt	exthdr;
 		struct flow_stmt	flow;
 		struct counter_stmt	counter;
 		struct payload_stmt	payload;

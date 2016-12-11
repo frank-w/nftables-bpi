@@ -3209,7 +3209,10 @@ ct_stmt			:	CT	ct_key		SET	expr
 
 payload_stmt		:	payload_expr		SET	expr
 			{
-				$$ = payload_stmt_alloc(&@$, $1, $3);
+				if ($1->ops->type == EXPR_EXTHDR)
+					$$ = exthdr_stmt_alloc(&@$, $1, $3);
+				else
+					$$ = payload_stmt_alloc(&@$, $1, $3);
 			}
 			;
 

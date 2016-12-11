@@ -3,6 +3,7 @@
 
 #include <proto.h>
 #include <exthdr.h>
+#include <statement.h>
 
 extern struct expr *tcpopt_expr_alloc(const struct location *loc,
 				      uint8_t type, uint8_t field);

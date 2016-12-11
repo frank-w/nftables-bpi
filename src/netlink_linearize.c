@@ -816,6 +816,33 @@ static bool payload_needs_l4csum_update_pseudohdr(const struct expr *expr,
 	return false;
 }
 
+static void netlink_gen_exthdr_stmt(struct netlink_linearize_ctx *ctx,
+				    const struct stmt *stmt)
+{
+	struct nftnl_expr *nle;
+	const struct expr *expr;
+	enum nft_registers sreg;
+	unsigned int offset;
+
+	sreg = get_register(ctx, stmt->exthdr.val);
+	netlink_gen_expr(ctx, stmt->exthdr.val, sreg);
+	release_register(ctx, stmt->exthdr.val);
+
+	expr = stmt->exthdr.expr;
+
+	offset = expr->exthdr.tmpl->offset + expr->exthdr.offset;
+
+	nle = alloc_nft_expr("exthdr");
+	netlink_put_register(nle, NFTNL_EXPR_EXTHDR_SREG, sreg);
+	nftnl_expr_set_u8(nle, NFTNL_EXPR_EXTHDR_TYPE,
+			  expr->exthdr.desc->type);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_EXTHDR_OFFSET, offset / BITS_PER_BYTE);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_EXTHDR_LEN,
+			   div_round_up(expr->len, BITS_PER_BYTE));
+	nftnl_expr_set_u8(nle, NFTNL_EXPR_EXTHDR_OP, expr->exthdr.op);
+	nftnl_rule_add_expr(ctx->nlr, nle);
+}
+
 static void netlink_gen_payload_stmt(struct netlink_linearize_ctx *ctx,
 				     const struct stmt *stmt)
 {
@@ -1239,6 +1266,8 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_verdict_stmt(ctx, stmt);
 	case STMT_FLOW:
 		return netlink_gen_flow_stmt(ctx, stmt);
+	case STMT_EXTHDR:
+		return netlink_gen_exthdr_stmt(ctx, stmt);
 	case STMT_PAYLOAD:
 		return netlink_gen_payload_stmt(ctx, stmt);
 	case STMT_META:

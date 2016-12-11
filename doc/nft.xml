@@ -4259,6 +4259,22 @@ ip forward ip dscp set 42
 			</para>
 		</refsect2>
 		<refsect2>
+			<title>Extension header statement</title>
+			<para>
+				The extension header statement alters packet content in variable-sized headers.
+				This can currently be used to alter the TCP Maximum segment size of packets,
+				similar to TCPMSS.
+			</para>
+			<para>
+				<example>
+					<title>change tcp mss</title>
+					<programlisting>
+tcp option maxseg size set 1360
+					</programlisting>
+				</example>
+			</para>
+		</refsect2>
+		<refsect2>
 			<title>Log statement</title>
 			<para>
 				<cmdsynopsis>

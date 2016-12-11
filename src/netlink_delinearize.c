@@ -513,8 +513,25 @@ static void netlink_parse_exthdr(struct netlink_parse_ctx *ctx,
 	expr = exthdr_expr_alloc(loc, NULL, 0);
 	exthdr_init_raw(expr, type, offset, len, op, flags);
 
-	dreg = netlink_parse_register(nle, NFTNL_EXPR_EXTHDR_DREG);
-	netlink_set_register(ctx, dreg, expr);
+	if (nftnl_expr_is_set(nle, NFTNL_EXPR_EXTHDR_DREG)) {
+		dreg = netlink_parse_register(nle, NFTNL_EXPR_EXTHDR_DREG);
+		netlink_set_register(ctx, dreg, expr);
+	} else if (nftnl_expr_is_set(nle, NFTNL_EXPR_EXTHDR_SREG)) {
+		enum nft_registers sreg;
+		struct stmt *stmt;
+		struct expr *val;
+
+		sreg = netlink_parse_register(nle, NFTNL_EXPR_EXTHDR_SREG);
+		val = netlink_get_register(ctx, loc, sreg);
+		if (val == NULL)
+			return netlink_error(ctx, loc,
+					     "exthdr statement has no expression");
+
+		expr_set_type(val, expr->dtype, expr->byteorder);
+
+		stmt = exthdr_stmt_alloc(loc, expr, val);
+		list_add_tail(&stmt->list, &ctx->rule->stmts);
+	}
 }
 
 static void netlink_parse_hash(struct netlink_parse_ctx *ctx,

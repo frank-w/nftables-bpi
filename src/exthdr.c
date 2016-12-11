@@ -21,6 +21,7 @@
 #include <utils.h>
 #include <headers.h>
 #include <expression.h>
+#include <statement.h>
 
 static void exthdr_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
@@ -96,6 +97,30 @@ struct expr *exthdr_expr_alloc(const struct location *loc,
 	expr->exthdr.desc = desc;
 	expr->exthdr.tmpl = tmpl;
 	return expr;
+}
+
+static void exthdr_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
+{
+	expr_print(stmt->exthdr.expr, octx);
+	printf(" set ");
+	expr_print(stmt->exthdr.val, octx);
+}
+
+static const struct stmt_ops exthdr_stmt_ops = {
+	.type		= STMT_EXTHDR,
+	.name		= "exthdr",
+	.print		= exthdr_stmt_print,
+};
+
+struct stmt *exthdr_stmt_alloc(const struct location *loc,
+				struct expr *expr, struct expr *val)
+{
+	struct stmt *stmt;
+
+	stmt = stmt_alloc(loc, &exthdr_stmt_ops);
+	stmt->exthdr.expr = expr;
+	stmt->exthdr.val  = val;
+	return stmt;
 }
 
 static const struct exthdr_desc *exthdr_protocols[IPPROTO_MAX] = {

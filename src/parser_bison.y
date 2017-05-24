@@ -514,7 +514,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 %type <set>			map_block_alloc map_block
 %destructor { set_free($$); }	map_block_alloc
 
-%type <obj>			obj_block_alloc counter_block quota_block ct_block limit_block
+%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block limit_block
 %destructor { obj_free($$); }	obj_block_alloc
 
 %type <list>			stmt_list
@@ -876,7 +876,7 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
-			|	CT	HELPER	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
+			|	CT	HELPER	obj_spec	ct_obj_alloc	'{' ct_helper_block '}'	stmt_separator
 			{
 
 				$$ = cmd_alloc_obj_ct(CMD_ADD, NFT_OBJECT_CT_HELPER, &$3, &@$, $4);
@@ -951,7 +951,7 @@ create_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
-			|	CT	HELPER	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
+			|	CT	HELPER	obj_spec	ct_obj_alloc	'{' ct_helper_block '}'	stmt_separator
 			{
 				$$ = cmd_alloc_obj_ct(CMD_CREATE, NFT_OBJECT_CT_HELPER, &$3, &@$, $4);
 			}
@@ -1293,7 +1293,7 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 				list_add_tail(&$4->list, &$1->objs);
 				$$ = $1;
 			}
-			|	table_block	CT	HELPER	obj_identifier  obj_block_alloc '{'     ct_block     '}' stmt_separator
+			|	table_block	CT	HELPER	obj_identifier  obj_block_alloc '{'     ct_helper_block     '}' stmt_separator
 			{
 				$5->location = @4;
 				$5->type = NFT_OBJECT_CT_HELPER;
@@ -1512,10 +1512,10 @@ quota_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			;
 
-ct_block		:	/* empty */	{ $$ = $<obj>-1; }
-			|       ct_block     common_block
-			|       ct_block     stmt_separator
-			|       ct_block     ct_helper_config
+ct_helper_block		:	/* empty */	{ $$ = $<obj>-1; }
+			|       ct_helper_block     common_block
+			|       ct_helper_block     stmt_separator
+			|       ct_helper_block     ct_helper_config
 			{
 				$$ = $1;
 			}

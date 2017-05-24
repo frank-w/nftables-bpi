@@ -405,6 +405,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 %token COUNTERS			"counters"
 %token QUOTAS			"quotas"
 %token LIMITS			"limits"
+%token HELPERS			"helpers"
 
 %token LOG			"log"
 %token PREFIX			"prefix"
@@ -698,9 +699,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 %destructor { expr_free($$); }	exthdr_exists_expr
 %type <val>			exthdr_key
 
-%type <val>			ct_l4protoname
-%type <string>			ct_obj_kind
-%destructor { xfree($$); }     	ct_obj_kind
+%type <val>			ct_l4protoname ct_obj_type
 
 %%
 
@@ -877,19 +876,10 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
-			|	CT	ct_obj_kind	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
+			|	CT	HELPER	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
 			{
-				struct error_record *erec;
-				int type;
 
-				erec = ct_objtype_parse(&@$, $2, &type);
-				xfree($2);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
-				$$ = cmd_alloc_obj_ct(CMD_ADD, type, &$3, &@$, $4);
+				$$ = cmd_alloc_obj_ct(CMD_ADD, NFT_OBJECT_CT_HELPER, &$3, &@$, $4);
 			}
 			|	LIMIT		obj_spec	limit_obj
 			{
@@ -961,19 +951,9 @@ create_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
-			|	CT	ct_obj_kind	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
+			|	CT	HELPER	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
 			{
-				struct error_record *erec;
-				int type;
-
-				erec = ct_objtype_parse(&@$, $2, &type);
-				xfree($2);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
-				$$ = cmd_alloc_obj_ct(CMD_CREATE, type, &$3, &@$, $4);
+				$$ = cmd_alloc_obj_ct(CMD_CREATE, NFT_OBJECT_CT_HELPER, &$3, &@$, $4);
 			}
 			|	LIMIT		obj_spec	limit_obj
 			{
@@ -1019,19 +999,9 @@ delete_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_QUOTA, &$2, &@$, NULL);
 			}
-			|	CT	ct_obj_kind	obj_spec	ct_obj_alloc
+			|	CT	ct_obj_type	obj_spec	ct_obj_alloc
 			{
-				struct error_record *erec;
-				int type;
-
-				erec = ct_objtype_parse(&@$, $2, &type);
-				xfree($2);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
-				$$ = cmd_alloc_obj_ct(CMD_DELETE, type, &$3, &@$, $4);
+				$$ = cmd_alloc_obj_ct(CMD_DELETE, $2, &$3, &@$, $4);
 			}
 			|	LIMIT		obj_spec
 			{
@@ -1123,35 +1093,13 @@ list_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_MAP, &$2, &@$, NULL);
 			}
-			|	CT		ct_obj_kind	obj_spec
+			|	CT		ct_obj_type	obj_spec
 			{
-				struct error_record *erec;
-				int type;
-
-				erec = ct_objtype_parse(&@$, $2, &type);
-				xfree($2);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
-				$$ = cmd_alloc_obj_ct(CMD_LIST, type, &$3, &@$, NULL);
+				$$ = cmd_alloc_obj_ct(CMD_LIST, $2, &$3, &@$, NULL);
 			}
-			|       CT		ct_obj_kind	TABLE   table_spec
+			|       CT		HELPERS		TABLE   table_spec
 			{
-				int cmd;
-
-				if (strcmp($2, "helpers") == 0) {
-					cmd = CMD_OBJ_CT_HELPERS;
-				} else {
-					erec_queue(error(&@$, "unknown ct class '%s', want 'helpers'", $2),
-						   state->msgs);
-					xfree($2);
-					YYERROR;
-				}
-				xfree($2);
-
-				$$ = cmd_alloc(CMD_LIST, cmd, &$4, &@$, NULL);
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_CT_HELPERS, &$4, &@$, NULL);
 			}
 			;
 
@@ -1345,20 +1293,10 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 				list_add_tail(&$4->list, &$1->objs);
 				$$ = $1;
 			}
-			|	table_block	CT	ct_obj_kind	obj_identifier  obj_block_alloc '{'     ct_block     '}' stmt_separator
+			|	table_block	CT	HELPER	obj_identifier  obj_block_alloc '{'     ct_block     '}' stmt_separator
 			{
-				struct error_record *erec;
-				int type;
-
-				erec = ct_objtype_parse(&@$, $3, &type);
-				xfree($3);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
 				$5->location = @4;
-				$5->type = type;
+				$5->type = NFT_OBJECT_CT_HELPER;
 				handle_merge(&$5->handle, &$4);
 				handle_free(&$4);
 				list_add_tail(&$5->list, &$1->objs);
@@ -1577,7 +1515,7 @@ quota_block		:	/* empty */	{ $$ = $<obj>-1; }
 ct_block		:	/* empty */	{ $$ = $<obj>-1; }
 			|       ct_block     common_block
 			|       ct_block     stmt_separator
-			|       ct_block     ct_config
+			|       ct_block     ct_helper_config
 			{
 				$$ = $1;
 			}
@@ -2886,15 +2824,14 @@ quota_obj		:	quota_config
 			}
 			;
 
-ct_obj_kind		:	STRING		{ $$ = $1; }
-			|	HELPER		{ $$ = xstrdup("helper"); }
+ct_obj_type		:	HELPER		{ $$ = NFT_OBJECT_CT_HELPER; }
 			;
 
 ct_l4protoname		:	TCP	{ $$ = IPPROTO_TCP; }
 			|	UDP	{ $$ = IPPROTO_UDP; }
 			;
 
-ct_config		:	TYPE	QUOTED_STRING	PROTOCOL	ct_l4protoname	stmt_separator
+ct_helper_config		:	TYPE	QUOTED_STRING	PROTOCOL	ct_l4protoname	stmt_separator
 			{
 				struct ct_helper *ct;
 				int ret;
@@ -2918,7 +2855,6 @@ ct_config		:	TYPE	QUOTED_STRING	PROTOCOL	ct_l4protoname	stmt_separator
 ct_obj_alloc		:
 			{
 				$$ = obj_alloc(&@$);
-				$$->type = NFT_OBJECT_CT_HELPER;
 			}
 			;
 

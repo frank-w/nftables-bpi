@@ -27,8 +27,6 @@ extern struct expr *ct_expr_alloc(const struct location *loc,
 				  enum nft_ct_keys key, int8_t direction);
 extern void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr);
 
-extern struct error_record *ct_objtype_parse(const struct location *loc, const char *str, int *type);
-
 extern struct stmt *notrack_stmt_alloc(const struct location *loc);
 
 extern const struct datatype ct_dir_type;

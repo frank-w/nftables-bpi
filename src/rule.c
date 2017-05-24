@@ -1742,9 +1742,12 @@ static int do_command_describe(struct netlink_ctx *ctx, struct cmd *cmd)
 }
 
 struct cmd *cmd_alloc_obj_ct(enum cmd_ops op, int type, const struct handle *h,
-			     const struct location *loc, void *data)
+			     const struct location *loc, struct obj *obj)
 {
 	enum cmd_obj cmd_obj;
+
+	if (obj)
+		obj->type = type;
 
 	switch (type) {
 	case NFT_OBJECT_CT_HELPER:
@@ -1754,7 +1757,7 @@ struct cmd *cmd_alloc_obj_ct(enum cmd_ops op, int type, const struct handle *h,
 		BUG("missing type mapping");
 	}
 
-	return cmd_alloc(op, cmd_obj, h, loc, data);
+	return cmd_alloc(op, cmd_obj, h, loc, obj);
 }
 
 int do_command(struct netlink_ctx *ctx, struct cmd *cmd)

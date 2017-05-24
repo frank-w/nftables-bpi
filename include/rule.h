@@ -463,7 +463,7 @@ extern struct cmd *cmd_alloc(enum cmd_ops op, enum cmd_obj obj,
 extern void nft_cmd_expand(struct cmd *cmd);
 extern struct cmd *cmd_alloc_obj_ct(enum cmd_ops op, int type,
 				    const struct handle *h,
-				    const struct location *loc, void *data);
+				    const struct location *loc, struct obj *obj);
 extern void cmd_free(struct cmd *cmd);
 
 #include <payload.h>

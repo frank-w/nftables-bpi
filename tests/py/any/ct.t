@@ -107,6 +107,7 @@ ct mark original;fail
 ct event set new;ok
 ct event set new or related or destroy or foobar;fail
 ct event set 'new | related | destroy | label';ok;ct event set new,related,destroy,label
+ct event set new,related,destroy,label;ok
 ct event set new,destroy;ok
 ct event set 1;ok;ct event set new
 ct event set 0x0;ok

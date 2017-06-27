@@ -401,6 +401,11 @@ ip test-ip4 output
   [ immediate reg 1 0x00000407 ]
   [ ct set event with reg 1 ]
 
+# ct event set new,related,destroy,label
+ip test-ip4 output
+  [ immediate reg 1 0x00000407 ]
+  [ ct set event with reg 1 ]
+
 # ct event set new,destroy
 ip test-ip4 output
   [ immediate reg 1 0x00000005 ]

@@ -609,8 +609,8 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 %type <expr>			rhs_expr concat_rhs_expr basic_rhs_expr
 %destructor { expr_free($$); }	rhs_expr concat_rhs_expr basic_rhs_expr
-%type <expr>			primary_rhs_expr list_rhs_expr shift_rhs_expr
-%destructor { expr_free($$); }	primary_rhs_expr list_rhs_expr shift_rhs_expr
+%type <expr>			primary_rhs_expr list_rhs_expr shift_rhs_expr symbol_stmt_expr
+%destructor { expr_free($$); }	primary_rhs_expr list_rhs_expr shift_rhs_expr symbol_stmt_expr
 %type <expr>			and_rhs_expr exclusive_or_rhs_expr inclusive_or_rhs_expr
 %destructor { expr_free($$); }	and_rhs_expr exclusive_or_rhs_expr inclusive_or_rhs_expr
 
@@ -3302,14 +3302,17 @@ ct_key_dir_optional	:	BYTES		{ $$ = NFT_CT_BYTES; }
 			|	ZONE		{ $$ = NFT_CT_ZONE; }
 			;
 
+symbol_stmt_expr		:	symbol_expr
+			|	keyword_expr
+			;
 
-list_stmt_expr		:	symbol_expr	COMMA	symbol_expr
+list_stmt_expr		:	symbol_stmt_expr	COMMA	symbol_stmt_expr
 			{
 				$$ = list_expr_alloc(&@$);
 				compound_expr_add($$, $1);
 				compound_expr_add($$, $3);
 			}
-			|	list_stmt_expr	COMMA		symbol_expr
+			|	list_stmt_expr	COMMA	symbol_stmt_expr
 			{
 				$1->location = @$;
 				compound_expr_add($1, $3);

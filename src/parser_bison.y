@@ -3094,6 +3094,7 @@ rt_expr			:	RT	rt_key
 
 rt_key			:	CLASSID		{ $$ = NFT_RT_CLASSID; }
 			|	NEXTHOP		{ $$ = NFT_RT_NEXTHOP4; }
+			|	MTU		{ $$ = NFT_RT_TCPMSS; }
 			;
 
 ct_expr			: 	CT	ct_key

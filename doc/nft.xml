@@ -2836,6 +2836,11 @@ filter prerouting meta mark set 0xdead fib daddr . mark type vmap { blackhole : 
 								<entry>Routing nexthop</entry>
 								<entry>ipv4_addr/ipv6_addr</entry>
 							</row>
+							<row>
+								<entry>mtu</entry>
+								<entry>TCP maximum segment size of route</entry>
+								<entry>integer (16 bit)</entry>
+							</row>
 						</tbody>
 					</tgroup>
 				</table>
@@ -4270,6 +4275,8 @@ ip forward ip dscp set 42
 					<title>change tcp mss</title>
 					<programlisting>
 tcp option maxseg size set 1360
+# set a size based on route information:
+tcp option maxseg size set rt mtu
 					</programlisting>
 				</example>
 			</para>

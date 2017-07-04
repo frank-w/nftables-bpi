@@ -73,6 +73,11 @@ static const struct rt_template rt_templates[] = {
 					      16 * BITS_PER_BYTE,
 					      BYTEORDER_BIG_ENDIAN,
 					      true),
+	[NFT_RT_TCPMSS]		= RT_TEMPLATE("mtu",
+					      &integer_type,
+					      2 * BITS_PER_BYTE,
+					      BYTEORDER_HOST_ENDIAN,
+					      false),
 };
 
 static void rt_expr_print(const struct expr *expr, struct output_ctx *octx)

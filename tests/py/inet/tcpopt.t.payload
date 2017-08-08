@@ -193,3 +193,8 @@ inet test-inet input
   [ cmp eq reg 1 0x00000006 ]
   [ exthdr load tcpopt 1b @ 3 + 0 present => reg 1 ]
   [ cmp eq reg 1 0x00000000 ]
+
+# tcp option maxseg size set 1360
+inet test-inet input
+  [ immediate reg 1 0x00005005 ]
+  [ exthdr write tcpopt reg 1 => 2b @ 2 + 2 ]

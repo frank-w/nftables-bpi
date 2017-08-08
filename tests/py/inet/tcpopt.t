@@ -38,3 +38,5 @@ tcp option sack window 1;fail
 
 tcp option window exists;ok
 tcp option window missing;ok
+
+tcp option maxseg size set 1360;ok

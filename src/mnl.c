@@ -336,33 +336,6 @@ int mnl_nft_rule_batch_del(struct nftnl_rule *nlr, struct nftnl_batch *batch,
 /*
  * Rule
  */
-int mnl_nft_rule_add(struct mnl_socket *nf_sock, struct nftnl_rule *nlr,
-		     unsigned int flags, uint32_t seqnum)
-{
-	char buf[MNL_SOCKET_BUFFER_SIZE];
-	struct nlmsghdr *nlh;
-
-	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_NEWRULE,
-				    nftnl_rule_get_u32(nlr, NFTNL_RULE_FAMILY),
-				    NLM_F_ACK | NLM_F_CREATE | flags, seqnum);
-	nftnl_rule_nlmsg_build_payload(nlh, nlr);
-
-	return nft_mnl_talk(nf_sock, nlh, nlh->nlmsg_len, seqnum, NULL, NULL);
-}
-
-int mnl_nft_rule_delete(struct mnl_socket *nf_sock, struct nftnl_rule *nlr,
-			unsigned int flags, uint32_t seqnum)
-{
-	char buf[MNL_SOCKET_BUFFER_SIZE];
-	struct nlmsghdr *nlh;
-
-	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_DELRULE,
-				    nftnl_rule_get_u32(nlr, NFTNL_RULE_FAMILY),
-				    NLM_F_ACK, seqnum);
-	nftnl_rule_nlmsg_build_payload(nlh, nlr);
-
-	return nft_mnl_talk(nf_sock, nlh, nlh->nlmsg_len, seqnum, NULL, NULL);
-}
 
 static int rule_cb(const struct nlmsghdr *nlh, void *data)
 {
@@ -524,27 +497,6 @@ err:
 	return NULL;
 }
 
-static int chain_get_cb(const struct nlmsghdr *nlh, void *data)
-{
-	nftnl_chain_nlmsg_parse(nlh, data);
-	return MNL_CB_OK;
-}
-
-int mnl_nft_chain_get(struct mnl_socket *nf_sock, struct nftnl_chain *nlc,
-		      unsigned int flags, uint32_t seqnum)
-{
-	char buf[MNL_SOCKET_BUFFER_SIZE];
-	struct nlmsghdr *nlh;
-
-	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETCHAIN,
-				    nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY),
-				    seqnum, NLM_F_ACK | flags);
-	nftnl_chain_nlmsg_build_payload(nlh, nlc);
-
-	return nft_mnl_talk(nf_sock, nlh, nlh->nlmsg_len, seqnum, chain_get_cb,
-			    nlc);
-}
-
 /*
  * Table
  */
@@ -653,29 +605,6 @@ struct nftnl_table_list *mnl_nft_table_dump(struct mnl_socket *nf_sock,
 err:
 	nftnl_table_list_free(nlt_list);
 	return NULL;
-}
-
-static int table_get_cb(const struct nlmsghdr *nlh, void *data)
-{
-	struct nftnl_table *t = data;
-
-	nftnl_table_nlmsg_parse(nlh, t);
-	return MNL_CB_OK;
-}
-
-int mnl_nft_table_get(struct mnl_socket *nf_sock, struct nftnl_table *nlt,
-		      unsigned int flags, uint32_t seqnum)
-{
-	char buf[MNL_SOCKET_BUFFER_SIZE];
-	struct nlmsghdr *nlh;
-
-	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETTABLE,
-				    nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY),
-				    NLM_F_ACK, seqnum);
-	nftnl_table_nlmsg_build_payload(nlh, nlt);
-
-	return nft_mnl_talk(nf_sock, nlh, nlh->nlmsg_len, seqnum, table_get_cb,
-			    nlt);
 }
 
 /*
@@ -904,29 +833,6 @@ mnl_nft_obj_dump(struct mnl_socket *nf_sock, int family, uint32_t seqnum,
 err:
 	nftnl_obj_list_free(nln_list);
 	return NULL;
-}
-
-static int set_get_cb(const struct nlmsghdr *nlh, void *data)
-{
-	struct nftnl_set *s = data;
-
-	nftnl_set_nlmsg_parse(nlh, s);
-	return MNL_CB_OK;
-}
-
-int mnl_nft_set_get(struct mnl_socket *nf_sock, struct nftnl_set *nls,
-		    uint32_t seqnum)
-{
-	char buf[MNL_SOCKET_BUFFER_SIZE];
-	struct nlmsghdr *nlh;
-
-	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETSET,
-				    nftnl_set_get_u32(nls, NFTNL_SET_FAMILY),
-				    NLM_F_ACK, seqnum);
-	nftnl_set_nlmsg_build_payload(nlh, nls);
-
-	return nft_mnl_talk(nf_sock, nlh, nlh->nlmsg_len, seqnum, set_get_cb,
-			    nls);
 }
 
 /*

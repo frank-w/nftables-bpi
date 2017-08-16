@@ -33,10 +33,6 @@ int mnl_nft_rule_batch_del(struct nftnl_rule *nlr, struct nftnl_batch *batch,
 int mnl_nft_rule_batch_replace(struct nftnl_rule *nlr, struct nftnl_batch *batch,
 			       unsigned int flags, uint32_t seqnum);
 
-int mnl_nft_rule_add(struct mnl_socket *nf_sock, struct nftnl_rule *r,
-		     unsigned int flags, uint32_t seqnum);
-int mnl_nft_rule_delete(struct mnl_socket *nf_sock, struct nftnl_rule *r,
-			unsigned int flags, uint32_t seqnum);
 struct nftnl_rule_list *mnl_nft_rule_dump(struct mnl_socket *nf_sock,
 					  int family, uint32_t seqnum);
 
@@ -50,8 +46,6 @@ int mnl_nft_chain_batch_del(struct nftnl_chain *nlc, struct nftnl_batch *batch,
 			    unsigned int flags, uint32_t seqnum);
 struct nftnl_chain_list *mnl_nft_chain_dump(struct mnl_socket *nf_sock,
 					    int family, uint32_t seqnum);
-int mnl_nft_chain_get(struct mnl_socket *nf_sock, struct nftnl_chain *nlc,
-		      unsigned int flags, uint32_t seqnum);
 
 int mnl_nft_table_add(struct mnl_socket *nf_sock, struct nftnl_table *nlt,
 		      unsigned int flags, uint32_t seqnum);
@@ -63,8 +57,6 @@ int mnl_nft_table_batch_del(struct nftnl_table *nlt, struct nftnl_batch *batch,
 			    unsigned int flags, uint32_t seqnum);
 struct nftnl_table_list *mnl_nft_table_dump(struct mnl_socket *nf_sock,
 					    int family, uint32_t seqnum);
-int mnl_nft_table_get(struct mnl_socket *nf_sock, struct nftnl_table *nlt,
-		      unsigned int flags, uint32_t seqnum);
 
 int mnl_nft_set_add(struct mnl_socket *nf_sock, struct nftnl_set *nls,
 		    unsigned int flags, uint32_t seqnum);
@@ -76,8 +68,6 @@ int mnl_nft_set_batch_del(struct nftnl_set *nls, struct nftnl_batch *batch,
 			  unsigned int flags, uint32_t seqnum);
 struct nftnl_set_list *mnl_nft_set_dump(struct mnl_socket *nf_sock, int family,
 					const char *table, uint32_t seqnum);
-int mnl_nft_set_get(struct mnl_socket *nf_sock, struct nftnl_set *nls,
-		    uint32_t seqnum);
 
 int mnl_nft_setelem_add(struct mnl_socket *nf_sock, struct nftnl_set *nls,
 			unsigned int flags, uint32_t seqnum);

@@ -486,19 +486,6 @@ int netlink_replace_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
 	return err;
 }
 
-int netlink_add_rule_list(struct netlink_ctx *ctx, const struct handle *h,
-			  const struct list_head *rule_list)
-{
-	struct rule *rule;
-
-	list_for_each_entry(rule, rule_list, list) {
-		if (netlink_add_rule_batch(ctx, &rule->handle, rule,
-					   NLM_F_APPEND) < 0)
-			return -1;
-	}
-	return 0;
-}
-
 int netlink_del_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
 			   const struct location *loc)
 {
@@ -871,35 +858,6 @@ int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h,
 				strerror(ENOENT));
 }
 
-int netlink_get_chain(struct netlink_ctx *ctx, const struct handle *h,
-		      const struct location *loc)
-{
-	struct nftnl_chain *nlc;
-	struct chain *chain;
-	int err;
-
-	nlc = alloc_nftnl_chain(h);
-	err = mnl_nft_chain_get(ctx->nf_sock, nlc, 0, ctx->seqnum);
-	if (err < 0) {
-		netlink_io_error(ctx, loc,
-				 "Could not receive chain from kernel: %s",
-				 strerror(errno));
-		goto out;
-	}
-
-	chain = netlink_delinearize_chain(ctx, nlc);
-	list_add_tail(&chain->list, &ctx->list);
-out:
-	nftnl_chain_free(nlc);
-	return err;
-}
-
-int netlink_list_chain(struct netlink_ctx *ctx, const struct handle *h,
-		       const struct location *loc)
-{
-	return netlink_list_rules(ctx, h, loc);
-}
-
 int netlink_flush_chain(struct netlink_ctx *ctx, const struct handle *h,
 			const struct location *loc)
 {
@@ -1000,19 +958,6 @@ int netlink_delete_table(struct netlink_ctx *ctx, const struct handle *h,
 		return netlink_del_table_compat(ctx, h, loc);
 }
 
-void netlink_dump_table(const struct nftnl_table *nlt)
-{
-#ifdef DEBUG
-	char buf[4096];
-
-	if (!(debug_level & DEBUG_NETLINK))
-		return;
-
-	nftnl_table_snprintf(buf, sizeof(buf), nlt, 0, 0);
-	fprintf(stdout, "%s\n", buf);
-#endif
-}
-
 static struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 					       const struct nftnl_table *nlt)
 {
@@ -1053,30 +998,6 @@ int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h,
 	nftnl_table_list_foreach(table_cache, list_table_cb, ctx);
 	nftnl_table_list_free(table_cache);
 	return 0;
-}
-
-int netlink_get_table(struct netlink_ctx *ctx, const struct handle *h,
-		      const struct location *loc, struct table *table)
-{
-	struct nftnl_table *nlt;
-	struct table *ntable;
-	int err;
-
-	nlt = alloc_nftnl_table(h);
-	err = mnl_nft_table_get(ctx->nf_sock, nlt, 0, ctx->seqnum);
-	if (err < 0) {
-		netlink_io_error(ctx, loc,
-				 "Could not receive table from kernel: %s",
-				 strerror(errno));
-		goto out;
-	}
-
-	ntable = netlink_delinearize_table(ctx, nlt);
-	table->flags = ntable->flags;
-	table_free(ntable);
-out:
-	nftnl_table_free(nlt);
-	return err;
 }
 
 int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h,
@@ -1415,31 +1336,6 @@ int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h,
 
 	err = nftnl_set_list_foreach(set_cache, list_set_cb, ctx);
 	nftnl_set_list_free(set_cache);
-	return err;
-}
-
-int netlink_get_set(struct netlink_ctx *ctx, const struct handle *h,
-		    const struct location *loc)
-{
-	struct nftnl_set *nls;
-	struct set *set;
-	int err;
-
-	nls = alloc_nftnl_set(h);
-	err = mnl_nft_set_get(ctx->nf_sock, nls, ctx->seqnum);
-	if (err < 0) {
-		nftnl_set_free(nls);
-		return netlink_io_error(ctx, loc,
-					"Could not receive set from kernel: %s",
-					strerror(errno));
-	}
-
-	set = netlink_delinearize_set(ctx, nls);
-	nftnl_set_free(nls);
-	if (set == NULL)
-		return -1;
-	list_add_tail(&set->list, &ctx->list);
-
 	return err;
 }
 

@@ -195,8 +195,6 @@ struct xt_stmt {
 	void				*entry;
 };
 
-extern struct stmt *xt_stmt_alloc(const struct location *loc);
-
 /**
  * enum stmt_types - statement types
  *

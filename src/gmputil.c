@@ -77,11 +77,6 @@ uint8_t mpz_get_uint8(const mpz_t op)
 	return mpz_get_type(uint8_t, MPZ_HOST_ENDIAN, op);
 }
 
-uint64_t mpz_get_be64(const mpz_t op)
-{
-	return mpz_get_type(uint64_t, MPZ_BIG_ENDIAN, op);
-}
-
 uint32_t mpz_get_be32(const mpz_t op)
 {
 	return mpz_get_type(uint32_t, MPZ_BIG_ENDIAN, op);

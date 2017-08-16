@@ -45,7 +45,6 @@ extern uint32_t mpz_get_uint32(const mpz_t op);
 extern uint16_t mpz_get_uint16(const mpz_t op);
 extern uint8_t mpz_get_uint8(const mpz_t op);
 
-extern uint64_t mpz_get_be64(const mpz_t op);
 extern uint32_t mpz_get_be32(const mpz_t op);
 extern uint16_t mpz_get_be16(const mpz_t op);
 

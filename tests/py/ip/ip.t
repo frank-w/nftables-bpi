@@ -127,6 +127,8 @@ iif "lo" ip checksum set 0;ok
 iif "lo" ip id set 0;ok
 iif "lo" ip ecn set 1;ok;iif "lo" ip ecn set ect1
 iif "lo" ip ecn set ce;ok
+iif "lo" ip ttl set 23;ok
+iif "lo" ip protocol set 1;ok
 
 iif "lo" ip dscp set af23;ok
 iif "lo" ip dscp set cs0;ok

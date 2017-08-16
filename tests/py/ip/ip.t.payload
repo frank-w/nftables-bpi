@@ -576,3 +576,19 @@ ip test-ip4 input
   [ bitwise reg 1 = (reg=1 & 0x000003ff ) ^ 0x00000000 ]
   [ payload write reg 1 => 2b @ network header + 0 csum_type 1 csum_off 10 csum_flags 0x0 ]
 
+# iif "lo" ip ttl set 23
+ip test-ip4 input
+  [ meta load iif => reg 1 ]
+  [ cmp eq reg 1 0x00000001 ]
+  [ payload load 2b @ network header + 8 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x0000ff00 ) ^ 0x00000017 ]
+  [ payload write reg 1 => 2b @ network header + 8 csum_type 1 csum_off 10 csum_flags 0x0 ]
+
+# iif "lo" ip protocol set 1
+ip test-ip4 input
+  [ meta load iif => reg 1 ]
+  [ cmp eq reg 1 0x00000001 ]
+  [ payload load 2b @ network header + 8 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x000000ff ) ^ 0x00000100 ]
+  [ payload write reg 1 => 2b @ network header + 8 csum_type 1 csum_off 10 csum_flags 0x1 ]
+

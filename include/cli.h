@@ -15,6 +15,5 @@ static inline int cli_init(struct nft_ctx *nft, struct mnl_socket *nf_sock,
 }
 #endif
 extern void cli_exit(void);
-extern void cli_display(const char *fmt, va_list ap) __fmtstring(1, 0);
 
 #endif

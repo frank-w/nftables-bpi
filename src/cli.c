@@ -149,32 +149,6 @@ static char **cli_completion(const char *text, int start, int end)
 	return NULL;
 }
 
-void __fmtstring(1, 0) cli_display(const char *fmt, va_list ap)
-{
-	int point, end;
-	char *buf;
-
-	point = rl_point;
-	end   = rl_end;
-	rl_point = rl_end = 0;
-
-	rl_save_prompt();
-	rl_clear_message();
-
-	if (vasprintf(&buf, fmt, ap) < 0)
-		fprintf(rl_outstream, "cli_display: out of memory\n");
-	else {
-		fprintf(rl_outstream, "%s\n", buf);
-		xfree(buf);
-	}
-
-	rl_restore_prompt();
-
-	rl_point = point;
-	rl_end   = end;
-	rl_forced_update_display();
-}
-
 int cli_init(struct nft_ctx *nft, struct mnl_socket *nf_sock,
 	     struct nft_cache *cache, struct parser_state *_state)
 {

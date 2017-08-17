@@ -45,40 +45,66 @@ vi:ts=4 sw=4
 	<refsynopsisdiv>
 		<cmdsynopsis>
 			<command>nft</command>
-			<arg choice="opt">
-				<option>-n | --numeric</option>
-			</arg>
-			<arg choice="opt">
-				<option>-s | --stateless</option>
-			</arg>
-			<arg choice="opt">
-				<option>-c | --check</option>
-			</arg>
-			<arg choice="opt">
-				<option>[-I | --includepath]</option>
+			<group>
+				<arg><option>-n</option></arg>
+				<arg><option>--numeric</option></arg>
+			</group>
+			<group>
+				<arg><option>-N</option></arg>
+				<arg><option>--reversedns</option></arg>
+			</group>
+			<group>
+				<arg><option>-s</option></arg>
+				<arg><option>--stateless</option></arg>
+			</group>
+			<group>
+				<arg><option>-c</option></arg>
+				<arg><option>--check</option></arg>
+			</group>
+			<group>
+				<arg><option>-a</option></arg>
+				<arg><option>--handle</option></arg>
+			</group>
+			<group>
+				<arg><option>-e</option></arg>
+				<arg><option>--echo</option></arg>
+			</group>
+			<arg>
+				<group choice="req">
+					<arg><option>-I</option></arg>
+					<arg><option>--includepath</option></arg>
+				</group>
 				<replaceable>directory</replaceable>
 			</arg>
 			<group>
-				<arg choice="opt">
-					<option>[-f | --file]</option>
+				<arg>
+					<group choice="req">
+						<arg><option>-f</option></arg>
+						<arg><option>--file</option></arg>
+					</group>
 					<replaceable>filename</replaceable>
 				</arg>
-				<arg choice="opt">
-					<option>[-i | --interactive]</option>
+				<arg>
+					<group choice="req">
+						<arg><option>-i</option></arg>
+						<arg><option>--interactive</option></arg>
+					</group>
 				</arg>
-				<arg choice="opt" rep="repeat">
+				<arg rep="repeat">
 					<replaceable>cmd</replaceable>
 				</arg>
 			</group>
 		</cmdsynopsis>
 		<cmdsynopsis>
 			<command>nft</command>
-			<arg choice="opt">
-				<option>-h | --help</option>
-			</arg>
-			<arg choice="opt">
-				<option>-v | --version</option>
-			</arg>
+			<group>
+				<arg><option>-h</option></arg>
+				<arg><option>--help</option></arg>
+			</group>
+			<group>
+				<arg><option>-v</option></arg>
+				<arg><option>--version</option></arg>
+			</group>
 		</cmdsynopsis>
 	</refsynopsisdiv>
 
@@ -141,7 +167,7 @@ vi:ts=4 sw=4
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><option>-N</option></term>
+				<term><option>-N, --reversedns</option></term>
 				<listitem>
 					<para>
 						Translate IP addresses to names. Usually requires network traffic for DNS lookup.
@@ -170,7 +196,7 @@ vi:ts=4 sw=4
 				<term><option>-I, --includepath <replaceable>directory</replaceable></option></term>
 				<listitem>
 					<para>
-						Add the directory <replaceable>directory</replaceable> to the list of directories to be searched for included files.
+						Add the directory <replaceable>directory</replaceable> to the list of directories to be searched for included files. This option may be specified multiple times.
 					</para>
 				</listitem>
 			</varlistentry>

@@ -143,6 +143,7 @@ void netlink_parse_match(struct netlink_parse_ctx *ctx,
 	m->u.match_size = mt_len + XT_ALIGN(sizeof(struct xt_entry_match));
 	m->u.user.revision = nftnl_expr_get_u32(nle, NFTNL_EXPR_MT_REV);
 
+	stmt = stmt_alloc(loc, NULL);
 	stmt->xt.name = strdup(name);
 	stmt->xt.type = NFT_XT_MATCH;
 	stmt->xt.match = xt_match_clone(mt);
@@ -179,6 +180,7 @@ void netlink_parse_target(struct netlink_parse_ctx *ctx,
 	t->u.user.revision = nftnl_expr_get_u32(nle, NFTNL_EXPR_TG_REV);
 	strcpy(t->u.user.name, tg->name);
 
+	stmt = stmt_alloc(loc, NULL);
 	stmt->xt.name = strdup(name);
 	stmt->xt.type = NFT_XT_TARGET;
 	stmt->xt.target = xt_target_clone(tg);

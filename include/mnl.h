@@ -8,6 +8,7 @@
 struct mnl_ctx {
 	struct mnl_socket	*nf_sock;
 	unsigned int		seqnum;
+	unsigned int		debug_mask;
 };
 
 struct mnl_socket *netlink_open_sock(void);
@@ -97,7 +98,7 @@ int mnl_nft_obj_batch_del(struct nftnl_obj *nln, struct nftnl_batch *batch,
 
 struct nftnl_ruleset *mnl_nft_ruleset_dump(struct mnl_socket *nf_sock,
 					   uint32_t family, uint32_t seqnum);
-int mnl_nft_event_listener(struct mnl_socket *nf_sock,
+int mnl_nft_event_listener(struct mnl_ctx *ctx,
 			   int (*cb)(const struct nlmsghdr *nlh, void *data),
 			   void *cb_data);
 

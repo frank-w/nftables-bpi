@@ -71,7 +71,7 @@ nft_mnl_talk(struct mnl_ctx *ctx, const void *data, unsigned int len,
 {
 	uint32_t portid = mnl_socket_get_portid(ctx->nf_sock);
 
-	if (debug_level & DEBUG_MNL)
+	if (ctx->debug_mask & DEBUG_MNL)
 		mnl_nlmsg_fprintf(stdout, data, len, sizeof(struct nfgenmsg));
 
 	if (mnl_socket_sendto(ctx->nf_sock, data, len) < 0)
@@ -229,7 +229,7 @@ static ssize_t mnl_nft_socket_sendmsg(const struct netlink_ctx *ctx)
 	nftnl_batch_iovec(ctx->batch, iov, iov_len);
 
 	for (i = 0; i < iov_len; i++) {
-		if (debug_level & DEBUG_MNL) {
+		if (ctx->debug_mask & DEBUG_MNL) {
 			mnl_nlmsg_fprintf(stdout,
 					  iov[i].iov_base, iov[i].iov_len,
 					  sizeof(struct nfgenmsg));
@@ -1071,7 +1071,7 @@ err:
  */
 #define NFTABLES_NLEVENT_BUFSIZ	(1 << 24)
 
-int mnl_nft_event_listener(struct mnl_socket *nf_sock,
+int mnl_nft_event_listener(struct mnl_ctx *ctx,
 			   int (*cb)(const struct nlmsghdr *nlh, void *data),
 			   void *cb_data)
 {
@@ -1079,7 +1079,7 @@ int mnl_nft_event_listener(struct mnl_socket *nf_sock,
  	 * message loss due to ENOBUFS.
 	 */
 	unsigned int bufsiz = NFTABLES_NLEVENT_BUFSIZ;
-	int fd = mnl_socket_get_fd(nf_sock);
+	int fd = mnl_socket_get_fd(ctx->nf_sock);
 	char buf[NFT_NLMSG_MAXSIZE];
 	fd_set readfds;
 	int ret;
@@ -1105,7 +1105,7 @@ int mnl_nft_event_listener(struct mnl_socket *nf_sock,
 			return -1;
 
 		if (FD_ISSET(fd, &readfds)) {
-			ret = mnl_socket_recvfrom(nf_sock, buf, sizeof(buf));
+			ret = mnl_socket_recvfrom(ctx->nf_sock, buf, sizeof(buf));
 			if (ret < 0) {
 				if (errno == ENOBUFS) {
 					printf("# ERROR: We lost some netlink events!\n");
@@ -1116,7 +1116,7 @@ int mnl_nft_event_listener(struct mnl_socket *nf_sock,
 			}
 		}
 
-		if (debug_level & DEBUG_MNL) {
+		if (ctx->debug_mask & DEBUG_MNL) {
 			mnl_nlmsg_fprintf(stdout, buf, sizeof(buf),
 					  sizeof(struct nfgenmsg));
 		}

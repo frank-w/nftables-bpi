@@ -182,7 +182,7 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 		break;
 	case SYMBOL_SET:
 		ret = cache_update(ctx->nf_sock, ctx->cache, ctx->cmd->op,
-				   ctx->msgs);
+				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK);
 		if (ret < 0)
 			return ret;
 
@@ -1708,11 +1708,11 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 
 static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 {
-	if (debug_level & DEBUG_EVALUATION) {
+	if (ctx->debug_mask & DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &(*expr)->location,
 				   "Evaluate %s", (*expr)->ops->name);
-		erec_print(stdout, erec);
+		erec_print(stdout, erec, ctx->debug_mask);
 		expr_print(*expr, &octx_debug_dummy);
 		printf("\n\n");
 	}
@@ -2689,11 +2689,12 @@ static int stmt_evaluate_objref(struct eval_ctx *ctx, struct stmt *stmt)
 
 int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 {
-	if (debug_level & DEBUG_EVALUATION) {
+	if (ctx->debug_mask & DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &stmt->location,
 				   "Evaluate %s", stmt->ops->name);
-		erec_print(stdout, erec); stmt_print(stmt, &octx_debug_dummy);
+		erec_print(stdout, erec, ctx->debug_mask);
+		stmt_print(stmt, &octx_debug_dummy);
 		printf("\n\n");
 	}
 
@@ -2823,7 +2824,7 @@ static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule)
 	struct stmt *stmt, *tstmt = NULL;
 	struct error_record *erec;
 
-	proto_ctx_init(&ctx->pctx, rule->handle.family);
+	proto_ctx_init(&ctx->pctx, rule->handle.family, ctx->debug_mask);
 	memset(&ctx->ectx, 0, sizeof(ctx->ectx));
 
 	ctx->rule = rule;
@@ -2965,14 +2966,14 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs);
+				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK);
 		if (ret < 0)
 			return ret;
 
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs);
+				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK);
 		if (ret < 0)
 			return ret;
 
@@ -2983,7 +2984,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 		return rule_evaluate(ctx, cmd->rule);
 	case CMD_OBJ_CHAIN:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs);
+				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK);
 		if (ret < 0)
 			return ret;
 
@@ -3006,7 +3007,7 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs);
+				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK);
 		if (ret < 0)
 			return ret;
 
@@ -3048,7 +3049,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs);
+	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+			   ctx->debug_mask & DEBUG_NETLINK);
 	if (ret < 0)
 		return ret;
 
@@ -3131,7 +3133,8 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs);
+	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+			   ctx->debug_mask & DEBUG_NETLINK);
 	if (ret < 0)
 		return ret;
 
@@ -3157,7 +3160,8 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs);
+	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+			   ctx->debug_mask & DEBUG_NETLINK);
 	if (ret < 0)
 		return ret;
 
@@ -3216,7 +3220,7 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs);
+				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK);
 		if (ret < 0)
 			return ret;
 
@@ -3313,7 +3317,8 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 	uint32_t event;
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs);
+	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+			   ctx->debug_mask & DEBUG_NETLINK);
 	if (ret < 0)
 		return ret;
 
@@ -3334,7 +3339,8 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 
 static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 {
-	return cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs);
+	return cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+			    ctx->debug_mask & DEBUG_NETLINK);
 }
 
 static const char *cmd_op_name[] = {
@@ -3362,12 +3368,13 @@ static const char *cmd_op_to_name(enum cmd_ops op)
 
 int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 {
-	if (debug_level & DEBUG_EVALUATION) {
+	if (ctx->debug_mask & DEBUG_EVALUATION) {
 		struct error_record *erec;
 
 		erec = erec_create(EREC_INFORMATIONAL, &cmd->location,
 				   "Evaluate %s", cmd_op_to_name(cmd->op));
-		erec_print(stdout, erec); printf("\n\n");
+		erec_print(stdout, erec, ctx->debug_mask);
+		printf("\n\n");
 	}
 
 	ctx->cmd = cmd;

@@ -122,7 +122,8 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 }
 
 static int cache_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
-		      enum cmd_ops cmd, struct list_head *msgs)
+		      enum cmd_ops cmd, struct list_head *msgs,
+		      unsigned int debug_mask)
 {
 	struct handle handle = {
 		.family = NFPROTO_UNSPEC,
@@ -136,6 +137,7 @@ static int cache_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 	ctx.cache = cache;
 	ctx.msgs = msgs;
 	ctx.seqnum = cache->seqnum++;
+	ctx.debug_mask = debug_mask;
 
 	ret = cache_init_tables(&ctx, &handle, cache);
 	if (ret < 0)
@@ -148,7 +150,7 @@ static int cache_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 }
 
 int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
-		 enum cmd_ops cmd, struct list_head *msgs)
+		 enum cmd_ops cmd, struct list_head *msgs, bool debug)
 {
 	int ret;
 
@@ -156,7 +158,7 @@ int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
 		return 0;
 replay:
 	netlink_genid_get(nf_sock, cache->seqnum++);
-	ret = cache_init(nf_sock, cache, cmd, msgs);
+	ret = cache_init(nf_sock, cache, cmd, msgs, debug);
 	if (ret < 0) {
 		cache_release(cache);
 		if (errno == EINTR) {
@@ -991,7 +993,7 @@ static int do_add_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	set = set_lookup(table, h->set);
 
 	if (set->flags & NFT_SET_INTERVAL &&
-	    set_to_intervals(ctx->msgs, set, init, true) < 0)
+	    set_to_intervals(ctx->msgs, set, init, true, ctx->debug_mask) < 0)
 		return -1;
 
 	return __do_add_setelems(ctx, h, set, init, flags);
@@ -1002,7 +1004,8 @@ static int do_add_set(struct netlink_ctx *ctx, const struct handle *h,
 {
 	if (set->init != NULL) {
 		if (set->flags & NFT_SET_INTERVAL &&
-		    set_to_intervals(ctx->msgs, set, set->init, true) < 0)
+		    set_to_intervals(ctx->msgs, set, set->init, true,
+				     ctx->debug_mask) < 0)
 			return -1;
 	}
 	if (netlink_add_set(ctx, h, set, flags) < 0)
@@ -1021,8 +1024,8 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	if (ctx->octx->echo) {
 		int ret;
 
-		ret = cache_update(ctx->nf_sock, ctx->cache,
-				  cmd->obj, ctx->msgs);
+		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->obj,
+				   ctx->msgs, ctx->debug_mask);
 		if (ret < 0)
 			return ret;
 
@@ -1072,8 +1075,8 @@ static int do_command_insert(struct netlink_ctx *ctx, struct cmd *cmd)
 	if (ctx->octx->echo) {
 		int ret;
 
-		ret = cache_update(ctx->nf_sock, ctx->cache,
-				  cmd->obj, ctx->msgs);
+		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->obj,
+				   ctx->msgs, ctx->debug_mask);
 		if (ret < 0)
 			return ret;
 
@@ -1100,7 +1103,7 @@ static int do_delete_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	set = set_lookup(table, h->set);
 
 	if (set->flags & NFT_SET_INTERVAL &&
-	    set_to_intervals(ctx->msgs, set, expr, false) < 0)
+	    set_to_intervals(ctx->msgs, set, expr, false, ctx->debug_mask) < 0)
 		return -1;
 
 	if (netlink_delete_setelems(ctx, h, expr) < 0)

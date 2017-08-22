@@ -36,7 +36,8 @@
 #include "parser_bison.h"
 
 void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
-		 struct parser_state *state, struct list_head *msgs)
+		 struct parser_state *state, struct list_head *msgs,
+		 unsigned int debug_mask)
 {
 	memset(state, 0, sizeof(*state));
 	init_list_head(&state->cmds);
@@ -46,6 +47,7 @@ void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 	state->ectx.cache = cache;
 	state->ectx.msgs = msgs;
 	state->ectx.nf_sock = nf_sock;
+	state->ectx.debug_mask = debug_mask;
 }
 
 static void yyerror(struct location *loc, struct nft_ctx *nft, void *scanner,
@@ -118,9 +120,9 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 %initial-action {
 	location_init(scanner, state, &yylloc);
-	if (debug_level & DEBUG_SCANNER)
+	if (nft->debug_mask & DEBUG_SCANNER)
 		nft_set_debug(1, scanner);
-	if (debug_level & DEBUG_PARSER)
+	if (nft->debug_mask & DEBUG_PARSER)
 		yydebug = 1;
 }
 

@@ -19,6 +19,7 @@ struct netlink_parse_ctx {
 	struct rule		*rule;
 	struct stmt		*stmt;
 	struct expr		*registers[1 + NFT_REG32_15 - NFT_REG32_00 + 1];
+	unsigned int		debug_mask;
 };
 
 struct rule_pp_ctx {
@@ -39,6 +40,7 @@ extern const struct location netlink_location;
  * @data:	pointer to pass data to callback
  * @seqnum:	sequence number
  * @octx:	output context
+ * @debug_mask:	display debugging information
  * @cache:	cache context
  */
 struct netlink_ctx {
@@ -50,6 +52,7 @@ struct netlink_ctx {
 	uint32_t		seqnum;
 	struct nftnl_batch	*batch;
 	bool			batch_supported;
+	unsigned int		debug_mask;
 	struct output_ctx	*octx;
 	struct nft_cache	*cache;
 };
@@ -176,11 +179,15 @@ extern int netlink_add_obj(struct netlink_ctx *ctx, const struct handle *h,
 extern int netlink_delete_obj(struct netlink_ctx *ctx, const struct handle *h,
 			      struct location *loc, uint32_t type);
 
-extern void netlink_dump_chain(const struct nftnl_chain *nlc);
-extern void netlink_dump_rule(const struct nftnl_rule *nlr);
-extern void netlink_dump_expr(const struct nftnl_expr *nle);
-extern void netlink_dump_set(const struct nftnl_set *nls);
-extern void netlink_dump_obj(struct nftnl_obj *nlo);
+extern void netlink_dump_chain(const struct nftnl_chain *nlc,
+			       unsigned int debug_mask);
+extern void netlink_dump_rule(const struct nftnl_rule *nlr,
+			      unsigned int debug_mask);
+extern void netlink_dump_expr(const struct nftnl_expr *nle,
+			      unsigned int debug_mask);
+extern void netlink_dump_set(const struct nftnl_set *nls,
+			     unsigned int debug_mask);
+extern void netlink_dump_obj(struct nftnl_obj *nlo, unsigned int debug_mask);
 
 extern int netlink_batch_send(struct netlink_ctx *ctx, struct list_head *err_list);
 
@@ -207,6 +214,7 @@ struct netlink_mon_handler {
 	uint32_t		format;
 	struct netlink_ctx	*ctx;
 	const struct location	*loc;
+	unsigned int		debug_mask;
 	bool			cache_needed;
 	struct nft_cache	*cache;
 };

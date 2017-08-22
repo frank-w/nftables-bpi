@@ -29,7 +29,6 @@
 #include <cli.h>
 
 static struct nft_ctx nft;
-unsigned int debug_level;
 
 enum opt_vals {
 	OPT_HELP		= 'h',
@@ -200,6 +199,7 @@ static int nft_netlink(struct nft_ctx *nft,
 		ctx.octx = &nft->output;
 		ctx.nf_sock = nf_sock;
 		ctx.cache = &nft->cache;
+		ctx.debug_mask = nft->debug_mask;
 		init_list_head(&ctx.list);
 		ret = do_command(&ctx, cmd);
 		if (ret < 0)
@@ -363,7 +363,7 @@ int main(int argc, char * const *argv)
 				for (i = 0; i < array_size(debug_param); i++) {
 					if (strcmp(debug_param[i].name, optarg))
 						continue;
-					debug_level |= debug_param[i].level;
+					nft.debug_mask |= debug_param[i].level;
 					break;
 				}
 
@@ -400,15 +400,16 @@ int main(int argc, char * const *argv)
 				strcat(buf, " ");
 		}
 		strcat(buf, "\n");
-		parser_init(nf_sock, &nft.cache, &state, &msgs);
+		parser_init(nf_sock, &nft.cache, &state, &msgs, nft.debug_mask);
 		scanner = scanner_init(&state);
 		scanner_push_buffer(scanner, &indesc_cmdline, buf);
 	} else if (filename != NULL) {
-		rc = cache_update(nf_sock, &nft.cache, CMD_INVALID, &msgs);
+		rc = cache_update(nf_sock, &nft.cache, CMD_INVALID, &msgs,
+				  nft.debug_mask);
 		if (rc < 0)
 			return rc;
 
-		parser_init(nf_sock, &nft.cache, &state, &msgs);
+		parser_init(nf_sock, &nft.cache, &state, &msgs, nft.debug_mask);
 		scanner = scanner_init(&state);
 		if (scanner_read_file(scanner, filename, &internal_location) < 0)
 			goto out;
@@ -428,7 +429,7 @@ int main(int argc, char * const *argv)
 		rc = NFT_EXIT_FAILURE;
 out:
 	scanner_destroy(scanner);
-	erec_print_list(stderr, &msgs);
+	erec_print_list(stderr, &msgs, nft.debug_mask);
 	xfree(buf);
 	cache_release(&nft.cache);
 	iface_cache_release();

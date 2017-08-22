@@ -58,8 +58,10 @@ static inline void erec_queue(struct error_record *erec,
 	list_add_tail(&erec->list, queue);
 }
 
-extern void erec_print(FILE *f, const struct error_record *erec);
-extern void erec_print_list(FILE *f, struct list_head *list);
+extern void erec_print(FILE *f, const struct error_record *erec,
+		       unsigned int debug_mask);
+extern void erec_print_list(FILE *f, struct list_head *list,
+			    unsigned int debug_mask);
 
 struct eval_ctx;
 

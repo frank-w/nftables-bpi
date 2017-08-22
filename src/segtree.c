@@ -25,6 +25,7 @@
  * @type:	the datatype of the dimension
  * @dwidth:	width of the dimension
  * @byteorder:	byteorder of elements
+ * @debug_mask:	display debugging information
  */
 struct seg_tree {
 	struct rb_root			root;
@@ -33,6 +34,7 @@ struct seg_tree {
 	const struct datatype		*datatype;
 	unsigned int			datalen;
 	enum byteorder			byteorder;
+	unsigned int			debug_mask;
 };
 
 enum elementary_interval_flags {
@@ -68,7 +70,7 @@ struct elementary_interval {
 static struct output_ctx debug_octx = {};
 
 static void seg_tree_init(struct seg_tree *tree, const struct set *set,
-			  struct expr *init)
+			  struct expr *init, unsigned int debug_mask)
 {
 	struct expr *first;
 
@@ -79,6 +81,7 @@ static void seg_tree_init(struct seg_tree *tree, const struct set *set,
 	tree->datatype	= set->datatype;
 	tree->datalen	= set->datalen;
 	tree->byteorder	= first->byteorder;
+	tree->debug_mask = debug_mask;
 }
 
 static struct elementary_interval *ei_alloc(const mpz_t left, const mpz_t right,
@@ -161,9 +164,9 @@ static void __ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 	rb_insert_color(&new->rb_node, &tree->root);
 }
 
-static bool segtree_debug(void)
+static bool segtree_debug(unsigned int debug_mask)
 {
-	if (debug_level & DEBUG_SEGTREE)
+	if (debug_mask & DEBUG_SEGTREE)
 		return true;
 
 	return false;
@@ -192,7 +195,7 @@ static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 	lei = ei_lookup(tree, new->left);
 	rei = ei_lookup(tree, new->right);
 
-	if (segtree_debug())
+	if (segtree_debug(tree->debug_mask))
 		pr_gmp_debug("insert: [%Zx %Zx]\n", new->left, new->right);
 
 	if (lei != NULL && rei != NULL && lei == rei) {
@@ -202,7 +205,7 @@ static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 		 *
 		 * [lei_left, new_left) and (new_right, rei_right]
 		 */
-		if (segtree_debug())
+		if (segtree_debug(tree->debug_mask))
 			pr_gmp_debug("split [%Zx %Zx]\n", lei->left, lei->right);
 
 		ei_remove(tree, lei);
@@ -222,7 +225,7 @@ static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 			 *
 			 * [lei_left, new_left)[new_left, new_right]
 			 */
-			if (segtree_debug()) {
+			if (segtree_debug(tree->debug_mask)) {
 				pr_gmp_debug("adjust left [%Zx %Zx]\n",
 					     lei->left, lei->right);
 			}
@@ -240,7 +243,7 @@ static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 			 *
 			 * [new_left, new_right](new_right, rei_right]
 			 */
-			if (segtree_debug()) {
+			if (segtree_debug(tree->debug_mask)) {
 				pr_gmp_debug("adjust right [%Zx %Zx]\n",
 					     rei->left, rei->right);
 			}
@@ -461,7 +464,7 @@ static void segtree_linearize(struct list_head *list, const struct set *set,
 	 * Convert the tree of open intervals to half-closed map expressions.
 	 */
 	rb_for_each_entry_safe(ei, node, next, &tree->root, rb_node) {
-		if (segtree_debug())
+		if (segtree_debug(tree->debug_mask))
 			pr_gmp_debug("iter: [%Zx %Zx]\n", ei->left, ei->right);
 
 		if (prev == NULL) {
@@ -547,20 +550,20 @@ static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 }
 
 int set_to_intervals(struct list_head *errs, struct set *set,
-		     struct expr *init, bool add)
+		     struct expr *init, bool add, unsigned int debug_mask)
 {
 	struct elementary_interval *ei, *next;
 	struct seg_tree tree;
 	LIST_HEAD(list);
 
-	seg_tree_init(&tree, set, init);
+	seg_tree_init(&tree, set, init, debug_mask);
 	if (set_to_segtree(errs, set, init, &tree, add) < 0)
 		return -1;
 	segtree_linearize(&list, set, init, &tree, add);
 
 	init->size = 0;
 	list_for_each_entry_safe(ei, next, &list, list) {
-		if (segtree_debug()) {
+		if (segtree_debug(tree.debug_mask)) {
 			pr_gmp_debug("list: [%.*Zx %.*Zx]\n",
 				     2 * tree.keylen / BITS_PER_BYTE, ei->left,
 				     2 * tree.keylen / BITS_PER_BYTE, ei->right);
@@ -569,7 +572,7 @@ int set_to_intervals(struct list_head *errs, struct set *set,
 		ei_destroy(ei);
 	}
 
-	if (segtree_debug()) {
+	if (segtree_debug(tree.debug_mask)) {
 		expr_print(init, &debug_octx);
 		pr_gmp_debug("\n");
 	}

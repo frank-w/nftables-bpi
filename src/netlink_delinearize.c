@@ -2201,7 +2201,7 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 	struct stmt *stmt, *next;
 
 	memset(&rctx, 0, sizeof(rctx));
-	proto_ctx_init(&rctx.pctx, rule->handle.family);
+	proto_ctx_init(&rctx.pctx, rule->handle.family, ctx->debug_mask);
 
 	list_for_each_entry_safe(stmt, next, &rule->stmts, list) {
 		enum stmt_types type = stmt->ops->type;
@@ -2313,6 +2313,7 @@ struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 
 	memset(&_ctx, 0, sizeof(_ctx));
 	_ctx.msgs = ctx->msgs;
+	_ctx.debug_mask = ctx->debug_mask;
 
 	memset(&h, 0, sizeof(h));
 	h.family = nftnl_rule_get_u32(nlr, NFTNL_RULE_FAMILY);

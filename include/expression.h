@@ -413,7 +413,8 @@ extern struct expr *list_expr_alloc(const struct location *loc);
 extern struct expr *set_expr_alloc(const struct location *loc,
 				   const struct set *set);
 extern int set_to_intervals(struct list_head *msgs, struct set *set,
-			    struct expr *init, bool add);
+			    struct expr *init, bool add,
+			    unsigned int debug_mask);
 extern void interval_map_decompose(struct expr *set);
 
 extern struct expr *mapping_expr_alloc(const struct location *loc,

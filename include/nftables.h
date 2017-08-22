@@ -42,12 +42,11 @@ struct nft_ctx {
 	const char		*include_paths[INCLUDE_PATHS_MAX];
 	unsigned int		num_include_paths;
 	unsigned int		parser_max_errors;
+	unsigned int		debug_mask;
 	struct output_ctx	output;
 	bool			check;
 	struct nft_cache	cache;
 };
-
-extern unsigned int debug_level;
 
 enum nftables_exit_codes {
 	NFT_EXIT_SUCCESS	= 0,

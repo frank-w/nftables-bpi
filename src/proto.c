@@ -138,11 +138,12 @@ const struct hook_proto_desc hook_proto_desc[] = {
 	[NFPROTO_ARP]		= HOOK_PROTO_DESC(PROTO_BASE_NETWORK_HDR, &proto_arp),
 };
 
-static void proto_ctx_debug(const struct proto_ctx *ctx, enum proto_bases base)
+static void proto_ctx_debug(const struct proto_ctx *ctx, enum proto_bases base,
+			    unsigned int debug_mask)
 {
 	unsigned int i;
 
-	if (!(debug_level & DEBUG_PROTO_CTX))
+	if (!(debug_mask & DEBUG_NETLINK))
 		return;
 
 	pr_debug("update %s protocol context:\n", proto_base_names[base]);
@@ -165,16 +166,19 @@ static void proto_ctx_debug(const struct proto_ctx *ctx, enum proto_bases base)
  *
  * @ctx:	protocol context
  * @family:	hook family
+ * @debug_mask:	display debugging information
  */
-void proto_ctx_init(struct proto_ctx *ctx, unsigned int family)
+void proto_ctx_init(struct proto_ctx *ctx, unsigned int family,
+		    unsigned int debug_mask)
 {
 	const struct hook_proto_desc *h = &hook_proto_desc[family];
 
 	memset(ctx, 0, sizeof(*ctx));
 	ctx->family = family;
 	ctx->protocol[h->base].desc = h->desc;
+	ctx->debug_mask = debug_mask;
 
-	proto_ctx_debug(ctx, h->base);
+	proto_ctx_debug(ctx, h->base, debug_mask);
 }
 
 /**
@@ -192,7 +196,7 @@ void proto_ctx_update(struct proto_ctx *ctx, enum proto_bases base,
 	ctx->protocol[base].location	= *loc;
 	ctx->protocol[base].desc	= desc;
 
-	proto_ctx_debug(ctx, base);
+	proto_ctx_debug(ctx, base, ctx->debug_mask);
 }
 
 #define HDR_TEMPLATE(__name, __dtype, __type, __member)			\

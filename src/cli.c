@@ -134,10 +134,11 @@ static void cli_complete(char *line)
 	xfree(line);
 	line = s;
 
-	parser_init(cli_nf_sock, &cli_nft->cache, state, &msgs);
+	parser_init(cli_nf_sock, &cli_nft->cache, state, &msgs,
+		    cli_nft->debug_mask);
 	scanner_push_buffer(scanner, &indesc_cli, line);
 	nft_run(cli_nft, cli_nf_sock, scanner, state, &msgs);
-	erec_print_list(stdout, &msgs);
+	erec_print_list(stdout, &msgs, cli_nft->debug_mask);
 	xfree(line);
 	cache_release(&cli_nft->cache);
 	iface_cache_release();

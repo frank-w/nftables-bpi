@@ -1337,5 +1337,5 @@ void netlink_linearize_rule(struct netlink_ctx *ctx, struct nftnl_rule *nlr,
 		nftnl_udata_buf_free(udata);
 	}
 
-	netlink_dump_rule(nlr);
+	netlink_dump_rule(nlr, ctx->debug_mask);
 }

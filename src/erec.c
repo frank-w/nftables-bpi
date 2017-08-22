@@ -112,7 +112,8 @@ struct error_record *erec_create(enum error_record_types type,
 	return erec;
 }
 
-void erec_print(FILE *f, const struct error_record *erec)
+void erec_print(FILE *f, const struct error_record *erec,
+		unsigned int debug_mask)
 {
 	const struct location *loc = erec->locations, *iloc;
 	const struct input_descriptor *indesc = loc->indesc, *tmp;
@@ -153,7 +154,7 @@ void erec_print(FILE *f, const struct error_record *erec)
 		fprintf(f, "%s\n", erec->msg);
 		for (l = 0; l < (int)erec->num_locations; l++) {
 			loc = &erec->locations[l];
-			netlink_dump_expr(loc->nle);
+			netlink_dump_expr(loc->nle, debug_mask);
 		}
 		fprintf(f, "\n");
 	} else {
@@ -202,13 +203,13 @@ void erec_print(FILE *f, const struct error_record *erec)
 	fprintf(f, "\n");
 }
 
-void erec_print_list(FILE *f, struct list_head *list)
+void erec_print_list(FILE *f, struct list_head *list, unsigned int debug_mask)
 {
 	struct error_record *erec, *next;
 
 	list_for_each_entry_safe(erec, next, list, list) {
 		list_del(&erec->list);
-		erec_print(f, erec);
+		erec_print(f, erec, debug_mask);
 		erec_destroy(erec);
 	}
 }

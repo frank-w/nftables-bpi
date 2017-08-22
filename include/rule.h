@@ -470,6 +470,7 @@ extern void cmd_free(struct cmd *cmd);
  * @set:	current set
  * @stmt:	current statement
  * @cache:	cache context
+ * @debug_mask: debugging bitmask
  * @ectx:	expression context
  * @pctx:	payload context
  */
@@ -482,6 +483,7 @@ struct eval_ctx {
 	struct set		*set;
 	struct stmt		*stmt;
 	struct nft_cache	*cache;
+	unsigned int		debug_mask;
 	struct expr_ctx		ectx;
 	struct proto_ctx	pctx;
 };
@@ -494,7 +496,7 @@ struct netlink_ctx;
 extern int do_command(struct netlink_ctx *ctx, struct cmd *cmd);
 
 extern int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
-			 enum cmd_ops cmd, struct list_head *msgs);
+			 enum cmd_ops cmd, struct list_head *msgs, bool debug);
 extern void cache_flush(struct list_head *table_list);
 extern void cache_release(struct nft_cache *cache);
 

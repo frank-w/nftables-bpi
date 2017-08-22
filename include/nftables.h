@@ -41,12 +41,12 @@ struct nft_cache {
 struct nft_ctx {
 	const char		*include_paths[INCLUDE_PATHS_MAX];
 	unsigned int		num_include_paths;
+	unsigned int		parser_max_errors;
 	struct output_ctx	output;
 	bool			check;
 	struct nft_cache	cache;
 };
 
-extern unsigned int max_errors;
 extern unsigned int debug_level;
 
 enum nftables_exit_codes {

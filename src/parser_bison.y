@@ -692,7 +692,7 @@ input			:	/* empty */
 
 					list_add_tail(&$2->list, &list);
 					if (cmd_evaluate(&state->ectx, $2) < 0) {
-						if (++state->nerrs == max_errors)
+						if (++state->nerrs == nft->parser_max_errors)
 							YYABORT;
 					} else
 						list_splice_tail(&list, &state->cmds);
@@ -731,7 +731,7 @@ common_block		:	INCLUDE		QUOTED_STRING	stmt_seperator
 			}
 			|	error		stmt_seperator
 			{
-				if (++state->nerrs == max_errors)
+				if (++state->nerrs == nft->parser_max_errors)
 					YYABORT;
 				yyerrok;
 			}
@@ -758,7 +758,7 @@ line			:	common_block			{ $$ = NULL; }
 
 					list_add_tail(&$1->list, &list);
 					if (cmd_evaluate(&state->ectx, $1) < 0) {
-						if (++state->nerrs == max_errors)
+						if (++state->nerrs == nft->parser_max_errors)
 							YYABORT;
 					} else
 						list_splice_tail(&list, &state->cmds);

@@ -29,7 +29,6 @@
 #include <cli.h>
 
 static struct nft_ctx nft;
-unsigned int max_errors = 10;
 #ifdef DEBUG
 unsigned int debug_level;
 #endif
@@ -295,6 +294,7 @@ static void nft_ctx_init(struct nft_ctx *nft)
 {
 	nft->include_paths[0]	= DEFAULT_INCLUDE_PATH;
 	nft->num_include_paths	= 1;
+	nft->parser_max_errors = 10;
 }
 
 int main(int argc, char * const *argv)

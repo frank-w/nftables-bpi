@@ -210,13 +210,12 @@ static void mnl_set_sndbuffer(const struct mnl_socket *nl,
 	nlbuffsiz = newbuffsiz;
 }
 
-static ssize_t mnl_nft_socket_sendmsg(const struct mnl_socket *nl,
-				      struct nftnl_batch *batch)
+static ssize_t mnl_nft_socket_sendmsg(const struct netlink_ctx *ctx)
 {
 	static const struct sockaddr_nl snl = {
 		.nl_family = AF_NETLINK
 	};
-	uint32_t iov_len = nftnl_batch_iovec_len(batch);
+	uint32_t iov_len = nftnl_batch_iovec_len(ctx->batch);
 	struct iovec iov[iov_len];
 	struct msghdr msg = {
 		.msg_name	= (struct sockaddr *) &snl,
@@ -226,8 +225,8 @@ static ssize_t mnl_nft_socket_sendmsg(const struct mnl_socket *nl,
 	};
 	uint32_t i;
 
-	mnl_set_sndbuffer(nl, batch);
-	nftnl_batch_iovec(batch, iov, iov_len);
+	mnl_set_sndbuffer(ctx->nf_sock, ctx->batch);
+	nftnl_batch_iovec(ctx->batch, iov, iov_len);
 
 	for (i = 0; i < iov_len; i++) {
 		if (debug_level & DEBUG_MNL) {
@@ -237,7 +236,7 @@ static ssize_t mnl_nft_socket_sendmsg(const struct mnl_socket *nl,
 		}
 	}
 
-	return sendmsg(mnl_socket_get_fd(nl), &msg, 0);
+	return sendmsg(mnl_socket_get_fd(ctx->nf_sock), &msg, 0);
 }
 
 int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
@@ -251,7 +250,7 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
 		.tv_usec	= 0
 	};
 
-	ret = mnl_nft_socket_sendmsg(nl, ctx->batch);
+	ret = mnl_nft_socket_sendmsg(ctx);
 	if (ret == -1)
 		return -1;
 

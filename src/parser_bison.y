@@ -48,7 +48,7 @@ void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 	state->ectx.nf_sock = nf_sock;
 }
 
-static void yyerror(struct location *loc, void *scanner,
+static void yyerror(struct location *loc, struct nft_ctx *nft, void *scanner,
 		    struct parser_state *state, const char *s)
 {
 	erec_queue(error(loc, "%s", s), state->msgs);
@@ -109,6 +109,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 %name-prefix "nft_"
 %debug
 %pure-parser
+%parse-param		{ struct nft_ctx *nft }
 %parse-param		{ void *scanner }
 %parse-param		{ struct parser_state *state }
 %lex-param		{ scanner }
@@ -709,7 +710,7 @@ opt_newline		:	NEWLINE
 
 common_block		:	INCLUDE		QUOTED_STRING	stmt_seperator
 			{
-				if (scanner_include_file(scanner, $2, &@$) < 0) {
+				if (scanner_include_file(nft, scanner, $2, &@$) < 0) {
 					xfree($2);
 					YYERROR;
 				}

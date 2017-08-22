@@ -33,14 +33,15 @@ struct mnl_socket;
 
 extern void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 			struct parser_state *state, struct list_head *msgs);
-extern int nft_parse(void *, struct parser_state *state);
+extern int nft_parse(struct nft_ctx *ctx, void *, struct parser_state *state);
 
 extern void *scanner_init(struct parser_state *state);
 extern void scanner_destroy(struct parser_state *state);
 
 extern int scanner_read_file(void *scanner, const char *filename,
 			     const struct location *loc);
-extern int scanner_include_file(void *scanner, const char *filename,
+extern int scanner_include_file(struct nft_ctx *ctx, void *scanner,
+				const char *filename,
 				const struct location *loc);
 extern void scanner_push_buffer(void *scanner,
 				const struct input_descriptor *indesc,

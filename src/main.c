@@ -34,9 +34,6 @@ unsigned int max_errors = 10;
 unsigned int debug_level;
 #endif
 
-const char *include_paths[INCLUDE_PATHS_MAX] = { DEFAULT_INCLUDE_PATH };
-static unsigned int num_include_paths = 1;
-
 enum opt_vals {
 	OPT_HELP		= 'h',
 	OPT_VERSION		= 'v',
@@ -253,7 +250,7 @@ int nft_run(struct nft_ctx *nft, struct mnl_socket *nf_sock,
 	struct cmd *cmd, *next;
 	int ret;
 
-	ret = nft_parse(scanner, state);
+	ret = nft_parse(nft, scanner, state);
 	if (ret != 0 || state->nerrs > 0) {
 		ret = -1;
 		goto err1;
@@ -294,6 +291,12 @@ void nft_exit(void)
 	mark_table_exit();
 }
 
+static void nft_ctx_init(struct nft_ctx *nft)
+{
+	nft->include_paths[0]	= DEFAULT_INCLUDE_PATH;
+	nft->num_include_paths	= 1;
+}
+
 int main(int argc, char * const *argv)
 {
 	struct parser_state state;
@@ -308,6 +311,8 @@ int main(int argc, char * const *argv)
 	init_list_head(&nft.cache.list);
 
 	nft_init();
+	nft_ctx_init(&nft);
+
 	nf_sock = netlink_open_sock();
 	while (1) {
 		val = getopt_long(argc, argv, OPTSTRING, options, NULL);
@@ -332,13 +337,13 @@ int main(int argc, char * const *argv)
 			interactive = true;
 			break;
 		case OPT_INCLUDEPATH:
-			if (num_include_paths >= INCLUDE_PATHS_MAX) {
+			if (nft.num_include_paths >= INCLUDE_PATHS_MAX) {
 				fprintf(stderr, "Too many include paths "
 						"specified, max. %u\n",
 					INCLUDE_PATHS_MAX - 1);
 				exit(NFT_EXIT_FAILURE);
 			}
-			include_paths[num_include_paths++] = optarg;
+			nft.include_paths[nft.num_include_paths++] = optarg;
 			break;
 		case OPT_NUMERIC:
 			if (++nft.output.numeric > NUMERIC_ALL) {

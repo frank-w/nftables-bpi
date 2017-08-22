@@ -773,8 +773,8 @@ static bool search_in_include_path(const char *filename)
 		filename[0] != '/');
 }
 
-int scanner_include_file(void *scanner, const char *filename,
-			 const struct location *loc)
+int scanner_include_file(struct nft_ctx *nft, void *scanner,
+			 const char *filename, const struct location *loc)
 {
 	struct parser_state *state = yyget_extra(scanner);
 	struct error_record *erec;
@@ -784,13 +784,13 @@ int scanner_include_file(void *scanner, const char *filename,
 
 	if (search_in_include_path(filename)) {
 		for (i = 0; i < INCLUDE_PATHS_MAX; i++) {
-			if (include_paths[i] == NULL)
+			if (nft->include_paths[i] == NULL)
 				break;
 			ret = snprintf(buf, sizeof(buf), "%s/%s",
-				       include_paths[i], filename);
+				       nft->include_paths[i], filename);
 			if (ret < 0 || ret >= PATH_MAX) {
 				erec = error(loc, "Too long file path \"%s/%s\"\n",
-					     include_paths[i], filename);
+					     nft->include_paths[i], filename);
 				erec_queue(erec, state->msgs);
 				return -1;
 			}

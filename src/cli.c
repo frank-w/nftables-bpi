@@ -41,9 +41,8 @@ static const struct input_descriptor indesc_cli = {
 };
 
 static struct parser_state *state;
-static struct nft_ctx cli_nft;
+static struct nft_ctx *cli_nft;
 static struct mnl_socket *cli_nf_sock;
-static struct nft_cache *cli_cache;
 static void *scanner;
 static char histfile[PATH_MAX];
 static char *multiline;
@@ -135,12 +134,12 @@ static void cli_complete(char *line)
 	xfree(line);
 	line = s;
 
-	parser_init(cli_nf_sock, cli_cache, state, &msgs);
+	parser_init(cli_nf_sock, &cli_nft->cache, state, &msgs);
 	scanner_push_buffer(scanner, &indesc_cli, line);
-	nft_run(&cli_nft, cli_nf_sock, cli_cache, scanner, state, &msgs);
+	nft_run(cli_nft, cli_nf_sock, scanner, state, &msgs);
 	erec_print_list(stdout, &msgs);
 	xfree(line);
-	cache_release(cli_cache);
+	cache_release(&cli_nft->cache);
 	iface_cache_release();
 }
 
@@ -150,13 +149,12 @@ static char **cli_completion(const char *text, int start, int end)
 }
 
 int cli_init(struct nft_ctx *nft, struct mnl_socket *nf_sock,
-	     struct nft_cache *cache, struct parser_state *_state)
+	     struct parser_state *_state)
 {
 	const char *home;
 
 	cli_nf_sock = nf_sock;
-	cli_nft = *nft;
-	cli_cache = cache;
+	cli_nft = nft;
 	rl_readline_name = "nft";
 	rl_instream  = stdin;
 	rl_outstream = stdout;

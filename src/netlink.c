@@ -504,7 +504,6 @@ int netlink_del_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
 
 void netlink_dump_rule(const struct nftnl_rule *nlr)
 {
-#ifdef DEBUG
 	char buf[4096];
 
 	if (!(debug_level & DEBUG_NETLINK))
@@ -512,12 +511,10 @@ void netlink_dump_rule(const struct nftnl_rule *nlr)
 
 	nftnl_rule_snprintf(buf, sizeof(buf), nlr, 0, 0);
 	fprintf(stdout, "%s\n", buf);
-#endif
 }
 
 void netlink_dump_expr(const struct nftnl_expr *nle)
 {
-#ifdef DEBUG
 	char buf[4096];
 
 	if (!(debug_level & DEBUG_NETLINK))
@@ -525,7 +522,6 @@ void netlink_dump_expr(const struct nftnl_expr *nle)
 
 	nftnl_expr_snprintf(buf, sizeof(buf), nle, 0, 0);
 	fprintf(stdout, "%s\n", buf);
-#endif
 }
 
 static int list_rule_cb(struct nftnl_rule *nlr, void *arg)
@@ -579,7 +575,6 @@ static int netlink_flush_rules(struct netlink_ctx *ctx, const struct handle *h,
 
 void netlink_dump_chain(const struct nftnl_chain *nlc)
 {
-#ifdef DEBUG
 	char buf[4096];
 
 	if (!(debug_level & DEBUG_NETLINK))
@@ -587,7 +582,6 @@ void netlink_dump_chain(const struct nftnl_chain *nlc)
 
 	nftnl_chain_snprintf(buf, sizeof(buf), nlc, 0, 0);
 	fprintf(stdout, "%s\n", buf);
-#endif
 }
 
 static int netlink_add_chain_compat(struct netlink_ctx *ctx,
@@ -1036,7 +1030,6 @@ static const struct datatype *dtype_map_from_kernel(enum nft_data_types type)
 
 void netlink_dump_set(const struct nftnl_set *nls)
 {
-#ifdef DEBUG
 	char buf[4096];
 
 	if (!(debug_level & DEBUG_NETLINK))
@@ -1044,7 +1037,6 @@ void netlink_dump_set(const struct nftnl_set *nls)
 
 	nftnl_set_snprintf(buf, sizeof(buf), nls, 0, 0);
 	fprintf(stdout, "%s\n", buf);
-#endif
 }
 
 static int set_parse_udata_cb(const struct nftnl_udata *attr, void *data)
@@ -1661,7 +1653,6 @@ out:
 
 void netlink_dump_obj(struct nftnl_obj *nln)
 {
-#ifdef DEBUG
 	char buf[4096];
 
 	if (!(debug_level & DEBUG_NETLINK))
@@ -1669,7 +1660,6 @@ void netlink_dump_obj(struct nftnl_obj *nln)
 
 	nftnl_obj_snprintf(buf, sizeof(buf), nln, 0, 0);
 	fprintf(stdout, "%s\n", buf);
-#endif
 }
 
 int netlink_add_obj(struct netlink_ctx *ctx, const struct handle *h,
@@ -2854,7 +2844,6 @@ static int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 	return MNL_CB_OK;
 }
 
-#ifdef DEBUG
 /* only those which could be useful listening to events */
 static const char *const nftnl_msg_types[NFT_MSG_MAX] = {
 	[NFT_MSG_NEWTABLE]	= "NFT_MSG_NEWTABLE",
@@ -2880,16 +2869,13 @@ static const char *nftnl_msgtype2str(uint16_t type)
 
 	return nftnl_msg_types[type];
 }
-#endif /* DEBUG */
 
 static void netlink_events_debug(uint16_t type)
 {
-#ifdef DEBUG
 	if (!(debug_level & DEBUG_NETLINK))
 		return;
 
 	printf("netlink event: %s\n", nftnl_msgtype2str(type));
-#endif /* DEBUG */
 }
 
 static int netlink_events_newgen_cb(const struct nlmsghdr *nlh, int type,

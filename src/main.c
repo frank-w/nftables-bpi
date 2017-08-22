@@ -29,9 +29,7 @@
 #include <cli.h>
 
 static struct nft_ctx nft;
-#ifdef DEBUG
 unsigned int debug_level;
-#endif
 
 enum opt_vals {
 	OPT_HELP		= 'h',
@@ -90,13 +88,11 @@ static const struct option options[] = {
 		.val		= OPT_INCLUDEPATH,
 		.has_arg	= 1,
 	},
-#ifdef DEBUG
 	{
 		.name		= "debug",
 		.val		= OPT_DEBUG,
 		.has_arg	= 1,
 	},
-#endif
 	{
 		.name		= "handle",
 		.val		= OPT_HANDLE_OUTPUT,
@@ -131,14 +127,11 @@ static void show_help(const char *name)
 "  -a, --handle			Output rule handle.\n"
 "  -e, --echo			Echo what has been added, inserted or replaced.\n"
 "  -I, --includepath <directory>	Add <directory> to the paths searched for include files. Default is: %s\n"
-#ifdef DEBUG
 "  --debug <level [,level...]>	Specify debugging level (scanner, parser, eval, netlink, mnl, proto-ctx, segtree, all)\n"
-#endif
 "\n",
 	name, DEFAULT_INCLUDE_PATH);
 }
 
-#ifdef DEBUG
 static const struct {
 	const char		*name;
 	enum debug_level	level;
@@ -176,7 +169,6 @@ static const struct {
 		.level		= ~0,
 	},
 };
-#endif
 
 static const struct input_descriptor indesc_cmdline = {
 	.type	= INDESC_BUFFER,
@@ -359,7 +351,6 @@ int main(int argc, char * const *argv)
 		case OPT_IP2NAME:
 			nft.output.ip2name++;
 			break;
-#ifdef DEBUG
 		case OPT_DEBUG:
 			for (;;) {
 				unsigned int i;
@@ -387,7 +378,6 @@ int main(int argc, char * const *argv)
 				optarg = end + 1;
 			}
 			break;
-#endif
 		case OPT_HANDLE_OUTPUT:
 			nft.output.handle++;
 			break;

@@ -72,10 +72,8 @@ nft_mnl_talk(struct mnl_socket *nf_sock, const void *data,
 {
 	uint32_t portid = mnl_socket_get_portid(nf_sock);
 
-#ifdef DEBUG
 	if (debug_level & DEBUG_MNL)
 		mnl_nlmsg_fprintf(stdout, data, len, sizeof(struct nfgenmsg));
-#endif
 
 	if (mnl_socket_sendto(nf_sock, data, len) < 0)
 		return -1;
@@ -223,14 +221,11 @@ static ssize_t mnl_nft_socket_sendmsg(const struct mnl_socket *nl,
 		.msg_iov	= iov,
 		.msg_iovlen	= iov_len,
 	};
-#ifdef DEBUG
 	uint32_t i;
-#endif
 
 	mnl_set_sndbuffer(nl, batch);
 	nftnl_batch_iovec(batch, iov, iov_len);
 
-#ifdef DEBUG
 	for (i = 0; i < iov_len; i++) {
 		if (debug_level & DEBUG_MNL) {
 			mnl_nlmsg_fprintf(stdout,
@@ -238,7 +233,6 @@ static ssize_t mnl_nft_socket_sendmsg(const struct mnl_socket *nl,
 					  sizeof(struct nfgenmsg));
 		}
 	}
-#endif
 
 	return sendmsg(mnl_socket_get_fd(nl), &msg, 0);
 }
@@ -1072,12 +1066,10 @@ int mnl_nft_event_listener(struct mnl_socket *nf_sock,
 			}
 		}
 
-#ifdef DEBUG
 		if (debug_level & DEBUG_MNL) {
 			mnl_nlmsg_fprintf(stdout, buf, sizeof(buf),
 					  sizeof(struct nfgenmsg));
 		}
-#endif /* DEBUG */
 		ret = mnl_cb_run(buf, ret, 0, 0, cb, cb_data);
 		if (ret <= 0)
 			break;

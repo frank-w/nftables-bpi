@@ -13,17 +13,9 @@
 
 #define BITS_PER_BYTE	8
 
-#if defined(DEBUG)
 #define pr_debug(fmt, arg...) printf(fmt, ##arg)
-#else
-#define pr_debug(fmt, arg...) ({ if (false) {}; 0; })
-#endif
 
-#if defined(DEBUG) && defined(HAVE_LIBGMP)
 #define pr_gmp_debug(fmt, arg...) gmp_printf(fmt, ##arg)
-#else
-#define pr_gmp_debug(fmt, arg...) ({ if (false) {}; 0; })
-#endif
 
 #define __fmtstring(x, y)	__attribute__((format(printf, x, y)))
 #if 0
@@ -35,11 +27,7 @@
 #define __must_check		__attribute__((warn_unused_result))
 #define __noreturn		__attribute__((__noreturn__))
 
-#ifdef DEBUG
 #define BUG(fmt, arg...)	({ fprintf(stderr, "BUG: " fmt, ##arg); assert(0); })
-#else
-#define BUG(fmt, arg...)	assert(0)
-#endif
 
 #define BUILD_BUG_ON(condition)	((void)sizeof(char[1 - 2*!!(condition)]))
 #define BUILD_BUG_ON_ZERO(e)	(sizeof(char[1 - 2 * !!(e)]) - 1)

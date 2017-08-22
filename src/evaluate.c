@@ -1708,7 +1708,6 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 
 static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 {
-#ifdef DEBUG
 	if (debug_level & DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &(*expr)->location,
@@ -1717,7 +1716,6 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 		expr_print(*expr, &octx_debug_dummy);
 		printf("\n\n");
 	}
-#endif
 
 	switch ((*expr)->ops->type) {
 	case EXPR_SYMBOL:
@@ -2691,7 +2689,6 @@ static int stmt_evaluate_objref(struct eval_ctx *ctx, struct stmt *stmt)
 
 int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 {
-#ifdef DEBUG
 	if (debug_level & DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &stmt->location,
@@ -2699,7 +2696,6 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 		erec_print(stdout, erec); stmt_print(stmt, &octx_debug_dummy);
 		printf("\n\n");
 	}
-#endif
 
 	switch (stmt->ops->type) {
 	case STMT_COUNTER:
@@ -3341,7 +3337,6 @@ static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 	return cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs);
 }
 
-#ifdef DEBUG
 static const char *cmd_op_name[] = {
 	[CMD_INVALID]	= "invalid",
 	[CMD_ADD]	= "add",
@@ -3364,11 +3359,9 @@ static const char *cmd_op_to_name(enum cmd_ops op)
 
 	return cmd_op_name[op];
 }
-#endif
 
 int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 {
-#ifdef DEBUG
 	if (debug_level & DEBUG_EVALUATION) {
 		struct error_record *erec;
 
@@ -3376,7 +3369,6 @@ int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 				   "Evaluate %s", cmd_op_to_name(cmd->op));
 		erec_print(stdout, erec); printf("\n\n");
 	}
-#endif
 
 	ctx->cmd = cmd;
 	switch (cmd->op) {

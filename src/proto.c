@@ -140,7 +140,6 @@ const struct hook_proto_desc hook_proto_desc[] = {
 
 static void proto_ctx_debug(const struct proto_ctx *ctx, enum proto_bases base)
 {
-#ifdef DEBUG
 	unsigned int i;
 
 	if (!(debug_level & DEBUG_PROTO_CTX))
@@ -159,7 +158,6 @@ static void proto_ctx_debug(const struct proto_ctx *ctx, enum proto_bases base)
 		pr_debug("\n");
 	}
 	pr_debug("\n");
-#endif
 }
 
 /**

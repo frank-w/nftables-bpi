@@ -163,10 +163,9 @@ static void __ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 
 static bool segtree_debug(void)
 {
-#ifdef DEBUG
 	if (debug_level & DEBUG_SEGTREE)
 		return true;
-#endif
+
 	return false;
 }
 

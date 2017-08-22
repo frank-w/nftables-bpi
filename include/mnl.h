@@ -3,8 +3,12 @@
 
 #include <list.h>
 #include <netlink.h>
+#include <libmnl/libmnl.h>
 
-struct mnl_socket;
+struct mnl_ctx {
+	struct mnl_socket	*nf_sock;
+	unsigned int		seqnum;
+};
 
 struct mnl_socket *netlink_open_sock(void);
 void netlink_close_sock(struct mnl_socket *nf_sock);

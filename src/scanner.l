@@ -300,6 +300,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "counters"		{ return COUNTERS; }
 "quotas"		{ return QUOTAS; }
+"limits"		{ return LIMITS; }
 
 "log"			{ return LOG; }
 "prefix"		{ return PREFIX; }

@@ -143,6 +143,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 	struct counter		*counter;
 	struct quota		*quota;
 	struct ct		*ct;
+	struct limit		*limit;
 	const struct datatype	*datatype;
 	struct handle_spec	handle_spec;
 	struct position_spec	position_spec;
@@ -394,6 +395,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 %token COUNTERS			"counters"
 %token QUOTAS			"quotas"
+%token LIMITS			"limits"
 
 %token LOG			"log"
 %token PREFIX			"prefix"
@@ -502,7 +504,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 %type <set>			map_block_alloc map_block
 %destructor { set_free($$); }	map_block_alloc
 
-%type <obj>			obj_block_alloc counter_block quota_block ct_block
+%type <obj>			obj_block_alloc counter_block quota_block ct_block limit_block
 %destructor { obj_free($$); }	obj_block_alloc
 
 %type <list>			stmt_list
@@ -590,8 +592,8 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 %type <expr>			and_rhs_expr exclusive_or_rhs_expr inclusive_or_rhs_expr
 %destructor { expr_free($$); }	and_rhs_expr exclusive_or_rhs_expr inclusive_or_rhs_expr
 
-%type <obj>			counter_obj quota_obj ct_obj_alloc
-%destructor { obj_free($$); }	counter_obj quota_obj ct_obj_alloc
+%type <obj>			counter_obj quota_obj ct_obj_alloc limit_obj
+%destructor { obj_free($$); }	counter_obj quota_obj ct_obj_alloc limit_obj
 
 %type <expr>			relational_expr
 %destructor { expr_free($$); }	relational_expr
@@ -662,6 +664,8 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 %destructor { xfree($$); }	counter_config
 %type <quota>			quota_config
 %destructor { xfree($$); }	quota_config
+%type <limit>			limit_config
+%destructor { xfree($$); }	limit_config
 
 %type <expr>			tcp_hdr_expr
 %destructor { expr_free($$); }	tcp_hdr_expr
@@ -869,6 +873,10 @@ add_cmd			:	TABLE		table_spec
 
 				$$ = cmd_alloc_obj_ct(CMD_ADD, type, &$3, &@$, $4);
 			}
+			|	LIMIT		obj_spec	limit_obj
+			{
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_LIMIT, &$2, &@$, $3);
+			}
 			;
 
 replace_cmd		:	RULE		ruleid_spec	rule
@@ -949,6 +957,10 @@ create_cmd		:	TABLE		table_spec
 
 				$$ = cmd_alloc_obj_ct(CMD_CREATE, type, &$3, &@$, $4);
 			}
+			|	LIMIT		obj_spec	limit_obj
+			{
+				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_LIMIT, &$2, &@$, $3);
+			}
 			;
 
 insert_cmd		:	RULE		rule_position	rule
@@ -1003,6 +1015,10 @@ delete_cmd		:	TABLE		table_spec
 
 				$$ = cmd_alloc_obj_ct(CMD_DELETE, type, &$3, &@$, $4);
 			}
+			|	LIMIT		obj_spec
+			{
+				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_LIMIT, &$2, &@$, NULL);
+			}
 			;
 
 list_cmd		:	TABLE		table_spec
@@ -1056,6 +1072,18 @@ list_cmd		:	TABLE		table_spec
 			|	QUOTA		obj_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_QUOTA, &$2, &@$, NULL);
+			}
+			|	LIMITS		ruleset_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_LIMITS, &$2, &@$, NULL);
+			}
+			|	LIMITS		TABLE	table_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_LIMITS, &$3, &@$, NULL);
+			}
+			|	LIMIT		obj_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_LIMIT, &$2, &@$, NULL);
 			}
 			|	RULESET		ruleset_spec
 			{
@@ -1318,6 +1346,17 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 				list_add_tail(&$5->list, &$1->objs);
 				$$ = $1;
 			}
+			|	table_block	LIMIT		obj_identifier
+					obj_block_alloc	'{'	limit_block	'}'
+					stmt_separator
+			{
+				$4->location = @3;
+				$4->type = NFT_OBJECT_LIMIT;
+				handle_merge(&$4->handle, &$3);
+				handle_free(&$3);
+				list_add_tail(&$4->list, &$1->objs);
+				$$ = $1;
+			}
 			;
 
 chain_block_alloc	:	/* empty */
@@ -1525,6 +1564,15 @@ ct_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			;
 
+limit_block		:	/* empty */	{ $$ = $<obj>-1; }
+			|       limit_block     common_block
+			|       limit_block     stmt_separator
+			|       limit_block     limit_config
+			{
+				$1->limit = *$2;
+				$$ = $1;
+			}
+			;
 
 type_identifier		:	STRING	{ $$ = $1; }
 			|	MARK	{ $$ = xstrdup("mark"); }
@@ -2003,6 +2051,12 @@ limit_stmt		:	LIMIT	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst
 				$$->limit.burst	= $6;
 				$$->limit.type	= NFT_LIMIT_PKT_BYTES;
 				$$->limit.flags = $3;
+			}
+			|	LIMIT	NAME	stmt_expr
+			{
+				$$ = objref_stmt_alloc(&@$);
+				$$->objref.type = NFT_OBJECT_LIMIT;
+				$$->objref.expr = $3;
 			}
 			;
 
@@ -2765,6 +2819,47 @@ ct_obj_alloc		:
 			{
 				$$ = obj_alloc(&@$);
 				$$->type = NFT_OBJECT_CT_HELPER;
+			}
+			;
+
+limit_config		:	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst
+			{
+				struct limit *limit;
+				limit = xzalloc(sizeof(*limit));
+				limit->rate	= $3;
+				limit->unit	= $5;
+				limit->burst	= $6;
+				limit->type	= NFT_LIMIT_PKTS;
+				limit->flags	= $2;
+				$$ = limit;
+			}
+			|	RATE	limit_mode	NUM	STRING	limit_burst
+			{
+				struct limit *limit;
+				struct error_record *erec;
+				uint64_t rate, unit;
+
+				erec = rate_parse(&@$, $4, &rate, &unit);
+				if (erec != NULL) {
+					erec_queue(erec, state->msgs);
+					YYERROR;
+				}
+
+				limit = xzalloc(sizeof(*limit));
+				limit->rate	= rate * $3;
+				limit->unit	= unit;
+				limit->burst	= $5;
+				limit->type	= NFT_LIMIT_PKT_BYTES;
+				limit->flags	= $2;
+				$$ = limit;
+			}
+			;
+
+limit_obj		:	limit_config
+			{
+				$$ = obj_alloc(&@$);
+				$$->type = NFT_OBJECT_LIMIT;
+				$$->limit = *$1;
 			}
 			;
 

@@ -272,6 +272,14 @@ struct ct_helper {
 	uint8_t l4proto;
 };
 
+struct limit {
+	uint64_t	rate;
+	uint64_t	unit;
+	uint32_t	burst;
+	uint32_t	type;
+	uint32_t	flags;
+};
+
 /**
  * struct obj - nftables stateful object statement
  *
@@ -291,6 +299,7 @@ struct obj {
 		struct counter		counter;
 		struct quota		quota;
 		struct ct_helper	ct_helper;
+		struct limit		limit;
 	};
 };
 
@@ -357,6 +366,8 @@ enum cmd_ops {
  * @CMD_OBJ_COUNTERS:	multiple counters
  * @CMD_OBJ_QUOTA:	quota
  * @CMD_OBJ_QUOTAS:	multiple quotas
+ * @CMD_OBJ_LIMIT:	limit
+ * @CMD_OBJ_LIMITS:	multiple limits
  */
 enum cmd_obj {
 	CMD_OBJ_INVALID,
@@ -381,6 +392,8 @@ enum cmd_obj {
 	CMD_OBJ_QUOTAS,
 	CMD_OBJ_CT_HELPER,
 	CMD_OBJ_CT_HELPERS,
+	CMD_OBJ_LIMIT,
+	CMD_OBJ_LIMITS,
 };
 
 struct export {

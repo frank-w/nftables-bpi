@@ -175,6 +175,7 @@ static const char *objref_type[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_COUNTER]	= "counter",
 	[NFT_OBJECT_QUOTA]	= "quota",
 	[NFT_OBJECT_CT_HELPER]	= "cthelper",
+	[NFT_OBJECT_LIMIT]	= "limit",
 };
 
 static const char *objref_type_name(uint32_t type)
@@ -286,7 +287,7 @@ struct stmt *log_stmt_alloc(const struct location *loc)
 	return stmt_alloc(loc, &log_stmt_ops);
 }
 
-static const char *get_unit(uint64_t u)
+const char *get_unit(uint64_t u)
 {
 	switch (u) {
 	case 1: return "second";

@@ -962,6 +962,7 @@ void cmd_free(struct cmd *cmd)
 		case CMD_OBJ_COUNTER:
 		case CMD_OBJ_QUOTA:
 		case CMD_OBJ_CT_HELPER:
+		case CMD_OBJ_LIMIT:
 			obj_free(cmd->object);
 			break;
 		default:
@@ -1050,6 +1051,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:
+	case CMD_OBJ_LIMIT:
 		return netlink_add_obj(ctx, &cmd->handle, cmd->object, flags);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
@@ -1136,6 +1138,9 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_CT_HELPER:
 		return netlink_delete_obj(ctx, &cmd->handle, &cmd->location,
 					  NFT_OBJECT_CT_HELPER);
+	case CMD_OBJ_LIMIT:
+		return netlink_delete_obj(ctx, &cmd->handle, &cmd->location,
+					  NFT_OBJECT_LIMIT);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -1296,6 +1301,37 @@ static void obj_print_data(const struct obj *obj,
 		printf("\t\tl3proto %s", family2str(obj->ct_helper.l3proto));
 		break;
 		}
+	case NFT_OBJECT_LIMIT: {
+		bool inv = obj->limit.flags & NFT_LIMIT_F_INV;
+		const char *data_unit;
+		uint64_t rate;
+
+		printf(" %s {%s%s%s", obj->handle.obj,
+				      opts->nl, opts->tab, opts->tab);
+		switch (obj->limit.type) {
+		case NFT_LIMIT_PKTS:
+			printf("limit rate %s%" PRIu64 "/%s",
+			       inv ? "over " : "", obj->limit.rate,
+			       get_unit(obj->limit.unit));
+			if (obj->limit.burst > 0)
+				printf(" burst %u packets", obj->limit.burst);
+			break;
+		case NFT_LIMIT_PKT_BYTES:
+			data_unit = get_rate(obj->limit.rate, &rate);
+
+			printf("limit rate %s%" PRIu64 " %s/%s",
+			       inv ? "over " : "", rate, data_unit,
+			       get_unit(obj->limit.unit));
+			if (obj->limit.burst > 0) {
+				uint64_t burst;
+
+				data_unit = get_rate(obj->limit.burst, &burst);
+				printf(" burst %"PRIu64" %s", burst, data_unit);
+			}
+			break;
+		}
+		}
+		break;
 	default:
 		printf("unknown {%s", opts->nl);
 		break;
@@ -1306,11 +1342,12 @@ static const char *obj_type_name_array[] = {
 	[NFT_OBJECT_COUNTER]	= "counter",
 	[NFT_OBJECT_QUOTA]	= "quota",
 	[NFT_OBJECT_CT_HELPER]	= "",
+	[NFT_OBJECT_LIMIT]	= "limit",
 };
 
 const char *obj_type_name(enum stmt_types type)
 {
-	assert(type <= NFT_OBJECT_CT_HELPER && obj_type_name_array[type]);
+	assert(type <= NFT_OBJECT_MAX && obj_type_name_array[type]);
 
 	return obj_type_name_array[type];
 }
@@ -1319,6 +1356,7 @@ static uint32_t obj_type_cmd_array[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_COUNTER]	= CMD_OBJ_COUNTER,
 	[NFT_OBJECT_QUOTA]	= CMD_OBJ_QUOTA,
 	[NFT_OBJECT_CT_HELPER]	= CMD_OBJ_CT_HELPER,
+	[NFT_OBJECT_LIMIT]	= CMD_OBJ_LIMIT,
 };
 
 uint32_t obj_type_to_cmd(uint32_t type)
@@ -1550,6 +1588,9 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_CT_HELPER:
 	case CMD_OBJ_CT_HELPERS:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_CT_HELPER);
+	case CMD_OBJ_LIMIT:
+	case CMD_OBJ_LIMITS:
+		return do_list_obj(ctx, cmd, NFT_OBJECT_LIMIT);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

@@ -2996,6 +2996,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:
+	case CMD_OBJ_LIMIT:
 		return 0;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
@@ -3021,6 +3022,7 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:
+	case CMD_OBJ_LIMIT:
 		return 0;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
@@ -3111,9 +3113,12 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_COUNTER);
 	case CMD_OBJ_CT_HELPER:
 		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_CT_HELPER);
+	case CMD_OBJ_LIMIT:
+		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_LIMIT);
 	case CMD_OBJ_COUNTERS:
 	case CMD_OBJ_QUOTAS:
 	case CMD_OBJ_CT_HELPERS:
+	case CMD_OBJ_LIMITS:
 	case CMD_OBJ_SETS:
 		if (cmd->handle.table == NULL)
 			return 0;

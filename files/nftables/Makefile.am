@@ -1,6 +1,7 @@
 
 pkgsysconfdir = ${sysconfdir}/nftables
-dist_pkgsysconf_DATA =	bridge-filter	\
+dist_pkgsysconf_DATA =	arp-filter	\
+			bridge-filter	\
 			inet-filter	\
 			ipv4-filter	\
 			ipv4-mangle	\

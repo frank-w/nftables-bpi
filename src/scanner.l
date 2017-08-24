@@ -856,7 +856,7 @@ void *scanner_init(struct parser_state *state)
 	return scanner;
 }
 
-void scanner_destroy(struct parser_state *scanner)
+void scanner_destroy(void *scanner)
 {
 	struct parser_state *state = yyget_extra(scanner);
 

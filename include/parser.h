@@ -37,7 +37,7 @@ extern void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 extern int nft_parse(struct nft_ctx *ctx, void *, struct parser_state *state);
 
 extern void *scanner_init(struct parser_state *state);
-extern void scanner_destroy(struct parser_state *state);
+extern void scanner_destroy(void *scanner);
 
 extern int scanner_read_file(void *scanner, const char *filename,
 			     const struct location *loc);

@@ -692,6 +692,7 @@ input			:	/* empty */
 
 					list_add_tail(&$2->list, &list);
 					if (cmd_evaluate(&state->ectx, $2) < 0) {
+						cmd_free($2);
 						if (++state->nerrs == nft->parser_max_errors)
 							YYABORT;
 					} else
@@ -758,6 +759,7 @@ line			:	common_block			{ $$ = NULL; }
 
 					list_add_tail(&$1->list, &list);
 					if (cmd_evaluate(&state->ectx, $1) < 0) {
+						cmd_free($1);
 						if (++state->nerrs == nft->parser_max_errors)
 							YYABORT;
 					} else

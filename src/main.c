@@ -259,7 +259,7 @@ err1:
 	return ret;
 }
 
-void nft_init(void)
+static void nft_init(void)
 {
 	mark_table_init();
 	realm_table_rt_init();
@@ -272,7 +272,7 @@ void nft_init(void)
 #endif
 }
 
-void nft_exit(void)
+static void nft_exit(void)
 {
 	ct_label_table_exit();
 	realm_table_rt_exit();
@@ -285,6 +285,7 @@ static struct nft_ctx *nft_ctx_new(void)
 {
 	struct nft_ctx *ctx;
 
+	nft_init();
 	ctx = xzalloc(sizeof(struct nft_ctx));
 
 	ctx->include_paths[0]	= DEFAULT_INCLUDE_PATH;
@@ -300,6 +301,7 @@ static void nft_ctx_free(const struct nft_ctx *ctx)
 	iface_cache_release();
 	cache_release(&nft->cache);
 	xfree(ctx);
+	nft_exit();
 }
 
 static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
@@ -360,8 +362,6 @@ int main(int argc, char * const *argv)
 	struct mnl_socket *nf_sock;
 	struct parser_state state;
 	int i, val, rc;
-
-	nft_init();
 
 	nft = nft_ctx_new();
 
@@ -478,7 +478,6 @@ int main(int argc, char * const *argv)
 	xfree(buf);
 	netlink_close_sock(nf_sock);
 	nft_ctx_free(nft);
-	nft_exit();
 
 	return rc;
 }

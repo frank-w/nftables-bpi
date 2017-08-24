@@ -297,6 +297,8 @@ static struct nft_ctx *nft_ctx_new(void)
 
 static void nft_ctx_free(const struct nft_ctx *ctx)
 {
+	iface_cache_release();
+	cache_release(&nft->cache);
 	xfree(ctx);
 }
 
@@ -318,7 +320,6 @@ static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
 
 	erec_print_list(stderr, &msgs, nft->debug_mask);
 	scanner_destroy(scanner);
-	cache_release(&nft->cache);
 
 	return rc;
 }
@@ -347,7 +348,6 @@ static int nft_run_cmd_from_filename(struct nft_ctx *nft,
 err:
 	erec_print_list(stderr, &msgs, nft->debug_mask);
 	scanner_destroy(scanner);
-	cache_release(&nft->cache);
 
 	return rc;
 }
@@ -476,7 +476,6 @@ int main(int argc, char * const *argv)
 	}
 
 	xfree(buf);
-	iface_cache_release();
 	netlink_close_sock(nf_sock);
 	nft_ctx_free(nft);
 	nft_exit();

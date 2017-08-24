@@ -849,8 +849,7 @@ void *scanner_init(struct parser_state *state)
 
 	state->indesc = state->indescs;
 
-	yylex_init(&scanner);
-	yyset_extra(state, scanner),
+	yylex_init_extra(state, &scanner);
 	yyset_out(NULL, scanner);
 
 	return scanner;

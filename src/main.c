@@ -428,8 +428,8 @@ int main(int argc, char * const *argv)
 	if (nft_run(&nft, nf_sock, scanner, &state, &msgs) != 0)
 		rc = NFT_EXIT_FAILURE;
 out:
-	scanner_destroy(scanner);
 	erec_print_list(stderr, &msgs, nft.debug_mask);
+	scanner_destroy(scanner);
 	xfree(buf);
 	cache_release(&nft.cache);
 	iface_cache_release();

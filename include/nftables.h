@@ -113,7 +113,7 @@ struct input_descriptor {
 	const char			*name;
 	union {
 		const char		*data;
-		int			fd;
+		FILE			*fp;
 	};
 	unsigned int			lineno;
 	unsigned int			column;

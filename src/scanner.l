@@ -634,7 +634,7 @@ static struct error_record *scanner_push_file(void *scanner, const char *filenam
 		state->indesc->location = *loc;
 	state->indesc->type	= INDESC_FILE;
 	state->indesc->name	= xstrdup(filename);
-	state->indesc->fd	= fileno(f);
+	state->indesc->fp	= f;
 	init_pos(state);
 	return NULL;
 }
@@ -866,6 +866,7 @@ void scanner_destroy(struct parser_state *scanner)
 		if (inpdesc && inpdesc->name) {
 			xfree(inpdesc->name);
 			inpdesc->name = NULL;
+			fclose(inpdesc->fp);
 		}
 		yypop_buffer_state(scanner);
 	} while (state->indesc_idx--);

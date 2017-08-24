@@ -300,16 +300,66 @@ static void nft_ctx_free(const struct nft_ctx *ctx)
 	xfree(ctx);
 }
 
-int main(int argc, char * const *argv)
+static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
+				   struct mnl_socket *nf_sock,
+				   char *buf, size_t buflen)
+{
+	int rc = NFT_EXIT_SUCCESS;
+	struct parser_state state;
+	LIST_HEAD(msgs);
+	void *scanner;
+
+	parser_init(nf_sock, &nft->cache, &state, &msgs, nft->debug_mask);
+	scanner = scanner_init(&state);
+	scanner_push_buffer(scanner, &indesc_cmdline, buf);
+
+	if (nft_run(nft, nf_sock, scanner, &state, &msgs) != 0)
+		rc = NFT_EXIT_FAILURE;
+
+	erec_print_list(stderr, &msgs, nft->debug_mask);
+	scanner_destroy(scanner);
+	cache_release(&nft->cache);
+
+	return rc;
+}
+
+static int nft_run_cmd_from_filename(struct nft_ctx *nft,
+				     struct mnl_socket *nf_sock,
+				     const char *filename)
 {
 	struct parser_state state;
-	void *scanner;
 	LIST_HEAD(msgs);
+	void *scanner;
+	int rc;
+
+	rc = cache_update(nf_sock, &nft->cache, CMD_INVALID, &msgs,
+			  nft->debug_mask);
+	if (rc < 0)
+		return NFT_EXIT_FAILURE;
+
+	parser_init(nf_sock, &nft->cache, &state, &msgs, nft->debug_mask);
+	scanner = scanner_init(&state);
+	if (scanner_read_file(scanner, filename, &internal_location) < 0)
+		goto err;
+
+	if (nft_run(nft, nf_sock, scanner, &state, &msgs) != 0)
+		rc = NFT_EXIT_FAILURE;
+err:
+	erec_print_list(stderr, &msgs, nft->debug_mask);
+	scanner_destroy(scanner);
+	cache_release(&nft->cache);
+
+	return rc;
+}
+
+int main(int argc, char * const *argv)
+{
 	char *buf = NULL, *filename = NULL;
 	unsigned int len;
 	bool interactive = false;
-	int i, val, rc = NFT_EXIT_SUCCESS;
 	struct mnl_socket *nf_sock;
+	struct parser_state state;
+	int i, val, rc;
 
 	nft_init();
 
@@ -410,21 +460,9 @@ int main(int argc, char * const *argv)
 				strcat(buf, " ");
 		}
 		strcat(buf, "\n");
-		parser_init(nf_sock, &nft->cache, &state, &msgs,
-			    nft->debug_mask);
-		scanner = scanner_init(&state);
-		scanner_push_buffer(scanner, &indesc_cmdline, buf);
+		rc = nft_run_cmd_from_buffer(nft, nf_sock, buf, len + 2);
 	} else if (filename != NULL) {
-		rc = cache_update(nf_sock, &nft->cache, CMD_INVALID, &msgs,
-				  nft->debug_mask);
-		if (rc < 0)
-			return rc;
-
-		parser_init(nf_sock, &nft->cache, &state, &msgs,
-			    nft->debug_mask);
-		scanner = scanner_init(&state);
-		if (scanner_read_file(scanner, filename, &internal_location) < 0)
-			goto out;
+		rc = nft_run_cmd_from_filename(nft, nf_sock, filename);
 	} else if (interactive) {
 		if (cli_init(nft, nf_sock, &state) < 0) {
 			fprintf(stderr, "%s: interactive CLI not supported in this build\n",
@@ -437,13 +475,7 @@ int main(int argc, char * const *argv)
 		exit(NFT_EXIT_FAILURE);
 	}
 
-	if (nft_run(nft, nf_sock, scanner, &state, &msgs) != 0)
-		rc = NFT_EXIT_FAILURE;
-out:
-	erec_print_list(stderr, &msgs, nft->debug_mask);
-	scanner_destroy(scanner);
 	xfree(buf);
-	cache_release(&nft->cache);
 	iface_cache_release();
 	netlink_close_sock(nf_sock);
 	nft_ctx_free(nft);

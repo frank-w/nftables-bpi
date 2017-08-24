@@ -249,6 +249,7 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
 		.tv_sec		= 0,
 		.tv_usec	= 0
 	};
+	int err = 0;
 
 	ret = mnl_nft_socket_sendmsg(ctx);
 	if (ret == -1)
@@ -271,8 +272,10 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
 
 		ret = mnl_cb_run(rcv_buf, ret, 0, portid, &netlink_echo_callback, ctx);
 		/* Continue on error, make sure we get all acknowledgments */
-		if (ret == -1)
+		if (ret == -1) {
 			mnl_err_list_node_add(err_list, errno, nlh->nlmsg_seq);
+			err = -1;
+		}
 
 		ret = select(fd+1, &readfds, NULL, NULL, &tv);
 		if (ret == -1)
@@ -281,7 +284,7 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
 		FD_ZERO(&readfds);
 		FD_SET(fd, &readfds);
 	}
-	return ret;
+	return err;
 }
 
 int mnl_nft_rule_batch_add(struct nftnl_rule *nlr, struct nftnl_batch *batch,

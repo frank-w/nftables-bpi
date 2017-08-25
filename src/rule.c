@@ -926,6 +926,7 @@ struct monitor *monitor_alloc(uint32_t format, uint32_t type, const char *event)
 
 void monitor_free(struct monitor *m)
 {
+	xfree(m->event);
 	xfree(m);
 }
 

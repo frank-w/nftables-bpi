@@ -4274,9 +4274,9 @@ ip forward ip dscp set 42
 				<example>
 					<title>change tcp mss</title>
 					<programlisting>
-tcp option maxseg size set 1360
+tcp flags syn tcp option maxseg size set 1360
 # set a size based on route information:
-tcp option maxseg size set rt mtu
+tcp flags syn tcp option maxseg size set rt mtu
 					</programlisting>
 				</example>
 			</para>

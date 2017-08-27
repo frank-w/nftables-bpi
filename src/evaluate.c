@@ -1799,6 +1799,8 @@ static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
 		return stmt_binary_error(ctx, *expr, stmt,
 					 "you cannot reference a set here, "
 					 "unknown value to use");
+	case EXPR_RT:
+		return byteorder_conversion(ctx, expr, byteorder);
 	default:
 		break;
 	}

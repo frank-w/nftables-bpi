@@ -11,3 +11,5 @@
 %cnt1 type counter;ok
 %qt1 type quota 25 mbytes;ok
 %qt2 type quota over 1 kbytes;ok
+%lim0 type limit rate 400/minute;ok
+%lim2 type limit rate over 1024 bytes/second burst 512 bytes;ok

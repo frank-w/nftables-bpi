@@ -48,22 +48,16 @@ const struct location netlink_location = {
 	.indesc	= &indesc_netlink,
 };
 
-static struct mnl_socket *nfsock_open(void)
-{
-	struct mnl_socket *s;
-
-	s = mnl_socket_open(NETLINK_NETFILTER);
-	if (s == NULL)
-		netlink_init_error();
-	return s;
-}
-
 struct mnl_socket *netlink_open_sock(void)
 {
 	struct mnl_socket *nf_sock;
 
-	nf_sock = nfsock_open();
+	nf_sock = mnl_socket_open(NETLINK_NETFILTER);
+	if (nf_sock == NULL)
+		netlink_init_error();
+
 	fcntl(mnl_socket_get_fd(nf_sock), F_SETFL, O_NONBLOCK);
+
 	return nf_sock;
 }
 

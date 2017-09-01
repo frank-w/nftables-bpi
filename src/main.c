@@ -298,10 +298,18 @@ static struct nft_ctx *nft_ctx_new(void)
 
 static void nft_ctx_free(const struct nft_ctx *ctx)
 {
+	if (ctx->nf_sock)
+		netlink_close_sock(ctx->nf_sock);
+
 	iface_cache_release();
 	cache_release(&nft->cache);
 	xfree(ctx);
 	nft_exit();
+}
+
+static void nft_ctx_netlink_init(struct nft_ctx *ctx)
+{
+	ctx->nf_sock = netlink_open_sock();
 }
 
 static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
@@ -361,7 +369,8 @@ int main(int argc, char * const *argv)
 
 	nft = nft_ctx_new();
 
-	nft->nf_sock = netlink_open_sock();
+	nft_ctx_netlink_init(nft);
+
 	while (1) {
 		val = getopt_long(argc, argv, OPTSTRING, options, NULL);
 		if (val == -1)
@@ -472,7 +481,6 @@ int main(int argc, char * const *argv)
 	}
 
 	xfree(buf);
-	netlink_close_sock(nft->nf_sock);
 	nft_ctx_free(nft);
 
 	return rc;

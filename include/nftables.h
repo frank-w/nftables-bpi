@@ -38,7 +38,10 @@ struct nft_cache {
 	uint32_t		seqnum;
 };
 
+struct mnl_socket;
+
 struct nft_ctx {
+	struct mnl_socket	*nf_sock;
 	const char		*include_paths[INCLUDE_PATHS_MAX];
 	unsigned int		num_include_paths;
 	unsigned int		parser_max_errors;

@@ -49,7 +49,10 @@ struct nft_ctx {
 	struct output_ctx	output;
 	bool			check;
 	struct nft_cache	cache;
+	uint32_t		flags;
 };
+
+#define NFT_CTX_DEFAULT		0
 
 enum nftables_exit_codes {
 	NFT_EXIT_SUCCESS	= 0,

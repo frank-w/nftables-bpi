@@ -281,7 +281,12 @@ static void nft_exit(void)
 	mark_table_exit();
 }
 
-static struct nft_ctx *nft_ctx_new(void)
+static void nft_ctx_netlink_init(struct nft_ctx *ctx)
+{
+	ctx->nf_sock = netlink_open_sock();
+}
+
+static struct nft_ctx *nft_ctx_new(uint32_t flags)
 {
 	struct nft_ctx *ctx;
 
@@ -292,6 +297,10 @@ static struct nft_ctx *nft_ctx_new(void)
 	ctx->num_include_paths	= 1;
 	ctx->parser_max_errors	= 10;
 	init_list_head(&ctx->cache.list);
+	ctx->flags = flags;
+
+	if (flags == NFT_CTX_DEFAULT)
+		nft_ctx_netlink_init(ctx);
 
 	return ctx;
 }
@@ -305,11 +314,6 @@ static void nft_ctx_free(const struct nft_ctx *ctx)
 	cache_release(&nft->cache);
 	xfree(ctx);
 	nft_exit();
-}
-
-static void nft_ctx_netlink_init(struct nft_ctx *ctx)
-{
-	ctx->nf_sock = netlink_open_sock();
 }
 
 static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
@@ -367,9 +371,7 @@ int main(int argc, char * const *argv)
 	struct parser_state state;
 	int i, val, rc;
 
-	nft = nft_ctx_new();
-
-	nft_ctx_netlink_init(nft);
+	nft = nft_ctx_new(NFT_CTX_DEFAULT);
 
 	while (1) {
 		val = getopt_long(argc, argv, OPTSTRING, options, NULL);

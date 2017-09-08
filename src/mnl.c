@@ -947,10 +947,13 @@ static int mnl_nft_setelem_batch(struct nftnl_set *nls,
 	if (iter == NULL)
 		memory_allocation_error();
 
+	if (cmd == NFT_MSG_NEWSETELEM)
+		flags |= NLM_F_CREATE;
+
 	while (nftnl_set_elems_iter_cur(iter)) {
 		nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch), cmd,
 					    nftnl_set_get_u32(nls, NFTNL_SET_FAMILY),
-					    NLM_F_CREATE | flags, seqnum);
+					    flags, seqnum);
 		ret = nftnl_set_elems_nlmsg_build_payload_iter(nlh, iter);
 		mnl_nft_batch_continue(batch);
 		if (ret <= 0)
@@ -977,7 +980,7 @@ int mnl_nft_setelem_batch_flush(struct nftnl_set *nls, struct nftnl_batch *batch
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
 				    NFT_MSG_DELSETELEM,
 				    nftnl_set_get_u32(nls, NFTNL_SET_FAMILY),
-				    NLM_F_CREATE | flags, seqnum);
+				    flags, seqnum);
 	nftnl_set_elems_nlmsg_build_payload(nlh, nls);
 	mnl_nft_batch_continue(batch);
 

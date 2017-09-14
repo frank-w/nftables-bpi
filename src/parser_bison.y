@@ -478,8 +478,8 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 %type <val>			time_spec quota_used
 
-%type <val>			type_identifier_list
-%type <datatype>		data_type
+%type <expr>			data_type_expr data_type_atom_expr
+%destructor { expr_free($$); }  data_type_expr data_type_atom_expr
 
 %type <cmd>			line
 %destructor { cmd_free($$); }	line
@@ -1405,9 +1405,9 @@ set_block_alloc		:	/* empty */
 set_block		:	/* empty */	{ $$ = $<set>-1; }
 			|	set_block	common_block
 			|	set_block	stmt_separator
-			|	set_block	TYPE		data_type	stmt_separator
+			|	set_block	TYPE		data_type_expr	stmt_separator
 			{
-				$1->keytype = $3;
+				$1->key = $3;
 				$$ = $1;
 			}
 			|	set_block	FLAGS		set_flag_list	stmt_separator
@@ -1459,28 +1459,30 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 			|	map_block	common_block
 			|	map_block	stmt_separator
 			|	map_block	TYPE
-						data_type	COLON	data_type
+						data_type_expr	COLON	data_type_expr
 						stmt_separator
 			{
-				$1->keytype  = $3;
-				$1->datatype = $5;
+				$1->key = $3;
+				$1->datatype = $5->dtype;
+
+				expr_free($5);
 				$1->flags |= NFT_SET_MAP;
 				$$ = $1;
 			}
 			|	map_block	TYPE
-						data_type	COLON	COUNTER
+						data_type_expr	COLON	COUNTER
 						stmt_separator
 			{
-				$1->keytype = $3;
+				$1->key = $3;
 				$1->objtype = NFT_OBJECT_COUNTER;
 				$1->flags  |= NFT_SET_OBJECT;
 				$$ = $1;
 			}
 			|	map_block	TYPE
-						data_type	COLON	QUOTA
+						data_type_expr	COLON	QUOTA
 						stmt_separator
 			{
-				$1->keytype = $3;
+				$1->key = $3;
 				$1->objtype = NFT_OBJECT_QUOTA;
 				$1->flags  |= NFT_SET_OBJECT;
 				$$ = $1;
@@ -1512,16 +1514,7 @@ set_policy_spec		:	PERFORMANCE	{ $$ = NFT_SET_POL_PERFORMANCE; }
 			|	MEMORY		{ $$ = NFT_SET_POL_MEMORY; }
 			;
 
-data_type		:	type_identifier_list
-			{
-				if ($1 & ~TYPE_MASK)
-					$$ = concat_type_alloc($1);
-				else
-					$$ = datatype_lookup($1);
-			}
-			;
-
-type_identifier_list	:	type_identifier
+data_type_atom_expr	:	type_identifier
 			{
 				const struct datatype *dtype = datatype_lookup_byname($1);
 				if (dtype == NULL) {
@@ -1530,20 +1523,28 @@ type_identifier_list	:	type_identifier
 					xfree($1);
 					YYERROR;
 				}
-				xfree($1);
-				$$ = dtype->type;
+				$$ = constant_expr_alloc(&@1, dtype, dtype->byteorder,
+							 dtype->size, NULL);
 			}
-			|	type_identifier_list	DOT	type_identifier
+			;
+
+data_type_expr		:	data_type_atom_expr
+			|	data_type_expr	DOT	data_type_atom_expr
 			{
-				const struct datatype *dtype = datatype_lookup_byname($3);
-				if (dtype == NULL) {
-					erec_queue(error(&@3, "unknown datatype %s", $3),
-						   state->msgs);
-					xfree($3);
-					YYERROR;
+				if ($1->ops->type != EXPR_CONCAT) {
+					$$ = concat_expr_alloc(&@$);
+					compound_expr_add($$, $1);
+				} else {
+					struct location rhs[] = {
+						[1]	= @2,
+						[2]	= @3,
+					};
+					location_update(&$3->location, rhs, 2);
+
+					$$ = $1;
+					$$->location = @$;
 				}
-				xfree($3);
-				$$ = concat_subtype_add($$, dtype->type);
+				compound_expr_add($$, $3);
 			}
 			;
 

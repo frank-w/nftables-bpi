@@ -307,8 +307,8 @@ static void netlink_parse_lookup(struct netlink_parse_ctx *ctx,
 		return netlink_error(ctx, loc,
 				     "Lookup expression has no left hand side");
 
-	if (left->len < set->keylen) {
-		left = netlink_parse_concat_expr(ctx, loc, sreg, set->keylen);
+	if (left->len < set->key->len) {
+		left = netlink_parse_concat_expr(ctx, loc, sreg, set->key->len);
 		if (left == NULL)
 			return;
 	}
@@ -1122,8 +1122,8 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 		return netlink_error(ctx, loc,
 				     "Dynset statement has no key expression");
 
-	if (expr->len < set->keylen) {
-		expr = netlink_parse_concat_expr(ctx, loc, sreg, set->keylen);
+	if (expr->len < set->key->len) {
+		expr = netlink_parse_concat_expr(ctx, loc, sreg, set->key->len);
 		if (expr == NULL)
 			return;
 	}
@@ -1193,8 +1193,8 @@ static void netlink_parse_objref(struct netlink_parse_ctx *ctx,
 			return netlink_error(ctx, loc,
 					     "objref expression has no left hand side");
 
-		if (left->len < set->keylen) {
-			left = netlink_parse_concat_expr(ctx, loc, sreg, set->keylen);
+		if (left->len < set->key->len) {
+			left = netlink_parse_concat_expr(ctx, loc, sreg, set->key->len);
 			if (left == NULL)
 				return;
 		}

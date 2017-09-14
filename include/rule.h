@@ -212,8 +212,7 @@ extern struct rule *rule_lookup(const struct chain *chain, uint64_t handle);
  * @flags:	bitmask of set flags
  * @gc_int:	garbage collection interval
  * @timeout:	default timeout value
- * @keytype:	key data type
- * @keylen:	key length
+ * @key:	key expression (data type, length))
  * @datatype:	mapping data type
  * @datalen:	mapping data len
  * @objtype:	mapping object type
@@ -230,8 +229,7 @@ struct set {
 	uint32_t		flags;
 	uint32_t		gc_int;
 	uint64_t		timeout;
-	const struct datatype	*keytype;
-	unsigned int		keylen;
+	struct expr		*key;
 	const struct datatype	*datatype;
 	unsigned int		datalen;
 	uint32_t		objtype;

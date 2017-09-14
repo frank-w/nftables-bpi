@@ -832,7 +832,7 @@ struct expr *set_expr_alloc(const struct location *loc, const struct set *set)
 		return set_expr;
 
 	set_expr->set_flags = set->flags;
-	set_expr->dtype = set->keytype;
+	set_expr->dtype = set->key->dtype;
 
 	return set_expr;
 }
@@ -960,7 +960,7 @@ struct expr *set_ref_expr_alloc(const struct location *loc, struct set *set)
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &set_ref_expr_ops, set->keytype, 0, 0);
+	expr = expr_alloc(loc, &set_ref_expr_ops, set->key->dtype, 0, 0);
 	expr->set = set_get(set);
 	expr->flags |= EXPR_F_CONSTANT;
 	return expr;

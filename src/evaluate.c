@@ -60,6 +60,18 @@ static int __fmtstring(3, 4) set_error(struct eval_ctx *ctx,
 	return -1;
 }
 
+static void key_fix_dtype_byteorder(struct expr *key)
+{
+	const struct datatype *dtype = key->dtype;
+
+	if (dtype->byteorder == key->byteorder)
+		return;
+
+	key->dtype = set_datatype_alloc(dtype, key->byteorder);
+	if (dtype->flags & DTYPE_F_ALLOC)
+		concat_type_destroy(dtype);
+}
+
 static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 					     const char *name,
 					     struct expr *key,
@@ -69,11 +81,12 @@ static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 	struct set *set;
 	struct handle h;
 
+	key_fix_dtype_byteorder(key);
+
 	set = set_alloc(&expr->location);
 	set->flags	= NFT_SET_ANONYMOUS | expr->set_flags;
-	set->handle.set = xstrdup(name),
-	set->keytype 	= set_datatype_alloc(key->dtype, key->byteorder);
-	set->keylen	= key->len;
+	set->handle.set = xstrdup(name);
+	set->key	= key;
 	set->init	= expr;
 
 	if (ctx->table != NULL)
@@ -1204,8 +1217,6 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 		mappings = implicit_set_declaration(ctx, "__map%d",
 						    key,
 						    mappings);
-		expr_free(key);
-
 		mappings->set->datatype = set_datatype_alloc(ectx.dtype,
 							     ectx.byteorder);
 		mappings->set->datalen  = ectx.len;
@@ -1232,11 +1243,11 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 		    map->mappings->ops->name);
 	}
 
-	if (!datatype_equal(map->map->dtype, map->mappings->set->keytype))
+	if (!datatype_equal(map->map->dtype, map->mappings->set->key->dtype))
 		return expr_binary_error(ctx->msgs, map->mappings, map->map,
 					 "datatype mismatch, map expects %s, "
 					 "mapping expression has type %s",
-					 map->mappings->set->keytype->desc,
+					 map->mappings->set->key->dtype->desc,
 					 map->map->dtype->desc);
 
 	map->dtype = map->mappings->set->datatype;
@@ -1261,7 +1272,7 @@ static int expr_evaluate_mapping(struct eval_ctx *ctx, struct expr **expr)
 	if (!(set->flags & (NFT_SET_MAP | NFT_SET_OBJECT)))
 		return set_error(ctx, set, "set is not a map");
 
-	expr_set_context(&ctx->ectx, set->keytype, set->keylen);
+	expr_set_context(&ctx->ectx, set->key->dtype, set->key->len);
 	if (expr_evaluate(ctx, &mapping->left) < 0)
 		return -1;
 	if (!expr_is_constant(mapping->left))
@@ -2589,9 +2600,9 @@ static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 				  "Expression does not refer to a set");
 
 	if (stmt_evaluate_arg(ctx, stmt,
-			      stmt->set.set->set->keytype,
-			      stmt->set.set->set->keylen,
-			      stmt->set.set->set->keytype->byteorder,
+			      stmt->set.set->set->key->dtype,
+			      stmt->set.set->set->key->len,
+			      stmt->set.set->set->key->byteorder,
 			      &stmt->set.key) < 0)
 		return -1;
 	if (expr_is_constant(stmt->set.key))
@@ -2629,8 +2640,6 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 
 		mappings = implicit_set_declaration(ctx, "__objmap%d",
 						    key, mappings);
-		expr_free(key);
-
 		mappings->set->datatype = &string_type;
 		mappings->set->datalen  = NFT_OBJ_MAXNAMELEN * BITS_PER_BYTE;
 		mappings->set->objtype  = stmt->objref.type;
@@ -2657,11 +2666,11 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 		    map->mappings->ops->name);
 	}
 
-	if (!datatype_equal(map->map->dtype, map->mappings->set->keytype))
+	if (!datatype_equal(map->map->dtype, map->mappings->set->key->dtype))
 		return expr_binary_error(ctx->msgs, map->mappings, map->map,
 					 "datatype mismatch, map expects %s, "
 					 "mapping expression has type %s",
-					 map->mappings->set->keytype->desc,
+					 map->mappings->set->key->dtype->desc,
 					 map->map->dtype->desc);
 
 	map->dtype = map->mappings->set->datatype;
@@ -2765,7 +2774,7 @@ static int setelem_evaluate(struct eval_ctx *ctx, struct expr **expr)
 				 ctx->cmd->handle.set);
 
 	ctx->set = set;
-	expr_set_context(&ctx->ectx, set->keytype, set->keylen);
+	expr_set_context(&ctx->ectx, set->key->dtype, set->key->len);
 	if (expr_evaluate(ctx, expr) < 0)
 		return -1;
 	ctx->set = NULL;
@@ -2784,15 +2793,20 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 
 	type = set->flags & NFT_SET_MAP ? "map" : "set";
 
-	if (set->keytype == NULL)
-		return set_error(ctx, set, "%s definition does not specify "
-				 "key data type", type);
+	if (set->key == NULL)
+		return set_error(ctx, set, "%s definition does not specify key",
+				 type);
 
-	set->keylen = set->keytype->size;
-	if (set->keylen == 0)
-		return set_error(ctx, set, "unqualified key data type "
-				 "specified in %s definition", type);
+	if (set->key->len == 0) {
+		if (set->key->ops->type == EXPR_CONCAT &&
+		    expr_evaluate_concat(ctx, &set->key) < 0)
+			return -1;
 
+		if (set->key->len == 0)
+			return set_error(ctx, set, "unqualified key type %s "
+					 "specified in %s definition",
+					 set->key->dtype->name, type);
+	}
 	if (set->flags & NFT_SET_MAP) {
 		if (set->datatype == NULL)
 			return set_error(ctx, set, "map definition does not "
@@ -2809,7 +2823,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 
 	ctx->set = set;
 	if (set->init != NULL) {
-		expr_set_context(&ctx->ectx, set->keytype, set->keylen);
+		expr_set_context(&ctx->ectx, set->key->dtype, set->key->len);
 		if (expr_evaluate(ctx, &set->init) < 0)
 			return -1;
 	}

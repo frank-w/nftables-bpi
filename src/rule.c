@@ -215,7 +215,7 @@ void set_free(struct set *set)
 	if (set->init != NULL)
 		expr_free(set->init);
 	handle_free(&set->handle);
-	set_datatype_destroy(set->keytype);
+	expr_free(set->key);
 	set_datatype_destroy(set->datatype);
 	xfree(set);
 }
@@ -296,7 +296,7 @@ static void set_print_declaration(const struct set *set,
 
 	printf(" %s {%s", set->handle.set, opts->nl);
 
-	printf("%s%stype %s", opts->tab, opts->tab, set->keytype->name);
+	printf("%s%stype %s", opts->tab, opts->tab, set->key->dtype->name);
 	if (set->flags & NFT_SET_MAP)
 		printf(" : %s", set->datatype->name);
 	else if (set->flags & NFT_SET_OBJECT)

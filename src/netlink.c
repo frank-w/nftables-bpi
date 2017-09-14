@@ -1118,8 +1118,11 @@ static struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	set->handle.table  = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_TABLE));
 	set->handle.set    = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_NAME));
 
-	set->keytype = set_datatype_alloc(keytype, keybyteorder);
-	set->keylen  = nftnl_set_get_u32(nls, NFTNL_SET_KEY_LEN) * BITS_PER_BYTE;
+	set->key     = constant_expr_alloc(&netlink_location,
+					   set_datatype_alloc(keytype, keybyteorder),
+					   keybyteorder,
+					   nftnl_set_get_u32(nls, NFTNL_SET_KEY_LEN) * BITS_PER_BYTE,
+					   NULL);
 	set->flags   = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
 
 	set->objtype = objtype;
@@ -1158,9 +1161,9 @@ static int netlink_add_set_compat(struct netlink_ctx *ctx,
 	nls = alloc_nftnl_set(h);
 	nftnl_set_set_u32(nls, NFTNL_SET_FLAGS, set->flags);
 	nftnl_set_set_u32(nls, NFTNL_SET_KEY_TYPE,
-			  dtype_map_to_kernel(set->keytype));
+			  dtype_map_to_kernel(set->key->dtype));
 	nftnl_set_set_u32(nls, NFTNL_SET_KEY_LEN,
-			  div_round_up(set->keylen, BITS_PER_BYTE));
+			  div_round_up(set->key->len, BITS_PER_BYTE));
 	if (set->flags & NFT_SET_MAP) {
 		nftnl_set_set_u32(nls, NFTNL_SET_DATA_TYPE,
 				  dtype_map_to_kernel(set->datatype));
@@ -1192,9 +1195,9 @@ static int netlink_add_set_batch(struct netlink_ctx *ctx,
 	nls = alloc_nftnl_set(h);
 	nftnl_set_set_u32(nls, NFTNL_SET_FLAGS, set->flags);
 	nftnl_set_set_u32(nls, NFTNL_SET_KEY_TYPE,
-			  dtype_map_to_kernel(set->keytype));
+			  dtype_map_to_kernel(set->key->dtype));
 	nftnl_set_set_u32(nls, NFTNL_SET_KEY_LEN,
-			  div_round_up(set->keylen, BITS_PER_BYTE));
+			  div_round_up(set->key->len, BITS_PER_BYTE));
 	if (set->flags & NFT_SET_MAP) {
 		nftnl_set_set_u32(nls, NFTNL_SET_DATA_TYPE,
 				  dtype_map_to_kernel(set->datatype));
@@ -1226,7 +1229,7 @@ static int netlink_add_set_batch(struct netlink_ctx *ctx,
 	if (!udbuf)
 		memory_allocation_error();
 	if (!nftnl_udata_put_u32(udbuf, UDATA_SET_KEYBYTEORDER,
-				 set->keytype->byteorder))
+				 set->key->byteorder))
 		memory_allocation_error();
 
 	if (set->flags & NFT_SET_MAP &&
@@ -1537,10 +1540,10 @@ static int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 		flags = nftnl_set_elem_get_u32(nlse, NFTNL_SET_ELEM_FLAGS);
 
 	key = netlink_alloc_value(&netlink_location, &nld);
-	key->dtype	= set->keytype;
-	key->byteorder	= set->keytype->byteorder;
-	if (set->keytype->subtypes)
-		key = netlink_parse_concat_elem(set->keytype, key);
+	key->dtype	= set->key->dtype;
+	key->byteorder	= set->key->byteorder;
+	if (set->key->dtype->subtypes)
+		key = netlink_parse_concat_elem(set->key->dtype, key);
 
 	if (!(set->flags & NFT_SET_INTERVAL) &&
 	    key->byteorder == BYTEORDER_HOST_ENDIAN)
@@ -2197,7 +2200,7 @@ static int netlink_events_setelem_cb(const struct nlmsghdr *nlh, int type,
 		 * used by named sets, so use a dummy set.
 		 */
 		dummyset = set_alloc(monh->loc);
-		dummyset->keytype = set->keytype;
+		dummyset->key = expr_clone(set->key);
 		dummyset->datatype = set->datatype;
 		dummyset->flags = set->flags;
 		dummyset->init = set_expr_alloc(monh->loc, set);

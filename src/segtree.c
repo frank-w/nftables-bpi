@@ -76,8 +76,8 @@ static void seg_tree_init(struct seg_tree *tree, const struct set *set,
 
 	first = list_entry(init->expressions.next, struct expr, list);
 	tree->root	= RB_ROOT;
-	tree->keytype	= set->keytype;
-	tree->keylen	= set->keylen;
+	tree->keytype	= set->key->dtype;
+	tree->keylen	= set->key->len;
 	tree->datatype	= set->datatype;
 	tree->datalen	= set->datalen;
 	tree->byteorder	= first->byteorder;

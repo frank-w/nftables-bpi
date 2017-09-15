@@ -62,9 +62,7 @@ static int __fmtstring(3, 4) set_error(struct eval_ctx *ctx,
 
 static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 					     const char *name,
-					     const struct datatype *keytype,
-					     unsigned int keylen,
-					     unsigned int keybyteorder,
+					     struct expr *key,
 					     struct expr *expr)
 {
 	struct cmd *cmd;
@@ -74,8 +72,8 @@ static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 	set = set_alloc(&expr->location);
 	set->flags	= NFT_SET_ANONYMOUS | expr->set_flags;
 	set->handle.set = xstrdup(name),
-	set->keytype 	= set_datatype_alloc(keytype, keybyteorder);
-	set->keylen	= keylen;
+	set->keytype 	= set_datatype_alloc(key->dtype, key->byteorder);
+	set->keylen	= key->len;
 	set->init	= expr;
 
 	if (ctx->table != NULL)
@@ -1184,6 +1182,7 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 {
 	struct expr_ctx ectx = ctx->ectx;
 	struct expr *map = *expr, *mappings;
+	struct expr *key;
 
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &map->map) < 0)
@@ -1197,11 +1196,15 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 
 	switch (map->mappings->ops->type) {
 	case EXPR_SET:
+		key = constant_expr_alloc(&map->location,
+				 ctx->ectx.dtype,
+				 ctx->ectx.byteorder,
+				 ctx->ectx.len, NULL);
+
 		mappings = implicit_set_declaration(ctx, "__map%d",
-						    ctx->ectx.dtype,
-						    ctx->ectx.len,
-						    ctx->ectx.byteorder,
+						    key,
 						    mappings);
+		expr_free(key);
 
 		mappings->set->datatype = set_datatype_alloc(ectx.dtype,
 							     ectx.byteorder);
@@ -1539,8 +1542,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 		if (right->ops->type == EXPR_SET)
 			right = rel->right =
 				implicit_set_declaration(ctx, "__set%d",
-							 left->dtype, left->len,
-							 left->byteorder, right);
+							 left, right);
 		else if (!datatype_equal(left->dtype, right->dtype))
 			return expr_binary_error(ctx->msgs, right, left,
 						 "datatype mismatch, expected %s, "
@@ -1597,9 +1599,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 		case EXPR_SET:
 			assert(rel->op == OP_NEQ);
 			right = rel->right =
-				implicit_set_declaration(ctx, "__set%d",
-							 left->dtype, left->len,
-							 left->byteorder, right);
+				implicit_set_declaration(ctx, "__set%d", left, right);
 			/* fall through */
 		case EXPR_SET_REF:
 			assert(rel->op == OP_NEQ);
@@ -1978,8 +1978,7 @@ static int stmt_evaluate_flow(struct eval_ctx *ctx, struct stmt *stmt)
 		set->set_flags |= NFT_SET_TIMEOUT;
 
 	setref = implicit_set_declaration(ctx, stmt->flow.table ?: "__ft%d",
-					  key->dtype, key->len,
-					  key->dtype->byteorder, set);
+					  key, set);
 
 	stmt->flow.set = setref;
 
@@ -2609,6 +2608,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	struct expr *map = stmt->objref.expr;
 	struct expr *mappings;
+	struct expr *key;
 
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &map->map) < 0)
@@ -2622,11 +2622,15 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 
 	switch (map->mappings->ops->type) {
 	case EXPR_SET:
+		key = constant_expr_alloc(&stmt->location,
+					  ctx->ectx.dtype,
+					  ctx->ectx.byteorder,
+					  ctx->ectx.len, NULL);
+
 		mappings = implicit_set_declaration(ctx, "__objmap%d",
-						    ctx->ectx.dtype,
-						    ctx->ectx.len,
-						    ctx->ectx.byteorder,
-						    mappings);
+						    key, mappings);
+		expr_free(key);
+
 		mappings->set->datatype = &string_type;
 		mappings->set->datalen  = NFT_OBJ_MAXNAMELEN * BITS_PER_BYTE;
 		mappings->set->objtype  = stmt->objref.type;

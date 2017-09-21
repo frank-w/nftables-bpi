@@ -1690,7 +1690,14 @@ static int do_command_monitor(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct table *t;
 	struct set *s;
-	struct netlink_mon_handler monhandler;
+	struct netlink_mon_handler monhandler = {
+		.monitor_flags	= cmd->monitor->flags,
+		.format		= cmd->monitor->format,
+		.ctx		= ctx,
+		.loc		= &cmd->location,
+		.cache		= ctx->cache,
+		.debug_mask	= ctx->debug_mask,
+	};
 
 	monhandler.cache_needed = need_cache(cmd);
 	if (monhandler.cache_needed) {
@@ -1724,12 +1731,6 @@ static int do_command_monitor(struct netlink_ctx *ctx, struct cmd *cmd)
 			}
 		}
 	}
-
-	monhandler.monitor_flags = cmd->monitor->flags;
-	monhandler.format = cmd->monitor->format;
-	monhandler.ctx = ctx;
-	monhandler.loc = &cmd->location;
-	monhandler.cache = ctx->cache;
 
 	return netlink_monitor(&monhandler, ctx->nf_sock);
 }

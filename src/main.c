@@ -351,8 +351,10 @@ static int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 
 	parser_init(nft->nf_sock, &nft->cache, &state, &msgs, nft->debug_mask);
 	scanner = scanner_init(&state);
-	if (scanner_read_file(scanner, filename, &internal_location) < 0)
+	if (scanner_read_file(scanner, filename, &internal_location) < 0) {
+		rc = NFT_EXIT_FAILURE;
 		goto err;
+	}
 
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
 		rc = NFT_EXIT_FAILURE;

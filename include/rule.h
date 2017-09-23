@@ -437,7 +437,6 @@ void monitor_free(struct monitor *m);
  * @seqnum:	sequence number to match netlink errors
  * @union:	object
  * @arg:	argument data
- * @format:	info about the export/import format
  */
 struct cmd {
 	struct list_head	list;

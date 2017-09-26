@@ -877,7 +877,7 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
-			|	CT	STRING	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
+			|	CT	ct_obj_kind	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
 			{
 				struct error_record *erec;
 				int type;
@@ -961,7 +961,7 @@ create_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
-			|	CT	STRING	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
+			|	CT	ct_obj_kind	obj_spec	ct_obj_alloc	'{' ct_block '}'	stmt_separator
 			{
 				struct error_record *erec;
 				int type;
@@ -1019,7 +1019,7 @@ delete_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_QUOTA, &$2, &@$, NULL);
 			}
-			|	CT	STRING	obj_spec	ct_obj_alloc
+			|	CT	ct_obj_kind	obj_spec	ct_obj_alloc
 			{
 				struct error_record *erec;
 				int type;
@@ -1123,7 +1123,7 @@ list_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_MAP, &$2, &@$, NULL);
 			}
-			|	CT		STRING	obj_spec
+			|	CT		ct_obj_kind	obj_spec
 			{
 				struct error_record *erec;
 				int type;
@@ -1137,7 +1137,7 @@ list_cmd		:	TABLE		table_spec
 
 				$$ = cmd_alloc_obj_ct(CMD_LIST, type, &$3, &@$, NULL);
 			}
-			|       CT              STRING  TABLE   table_spec
+			|       CT		ct_obj_kind	TABLE   table_spec
 			{
 				int cmd;
 
@@ -2886,6 +2886,7 @@ quota_obj		:	quota_config
 			;
 
 ct_obj_kind		:	STRING		{ $$ = $1; }
+			|	HELPER		{ $$ = xstrdup("helper"); }
 			;
 
 ct_l4protoname		:	TCP	{ $$ = IPPROTO_TCP; }

@@ -484,6 +484,15 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "proto-src"		{ return PROTO_SRC; }
 "proto-dst"		{ return PROTO_DST; }
 "zone"			{ return ZONE; }
+"original"		{ return ORIGINAL; }
+"reply"			{ return REPLY; }
+"direction"		{ return DIRECTION; }
+"event"			{ return EVENT; }
+"expiration"		{ return EXPIRATION; }
+"helper"		{ return HELPER; }
+"label"			{ return LABEL; }
+"state"			{ return STATE; }
+"status"		{ return STATUS; }
 
 "numgen"		{ return NUMGEN; }
 "inc"			{ return INC; }

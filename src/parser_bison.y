@@ -386,6 +386,15 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 %token PROTO_SRC		"proto-src"
 %token PROTO_DST		"proto-dst"
 %token ZONE			"zone"
+%token DIRECTION		"direction"
+%token EVENT			"event"
+%token EXPIRATION		"expiration"
+%token HELPER			"helper"
+%token LABEL			"label"
+%token STATE			"state"
+%token STATUS			"status"
+%token ORIGINAL			"original"
+%token REPLY			"reply"
 
 %token COUNTER			"counter"
 %token NAME			"name"
@@ -658,7 +667,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 %type <expr>			ct_expr
 %destructor { expr_free($$); }	ct_expr
-%type <val>			ct_key		ct_key_dir	ct_key_dir_optional
+%type <val>			ct_key		ct_dir	ct_key_dir_optional	ct_key_dir
 
 %type <expr>			fib_expr
 %destructor { expr_free($$); }	fib_expr
@@ -3065,6 +3074,9 @@ keyword_expr		:	ETHER                   { $$ = symbol_value(&@$, "ether"); }
 			|	SNAT			{ $$ = symbol_value(&@$, "snat"); }
 			|	ECN			{ $$ = symbol_value(&@$, "ecn"); }
 			|	RESET			{ $$ = symbol_value(&@$, "reset"); }
+			|	ORIGINAL		{ $$ = symbol_value(&@$, "original"); }
+			|	REPLY			{ $$ = symbol_value(&@$, "reply"); }
+			|	LABEL			{ $$ = symbol_value(&@$, "label"); }
 			;
 
 primary_rhs_expr	:	symbol_expr		{ $$ = $1; }
@@ -3310,41 +3322,33 @@ ct_expr			: 	CT	ct_key
 			{
 				$$ = ct_expr_alloc(&@$, $2, -1);
 			}
-			| 	CT	STRING
+			|	CT	ct_dir	ct_key_dir
 			{
-				struct error_record *erec;
-				unsigned int key;
-
-				erec = ct_key_parse(&@$, $2, &key);
-				xfree($2);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
-				$$ = ct_expr_alloc(&@$, key, -1);
+				$$ = ct_expr_alloc(&@$, $3, $2);
 			}
-			|	CT	STRING	ct_key_dir
-			{
-				struct error_record *erec;
-				int8_t direction;
+			;
 
-				erec = ct_dir_parse(&@$, $2, &direction);
-				xfree($2);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
-				$$ = ct_expr_alloc(&@$, $3, direction);
-			}
+ct_dir			:	ORIGINAL	{ $$ = IP_CT_DIR_ORIGINAL; }
+			|	REPLY		{ $$ = IP_CT_DIR_REPLY; }
 			;
 
 ct_key			:	L3PROTOCOL	{ $$ = NFT_CT_L3PROTOCOL; }
 			|	PROTOCOL	{ $$ = NFT_CT_PROTOCOL; }
 			|	MARK		{ $$ = NFT_CT_MARK; }
+			|	STATE		{ $$ = NFT_CT_STATE; }
+			|	DIRECTION	{ $$ = NFT_CT_DIRECTION; }
+			|	STATUS		{ $$ = NFT_CT_STATUS; }
+			|	EXPIRATION	{ $$ = NFT_CT_EXPIRATION; }
+			|	HELPER		{ $$ = NFT_CT_HELPER; }
+			|	SADDR		{ $$ = NFT_CT_SRC; }
+			|	DADDR		{ $$ = NFT_CT_DST; }
+			|	PROTO_SRC	{ $$ = NFT_CT_PROTO_SRC; }
+			|	PROTO_DST	{ $$ = NFT_CT_PROTO_DST; }
+			|	LABEL		{ $$ = NFT_CT_LABELS; }
+			|	EVENT		{ $$ = NFT_CT_EVENTMASK; }
 			|	ct_key_dir_optional
 			;
+
 ct_key_dir		:	SADDR		{ $$ = NFT_CT_SRC; }
 			|	DADDR		{ $$ = NFT_CT_DST; }
 			|	L3PROTOCOL	{ $$ = NFT_CT_L3PROTOCOL; }
@@ -3359,6 +3363,7 @@ ct_key_dir_optional	:	BYTES		{ $$ = NFT_CT_BYTES; }
 			|	AVGPKT		{ $$ = NFT_CT_AVGPKT; }
 			|	ZONE		{ $$ = NFT_CT_ZONE; }
 			;
+
 
 list_stmt_expr		:	symbol_expr	COMMA	symbol_expr
 			{
@@ -3376,44 +3381,20 @@ list_stmt_expr		:	symbol_expr	COMMA	symbol_expr
 
 ct_stmt			:	CT	ct_key		SET	stmt_expr
 			{
-				$$ = ct_stmt_alloc(&@$, $2, -1, $4);
-			}
-			|	CT	STRING		SET	stmt_expr
-			{
-				struct error_record *erec;
-				unsigned int key;
-
-				erec = ct_key_parse(&@$, $2, &key);
-				xfree($2);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
-				switch (key) {
+				switch ($2) {
 				case NFT_CT_HELPER:
 					$$ = objref_stmt_alloc(&@$);
 					$$->objref.type = NFT_OBJECT_CT_HELPER;
 					$$->objref.expr = $4;
 					break;
 				default:
-					$$ = ct_stmt_alloc(&@$, key, -1, $4);
+					$$ = ct_stmt_alloc(&@$, $2, -1, $4);
 					break;
 				}
 			}
-			|	CT	STRING	ct_key_dir_optional SET	stmt_expr
+			|	CT	ct_dir	ct_key_dir_optional SET	stmt_expr
 			{
-				struct error_record *erec;
-				int8_t direction;
-
-				erec = ct_dir_parse(&@$, $2, &direction);
-				xfree($2);
-				if (erec != NULL) {
-					erec_queue(erec, state->msgs);
-					YYERROR;
-				}
-
-				$$ = ct_stmt_alloc(&@$, $3, direction, $5);
+				$$ = ct_stmt_alloc(&@$, $3, $2, $5);
 			}
 			;
 

@@ -334,56 +334,6 @@ static const struct expr_ops ct_expr_ops = {
 	.pctx_update	= ct_expr_pctx_update,
 };
 
-struct error_record *ct_dir_parse(const struct location *loc, const char *str,
-				  int8_t *direction)
-{
-	const struct symbolic_constant *s;
-
-	for (s = ct_dir_tbl.symbols; s->identifier != NULL; s++) {
-		if (!strcmp(str, s->identifier)) {
-			*direction = s->value;
-			return NULL;
-		}
-	}
-
-	return error(loc, "Could not parse direction %s", str);
-}
-
-struct error_record *ct_key_parse(const struct location *loc, const char *str,
-				  unsigned int *key)
-{
-	int ret, len, offset = 0;
-	const char *sep = "";
-	unsigned int i;
-	char buf[1024];
-	size_t size;
-
-	for (i = 0; i < array_size(ct_templates); i++) {
-		if (!ct_templates[i].token || strcmp(ct_templates[i].token, str))
-			continue;
-
-		*key = i;
-		return NULL;
-	}
-
-	len = (int)sizeof(buf);
-	size = sizeof(buf);
-
-	for (i = 0; i < array_size(ct_templates); i++) {
-		if (!ct_templates[i].token)
-			continue;
-
-		if (offset)
-			sep = ", ";
-
-		ret = snprintf(buf+offset, len, "%s%s", sep, ct_templates[i].token);
-		SNPRINTF_BUFFER_SIZE(ret, size, len, offset);
-		assert(offset < (int)sizeof(buf));
-	}
-
-	return error(loc, "syntax error, unexpected %s, known keys are %s", str, buf);
-}
-
 struct error_record *ct_objtype_parse(const struct location *loc, const char *str, int *type)
 {
 	if (strcmp(str, "helper") == 0) {

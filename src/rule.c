@@ -666,18 +666,12 @@ static void chain_print_declaration(const struct chain *chain)
 {
 	printf("\tchain %s {\n", chain->handle.chain);
 	if (chain->flags & CHAIN_F_BASECHAIN) {
-		if (chain->dev != NULL) {
-			printf("\t\ttype %s hook %s device %s priority %d; policy %s;\n",
-			       chain->type,
-			       hooknum2str(chain->handle.family, chain->hooknum),
-			       chain->dev, chain->priority,
-			       chain_policy2str(chain->policy));
-		} else {
-			printf("\t\ttype %s hook %s priority %d; policy %s;\n",
-			       chain->type,
-			       hooknum2str(chain->handle.family, chain->hooknum),
-			       chain->priority, chain_policy2str(chain->policy));
-		}
+		printf("\t\ttype %s hook %s", chain->type,
+		       hooknum2str(chain->handle.family, chain->hooknum));
+		if (chain->dev != NULL)
+			printf(" device %s", chain->dev);
+		printf(" priority %d; policy %s;\n",
+		       chain->priority, chain_policy2str(chain->policy));
 	}
 }
 

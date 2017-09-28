@@ -184,7 +184,7 @@ extern void netlink_dump_chain(const struct nftnl_chain *nlc,
 extern void netlink_dump_rule(const struct nftnl_rule *nlr,
 			      unsigned int debug_mask);
 extern void netlink_dump_expr(const struct nftnl_expr *nle,
-			      unsigned int debug_mask);
+			      FILE *fp, unsigned int debug_mask);
 extern void netlink_dump_set(const struct nftnl_set *nls,
 			     unsigned int debug_mask);
 extern void netlink_dump_obj(struct nftnl_obj *nlo, unsigned int debug_mask);

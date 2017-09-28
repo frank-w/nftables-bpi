@@ -515,7 +515,8 @@ void netlink_dump_rule(const struct nftnl_rule *nlr, unsigned int debug_mask)
 	fprintf(stdout, "%s\n", buf);
 }
 
-void netlink_dump_expr(const struct nftnl_expr *nle, unsigned int debug_mask)
+void netlink_dump_expr(const struct nftnl_expr *nle,
+		       FILE *fp, unsigned int debug_mask)
 {
 	char buf[4096];
 
@@ -523,7 +524,7 @@ void netlink_dump_expr(const struct nftnl_expr *nle, unsigned int debug_mask)
 		return;
 
 	nftnl_expr_snprintf(buf, sizeof(buf), nle, 0, 0);
-	fprintf(stdout, "%s\n", buf);
+	fprintf(fp, "%s\n", buf);
 }
 
 static int list_rule_cb(struct nftnl_rule *nlr, void *arg)

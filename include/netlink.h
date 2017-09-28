@@ -180,14 +180,14 @@ extern int netlink_delete_obj(struct netlink_ctx *ctx, const struct handle *h,
 			      struct location *loc, uint32_t type);
 
 extern void netlink_dump_chain(const struct nftnl_chain *nlc,
-			       unsigned int debug_mask);
+			       struct netlink_ctx *ctx);
 extern void netlink_dump_rule(const struct nftnl_rule *nlr,
-			      unsigned int debug_mask);
+			      struct netlink_ctx *ctx);
 extern void netlink_dump_expr(const struct nftnl_expr *nle,
 			      FILE *fp, unsigned int debug_mask);
 extern void netlink_dump_set(const struct nftnl_set *nls,
-			     unsigned int debug_mask);
-extern void netlink_dump_obj(struct nftnl_obj *nlo, unsigned int debug_mask);
+			     struct netlink_ctx *ctx);
+extern void netlink_dump_obj(struct nftnl_obj *nlo, struct netlink_ctx *ctx);
 
 extern int netlink_batch_send(struct netlink_ctx *ctx, struct list_head *err_list);
 

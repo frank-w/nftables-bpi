@@ -37,7 +37,7 @@
 
 void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 		 struct parser_state *state, struct list_head *msgs,
-		 unsigned int debug_mask)
+		 unsigned int debug_mask, struct output_ctx *octx)
 {
 	memset(state, 0, sizeof(*state));
 	init_list_head(&state->cmds);
@@ -48,6 +48,7 @@ void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 	state->ectx.msgs = msgs;
 	state->ectx.nf_sock = nf_sock;
 	state->ectx.debug_mask = debug_mask;
+	state->ectx.octx = octx;
 }
 
 static void yyerror(struct location *loc, struct nft_ctx *nft, void *scanner,

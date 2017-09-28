@@ -30,10 +30,11 @@ static const char *numgen_type_str(enum nft_ng_types type)
 
 static void numgen_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	printf("numgen %s mod %u", numgen_type_str(expr->numgen.type),
-	       expr->numgen.mod);
+	nft_print(octx, "numgen %s mod %u",
+		  numgen_type_str(expr->numgen.type),
+		  expr->numgen.mod);
 	if (expr->numgen.offset)
-		printf(" offset %u", expr->numgen.offset);
+		nft_print(octx, " offset %u", expr->numgen.offset);
 }
 
 static bool numgen_expr_cmp(const struct expr *e1, const struct expr *e2)

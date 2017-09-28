@@ -19,19 +19,19 @@ static void hash_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	switch (expr->hash.type) {
 	case NFT_HASH_SYM:
-		printf("symhash");
+		nft_print(octx, "symhash");
 	break;
 	case NFT_HASH_JENKINS:
 	default:
-		printf("jhash ");
+		nft_print(octx, "jhash ");
 		expr_print(expr->hash.expr, octx);
 	}
 
-	printf(" mod %u", expr->hash.mod);
+	nft_print(octx, " mod %u", expr->hash.mod);
 	if (expr->hash.seed_set)
-		printf(" seed 0x%x", expr->hash.seed);
+		nft_print(octx, " seed 0x%x", expr->hash.seed);
 	if (expr->hash.offset)
-		printf(" offset %u", expr->hash.offset);
+		nft_print(octx, " offset %u", expr->hash.offset);
 }
 
 static bool hash_expr_cmp(const struct expr *e1, const struct expr *e2)

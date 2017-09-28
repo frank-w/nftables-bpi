@@ -86,41 +86,42 @@ bool expr_cmp(const struct expr *e1, const struct expr *e2)
 	return e1->ops->cmp(e1, e2);
 }
 
-void expr_describe(const struct expr *expr)
+void expr_describe(const struct expr *expr, struct output_ctx *octx)
 {
 	const struct datatype *dtype = expr->dtype;
 	const char *delim = "";
 
-	printf("%s expression, datatype %s (%s)",
-		expr->ops->name, dtype->name, dtype->desc);
+	nft_print(octx, "%s expression, datatype %s (%s)",
+		  expr->ops->name, dtype->name, dtype->desc);
 	if (dtype->basetype != NULL) {
-		printf(" (basetype ");
+		nft_print(octx, " (basetype ");
 		for (dtype = dtype->basetype; dtype != NULL;
 		     dtype = dtype->basetype) {
-			printf("%s%s", delim, dtype->desc);
+			nft_print(octx, "%s%s", delim, dtype->desc);
 			delim = ", ";
 		}
-		printf(")");
+		nft_print(octx, ")");
 	}
 
 	if (expr_basetype(expr)->type == TYPE_STRING) {
 		if (expr->len)
-			printf(", %u characters", expr->len / BITS_PER_BYTE);
+			nft_print(octx, ", %u characters",
+				  expr->len / BITS_PER_BYTE);
 		else
-			printf(", dynamic length");
+			nft_print(octx, ", dynamic length");
 	} else
-		printf(", %u bits", expr->len);
+		nft_print(octx, ", %u bits", expr->len);
 
-	printf("\n");
+	nft_print(octx, "\n");
 
 	if (expr->dtype->sym_tbl != NULL) {
-		printf("\npre-defined symbolic constants ");
+		nft_print(octx, "\npre-defined symbolic constants ");
 		if (expr->dtype->sym_tbl->base == BASE_DECIMAL)
-			printf("(in decimal):\n");
+			nft_print(octx, "(in decimal):\n");
 		else
-			printf("(in hexadecimal):\n");
+			nft_print(octx, "(in hexadecimal):\n");
 		symbol_table_print(expr->dtype->sym_tbl, expr->dtype,
-				   expr->byteorder);
+				   expr->byteorder, octx);
 	}
 }
 
@@ -215,7 +216,8 @@ struct expr *verdict_expr_alloc(const struct location *loc,
 
 static void symbol_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	printf("%s%s", expr->scope != NULL ? "$" : "", expr->identifier);
+	nft_print(octx, "%s%s", expr->scope != NULL ? "$" : "",
+		  expr->identifier);
 }
 
 static void symbol_expr_clone(struct expr *new, const struct expr *expr)
@@ -398,7 +400,7 @@ struct expr *bitmask_expr_to_binops(struct expr *expr)
 static void prefix_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	expr_print(expr->prefix, octx);
-	printf("/%u", expr->prefix_len);
+	nft_print(octx, "/%u", expr->prefix_len);
 }
 
 static void prefix_expr_set_type(const struct expr *expr,
@@ -513,10 +515,10 @@ static void binop_arg_print(const struct expr *op, const struct expr *arg,
 		prec = 1;
 
 	if (prec)
-		printf("(");
+		nft_print(octx, "(");
 	expr_print(arg, octx);
 	if (prec)
-		printf(")");
+		nft_print(octx, ")");
 }
 
 static bool must_print_eq_op(const struct expr *expr)
@@ -534,9 +536,9 @@ static void binop_expr_print(const struct expr *expr, struct output_ctx *octx)
 
 	if (expr_op_symbols[expr->op] &&
 	    (expr->op != OP_EQ || must_print_eq_op(expr)))
-		printf(" %s ", expr_op_symbols[expr->op]);
+		nft_print(octx, " %s ", expr_op_symbols[expr->op]);
 	else
-		printf(" ");
+		nft_print(octx, " ");
 
 	binop_arg_print(expr, expr->right, octx);
 }
@@ -602,7 +604,7 @@ static void range_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	octx->numeric += NUMERIC_ALL + 1;
 	expr_print(expr->left, octx);
-	printf("-");
+	nft_print(octx, "-");
 	expr_print(expr->right, octx);
 	octx->numeric -= NUMERIC_ALL + 1;
 }
@@ -682,7 +684,7 @@ static void compound_expr_print(const struct expr *expr, const char *delim,
 	const char *d = "";
 
 	list_for_each_entry(i, &expr->expressions, list) {
-		printf("%s", d);
+		nft_print(octx, "%s", d);
 		expr_print(i, octx);
 		d = delim;
 	}
@@ -793,16 +795,16 @@ static void set_expr_print(const struct expr *expr, struct output_ctx *octx)
 	const char *d = "";
 	int count = 0;
 
-	printf("{ ");
+	nft_print(octx, "{ ");
 
 	list_for_each_entry(i, &expr->expressions, list) {
-		printf("%s", d);
+		nft_print(octx, "%s", d);
 		expr_print(i, octx);
 		count++;
 		d = calculate_delim(expr, &count);
 	}
 
-	printf(" }");
+	nft_print(octx, " }");
 }
 
 static void set_expr_set_type(const struct expr *expr,
@@ -840,7 +842,7 @@ struct expr *set_expr_alloc(const struct location *loc, const struct set *set)
 static void mapping_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	expr_print(expr->left, octx);
-	printf(" : ");
+	nft_print(octx, " : ");
 	expr_print(expr->right, octx);
 }
 
@@ -889,9 +891,9 @@ static void map_expr_print(const struct expr *expr, struct output_ctx *octx)
 	expr_print(expr->map, octx);
 	if (expr->mappings->ops->type == EXPR_SET_REF &&
 	    expr->mappings->set->datatype->type == TYPE_VERDICT)
-		printf(" vmap ");
+		nft_print(octx, " vmap ");
 	else
-		printf(" map ");
+		nft_print(octx, " map ");
 	expr_print(expr->mappings, octx);
 }
 
@@ -930,11 +932,11 @@ static void set_ref_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	if (expr->set->flags & NFT_SET_ANONYMOUS) {
 		if (expr->set->flags & NFT_SET_EVAL)
-			printf("table %s", expr->set->handle.set);
+			nft_print(octx, "table %s", expr->set->handle.set);
 		else
 			expr_print(expr->set->init, octx);
 	} else {
-		printf("@%s", expr->set->handle.set);
+		nft_print(octx, "@%s", expr->set->handle.set);
 	}
 }
 
@@ -971,18 +973,18 @@ static void set_elem_expr_print(const struct expr *expr,
 {
 	expr_print(expr->key, octx);
 	if (expr->timeout) {
-		printf(" timeout ");
-		time_print(expr->timeout / 1000);
+		nft_print(octx, " timeout ");
+		time_print(expr->timeout / 1000, octx);
 	}
 	if (!octx->stateless && expr->expiration) {
-		printf(" expires ");
-		time_print(expr->expiration / 1000);
+		nft_print(octx, " expires ");
+		time_print(expr->expiration / 1000, octx);
 	}
 	if (expr->comment)
-		printf(" comment \"%s\"", expr->comment);
+		nft_print(octx, " comment \"%s\"", expr->comment);
 
 	if (expr->stmt) {
-		printf(" : ");
+		nft_print(octx, " : ");
 		stmt_print(expr->stmt, octx);
 	}
 }

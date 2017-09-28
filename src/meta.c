@@ -54,13 +54,15 @@ static void tchandle_type_print(const struct expr *expr,
 
 	switch(handle) {
 	case TC_H_ROOT:
-		printf("root");
+		nft_print(octx, "root");
 		break;
 	case TC_H_UNSPEC:
-		printf("none");
+		nft_print(octx, "none");
 		break;
 	default:
-		printf("%0x:%0x", TC_H_MAJ(handle) >> 16, TC_H_MIN(handle));
+		nft_print(octx, "%0x:%0x",
+			  TC_H_MAJ(handle) >> 16,
+			  TC_H_MIN(handle));
 		break;
 	}
 }
@@ -134,9 +136,9 @@ static void ifindex_type_print(const struct expr *expr, struct output_ctx *octx)
 
 	ifindex = mpz_get_uint32(expr->value);
 	if (nft_if_indextoname(ifindex, name))
-		printf("\"%s\"", name);
+		nft_print(octx, "\"%s\"", name);
 	else
-		printf("%d", ifindex);
+		nft_print(octx, "%d", ifindex);
 }
 
 static struct error_record *ifindex_type_parse(const struct expr *sym,
@@ -209,9 +211,9 @@ static void uid_type_print(const struct expr *expr, struct output_ctx *octx)
 
 		pw = getpwuid(uid);
 		if (pw != NULL)
-			printf("\"%s\"", pw->pw_name);
+			nft_print(octx, "\"%s\"", pw->pw_name);
 		else
-			printf("%d", uid);
+			nft_print(octx, "%d", uid);
 		return;
 	}
 	expr_basetype(expr)->print(expr, octx);
@@ -261,9 +263,9 @@ static void gid_type_print(const struct expr *expr, struct output_ctx *octx)
 
 		gr = getgrgid(gid);
 		if (gr != NULL)
-			printf("\"%s\"", gr->gr_name);
+			nft_print(octx, "\"%s\"", gr->gr_name);
 		else
-			printf("%u", gid);
+			nft_print(octx, "%u", gid);
 		return;
 	}
 	expr_basetype(expr)->print(expr, octx);
@@ -446,9 +448,11 @@ static bool meta_key_is_qualified(enum nft_meta_keys key)
 static void meta_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	if (meta_key_is_qualified(expr->meta.key))
-		printf("meta %s", meta_templates[expr->meta.key].token);
+		nft_print(octx, "meta %s",
+			  meta_templates[expr->meta.key].token);
 	else
-		printf("%s", meta_templates[expr->meta.key].token);
+		nft_print(octx, "%s",
+			  meta_templates[expr->meta.key].token);
 }
 
 static bool meta_expr_cmp(const struct expr *e1, const struct expr *e2)
@@ -573,9 +577,11 @@ struct expr *meta_expr_alloc(const struct location *loc, enum nft_meta_keys key)
 static void meta_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	if (meta_key_is_qualified(stmt->meta.key))
-		printf("meta %s set ", meta_templates[stmt->meta.key].token);
+		nft_print(octx, "meta %s set ",
+			  meta_templates[stmt->meta.key].token);
 	else
-		printf("%s set ", meta_templates[stmt->meta.key].token);
+		nft_print(octx, "%s set ",
+			  meta_templates[stmt->meta.key].token);
 
 	expr_print(stmt->meta.expr, octx);
 }

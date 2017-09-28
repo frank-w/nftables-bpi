@@ -316,6 +316,15 @@ static void nft_ctx_free(const struct nft_ctx *ctx)
 	nft_exit();
 }
 
+static FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp)
+{
+	FILE *old = ctx->output.output_fp;
+
+	ctx->output.output_fp = fp;
+
+	return old;
+}
+
 static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
 				   char *buf, size_t buflen)
 {
@@ -324,7 +333,8 @@ static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
 	LIST_HEAD(msgs);
 	void *scanner;
 
-	parser_init(nft->nf_sock, &nft->cache, &state, &msgs, nft->debug_mask);
+	parser_init(nft->nf_sock, &nft->cache, &state,
+		    &msgs, nft->debug_mask, &nft->output);
 	scanner = scanner_init(&state);
 	scanner_push_buffer(scanner, &indesc_cmdline, buf);
 
@@ -345,11 +355,12 @@ static int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	int rc;
 
 	rc = cache_update(nft->nf_sock, &nft->cache, CMD_INVALID, &msgs,
-			  nft->debug_mask);
+			  nft->debug_mask, &nft->output);
 	if (rc < 0)
 		return NFT_EXIT_FAILURE;
 
-	parser_init(nft->nf_sock, &nft->cache, &state, &msgs, nft->debug_mask);
+	parser_init(nft->nf_sock, &nft->cache, &state,
+		    &msgs, nft->debug_mask, &nft->output);
 	scanner = scanner_init(&state);
 	if (scanner_read_file(scanner, filename, &internal_location) < 0) {
 		rc = NFT_EXIT_FAILURE;
@@ -365,6 +376,37 @@ err:
 	return rc;
 }
 
+int nft_print(struct output_ctx *octx, const char *fmt, ...)
+{
+	int ret;
+	va_list arg;
+
+	if (!octx->output_fp)
+		return -1;
+
+	va_start(arg, fmt);
+	ret = vfprintf(octx->output_fp, fmt, arg);
+	va_end(arg);
+	fflush(octx->output_fp);
+
+	return ret;
+}
+
+int nft_gmp_print(struct output_ctx *octx, const char *fmt, ...)
+{
+	int ret;
+	va_list arg;
+
+	if (!octx->output_fp)
+		return -1;
+
+	va_start(arg, fmt);
+	ret = gmp_vfprintf(octx->output_fp, fmt, arg);
+	va_end(arg);
+
+	return ret;
+}
+
 int main(int argc, char * const *argv)
 {
 	char *buf = NULL, *filename = NULL;
@@ -372,8 +414,11 @@ int main(int argc, char * const *argv)
 	bool interactive = false;
 	struct parser_state state;
 	int i, val, rc;
+	FILE *outfp = fdopen(dup(STDOUT_FILENO), "w");
 
 	nft = nft_ctx_new(NFT_CTX_DEFAULT);
+	nft_ctx_set_output(nft, outfp);
+	close(STDOUT_FILENO);
 
 	while (1) {
 		val = getopt_long(argc, argv, OPTSTRING, options, NULL);

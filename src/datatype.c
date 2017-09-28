@@ -192,15 +192,15 @@ void symbolic_constant_print(const struct symbol_table *tbl,
 		return expr_basetype(expr)->print(expr, octx);
 
 	if (quotes)
-		printf("\"");
+		nft_print(octx, "\"");
 
 	if (octx->numeric > NUMERIC_ALL)
-		printf("%"PRIu64"", val);
+		nft_print(octx, "%" PRIu64 "", val);
 	else
-		printf("%s", s->identifier);
+		nft_print(octx, "%s", s->identifier);
 
 	if (quotes)
-		printf("\"");
+		nft_print(octx, "\"");
 }
 
 static void switch_byteorder(void *data, unsigned int len)
@@ -215,7 +215,8 @@ static void switch_byteorder(void *data, unsigned int len)
 
 void symbol_table_print(const struct symbol_table *tbl,
 			const struct datatype *dtype,
-			enum byteorder byteorder)
+			enum byteorder byteorder,
+			struct output_ctx *octx)
 {
 	const struct symbolic_constant *s;
 	unsigned int len = dtype->size / BITS_PER_BYTE;
@@ -228,16 +229,17 @@ void symbol_table_print(const struct symbol_table *tbl,
 			switch_byteorder(&value, len);
 
 		if (tbl->base == BASE_DECIMAL)
-			printf("\t%-30s\t%20"PRIu64"\n", s->identifier, value);
+			nft_print(octx, "\t%-30s\t%20" PRIu64 "\n",
+				  s->identifier, value);
 		else
-			printf("\t%-30s\t0x%.*" PRIx64 "\n",
-			       s->identifier, 2 * len, value);
+			nft_print(octx, "\t%-30s\t0x%.*" PRIx64 "\n",
+				  s->identifier, 2 * len, value);
 	}
 }
 
 static void invalid_type_print(const struct expr *expr, struct output_ctx *octx)
 {
-	gmp_printf("0x%Zx [invalid type]", expr->value);
+	nft_gmp_print(octx, "0x%Zx [invalid type]", expr->value);
 }
 
 const struct datatype invalid_type = {
@@ -251,30 +253,30 @@ static void verdict_type_print(const struct expr *expr, struct output_ctx *octx)
 {
 	switch (expr->verdict) {
 	case NFT_CONTINUE:
-		printf("continue");
+		nft_print(octx, "continue");
 		break;
 	case NFT_BREAK:
-		printf("break");
+		nft_print(octx, "break");
 		break;
 	case NFT_JUMP:
-		printf("jump %s", expr->chain);
+		nft_print(octx, "jump %s", expr->chain);
 		break;
 	case NFT_GOTO:
-		printf("goto %s", expr->chain);
+		nft_print(octx, "goto %s", expr->chain);
 		break;
 	case NFT_RETURN:
-		printf("return");
+		nft_print(octx, "return");
 		break;
 	default:
 		switch (expr->verdict & NF_VERDICT_MASK) {
 		case NF_ACCEPT:
-			printf("accept");
+			nft_print(octx, "accept");
 			break;
 		case NF_DROP:
-			printf("drop");
+			nft_print(octx, "drop");
 			break;
 		case NF_QUEUE:
-			printf("queue");
+			nft_print(octx, "queue");
 			break;
 		default:
 			BUG("invalid verdict value %u\n", expr->verdict);
@@ -327,7 +329,7 @@ static void integer_type_print(const struct expr *expr, struct output_ctx *octx)
 		}
 	} while ((dtype = dtype->basetype));
 
-	gmp_printf(fmt, expr->value);
+	nft_gmp_print(octx, fmt, expr->value);
 }
 
 static struct error_record *integer_type_parse(const struct expr *sym,
@@ -364,7 +366,7 @@ static void string_type_print(const struct expr *expr, struct output_ctx *octx)
 
 	mpz_export_data(data, expr->value, BYTEORDER_HOST_ENDIAN, len);
 	data[len] = '\0';
-	printf("\"%s\"", data);
+	nft_print(octx, "\"%s\"", data);
 }
 
 static struct error_record *string_type_parse(const struct expr *sym,
@@ -396,7 +398,7 @@ static void lladdr_type_print(const struct expr *expr, struct output_ctx *octx)
 	mpz_export_data(data, expr->value, BYTEORDER_BIG_ENDIAN, len);
 
 	for (i = 0; i < len; i++) {
-		printf("%s%.2x", delim, data[i]);
+		nft_print(octx, "%s%.2x", delim, data[i]);
 		delim = ":";
 	}
 }
@@ -449,7 +451,7 @@ static void ipaddr_type_print(const struct expr *expr, struct output_ctx *octx)
 		getnameinfo((struct sockaddr *)&sin, sizeof(sin), buf,
 			    sizeof(buf), NULL, 0, NI_NUMERICHOST);
 	}
-	printf("%s", buf);
+	nft_print(octx, "%s", buf);
 }
 
 static struct error_record *ipaddr_type_parse(const struct expr *sym,
@@ -507,7 +509,7 @@ static void ip6addr_type_print(const struct expr *expr, struct output_ctx *octx)
 		getnameinfo((struct sockaddr *)&sin6, sizeof(sin6), buf,
 			    sizeof(buf), NULL, 0, NI_NUMERICHOST);
 	}
-	printf("%s", buf);
+	nft_print(octx, "%s", buf);
 }
 
 static struct error_record *ip6addr_type_parse(const struct expr *sym,
@@ -557,7 +559,7 @@ static void inet_protocol_type_print(const struct expr *expr,
 	if (octx->numeric < NUMERIC_ALL) {
 		p = getprotobynumber(mpz_get_uint8(expr->value));
 		if (p != NULL) {
-			printf("%s", p->p_name);
+			nft_print(octx, "%s", p->p_name);
 			return;
 		}
 	}
@@ -821,7 +823,7 @@ const struct datatype icmpx_code_type = {
 	.sym_tbl	= &icmpx_code_tbl,
 };
 
-void time_print(uint64_t seconds)
+void time_print(uint64_t seconds, struct output_ctx *octx)
 {
 	uint64_t days, hours, minutes;
 
@@ -835,13 +837,13 @@ void time_print(uint64_t seconds)
 	seconds %= 60;
 
 	if (days > 0)
-		printf("%"PRIu64"d", days);
+		nft_print(octx, "%" PRIu64 "d", days);
 	if (hours > 0)
-		printf("%"PRIu64"h", hours);
+		nft_print(octx, "%" PRIu64 "h", hours);
 	if (minutes > 0)
-		printf("%"PRIu64"m", minutes);
+		nft_print(octx, "%" PRIu64 "m", minutes);
 	if (seconds > 0)
-		printf("%"PRIu64"s", seconds);
+		nft_print(octx, "%" PRIu64 "s", seconds);
 }
 
 enum {
@@ -933,7 +935,7 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 
 static void time_type_print(const struct expr *expr, struct output_ctx *octx)
 {
-	time_print(mpz_get_uint64(expr->value) / MSEC_PER_SEC);
+	time_print(mpz_get_uint64(expr->value) / MSEC_PER_SEC, octx);
 }
 
 static struct error_record *time_type_parse(const struct expr *sym,

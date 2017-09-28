@@ -109,20 +109,20 @@ struct stmt *verdict_stmt_alloc(const struct location *loc, struct expr *expr)
 
 static void flow_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("flow ");
+	nft_print(octx, "flow ");
 	if (stmt->flow.set) {
 		expr_print(stmt->flow.set, octx);
-		printf(" ");
+		nft_print(octx, " ");
 	}
-	printf("{ ");
+	nft_print(octx, "{ ");
 	expr_print(stmt->flow.key, octx);
-	printf(" ");
+	nft_print(octx, " ");
 
 	octx->stateless++;
 	stmt_print(stmt->flow.stmt, octx);
 	octx->stateless--;
 
-	printf("} ");
+	nft_print(octx, "} ");
 
 }
 
@@ -147,13 +147,13 @@ struct stmt *flow_stmt_alloc(const struct location *loc)
 
 static void counter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("counter");
+	nft_print(octx, "counter");
 
 	if (octx->stateless)
 		return;
 
-	printf(" packets %" PRIu64 " bytes %" PRIu64,
-	       stmt->counter.packets, stmt->counter.bytes);
+	nft_print(octx, " packets %" PRIu64 " bytes %" PRIu64,
+		  stmt->counter.packets, stmt->counter.bytes);
 }
 
 static const struct stmt_ops counter_stmt_ops = {
@@ -190,10 +190,11 @@ static void objref_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	switch (stmt->objref.type) {
 	case NFT_OBJECT_CT_HELPER:
-		printf("ct helper set ");
+		nft_print(octx, "ct helper set ");
 		break;
 	default:
-		printf("%s name ", objref_type_name(stmt->objref.type));
+		nft_print(octx, "%s name ",
+			  objref_type_name(stmt->objref.type));
 		break;
 	}
 	expr_print(stmt->objref.expr, octx);
@@ -234,39 +235,40 @@ static const char *log_level(uint32_t level)
 
 static void log_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("log");
+	nft_print(octx, "log");
 	if (stmt->log.flags & STMT_LOG_PREFIX)
-		printf(" prefix \"%s\"", stmt->log.prefix);
+		nft_print(octx, " prefix \"%s\"", stmt->log.prefix);
 	if (stmt->log.flags & STMT_LOG_GROUP)
-		printf(" group %u", stmt->log.group);
+		nft_print(octx, " group %u", stmt->log.group);
 	if (stmt->log.flags & STMT_LOG_SNAPLEN)
-		printf(" snaplen %u", stmt->log.snaplen);
+		nft_print(octx, " snaplen %u", stmt->log.snaplen);
 	if (stmt->log.flags & STMT_LOG_QTHRESHOLD)
-		printf(" queue-threshold %u", stmt->log.qthreshold);
+		nft_print(octx, " queue-threshold %u", stmt->log.qthreshold);
 	if ((stmt->log.flags & STMT_LOG_LEVEL) &&
 	    stmt->log.level != LOG_WARNING)
-		printf(" level %s", log_level(stmt->log.level));
+		nft_print(octx, " level %s", log_level(stmt->log.level));
 
 	if ((stmt->log.logflags & NF_LOG_MASK) == NF_LOG_MASK) {
-		printf(" flags all");
+		nft_print(octx, " flags all");
 	} else {
 		if (stmt->log.logflags & (NF_LOG_TCPSEQ | NF_LOG_TCPOPT)) {
 			const char *delim = " ";
 
-			printf(" flags tcp");
+			nft_print(octx, " flags tcp");
 			if (stmt->log.logflags & NF_LOG_TCPSEQ) {
-				printf(" sequence");
+				nft_print(octx, " sequence");
 				delim = ",";
 			}
 			if (stmt->log.logflags & NF_LOG_TCPOPT)
-				printf("%soptions", delim);
+				nft_print(octx, "%soptions",
+							delim);
 		}
 		if (stmt->log.logflags & NF_LOG_IPOPT)
-			printf(" flags ip options");
+			nft_print(octx, " flags ip options");
 		if (stmt->log.logflags & NF_LOG_UID)
-			printf(" flags skuid");
+			nft_print(octx, " flags skuid");
 		if (stmt->log.logflags & NF_LOG_MACDECODE)
-			printf(" flags ether");
+			nft_print(octx, " flags ether");
 	}
 }
 
@@ -329,23 +331,25 @@ static void limit_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 
 	switch (stmt->limit.type) {
 	case NFT_LIMIT_PKTS:
-		printf("limit rate %s%" PRIu64 "/%s",
-		       inv ? "over " : "", stmt->limit.rate,
-		       get_unit(stmt->limit.unit));
+		nft_print(octx, "limit rate %s%" PRIu64 "/%s",
+			  inv ? "over " : "", stmt->limit.rate,
+			  get_unit(stmt->limit.unit));
 		if (stmt->limit.burst > 0)
-			printf(" burst %u packets", stmt->limit.burst);
+			nft_print(octx, " burst %u packets",
+				  stmt->limit.burst);
 		break;
 	case NFT_LIMIT_PKT_BYTES:
 		data_unit = get_rate(stmt->limit.rate, &rate);
 
-		printf("limit rate %s%" PRIu64 " %s/%s",
-		       inv ? "over " : "", rate, data_unit,
-		       get_unit(stmt->limit.unit));
+		nft_print(octx,	"limit rate %s%" PRIu64 " %s/%s",
+			  inv ? "over " : "", rate, data_unit,
+			  get_unit(stmt->limit.unit));
 		if (stmt->limit.burst > 0) {
 			uint64_t burst;
 
 			data_unit = get_rate(stmt->limit.burst, &burst);
-			printf(" burst %"PRIu64" %s", burst, data_unit);
+			nft_print(octx, " burst %" PRIu64 " %s", burst,
+				  data_unit);
 		}
 		break;
 	}
@@ -370,17 +374,17 @@ static void queue_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	const char *delim = " ";
 
-	printf("queue");
+	nft_print(octx, "queue");
 	if (stmt->queue.queue != NULL) {
-		printf(" num ");
+		nft_print(octx, " num ");
 		expr_print(stmt->queue.queue, octx);
 	}
 	if (stmt->queue.flags & NFT_QUEUE_FLAG_BYPASS) {
-		printf("%sbypass", delim);
+		nft_print(octx, "%sbypass", delim);
 		delim = ",";
 	}
 	if (stmt->queue.flags & NFT_QUEUE_FLAG_CPU_FANOUT)
-		printf("%sfanout", delim);
+		nft_print(octx, "%sfanout", delim);
 
 }
 
@@ -402,12 +406,12 @@ static void quota_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	uint64_t bytes, used;
 
 	data_unit = get_rate(stmt->quota.bytes, &bytes);
-	printf("quota %s%"PRIu64" %s",
-	       inv ? "over " : "", bytes, data_unit);
+	nft_print(octx, "quota %s%" PRIu64 " %s",
+		  inv ? "over " : "", bytes, data_unit);
 
 	if (!octx->stateless && stmt->quota.used) {
 		data_unit = get_rate(stmt->quota.used, &used);
-		printf(" used %"PRIu64" %s", used, data_unit);
+		nft_print(octx, " used %" PRIu64 " %s", used, data_unit);
 	}
 }
 
@@ -428,15 +432,15 @@ struct stmt *quota_stmt_alloc(const struct location *loc)
 
 static void reject_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("reject");
+	nft_print(octx, "reject");
 	switch (stmt->reject.type) {
 	case NFT_REJECT_TCP_RST:
-		printf(" with tcp reset");
+		nft_print(octx, " with tcp reset");
 		break;
 	case NFT_REJECT_ICMPX_UNREACH:
 		if (stmt->reject.icmp_code == NFT_REJECT_ICMPX_PORT_UNREACH)
 			break;
-		printf(" with icmpx type ");
+		nft_print(octx, " with icmpx type ");
 		expr_print(stmt->reject.expr, octx);
 		break;
 	case NFT_REJECT_ICMP_UNREACH:
@@ -444,13 +448,13 @@ static void reject_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 		case NFPROTO_IPV4:
 			if (stmt->reject.icmp_code == ICMP_PORT_UNREACH)
 				break;
-			printf(" with icmp type ");
+			nft_print(octx, " with icmp type ");
 			expr_print(stmt->reject.expr, octx);
 			break;
 		case NFPROTO_IPV6:
 			if (stmt->reject.icmp_code == ICMP6_DST_UNREACH_NOPORT)
 				break;
-			printf(" with icmpv6 type ");
+			nft_print(octx, " with icmpv6 type ");
 			expr_print(stmt->reject.expr, octx);
 			break;
 		}
@@ -469,7 +473,7 @@ struct stmt *reject_stmt_alloc(const struct location *loc)
 	return stmt_alloc(loc, &reject_stmt_ops);
 }
 
-static void print_nf_nat_flags(uint32_t flags)
+static void print_nf_nat_flags(uint32_t flags, struct output_ctx *octx)
 {
 	const char *delim = " ";
 
@@ -477,17 +481,17 @@ static void print_nf_nat_flags(uint32_t flags)
 		return;
 
 	if (flags & NF_NAT_RANGE_PROTO_RANDOM) {
-		printf("%srandom", delim);
+		nft_print(octx, "%srandom", delim);
 		delim = ",";
 	}
 
 	if (flags & NF_NAT_RANGE_PROTO_RANDOM_FULLY) {
-		printf("%sfully-random", delim);
+		nft_print(octx, "%sfully-random", delim);
 		delim = ",";
 	}
 
 	if (flags & NF_NAT_RANGE_PERSISTENT)
-		printf("%spersistent", delim);
+		nft_print(octx, "%spersistent", delim);
 }
 
 static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
@@ -497,21 +501,21 @@ static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 		[NFT_NAT_DNAT]	= "dnat",
 	};
 
-	printf("%s to ", nat_types[stmt->nat.type]);
+	nft_print(octx, "%s to ", nat_types[stmt->nat.type]);
 	if (stmt->nat.addr) {
 		if (stmt->nat.proto) {
 			if (stmt->nat.addr->ops->type == EXPR_VALUE &&
 			    stmt->nat.addr->dtype->type == TYPE_IP6ADDR) {
-				printf("[");
+				nft_print(octx, "[");
 				expr_print(stmt->nat.addr, octx);
-				printf("]");
+				nft_print(octx, "]");
 			} else if (stmt->nat.addr->ops->type == EXPR_RANGE &&
 				   stmt->nat.addr->left->dtype->type == TYPE_IP6ADDR) {
-				printf("[");
+				nft_print(octx, "[");
 				expr_print(stmt->nat.addr->left, octx);
-				printf("]-[");
+				nft_print(octx, "]-[");
 				expr_print(stmt->nat.addr->right, octx);
-				printf("]");
+				nft_print(octx, "]");
 			} else {
 				expr_print(stmt->nat.addr, octx);
 			}
@@ -521,11 +525,11 @@ static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	}
 
 	if (stmt->nat.proto) {
-		printf(":");
+		nft_print(octx, ":");
 		expr_print(stmt->nat.proto, octx);
 	}
 
-	print_nf_nat_flags(stmt->nat.flags);
+	print_nf_nat_flags(stmt->nat.flags, octx);
 }
 
 static void nat_stmt_destroy(struct stmt *stmt)
@@ -548,14 +552,14 @@ struct stmt *nat_stmt_alloc(const struct location *loc)
 
 static void masq_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("masquerade");
+	nft_print(octx, "masquerade");
 
 	if (stmt->masq.proto) {
-		printf(" to :");
+		nft_print(octx, " to :");
 		expr_print(stmt->masq.proto, octx);
 	}
 
-	print_nf_nat_flags(stmt->masq.flags);
+	print_nf_nat_flags(stmt->masq.flags, octx);
 }
 
 static void masq_stmt_destroy(struct stmt *stmt)
@@ -577,14 +581,14 @@ struct stmt *masq_stmt_alloc(const struct location *loc)
 
 static void redir_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("redirect");
+	nft_print(octx, "redirect");
 
 	if (stmt->redir.proto) {
-		printf(" to :");
+		nft_print(octx, " to :");
 		expr_print(stmt->redir.proto, octx);
 	}
 
-	print_nf_nat_flags(stmt->redir.flags);
+	print_nf_nat_flags(stmt->redir.flags, octx);
 }
 
 static void redir_stmt_destroy(struct stmt *stmt)
@@ -611,9 +615,9 @@ static const char * const set_stmt_op_names[] = {
 
 static void set_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("set %s ", set_stmt_op_names[stmt->set.op]);
+	nft_print(octx, "set %s ", set_stmt_op_names[stmt->set.op]);
 	expr_print(stmt->set.key, octx);
-	printf(" ");
+	nft_print(octx, " ");
 	expr_print(stmt->set.set, octx);
 }
 
@@ -637,13 +641,13 @@ struct stmt *set_stmt_alloc(const struct location *loc)
 
 static void dup_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("dup");
+	nft_print(octx, "dup");
 	if (stmt->dup.to != NULL) {
-		printf(" to ");
+		nft_print(octx, " to ");
 		expr_print(stmt->dup.to, octx);
 
 		if (stmt->dup.dev != NULL) {
-			printf(" device ");
+			nft_print(octx, " device ");
 			expr_print(stmt->dup.dev, octx);
 		}
 	}
@@ -669,7 +673,7 @@ struct stmt *dup_stmt_alloc(const struct location *loc)
 
 static void fwd_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	printf("fwd to ");
+	nft_print(octx, "fwd to ");
 	expr_print(stmt->fwd.to, octx);
 }
 

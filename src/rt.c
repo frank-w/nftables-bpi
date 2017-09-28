@@ -82,7 +82,7 @@ static const struct rt_template rt_templates[] = {
 
 static void rt_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	printf("rt %s", rt_templates[expr->rt.key].token);
+	nft_print(octx, "rt %s", rt_templates[expr->rt.key].token);
 }
 
 static bool rt_expr_cmp(const struct expr *e1, const struct expr *e2)

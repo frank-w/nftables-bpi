@@ -32,18 +32,19 @@ static void exthdr_expr_print(const struct expr *expr, struct output_ctx *octx)
 		 */
 		unsigned int offset = expr->exthdr.offset / 64;
 
-		printf("tcp option %s", expr->exthdr.desc->name);
+		nft_print(octx, "tcp option %s", expr->exthdr.desc->name);
 		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
 			return;
 		if (offset)
-			printf("%d", offset);
-		printf(" %s", expr->exthdr.tmpl->token);
+			nft_print(octx, "%d", offset);
+		nft_print(octx, " %s", expr->exthdr.tmpl->token);
 	} else {
 		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
-			printf("exthdr %s", expr->exthdr.desc->name);
+			nft_print(octx, "exthdr %s", expr->exthdr.desc->name);
 		else {
-			printf("%s %s", expr->exthdr.desc ? expr->exthdr.desc->name : "unknown-exthdr",
-					expr->exthdr.tmpl->token);
+			nft_print(octx, "%s %s",
+				  expr->exthdr.desc ? expr->exthdr.desc->name : "unknown-exthdr",
+				  expr->exthdr.tmpl->token);
 		}
 	}
 }
@@ -98,7 +99,7 @@ struct expr *exthdr_expr_alloc(const struct location *loc,
 static void exthdr_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	expr_print(stmt->exthdr.expr, octx);
-	printf(" set ");
+	nft_print(octx, " set ");
 	expr_print(stmt->exthdr.val, octx);
 }
 

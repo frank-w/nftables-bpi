@@ -30,6 +30,7 @@ struct output_ctx {
 	unsigned int ip2name;
 	unsigned int handle;
 	unsigned int echo;
+	FILE *output_fp;
 };
 
 struct nft_cache {
@@ -147,5 +148,10 @@ void mark_table_exit(void);
 void realm_table_meta_exit(void);
 void devgroup_table_exit(void);
 void realm_table_rt_exit(void);
+
+int nft_print(struct output_ctx *octx, const char *fmt, ...)
+	__attribute__((format(printf, 2, 3)));
+int nft_gmp_print(struct output_ctx *octx, const char *fmt, ...)
+	__attribute__((format(printf, 2, 0)));
 
 #endif /* NFTABLES_NFTABLES_H */

@@ -172,7 +172,8 @@ extern struct chain *chain_lookup(const struct table *table,
 
 extern const char *family2str(unsigned int family);
 extern const char *hooknum2str(unsigned int family, unsigned int hooknum);
-extern void chain_print_plain(const struct chain *chain);
+extern void chain_print_plain(const struct chain *chain,
+			      struct output_ctx *octx);
 
 /**
  * struct rule - nftables rule
@@ -493,6 +494,7 @@ struct eval_ctx {
 	struct set		*set;
 	struct stmt		*stmt;
 	struct nft_cache	*cache;
+	struct output_ctx	*octx;
 	unsigned int		debug_mask;
 	struct expr_ctx		ectx;
 	struct proto_ctx	pctx;
@@ -506,7 +508,8 @@ struct netlink_ctx;
 extern int do_command(struct netlink_ctx *ctx, struct cmd *cmd);
 
 extern int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
-			 enum cmd_ops cmd, struct list_head *msgs, bool debug);
+			enum cmd_ops cmd, struct list_head *msgs, bool debug,
+			struct output_ctx *octx);
 extern void cache_flush(struct list_head *table_list);
 extern void cache_release(struct nft_cache *cache);
 

@@ -46,11 +46,11 @@ static void payload_expr_print(const struct expr *expr, struct output_ctx *octx)
 	desc = expr->payload.desc;
 	tmpl = expr->payload.tmpl;
 	if (payload_is_known(expr))
-		printf("%s %s", desc->name, tmpl->token);
+		nft_print(octx, "%s %s", desc->name, tmpl->token);
 	else
-		printf("payload @%s,%u,%u",
-		       proto_base_tokens[expr->payload.base],
-		       expr->payload.offset, expr->len);
+		nft_print(octx, "payload @%s,%u,%u",
+			  proto_base_tokens[expr->payload.base],
+			  expr->payload.offset, expr->len);
 }
 
 static bool payload_expr_cmp(const struct expr *e1, const struct expr *e2)
@@ -187,7 +187,7 @@ unsigned int payload_hdr_field(const struct expr *expr)
 static void payload_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	expr_print(stmt->payload.expr, octx);
-	printf(" set ");
+	nft_print(octx, " set ");
 	expr_print(stmt->payload.val, octx);
 }
 

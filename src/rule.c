@@ -128,16 +128,15 @@ static int cache_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 	struct handle handle = {
 		.family = NFPROTO_UNSPEC,
 	};
-	struct netlink_ctx ctx;
+	struct netlink_ctx ctx = {
+		.list		= LIST_HEAD_INIT(ctx.list),
+		.nf_sock	= nf_sock,
+		.cache		= cache,
+		.msgs		= msgs,
+		.seqnum		= cache->seqnum++,
+		.debug_mask	= debug_mask,
+	};
 	int ret;
-
-	memset(&ctx, 0, sizeof(ctx));
-	init_list_head(&ctx.list);
-	ctx.nf_sock = nf_sock;
-	ctx.cache = cache;
-	ctx.msgs = msgs;
-	ctx.seqnum = cache->seqnum++;
-	ctx.debug_mask = debug_mask;
 
 	ret = cache_init_tables(&ctx, &handle, cache);
 	if (ret < 0)

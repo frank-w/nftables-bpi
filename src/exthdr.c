@@ -31,17 +31,13 @@ static void exthdr_expr_print(const struct expr *expr, struct output_ctx *octx)
 		 * multiplicator
 		 */
 		unsigned int offset = expr->exthdr.offset / 64;
-		char buf[9] = {0};
 
-		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT) {
-			printf("tcp option %s", expr->exthdr.desc->name);
+		printf("tcp option %s", expr->exthdr.desc->name);
+		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
 			return;
-		}
-
 		if (offset)
-			snprintf(buf, sizeof buf, "%d", offset);
-		printf("tcp option %s%s %s", expr->exthdr.desc->name, buf,
-					     expr->exthdr.tmpl->token);
+			printf("%d", offset);
+		printf(" %s", expr->exthdr.tmpl->token);
 	} else {
 		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
 			printf("exthdr %s", expr->exthdr.desc->name);

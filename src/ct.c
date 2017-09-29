@@ -347,8 +347,21 @@ struct expr *ct_expr_alloc(const struct location *loc, enum nft_ct_keys key,
 	expr->ct.nfproto = nfproto;
 
 	switch (key) {
+	case NFT_CT_SRC:
+	case NFT_CT_DST:
+		expr->ct.base = PROTO_BASE_NETWORK_HDR;
+		break;
+	case NFT_CT_PROTO_SRC:
+	case NFT_CT_PROTO_DST:
+		expr->ct.base = PROTO_BASE_TRANSPORT_HDR;
+		break;
 	case NFT_CT_PROTOCOL:
 		expr->flags = EXPR_F_PROTOCOL;
+		expr->ct.base = PROTO_BASE_NETWORK_HDR;
+		break;
+	case NFT_CT_L3PROTOCOL:
+		expr->flags = EXPR_F_PROTOCOL;
+		expr->ct.base = PROTO_BASE_LL_HDR;
 		break;
 	default:
 		break;

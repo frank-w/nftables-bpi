@@ -82,7 +82,20 @@ static const struct rt_template rt_templates[] = {
 
 static void rt_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	nft_print(octx, "rt %s", rt_templates[expr->rt.key].token);
+	const char *ip = "";
+
+	switch (expr->rt.key) {
+	case NFT_RT_NEXTHOP4:
+		ip = "ip ";
+		break;
+	case NFT_RT_NEXTHOP6:
+		ip = "ip6 ";
+		break;
+	default:
+		break;
+	}
+
+	nft_print(octx, "rt %s%s", ip, rt_templates[expr->rt.key].token);
 }
 
 static bool rt_expr_cmp(const struct expr *e1, const struct expr *e2)

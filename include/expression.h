@@ -300,7 +300,9 @@ struct expr {
 		struct {
 			/* EXPR_CT */
 			enum nft_ct_keys	key;
+			enum proto_bases	base;
 			int8_t			direction;
+			uint8_t			nfproto;
 		} ct;
 		struct {
 			/* EXPR_NUMGEN */

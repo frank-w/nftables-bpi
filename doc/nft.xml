@@ -608,7 +608,6 @@ filter input iif $int_ifs accept
 			hybrid IPv4/IPv6 tables.  The <literal>meta</literal> expression <literal>nfproto</literal>
 			keyword can be used to test which family (ipv4 or ipv6) context the packet is being processed in.
 
-
 			When no address family is specified, <literal>ip</literal> is used by default.
 		</para>
 
@@ -2905,8 +2904,8 @@ filter output rt classid 10
 # IP family dependent rt expressions
 ip filter output rt nexthop 192.168.0.1
 ip6 filter output rt nexthop fd00::1
-inet filter meta nfproto ipv4 output rt nexthop 192.168.0.1
-inet filter meta nfproto ipv6 output rt nexthop fd00::1
+inet filter output rt ip nexthop 192.168.0.1
+inet filter output rt ip6 nexthop fd00::1
 					</programlisting>
 				</example>
 			</para>
@@ -4025,8 +4024,6 @@ ip6 filter input frag more-fragments 1 counter
 					<group choice="req">
 						<arg>l3proto</arg>
 						<arg>protocol</arg>
-						<arg>saddr</arg>
-						<arg>daddr</arg>
 						<arg>proto-src</arg>
 						<arg>proto-dst</arg>
 						<arg>bytes</arg>
@@ -4035,6 +4032,22 @@ ip6 filter input frag more-fragments 1 counter
 						<arg>zone</arg>
 					</group>
 				</cmdsynopsis>
+				<cmdsynopsis>
+					<command>ct</command>
+					<group choice="req">
+						<arg>original</arg>
+						<arg>reply</arg>
+					</group>
+					<group choice="req">
+						<arg>ip</arg>
+						<arg>ip6</arg>
+					</group>
+					<group choice="req">
+						<arg>saddr</arg>
+						<arg>daddr</arg>
+					</group>
+				</cmdsynopsis>
+
 			</para>
 			<para>
 				<table frame="all">

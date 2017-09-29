@@ -716,7 +716,7 @@ static void netlink_parse_ct_expr(struct netlink_parse_ctx *ctx,
 		dir = nftnl_expr_get_u8(nle, NFTNL_EXPR_CT_DIR);
 
 	key  = nftnl_expr_get_u32(nle, NFTNL_EXPR_CT_KEY);
-	expr = ct_expr_alloc(loc, key, dir);
+	expr = ct_expr_alloc(loc, key, dir, NFPROTO_UNSPEC);
 
 	dreg = netlink_parse_register(nle, NFTNL_EXPR_CT_DREG);
 	netlink_set_register(ctx, dreg, expr);
@@ -1385,12 +1385,29 @@ static void payload_match_postprocess(struct rule_pp_ctx *ctx,
 	}
 }
 
-static void ct_meta_common_postprocess(const struct expr *expr)
+static void ct_meta_common_postprocess(struct rule_pp_ctx *ctx,
+				       const struct expr *expr,
+				       enum proto_bases base)
 {
 	const struct expr *left = expr->left;
 	struct expr *right = expr->right;
 
 	switch (expr->op) {
+	case OP_EQ:
+		if (expr->right->ops->type == EXPR_RANGE)
+			break;
+
+		expr->left->ops->pctx_update(&ctx->pctx, expr);
+
+		if (ctx->pdctx.pbase == PROTO_BASE_INVALID &&
+		    left->flags & EXPR_F_PROTOCOL) {
+			payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
+		} else if (ctx->pdctx.pbase < PROTO_BASE_TRANSPORT_HDR) {
+			__payload_dependency_kill(&ctx->pdctx, base);
+			if (left->flags & EXPR_F_PROTOCOL)
+				payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
+		}
+		break;
 	case OP_NEQ:
 		if (right->ops->type != EXPR_SET && right->ops->type != EXPR_SET_REF)
 			break;
@@ -1406,40 +1423,17 @@ static void ct_meta_common_postprocess(const struct expr *expr)
 static void meta_match_postprocess(struct rule_pp_ctx *ctx,
 				   const struct expr *expr)
 {
-	struct expr *left = expr->left;
+	const struct expr *left = expr->left;
 
-	switch (expr->op) {
-	case OP_EQ:
-		if (expr->right->ops->type == EXPR_RANGE)
-			break;
-
-		expr->left->ops->pctx_update(&ctx->pctx, expr);
-
-		if (ctx->pdctx.pbase == PROTO_BASE_INVALID &&
-		    left->flags & EXPR_F_PROTOCOL)
-			payload_dependency_store(&ctx->pdctx, ctx->stmt,
-						 left->meta.base);
-		break;
-	default:
-		ct_meta_common_postprocess(expr);
-		break;
-	}
+	ct_meta_common_postprocess(ctx, expr, left->meta.base);
 }
 
 static void ct_match_postprocess(struct rule_pp_ctx *ctx,
 				 const struct expr *expr)
 {
-	switch (expr->op) {
-	case OP_EQ:
-		if (expr->right->ops->type == EXPR_RANGE)
-			break;
+	const struct expr *left = expr->left;
 
-		expr->left->ops->pctx_update(&ctx->pctx, expr);
-		break;
-	default:
-		ct_meta_common_postprocess(expr);
-		break;
-	}
+	ct_meta_common_postprocess(ctx, expr, left->ct.base);
 }
 
 /* Convert a bitmask to a prefix length */

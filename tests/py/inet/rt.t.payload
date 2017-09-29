@@ -5,10 +5,8 @@ inet test-inet output
   [ rt load nexthop4 => reg 1 ]
   [ cmp eq reg 1 0x0100a8c0 ]
 
-# meta nfproto ipv6 rt nexthop fd00::1
+# rt ip6 nexthop fd00::1
 inet test-inet output
-  [ meta load nfproto => reg 1 ]
-  [ cmp eq reg 1 0x0000000a ]
   [ rt load nexthop6 => reg 1 ]
   [ cmp eq reg 1 0x000000fd 0x00000000 0x00000000 0x01000000 ]
 

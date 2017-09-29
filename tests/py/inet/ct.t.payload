@@ -5,9 +5,9 @@ ip test-ip4 output
   [ ct load src => reg 1 , dir original ]
   [ cmp eq reg 1 0x04030201 ]
 
-# meta nfproto ipv6 ct original saddr ::1
+# ct original ip6 saddr ::1
 inet test-inet input
-  [ meta load nfproto => reg 1 ]
+  [ ct load l3protocol => reg 1 , dir original ]
   [ cmp eq reg 1 0x0000000a ]
   [ ct load src => reg 1 , dir original ]
   [ cmp eq reg 1 0x00000000 0x00000000 0x00000000 0x01000000 ]

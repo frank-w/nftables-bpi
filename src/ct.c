@@ -16,6 +16,8 @@
 #include <inttypes.h>
 #include <string.h>
 
+#include <netinet/ip.h>
+#include <linux/netfilter.h>
 #include <linux/netfilter/nf_tables.h>
 #include <linux/netfilter/nf_conntrack_common.h>
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
@@ -269,9 +271,11 @@ static const struct ct_template ct_templates[] = {
 					      BYTEORDER_HOST_ENDIAN, 32),
 };
 
-static void ct_print(enum nft_ct_keys key, int8_t dir, struct output_ctx *octx)
+static void ct_print(enum nft_ct_keys key, int8_t dir, uint8_t nfproto,
+		     struct output_ctx *octx)
 {
 	const struct symbolic_constant *s;
+	const struct proto_desc *desc;
 
 	nft_print(octx, "ct ");
 	if (dir < 0)
@@ -283,13 +287,25 @@ static void ct_print(enum nft_ct_keys key, int8_t dir, struct output_ctx *octx)
 			break;
 		}
 	}
+
+	switch (key) {
+	case NFT_CT_SRC: /* fallthrough */
+	case NFT_CT_DST:
+		desc = proto_find_upper(&proto_inet, nfproto);
+		if (desc)
+			printf("%s ", desc->name);
+		break;
+	default:
+		break;
+	}
+
  done:
 	nft_print(octx, "%s", ct_templates[key].token);
 }
 
 static void ct_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	ct_print(expr->ct.key, expr->ct.direction, octx);
+	ct_print(expr->ct.key, expr->ct.direction, expr->ct.nfproto, octx);
 }
 
 static bool ct_expr_cmp(const struct expr *e1, const struct expr *e2)
@@ -308,21 +324,21 @@ static void ct_expr_clone(struct expr *new, const struct expr *expr)
 static void ct_expr_pctx_update(struct proto_ctx *ctx, const struct expr *expr)
 {
 	const struct expr *left = expr->left, *right = expr->right;
-	const struct proto_desc *base, *desc;
+	const struct proto_desc *base = NULL, *desc;
+	uint32_t nhproto;
 
 	assert(expr->op == OP_EQ);
 
-	switch (left->ct.key) {
-	case NFT_CT_PROTOCOL:
-		base = ctx->protocol[PROTO_BASE_NETWORK_HDR].desc;
-		desc = proto_find_upper(base, mpz_get_uint32(right->value));
+	nhproto = mpz_get_uint32(right->value);
 
-		proto_ctx_update(ctx, PROTO_BASE_TRANSPORT_HDR,
-				 &expr->location, desc);
-		break;
-	default:
-		break;
-	}
+	base = ctx->protocol[left->ct.base].desc;
+	if (!base)
+		return;
+	desc = proto_find_upper(base, nhproto);
+	if (!desc)
+		return;
+
+	proto_ctx_update(ctx, left->ct.base + 1, &expr->location, desc);
 }
 
 static const struct expr_ops ct_expr_ops = {
@@ -335,7 +351,7 @@ static const struct expr_ops ct_expr_ops = {
 };
 
 struct expr *ct_expr_alloc(const struct location *loc, enum nft_ct_keys key,
-			   int8_t direction)
+			   int8_t direction, uint8_t nfproto)
 {
 	const struct ct_template *tmpl = &ct_templates[key];
 	struct expr *expr;
@@ -344,10 +360,24 @@ struct expr *ct_expr_alloc(const struct location *loc, enum nft_ct_keys key,
 			  tmpl->byteorder, tmpl->len);
 	expr->ct.key = key;
 	expr->ct.direction = direction;
+	expr->ct.nfproto = nfproto;
 
 	switch (key) {
+	case NFT_CT_SRC:
+	case NFT_CT_DST:
+		expr->ct.base = PROTO_BASE_NETWORK_HDR;
+		break;
+	case NFT_CT_PROTO_SRC:
+	case NFT_CT_PROTO_DST:
+		expr->ct.base = PROTO_BASE_TRANSPORT_HDR;
+		break;
 	case NFT_CT_PROTOCOL:
 		expr->flags = EXPR_F_PROTOCOL;
+		expr->ct.base = PROTO_BASE_NETWORK_HDR;
+		break;
+	case NFT_CT_L3PROTOCOL:
+		expr->flags = EXPR_F_PROTOCOL;
+		expr->ct.base = PROTO_BASE_LL_HDR;
 		break;
 	default:
 		break;
@@ -360,20 +390,23 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 {
 	const struct proto_desc *desc;
 
+	desc = ctx->protocol[expr->ct.base].desc;
+
 	switch (expr->ct.key) {
 	case NFT_CT_SRC:
 	case NFT_CT_DST:
-		desc = ctx->protocol[PROTO_BASE_NETWORK_HDR].desc;
-		if (desc == &proto_ip)
+		if (desc == &proto_ip) {
 			expr->dtype = &ipaddr_type;
-		else if (desc == &proto_ip6)
+			expr->ct.nfproto = NFPROTO_IPV4;
+		} else if (desc == &proto_ip6) {
 			expr->dtype = &ip6addr_type;
+			expr->ct.nfproto = NFPROTO_IPV6;
+		}
 
 		expr->len = expr->dtype->size;
 		break;
 	case NFT_CT_PROTO_SRC:
 	case NFT_CT_PROTO_DST:
-		desc = ctx->protocol[PROTO_BASE_TRANSPORT_HDR].desc;
 		if (desc == NULL)
 			break;
 		expr->dtype = &inet_service_type;
@@ -385,7 +418,7 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 
 static void ct_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	ct_print(stmt->ct.key, stmt->ct.direction, octx);
+	ct_print(stmt->ct.key, stmt->ct.direction, 0, octx);
 	nft_print(octx, " set ");
 	expr_print(stmt->ct.expr, octx);
 }

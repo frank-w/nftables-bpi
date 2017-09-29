@@ -696,26 +696,84 @@ static int expr_evaluate_rt(struct eval_ctx *ctx, struct expr **expr)
 	return expr_evaluate_primary(ctx, expr);
 }
 
+static int ct_gen_nh_dependency(struct eval_ctx *ctx, struct expr *ct)
+{
+	const struct proto_desc *base, *base_now;
+	struct expr *left, *right, *dep;
+	struct stmt *nstmt = NULL;
+
+	base_now = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
+
+	switch (ct->ct.nfproto) {
+	case NFPROTO_IPV4:
+		base = &proto_ip;
+		break;
+	case NFPROTO_IPV6:
+		base = &proto_ip6;
+		break;
+	default:
+		base = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
+		if (base == &proto_ip)
+			ct->ct.nfproto = NFPROTO_IPV4;
+		else if (base == &proto_ip)
+			ct->ct.nfproto = NFPROTO_IPV6;
+
+		if (base)
+			break;
+
+		return expr_error(ctx->msgs, ct,
+				  "cannot determine ip protocol version, use \"ip %1$caddr\" or \"ip6 %1$caddr\" instead",
+				  ct->ct.key == NFT_CT_SRC ? 's' : 'd');
+	}
+
+	/* no additional dependency needed? */
+	if (base == base_now)
+		return 0;
+
+	if (base_now && base_now != base)
+		return expr_error(ctx->msgs, ct,
+				  "conflicting dependencies: %s vs. %s\n",
+				  base->name,
+				  ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc->name);
+	switch (ctx->pctx.family) {
+	case NFPROTO_IPV4:
+	case NFPROTO_IPV6:
+		return 0;
+	}
+
+	left = ct_expr_alloc(&ct->location, NFT_CT_L3PROTOCOL, ct->ct.direction, ct->ct.nfproto);
+
+	right = constant_expr_alloc(&ct->location, left->dtype,
+				    left->dtype->byteorder, left->len,
+				    constant_data_ptr(ct->ct.nfproto, left->len));
+	dep = relational_expr_alloc(&ct->location, OP_EQ, left, right);
+
+	left->ops->pctx_update(&ctx->pctx, dep);
+
+	nstmt = expr_stmt_alloc(&dep->location, dep);
+
+	list_add_tail(&nstmt->list, &ctx->stmt->list);
+	return 0;
+}
+
 /*
  * CT expression: update the protocol dependant types bases on the protocol
  * context.
  */
 static int expr_evaluate_ct(struct eval_ctx *ctx, struct expr **expr)
 {
-	const struct proto_desc *base;
 	struct expr *ct = *expr;
 
-	ct_expr_update_type(&ctx->pctx, ct);
-
-	base = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
 	switch (ct->ct.key) {
 	case NFT_CT_SRC:
 	case NFT_CT_DST:
-		if (base != &proto_ip && base != &proto_ip6)
-			return expr_error_base(ctx->msgs, ct);
+		ct_gen_nh_dependency(ctx, ct);
+		break;
 	default:
 		break;
 	}
+
+	ct_expr_update_type(&ctx->pctx, ct);
 
 	return expr_evaluate_primary(ctx, expr);
 }

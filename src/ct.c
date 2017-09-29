@@ -308,21 +308,21 @@ static void ct_expr_clone(struct expr *new, const struct expr *expr)
 static void ct_expr_pctx_update(struct proto_ctx *ctx, const struct expr *expr)
 {
 	const struct expr *left = expr->left, *right = expr->right;
-	const struct proto_desc *base, *desc;
+	const struct proto_desc *base = NULL, *desc;
+	uint32_t nhproto;
 
 	assert(expr->op == OP_EQ);
 
-	switch (left->ct.key) {
-	case NFT_CT_PROTOCOL:
-		base = ctx->protocol[PROTO_BASE_NETWORK_HDR].desc;
-		desc = proto_find_upper(base, mpz_get_uint32(right->value));
+	nhproto = mpz_get_uint32(right->value);
 
-		proto_ctx_update(ctx, PROTO_BASE_TRANSPORT_HDR,
-				 &expr->location, desc);
-		break;
-	default:
-		break;
-	}
+	base = ctx->protocol[left->ct.base].desc;
+	if (!base)
+		return;
+	desc = proto_find_upper(base, nhproto);
+	if (!desc)
+		return;
+
+	proto_ctx_update(ctx, left->ct.base + 1, &expr->location, desc);
 }
 
 static const struct expr_ops ct_expr_ops = {
@@ -374,10 +374,11 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 {
 	const struct proto_desc *desc;
 
+	desc = ctx->protocol[expr->ct.base].desc;
+
 	switch (expr->ct.key) {
 	case NFT_CT_SRC:
 	case NFT_CT_DST:
-		desc = ctx->protocol[PROTO_BASE_NETWORK_HDR].desc;
 		if (desc == &proto_ip)
 			expr->dtype = &ipaddr_type;
 		else if (desc == &proto_ip6)
@@ -387,7 +388,6 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 		break;
 	case NFT_CT_PROTO_SRC:
 	case NFT_CT_PROTO_DST:
-		desc = ctx->protocol[PROTO_BASE_TRANSPORT_HDR].desc;
 		if (desc == NULL)
 			break;
 		expr->dtype = &inet_service_type;

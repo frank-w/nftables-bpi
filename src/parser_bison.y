@@ -665,7 +665,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 %type <expr>			rt_expr
 %destructor { expr_free($$); }	rt_expr
-%type <val>			rt_key
+%type <val>			rt_key_proto	rt_key
 
 %type <expr>			ct_expr
 %destructor { expr_free($$); }	ct_expr
@@ -3246,9 +3246,31 @@ hash_expr		:	JHASH		expr	MOD	NUM	SEED	NUM	offset_opt
 			}
 			;
 
+rt_key_proto		:	IP		{ $$ = NFPROTO_IPV4; }
+			|	IP6		{ $$ = NFPROTO_IPV6; }
+			;
+
 rt_expr			:	RT	rt_key
 			{
 				$$ = rt_expr_alloc(&@$, $2, true);
+			}
+			|	RT	rt_key_proto	rt_key
+			{
+				enum nft_rt_keys rtk = $3;
+
+				switch ($2) {
+				case NFPROTO_IPV4:
+					break;
+				case NFPROTO_IPV6:
+					if ($3 == NFT_RT_NEXTHOP4)
+						rtk = NFT_RT_NEXTHOP6;
+					break;
+				default:
+					YYERROR;
+					break;
+				}
+
+				$$ = rt_expr_alloc(&@$, rtk, false);
 			}
 			;
 

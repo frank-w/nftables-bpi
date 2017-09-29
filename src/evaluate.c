@@ -662,32 +662,28 @@ static int expr_evaluate_payload(struct eval_ctx *ctx, struct expr **exprp)
 	return 0;
 }
 
-static int expr_error_base(struct list_head *msgs, const struct expr *e)
-{
-	return expr_error(msgs, e,
-			  "meta nfproto ipv4 or ipv6 must be specified "
-			  "before %s expression", e->ops->name);
-}
-
 /*
  * RT expression: validate protocol dependencies.
  */
 static int expr_evaluate_rt(struct eval_ctx *ctx, struct expr **expr)
 {
-	const struct proto_desc *base;
+	static const char emsg[] = "cannot determine ip protocol version, use \"ip nexthop\" or \"ip6 nexthop\" instead";
 	struct expr *rt = *expr;
 
 	rt_expr_update_type(&ctx->pctx, rt);
 
-	base = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
 	switch (rt->rt.key) {
 	case NFT_RT_NEXTHOP4:
-		if (base != &proto_ip)
-			return expr_error_base(ctx->msgs, rt);
+		if (rt->dtype != &ipaddr_type)
+			return expr_error(ctx->msgs, rt, "%s", emsg);
+		if (ctx->pctx.family == NFPROTO_IPV6)
+			return expr_error(ctx->msgs, rt, "%s nexthop will not match", "ip");
 		break;
 	case NFT_RT_NEXTHOP6:
-		if (base != &proto_ip6)
-			return expr_error_base(ctx->msgs, rt);
+		if (rt->dtype != &ip6addr_type)
+			return expr_error(ctx->msgs, rt, "%s", emsg);
+		if (ctx->pctx.family == NFPROTO_IPV4)
+			return expr_error(ctx->msgs, rt, "%s nexthop will not match", "ip6");
 		break;
 	default:
 		break;

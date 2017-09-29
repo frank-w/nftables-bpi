@@ -3,4 +3,4 @@
 *ip6;test-ip6;output
 
 rt nexthop 192.168.0.1;fail
-rt nexthop fd00::1;ok
+rt nexthop fd00::1;ok;rt ip6 nexthop fd00::1

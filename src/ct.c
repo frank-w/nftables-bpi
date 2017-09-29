@@ -16,6 +16,8 @@
 #include <inttypes.h>
 #include <string.h>
 
+#include <netinet/ip.h>
+#include <linux/netfilter.h>
 #include <linux/netfilter/nf_tables.h>
 #include <linux/netfilter/nf_conntrack_common.h>
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
@@ -269,9 +271,11 @@ static const struct ct_template ct_templates[] = {
 					      BYTEORDER_HOST_ENDIAN, 32),
 };
 
-static void ct_print(enum nft_ct_keys key, int8_t dir, struct output_ctx *octx)
+static void ct_print(enum nft_ct_keys key, int8_t dir, uint8_t nfproto,
+		     struct output_ctx *octx)
 {
 	const struct symbolic_constant *s;
+	const struct proto_desc *desc;
 
 	nft_print(octx, "ct ");
 	if (dir < 0)
@@ -283,13 +287,25 @@ static void ct_print(enum nft_ct_keys key, int8_t dir, struct output_ctx *octx)
 			break;
 		}
 	}
+
+	switch (key) {
+	case NFT_CT_SRC: /* fallthrough */
+	case NFT_CT_DST:
+		desc = proto_find_upper(&proto_inet, nfproto);
+		if (desc)
+			printf("%s ", desc->name);
+		break;
+	default:
+		break;
+	}
+
  done:
 	nft_print(octx, "%s", ct_templates[key].token);
 }
 
 static void ct_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	ct_print(expr->ct.key, expr->ct.direction, octx);
+	ct_print(expr->ct.key, expr->ct.direction, expr->ct.nfproto, octx);
 }
 
 static bool ct_expr_cmp(const struct expr *e1, const struct expr *e2)
@@ -379,10 +395,13 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 	switch (expr->ct.key) {
 	case NFT_CT_SRC:
 	case NFT_CT_DST:
-		if (desc == &proto_ip)
+		if (desc == &proto_ip) {
 			expr->dtype = &ipaddr_type;
-		else if (desc == &proto_ip6)
+			expr->ct.nfproto = NFPROTO_IPV4;
+		} else if (desc == &proto_ip6) {
 			expr->dtype = &ip6addr_type;
+			expr->ct.nfproto = NFPROTO_IPV6;
+		}
 
 		expr->len = expr->dtype->size;
 		break;
@@ -399,7 +418,7 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 
 static void ct_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	ct_print(stmt->ct.key, stmt->ct.direction, octx);
+	ct_print(stmt->ct.key, stmt->ct.direction, 0, octx);
 	nft_print(octx, " set ");
 	expr_print(stmt->ct.expr, octx);
 }

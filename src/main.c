@@ -403,6 +403,7 @@ int nft_gmp_print(struct output_ctx *octx, const char *fmt, ...)
 	va_start(arg, fmt);
 	ret = gmp_vfprintf(octx->output_fp, fmt, arg);
 	va_end(arg);
+	fflush(octx->output_fp);
 
 	return ret;
 }

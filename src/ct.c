@@ -335,7 +335,7 @@ static const struct expr_ops ct_expr_ops = {
 };
 
 struct expr *ct_expr_alloc(const struct location *loc, enum nft_ct_keys key,
-			   int8_t direction)
+			   int8_t direction, uint8_t nfproto)
 {
 	const struct ct_template *tmpl = &ct_templates[key];
 	struct expr *expr;
@@ -344,6 +344,7 @@ struct expr *ct_expr_alloc(const struct location *loc, enum nft_ct_keys key,
 			  tmpl->byteorder, tmpl->len);
 	expr->ct.key = key;
 	expr->ct.direction = direction;
+	expr->ct.nfproto = nfproto;
 
 	switch (key) {
 	case NFT_CT_PROTOCOL:

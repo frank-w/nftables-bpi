@@ -669,7 +669,7 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 %type <expr>			ct_expr
 %destructor { expr_free($$); }	ct_expr
-%type <val>			ct_key		ct_dir	ct_key_dir_optional	ct_key_dir
+%type <val>			ct_key		ct_dir	ct_key_dir_optional	ct_key_dir	ct_key_proto	ct_key_proto_field
 
 %type <expr>			fib_expr
 %destructor { expr_free($$); }	fib_expr
@@ -3259,11 +3259,15 @@ rt_key			:	CLASSID		{ $$ = NFT_RT_CLASSID; }
 
 ct_expr			: 	CT	ct_key
 			{
-				$$ = ct_expr_alloc(&@$, $2, -1);
+				$$ = ct_expr_alloc(&@$, $2, -1, NFPROTO_UNSPEC);
 			}
 			|	CT	ct_dir	ct_key_dir
 			{
-				$$ = ct_expr_alloc(&@$, $3, $2);
+				$$ = ct_expr_alloc(&@$, $3, $2, NFPROTO_UNSPEC);
+			}
+			|	CT	ct_dir	ct_key_proto ct_key_proto_field
+			{
+				$$ = ct_expr_alloc(&@$, $4, $2, $3);
 			}
 			;
 
@@ -3295,6 +3299,14 @@ ct_key_dir		:	SADDR		{ $$ = NFT_CT_SRC; }
 			|	PROTO_SRC	{ $$ = NFT_CT_PROTO_SRC; }
 			|	PROTO_DST	{ $$ = NFT_CT_PROTO_DST; }
 			|	ct_key_dir_optional
+			;
+
+ct_key_proto		:	IP		{ $$ = NFPROTO_IPV4; }
+			|	IP6		{ $$ = NFPROTO_IPV6; }
+			;
+
+ct_key_proto_field	:	SADDR		{ $$ = NFT_CT_SRC; }
+			|	DADDR		{ $$ = NFT_CT_DST; }
 			;
 
 ct_key_dir_optional	:	BYTES		{ $$ = NFT_CT_BYTES; }

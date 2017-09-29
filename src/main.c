@@ -415,11 +415,9 @@ int main(int argc, char * const *argv)
 	bool interactive = false;
 	struct parser_state state;
 	int i, val, rc;
-	FILE *outfp = fdopen(dup(STDOUT_FILENO), "w");
 
 	nft = nft_ctx_new(NFT_CTX_DEFAULT);
-	nft_ctx_set_output(nft, outfp);
-	close(STDOUT_FILENO);
+	nft_ctx_set_output(nft, stdout);
 
 	while (1) {
 		val = getopt_long(argc, argv, OPTSTRING, options, NULL);

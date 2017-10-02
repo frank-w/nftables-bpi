@@ -1426,6 +1426,15 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 				$1->flags  |= NFT_SET_OBJECT;
 				$$ = $1;
 			}
+			|	map_block	TYPE
+						data_type_expr	COLON	LIMIT
+						stmt_separator
+			{
+				$1->key = $3;
+				$1->objtype = NFT_OBJECT_LIMIT;
+				$1->flags  |= NFT_SET_OBJECT;
+				$$ = $1;
+			}
 			|	map_block	FLAGS		set_flag_list	stmt_separator
 			{
 				$1->flags |= $3;

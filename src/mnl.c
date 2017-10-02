@@ -32,7 +32,7 @@
 
 uint32_t mnl_seqnum_alloc(unsigned int *seqnum)
 {
-	return *seqnum++;
+	return (*seqnum)++;
 }
 
 /* The largest nf_tables netlink message is the set element message, which

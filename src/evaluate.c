@@ -30,7 +30,6 @@
 #include <utils.h>
 #include <xt.h>
 
-static struct output_ctx octx_debug_dummy;
 static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr);
 
 static const char *byteorder_names[] = {
@@ -1777,9 +1776,10 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &(*expr)->location,
 				   "Evaluate %s", (*expr)->ops->name);
-		erec_print(stdout, erec, ctx->debug_mask);
-		expr_print(*expr, &octx_debug_dummy);
-		printf("\n\n");
+		erec_print(ctx->octx, erec, ctx->debug_mask);
+		expr_print(*expr, ctx->octx);
+		nft_print(ctx->octx, "\n\n");
+		erec_destroy(erec);
 	}
 
 	switch ((*expr)->ops->type) {
@@ -2762,9 +2762,10 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &stmt->location,
 				   "Evaluate %s", stmt->ops->name);
-		erec_print(stdout, erec, ctx->debug_mask);
-		stmt_print(stmt, &octx_debug_dummy);
-		printf("\n\n");
+		erec_print(ctx->octx, erec, ctx->debug_mask);
+		stmt_print(stmt, ctx->octx);
+		nft_print(ctx->octx, "\n\n");
+		erec_destroy(erec);
 	}
 
 	switch (stmt->ops->type) {
@@ -3452,8 +3453,9 @@ int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 
 		erec = erec_create(EREC_INFORMATIONAL, &cmd->location,
 				   "Evaluate %s", cmd_op_to_name(cmd->op));
-		erec_print(stdout, erec, ctx->debug_mask);
-		printf("\n\n");
+		erec_print(ctx->octx, erec, ctx->debug_mask);
+		nft_print(ctx->octx, "\n\n");
+		erec_destroy(erec);
 	}
 
 	ctx->cmd = cmd;

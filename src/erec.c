@@ -69,7 +69,7 @@ void erec_add_location(struct error_record *erec, const struct location *loc)
 	erec->num_locations++;
 }
 
-static void erec_destroy(struct error_record *erec)
+void erec_destroy(struct error_record *erec)
 {
 	unsigned int i;
 
@@ -112,7 +112,7 @@ struct error_record *erec_create(enum error_record_types type,
 	return erec;
 }
 
-void erec_print(FILE *f, const struct error_record *erec,
+void erec_print(struct output_ctx *octx, const struct error_record *erec,
 		unsigned int debug_mask)
 {
 	const struct location *loc = erec->locations, *iloc;
@@ -123,6 +123,10 @@ void erec_print(FILE *f, const struct error_record *erec,
 	unsigned int i, end;
 	int l, ret;
 	off_t orig_offset = 0;
+	FILE *f = octx->output_fp;
+
+	if (!f)
+		return;
 
 	switch (indesc->type) {
 	case INDESC_BUFFER:
@@ -202,13 +206,14 @@ void erec_print(FILE *f, const struct error_record *erec,
 	fprintf(f, "\n");
 }
 
-void erec_print_list(FILE *f, struct list_head *list, unsigned int debug_mask)
+void erec_print_list(struct output_ctx *octx, struct list_head *list,
+		     unsigned int debug_mask)
 {
 	struct error_record *erec, *next;
 
 	list_for_each_entry_safe(erec, next, list, list) {
 		list_del(&erec->list);
-		erec_print(f, erec, debug_mask);
+		erec_print(octx, erec, debug_mask);
 		erec_destroy(erec);
 	}
 }

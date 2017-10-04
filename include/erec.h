@@ -46,6 +46,7 @@ extern struct error_record *erec_create(enum error_record_types type,
 					const char *fmt, ...) __gmp_fmtstring(3, 4);
 extern void erec_add_location(struct error_record *erec,
 			      const struct location *loc);
+extern void erec_destroy(struct error_record *erec);
 
 #define error(loc, fmt, args...) \
 	erec_create(EREC_ERROR, (loc), (fmt), ## args)
@@ -58,9 +59,9 @@ static inline void erec_queue(struct error_record *erec,
 	list_add_tail(&erec->list, queue);
 }
 
-extern void erec_print(FILE *f, const struct error_record *erec,
+extern void erec_print(struct output_ctx *octx, const struct error_record *erec,
 		       unsigned int debug_mask);
-extern void erec_print_list(FILE *f, struct list_head *list,
+extern void erec_print_list(struct output_ctx *octx, struct list_head *list,
 			    unsigned int debug_mask);
 
 struct eval_ctx;

@@ -332,6 +332,7 @@ static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
 	struct parser_state state;
 	LIST_HEAD(msgs);
 	void *scanner;
+	FILE *fp;
 
 	parser_init(nft->nf_sock, &nft->cache, &state,
 		    &msgs, nft->debug_mask, &nft->output);
@@ -341,7 +342,9 @@ static int nft_run_cmd_from_buffer(struct nft_ctx *nft,
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
 		rc = NFT_EXIT_FAILURE;
 
-	erec_print_list(stderr, &msgs, nft->debug_mask);
+	fp = nft_ctx_set_output(nft, stderr);
+	erec_print_list(&nft->output, &msgs, nft->debug_mask);
+	nft_ctx_set_output(nft, fp);
 	scanner_destroy(scanner);
 
 	return rc;
@@ -353,6 +356,7 @@ static int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	LIST_HEAD(msgs);
 	void *scanner;
 	int rc;
+	FILE *fp;
 
 	rc = cache_update(nft->nf_sock, &nft->cache, CMD_INVALID, &msgs,
 			  nft->debug_mask, &nft->output);
@@ -370,7 +374,9 @@ static int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
 		rc = NFT_EXIT_FAILURE;
 err:
-	erec_print_list(stderr, &msgs, nft->debug_mask);
+	fp = nft_ctx_set_output(nft, stderr);
+	erec_print_list(&nft->output, &msgs, nft->debug_mask);
+	nft_ctx_set_output(nft, fp);
 	scanner_destroy(scanner);
 
 	return rc;

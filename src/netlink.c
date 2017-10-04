@@ -520,13 +520,11 @@ void netlink_dump_rule(const struct nftnl_rule *nlr, struct netlink_ctx *ctx)
 void netlink_dump_expr(const struct nftnl_expr *nle,
 		       FILE *fp, unsigned int debug_mask)
 {
-	char buf[4096];
-
 	if (!(debug_mask & DEBUG_NETLINK))
 		return;
 
-	nftnl_expr_snprintf(buf, sizeof(buf), nle, 0, 0);
-	fprintf(fp, "%s\n", buf);
+	nftnl_expr_fprintf(fp, nle, 0, 0);
+	fprintf(fp, "\n");
 }
 
 static int list_rule_cb(struct nftnl_rule *nlr, void *arg)

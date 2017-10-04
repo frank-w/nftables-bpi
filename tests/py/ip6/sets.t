@@ -36,3 +36,7 @@ ip6 saddr != @set33 drop;fail
 !set4 type ipv6_addr flags interval;ok
 ?set4 1234:1234:1234:1234::/64 4321:1234:1234:1234::/64;ok
 ?set4 4321:1234:1234:1234:1234:1234::/96;fail
+
+!set5 type ipv6_addr . ipv6_addr;ok
+ip6 saddr . ip6 daddr @set5 drop;ok
+set add ip6 saddr . ip6 daddr @set5;ok

@@ -22,6 +22,19 @@ ip test-ip4 input
   [ lookup reg 1 set set2 0x1 ]
   [ immediate reg 0 drop ]
 
+# ip saddr . ip daddr @set5 drop
+ip test-ip4 input
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ payload load 4b @ network header + 16 => reg 9 ]
+  [ lookup reg 1 set set5 ]
+  [ immediate reg 0 drop ]
+
+# set add ip saddr . ip daddr @set5
+ip test-ip4 input
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ payload load 4b @ network header + 16 => reg 9 ]
+  [ dynset add reg_key 1 set set5 ]
+
 # ip saddr { { 1.1.1.0, 3.3.3.0 }, 2.2.2.0 }
 __set%d test-ip4 3
 __set%d test-ip4 0

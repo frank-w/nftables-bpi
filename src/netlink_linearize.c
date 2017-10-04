@@ -1208,9 +1208,9 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 	struct nftnl_expr *nle;
 	enum nft_registers sreg_key;
 
-	sreg_key = get_register(ctx, stmt->set.key);
-	netlink_gen_expr(ctx, stmt->set.key, sreg_key);
-	release_register(ctx, stmt->set.key);
+	sreg_key = get_register(ctx, stmt->set.key->key);
+	netlink_gen_expr(ctx, stmt->set.key->key, sreg_key);
+	release_register(ctx, stmt->set.key->key);
 
 	nle = alloc_nft_expr("dynset");
 	netlink_put_register(nle, NFTNL_EXPR_DYNSET_SREG_KEY, sreg_key);

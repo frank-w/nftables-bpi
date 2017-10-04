@@ -866,8 +866,13 @@ def set_process(set_line, filename, lineno):
     set_name = tokens[0]
     set_type = tokens[2]
 
-    if len(tokens) == 5 and tokens[3] == "flags":
-        set_flags = tokens[4]
+    i = 3
+    while len(tokens) > i and tokens[i] == ".":
+        set_type += " . " + tokens[i+1]
+        i += 2
+
+    if len(tokens) == i+2 and tokens[i] == "flags":
+        set_flags = tokens[i+1]
     else:
         set_flags = ""
 

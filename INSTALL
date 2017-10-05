@@ -18,6 +18,12 @@ Installation instructions for nftables
 
   - libreadline
 
+  - pkg-config
+
+  - libtool
+
+  - optional: libxtables: required to interact with iptables-compat
+
   - optional: docbook2x: required for building man-page
 
   - optional: docbook-utils: required for building PDF man-page
@@ -50,6 +56,11 @@ Installation instructions for nftables
 	This is useful for embedded platforms optimizing for size and
 	having no other use for libgmp.
 	Note: This decreases the debugging verbosity in some files.
+
+ --with-xtables
+
+	For libxtables support to interact with the iptables-compat
+	utility.
 
  Suggested configuration options: --prefix=/ --datarootdir=/usr/share
 

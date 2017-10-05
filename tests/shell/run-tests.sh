@@ -3,7 +3,7 @@
 # Configuration
 TESTDIR="./"
 RETURNCODE_SEPARATOR="_"
-SRC_NFT="../../src/nft"
+SRC_NFT="$(dirname $0)/../../src/nft"
 
 msg_error() {
 	echo "E: $1 ..." >&2

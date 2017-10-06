@@ -302,7 +302,7 @@ const char *get_unit(uint64_t u)
 	return "error";
 }
 
-static const char *data_unit[] = {
+static const char * const data_unit[] = {
 	"bytes",
 	"kbytes",
 	"mbytes",
@@ -496,7 +496,7 @@ static void print_nf_nat_flags(uint32_t flags, struct output_ctx *octx)
 
 static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	static const char *nat_types[] = {
+	static const char * const nat_types[] = {
 		[NFT_NAT_SNAT]	= "snat",
 		[NFT_NAT_DNAT]	= "dnat",
 	};

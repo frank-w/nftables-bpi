@@ -496,7 +496,7 @@ struct symbol *symbol_lookup(const struct scope *scope, const char *identifier)
 	return NULL;
 }
 
-static const char *chain_type_str_array[] = {
+static const char * const chain_type_str_array[] = {
 	"filter",
 	"nat",
 	"route",
@@ -515,7 +515,7 @@ const char *chain_type_name_lookup(const char *name)
 	return NULL;
 }
 
-static const char *chain_hookname_str_array[] = {
+static const char * const chain_hookname_str_array[] = {
 	"prerouting",
 	"input",
 	"forward",
@@ -1345,7 +1345,7 @@ static void obj_print_data(const struct obj *obj,
 	}
 }
 
-static const char *obj_type_name_array[] = {
+static const char * const obj_type_name_array[] = {
 	[NFT_OBJECT_COUNTER]	= "counter",
 	[NFT_OBJECT_QUOTA]	= "quota",
 	[NFT_OBJECT_CT_HELPER]	= "",

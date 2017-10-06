@@ -27,7 +27,7 @@ const struct location internal_location = {
 	.indesc	= &internal_indesc,
 };
 
-static const char *error_record_names[] = {
+static const char * const error_record_names[] = {
 	[EREC_INFORMATIONAL]	= NULL,
 	[EREC_WARNING]		= "Warning",
 	[EREC_ERROR]		= "Error"

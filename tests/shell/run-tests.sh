@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-TESTDIR="./"
+TESTDIR="./$(dirname $0)/"
 RETURNCODE_SEPARATOR="_"
 SRC_NFT="$(dirname $0)/../../src/nft"
 

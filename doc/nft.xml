@@ -664,9 +664,9 @@ filter input iif $int_ifs accept
 						<arg choice="req"><replaceable>type</replaceable></arg>
 						<arg choice="req"><replaceable>hook</replaceable></arg>
 						<arg choice="opt"><replaceable>device</replaceable></arg>
-						<arg choice="req"><replaceable>priority</replaceable></arg>
+						<arg choice="req"><replaceable>priority</replaceable> ;</arg>
+						<arg choice="opt"><replaceable>policy</replaceable> ;</arg>
 					</arg>
-					<arg choice="opt"><replaceable>policy</replaceable></arg>
 				</arg>
 			</cmdsynopsis>
 			<cmdsynopsis>

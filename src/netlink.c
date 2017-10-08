@@ -388,7 +388,7 @@ static void netlink_gen_verdict(const struct expr *expr,
 	switch (expr->verdict) {
 	case NFT_JUMP:
 	case NFT_GOTO:
-		strncpy(data->chain, expr->chain, NFT_CHAIN_MAXNAMELEN);
+		snprintf(data->chain, NFT_CHAIN_MAXNAMELEN, "%s", expr->chain);
 		data->chain[NFT_CHAIN_MAXNAMELEN-1] = '\0';
 		break;
 	}
@@ -2648,7 +2648,7 @@ static int netlink_events_newgen_cb(const struct nlmsghdr *nlh, int type,
 		case NFTA_GEN_PROC_NAME:
 			if (mnl_attr_validate(attr, MNL_TYPE_NUL_STRING) < 0)
 				break;
-			strncpy(name, mnl_attr_get_str(attr), sizeof(name));
+			snprintf(name, sizeof(name), "%s", mnl_attr_get_str(attr));
 			break;
 		case NFTA_GEN_PROC_PID:
 			if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)

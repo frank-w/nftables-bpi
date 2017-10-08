@@ -53,7 +53,7 @@ static int data_cb(const struct nlmsghdr *nlh, void *data)
 	iface = xmalloc(sizeof(struct iface));
 	iface->ifindex = ifm->ifi_index;
 	mnl_attr_parse(nlh, sizeof(*ifm), data_attr_cb, tb);
-	strncpy(iface->name, mnl_attr_get_str(tb[IFLA_IFNAME]), IFNAMSIZ);
+	snprintf(iface->name, IFNAMSIZ, "%s", mnl_attr_get_str(tb[IFLA_IFNAME]));
 	list_add(&iface->list, &iface_list);
 
 	return MNL_CB_OK;
@@ -139,7 +139,7 @@ char *nft_if_indextoname(unsigned int ifindex, char *name)
 
 	list_for_each_entry(iface, &iface_list, list) {
 		if (iface->ifindex == ifindex) {
-			strncpy(name, iface->name, IFNAMSIZ);
+			snprintf(name, IFNAMSIZ, "%s", iface->name);
 			return name;
 		}
 	}

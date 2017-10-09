@@ -839,6 +839,15 @@ filter input iif $int_ifs accept
 				<arg choice="req" rep="repeat"><replaceable>statement</replaceable></arg>
 			</cmdsynopsis>
 			<cmdsynopsis>
+				<arg choice="req">replace</arg>
+				<command>rule</command>
+				<arg choice="opt"><replaceable>family</replaceable></arg>
+				<arg choice="req"><replaceable>table</replaceable></arg>
+				<arg choice="req"><replaceable>chain</replaceable></arg>
+				<arg choice="req">handle <replaceable>handle</replaceable></arg>
+				<arg choice="req" rep="repeat"><replaceable>statement</replaceable></arg>
+			</cmdsynopsis>
+			<cmdsynopsis>
 				<arg choice="req">delete</arg>
 				<command>rule</command>
 				<arg choice="opt"><replaceable>family</replaceable></arg>
@@ -869,6 +878,14 @@ filter input iif $int_ifs accept
 					<para>
 						Similar to the <command>add</command> command, but the rule is prepended to the
 						beginning of the chain or before the rule at the given position.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><option>replace</option></term>
+				<listitem>
+					<para>
+						Similar to the <command>add</command> command, but the rule replaces the specified rule.
 					</para>
 				</listitem>
 			</varlistentry>

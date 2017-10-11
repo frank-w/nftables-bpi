@@ -1,9 +1,0 @@
-#! nft -f
-
-# table: add and delete table
-add table filter
-table delete filter
-
-# table: deleting table with chain must fail
-add chain filter output
-table delete filter

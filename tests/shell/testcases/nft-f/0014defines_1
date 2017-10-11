@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Tests redefinition of an existing variable.
+
+set -e
+
+tmpfile=$(mktemp)
+if [ ! -w $tmpfile ] ; then
+	echo "Failed to create tmp file" >&2
+	exit 0
+fi
+
+trap "rm -rf $tmpfile" EXIT # cleanup if aborted
+
+echo "
+define var1 = lo
+define var1 = lo
+
+table ip t {
+	chain c {
+		iif \$var1
+	}
+}" >> $tmpfile
+
+$NFT -f $tmpfile

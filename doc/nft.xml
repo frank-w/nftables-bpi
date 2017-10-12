@@ -782,7 +782,7 @@ filter input iif $int_ifs accept
 							<entry>nat</entry>
 							<entry>ip, ip6</entry>
 							<entry>prerouting, input, output, postrouting</entry>
-							<entry>Chains of this type perform Native Address Translation based on conntrack entries. Only the first packet of a connection actually traverses this chain - its rules usually define details of the created conntrack entry (NAT statements for instance).</entry>
+							<entry>Chains of this type perform Network Address Translation based on conntrack entries. Only the first packet of a connection actually traverses this chain - its rules usually define details of the created conntrack entry (NAT statements for instance).</entry>
 						</row>
 						<row>
 							<entry>route</entry>

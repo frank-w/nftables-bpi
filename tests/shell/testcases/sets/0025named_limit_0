@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# This is the testscase:
+# * creating valid named limits
+# * referencing them from a valid rule
+
+tmpfile=$(mktemp)
+if [ ! -w $tmpfile ] ; then
+	echo "Failed to create tmp file" >&2
+	exit 0
+fi
+
+trap "rm -rf $tmpfile" EXIT # cleanup if aborted
+
+echo "
+table ip filter {
+	limit http-traffic {
+		rate 1/second
+	}
+	chain input {
+		type filter hook input priority 0; policy accept;
+		limit name tcp dport map { 80 : "http-traffic", 443 : "http-traffic"}
+	}
+}" > $tmpfile
+
+set -e
+$NFT -f $tmpfile

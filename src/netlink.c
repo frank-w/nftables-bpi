@@ -261,7 +261,7 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 			break;
 		}
 	}
-	if (set->set_flags & NFT_SET_OBJECT) {
+	if (set->set_flags & NFT_SET_OBJECT && data != NULL) {
 		netlink_gen_data(data, &nld);
 		nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_OBJREF,
 				   nld.value, nld.len);
@@ -1595,8 +1595,13 @@ static int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 		expr = mapping_expr_alloc(&netlink_location, expr, data);
 	}
 	if (set->flags & NFT_SET_OBJECT) {
-		nld.value = nftnl_set_elem_get(nlse, NFTNL_SET_ELEM_OBJREF,
-					       &nld.len);
+		if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_OBJREF)) {
+			nld.value = nftnl_set_elem_get(nlse,
+						       NFTNL_SET_ELEM_OBJREF,
+						       &nld.len);
+		} else
+			goto out;
+
 		data = netlink_alloc_value(&netlink_location, &nld);
 		data->dtype = &string_type;
 		data->byteorder = BYTEORDER_HOST_ENDIAN;

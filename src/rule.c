@@ -123,7 +123,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 
 static int cache_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 		      enum cmd_ops cmd, struct list_head *msgs,
-		      unsigned int debug_mask, struct output_ctx *octx)
+		      bool debug, struct output_ctx *octx)
 {
 	struct handle handle = {
 		.family = NFPROTO_UNSPEC,
@@ -134,7 +134,7 @@ static int cache_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 		.cache		= cache,
 		.msgs		= msgs,
 		.seqnum		= cache->seqnum++,
-		.debug_mask	= debug_mask,
+		.debug_mask	= debug ? DEBUG_NETLINK : 0,
 		.octx		= octx,
 	};
 	int ret;

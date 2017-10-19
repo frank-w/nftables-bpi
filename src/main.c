@@ -305,13 +305,13 @@ static struct nft_ctx *nft_ctx_new(uint32_t flags)
 	return ctx;
 }
 
-static void nft_ctx_free(const struct nft_ctx *ctx)
+static void nft_ctx_free(struct nft_ctx *ctx)
 {
 	if (ctx->nf_sock)
 		netlink_close_sock(ctx->nf_sock);
 
 	iface_cache_release();
-	cache_release(&nft->cache);
+	cache_release(&ctx->cache);
 	xfree(ctx);
 	nft_exit();
 }

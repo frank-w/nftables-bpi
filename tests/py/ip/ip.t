@@ -3,6 +3,7 @@
 
 *ip;test-ip4;input
 *inet;test-inet;input
+*bridge;test-bridge;input
 *netdev;test-netdev;ingress
 
 - ip version 2;ok

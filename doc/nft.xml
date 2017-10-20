@@ -46,49 +46,16 @@ vi:ts=4 sw=4
 		<cmdsynopsis>
 			<command>nft</command>
 			<group>
-				<arg><option>-n</option></arg>
-				<arg><option>--numeric</option></arg>
+				<arg><option> -nNscae </option></arg>
 			</group>
-			<group>
-				<arg><option>-N</option></arg>
-				<arg><option>--reversedns</option></arg>
-			</group>
-			<group>
-				<arg><option>-s</option></arg>
-				<arg><option>--stateless</option></arg>
-			</group>
-			<group>
-				<arg><option>-c</option></arg>
-				<arg><option>--check</option></arg>
-			</group>
-			<group>
-				<arg><option>-a</option></arg>
-				<arg><option>--handle</option></arg>
-			</group>
-			<group>
-				<arg><option>-e</option></arg>
-				<arg><option>--echo</option></arg>
-			</group>
-			<arg>
-				<group choice="req">
-					<arg><option>-I</option></arg>
-					<arg><option>--includepath</option></arg>
-				</group>
+			<arg> -I
 				<replaceable>directory</replaceable>
 			</arg>
 			<group>
-				<arg>
-					<group choice="req">
-						<arg><option>-f</option></arg>
-						<arg><option>--file</option></arg>
-					</group>
+				<arg> -f
 					<replaceable>filename</replaceable>
 				</arg>
-				<arg>
-					<group choice="req">
-						<arg><option>-i</option></arg>
-						<arg><option>--interactive</option></arg>
-					</group>
+				<arg> -i
 				</arg>
 				<arg rep="repeat">
 					<replaceable>cmd</replaceable>
@@ -96,15 +63,10 @@ vi:ts=4 sw=4
 			</group>
 		</cmdsynopsis>
 		<cmdsynopsis>
-			<command>nft</command>
-			<group>
-				<arg><option>-h</option></arg>
-				<arg><option>--help</option></arg>
-			</group>
-			<group>
-				<arg><option>-v</option></arg>
-				<arg><option>--version</option></arg>
-			</group>
+			<command>nft -h</command>
+		</cmdsynopsis>
+		<cmdsynopsis>
+			<command>nft -v</command>
 		</cmdsynopsis>
 	</refsynopsisdiv>
 
@@ -151,6 +113,14 @@ vi:ts=4 sw=4
 				</listitem>
 			</varlistentry>
 			<varlistentry>
+				<term><option>-N, --reversedns</option></term>
+				<listitem>
+					<para>
+						Translate IP addresses to names. Usually requires network traffic for DNS lookup.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
 				<term><option>-s, --stateless</option></term>
 				<listitem>
 					<para>
@@ -163,14 +133,6 @@ vi:ts=4 sw=4
 				<listitem>
 					<para>
 						Check commands validity without actually applying the changes.
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
-				<term><option>-N, --reversedns</option></term>
-				<listitem>
-					<para>
-						Translate IP addresses to names. Usually requires network traffic for DNS lookup.
 					</para>
 				</listitem>
 			</varlistentry>

@@ -147,13 +147,18 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 	return ctx;
 }
 
+void nft_ctx_flush_cache(struct nft_ctx *ctx)
+{
+	iface_cache_release();
+	cache_release(&ctx->cache);
+}
+
 void nft_ctx_free(struct nft_ctx *ctx)
 {
 	if (ctx->nf_sock)
 		netlink_close_sock(ctx->nf_sock);
 
-	iface_cache_release();
-	cache_release(&ctx->cache);
+	nft_ctx_flush_cache(ctx);
 	xfree(ctx);
 	nft_exit();
 }

@@ -51,6 +51,7 @@ enum nftables_exit_codes {
 struct nft_ctx *nft_ctx_new(uint32_t flags);
 void nft_ctx_free(struct nft_ctx *ctx);
 FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp);
+void nft_ctx_flush_cache(struct nft_ctx *ctx);
 
 int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen);
 int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename);

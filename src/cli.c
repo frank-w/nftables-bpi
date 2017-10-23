@@ -140,8 +140,7 @@ static void cli_complete(char *line)
 	nft_run(cli_nft, cli_nf_sock, scanner, state, &msgs);
 	erec_print_list(&cli_nft->output, &msgs, cli_nft->debug_mask);
 	xfree(line);
-	cache_release(&cli_nft->cache);
-	iface_cache_release();
+	nft_ctx_flush_cache(cli_nft);
 }
 
 static char **cli_completion(const char *text, int start, int end)

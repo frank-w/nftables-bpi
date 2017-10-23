@@ -35,15 +35,7 @@
 
 #define CMDLINE_HISTFILE	".nft.history"
 
-static const struct input_descriptor indesc_cli = {
-	.type	= INDESC_CLI,
-	.name   = "<cli>",
-};
-
-static struct parser_state *state;
 static struct nft_ctx *cli_nft;
-static struct mnl_socket *cli_nf_sock;
-static void *scanner;
 static char histfile[PATH_MAX];
 static char *multiline;
 static bool eof;
@@ -134,11 +126,7 @@ static void cli_complete(char *line)
 	xfree(line);
 	line = s;
 
-	parser_init(cli_nf_sock, &cli_nft->cache, state, &msgs,
-		    cli_nft->debug_mask, &cli_nft->output);
-	scanner_push_buffer(scanner, &indesc_cli, line);
-	nft_run(cli_nft, cli_nf_sock, scanner, state, &msgs);
-	erec_print_list(&cli_nft->output, &msgs, cli_nft->debug_mask);
+	nft_run_cmd_from_buffer(cli_nft, line, len + 2);
 	xfree(line);
 	nft_ctx_flush_cache(cli_nft);
 }
@@ -148,12 +136,10 @@ static char **cli_completion(const char *text, int start, int end)
 	return NULL;
 }
 
-int cli_init(struct nft_ctx *nft, struct mnl_socket *nf_sock,
-	     struct parser_state *_state)
+int cli_init(struct nft_ctx *nft)
 {
 	const char *home;
 
-	cli_nf_sock = nf_sock;
 	cli_nft = nft;
 	rl_readline_name = "nft";
 	rl_instream  = stdin;
@@ -169,9 +155,6 @@ int cli_init(struct nft_ctx *nft, struct mnl_socket *nf_sock,
 
 	read_history(histfile);
 	history_set_pos(history_length);
-
-	state	= _state;
-	scanner = scanner_init(state);
 
 	while (!eof)
 		rl_callback_read_char();

@@ -75,9 +75,9 @@ out:
 	return ret;
 }
 
-int nft_run(struct nft_ctx *nft, struct mnl_socket *nf_sock,
-	    void *scanner, struct parser_state *state,
-	    struct list_head *msgs)
+static int nft_run(struct nft_ctx *nft, struct mnl_socket *nf_sock,
+		   void *scanner, struct parser_state *state,
+		   struct list_head *msgs)
 {
 	struct cmd *cmd, *next;
 	int ret;

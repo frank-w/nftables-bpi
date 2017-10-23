@@ -20,7 +20,7 @@
 
 #include <nftables/nftables.h>
 #include <utils.h>
-#include <parser.h>
+#include <nftables.h>
 #include <cli.h>
 
 static struct nft_ctx *nft;
@@ -169,7 +169,6 @@ int main(int argc, char * const *argv)
 	char *buf = NULL, *filename = NULL;
 	unsigned int len;
 	bool interactive = false;
-	struct parser_state state;
 	int i, val, rc;
 
 	nft = nft_ctx_new(NFT_CTX_DEFAULT);
@@ -273,7 +272,7 @@ int main(int argc, char * const *argv)
 	} else if (filename != NULL) {
 		rc = nft_run_cmd_from_filename(nft, filename);
 	} else if (interactive) {
-		if (cli_init(nft, nft->nf_sock, &state) < 0) {
+		if (cli_init(nft) < 0) {
 			fprintf(stderr, "%s: interactive CLI not supported in this build\n",
 				argv[0]);
 			exit(NFT_EXIT_FAILURE);

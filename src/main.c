@@ -20,7 +20,6 @@
 
 #include <nftables/nftables.h>
 #include <utils.h>
-#include <nftables.h>
 #include <cli.h>
 
 static struct nft_ctx *nft;
@@ -170,6 +169,8 @@ int main(int argc, char * const *argv)
 	unsigned int len;
 	bool interactive = false;
 	int i, val, rc;
+	enum numeric_level numeric;
+	unsigned int debug_mask;
 
 	nft = nft_ctx_new(NFT_CTX_DEFAULT);
 	nft_ctx_set_output(nft, stdout);
@@ -188,7 +189,7 @@ int main(int argc, char * const *argv)
 			       PACKAGE_NAME, PACKAGE_VERSION, RELEASE_NAME);
 			exit(NFT_EXIT_SUCCESS);
 		case OPT_CHECK:
-			nft->check = true;
+			nft_ctx_set_dry_run(nft, true);
 			break;
 		case OPT_FILE:
 			filename = optarg;
@@ -197,29 +198,31 @@ int main(int argc, char * const *argv)
 			interactive = true;
 			break;
 		case OPT_INCLUDEPATH:
-			if (nft->num_include_paths >= INCLUDE_PATHS_MAX) {
-				fprintf(stderr, "Too many include paths "
-						"specified, max. %u\n",
-					INCLUDE_PATHS_MAX - 1);
+			if (nft_ctx_add_include_path(nft, optarg)) {
+				fprintf(stderr,
+					"Failed to add include path '%s'\n",
+					optarg);
 				exit(NFT_EXIT_FAILURE);
 			}
-			nft->include_paths[nft->num_include_paths++] = optarg;
 			break;
 		case OPT_NUMERIC:
-			if (++nft->output.numeric > NUMERIC_ALL) {
+			numeric = nft_ctx_output_get_numeric(nft);
+			if (numeric == NUMERIC_ALL) {
 				fprintf(stderr, "Too many numeric options "
 						"used, max. %u\n",
 					NUMERIC_ALL);
 				exit(NFT_EXIT_FAILURE);
 			}
+			nft_ctx_output_set_numeric(nft, numeric + 1);
 			break;
 		case OPT_STATELESS:
-			nft->output.stateless++;
+			nft_ctx_output_set_stateless(nft, true);
 			break;
 		case OPT_IP2NAME:
-			nft->output.ip2name++;
+			nft_ctx_output_set_ip2name(nft, true);
 			break;
 		case OPT_DEBUG:
+			debug_mask = nft_ctx_output_get_debug(nft);
 			for (;;) {
 				unsigned int i;
 				char *end;
@@ -231,7 +234,7 @@ int main(int argc, char * const *argv)
 				for (i = 0; i < array_size(debug_param); i++) {
 					if (strcmp(debug_param[i].name, optarg))
 						continue;
-					nft->debug_mask |= debug_param[i].level;
+					debug_mask |= debug_param[i].level;
 					break;
 				}
 
@@ -245,12 +248,13 @@ int main(int argc, char * const *argv)
 					break;
 				optarg = end + 1;
 			}
+			nft_ctx_output_set_debug(nft, debug_mask);
 			break;
 		case OPT_HANDLE_OUTPUT:
-			nft->output.handle++;
+			nft_ctx_output_set_handle(nft, true);
 			break;
 		case OPT_ECHO:
-			nft->output.echo++;
+			nft_ctx_output_set_echo(nft, true);
 			break;
 		case OPT_INVALID:
 			exit(NFT_EXIT_FAILURE);

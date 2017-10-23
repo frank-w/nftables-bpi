@@ -14,6 +14,7 @@
 #include <iface.h>
 
 #include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 
 static int nft_netlink(struct nft_ctx *nft,
@@ -123,6 +124,33 @@ static void nft_exit(void)
 	mark_table_exit();
 }
 
+int nft_ctx_add_include_path(struct nft_ctx *ctx, const char *path)
+{
+	char **tmp;
+	int pcount = ctx->num_include_paths;
+
+	tmp = realloc(ctx->include_paths, (pcount + 1) * sizeof(char *));
+	if (!tmp)
+		return -1;
+
+	ctx->include_paths = tmp;
+
+	if (asprintf(&ctx->include_paths[pcount], "%s", path) < 0)
+		return -1;
+
+	ctx->num_include_paths++;
+	return 0;
+}
+
+void nft_ctx_clear_include_paths(struct nft_ctx *ctx)
+{
+	while (ctx->num_include_paths)
+		xfree(ctx->include_paths[--ctx->num_include_paths]);
+
+	xfree(ctx->include_paths);
+	ctx->include_paths = NULL;
+}
+
 static void nft_ctx_netlink_init(struct nft_ctx *ctx)
 {
 	ctx->nf_sock = netlink_open_sock();
@@ -135,8 +163,7 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 	nft_init();
 	ctx = xzalloc(sizeof(struct nft_ctx));
 
-	ctx->include_paths[0]	= DEFAULT_INCLUDE_PATH;
-	ctx->num_include_paths	= 1;
+	nft_ctx_add_include_path(ctx, DEFAULT_INCLUDE_PATH);
 	ctx->parser_max_errors	= 10;
 	init_list_head(&ctx->cache.list);
 	ctx->flags = flags;
@@ -159,6 +186,7 @@ void nft_ctx_free(struct nft_ctx *ctx)
 		netlink_close_sock(ctx->nf_sock);
 
 	nft_ctx_flush_cache(ctx);
+	nft_ctx_clear_include_paths(ctx);
 	xfree(ctx);
 	nft_exit();
 }
@@ -170,6 +198,75 @@ FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp)
 	ctx->output.output_fp = fp;
 
 	return old;
+}
+
+bool nft_ctx_get_dry_run(struct nft_ctx *ctx)
+{
+	return ctx->check;
+}
+
+void nft_ctx_set_dry_run(struct nft_ctx *ctx, bool dry)
+{
+	ctx->check = dry;
+}
+
+enum numeric_level nft_ctx_output_get_numeric(struct nft_ctx *ctx)
+{
+	return ctx->output.numeric;
+}
+
+void nft_ctx_output_set_numeric(struct nft_ctx *ctx, enum numeric_level level)
+{
+	ctx->output.numeric = level;
+}
+
+bool nft_ctx_output_get_stateless(struct nft_ctx *ctx)
+{
+	return ctx->output.stateless;
+}
+
+void nft_ctx_output_set_stateless(struct nft_ctx *ctx, bool val)
+{
+	ctx->output.stateless = val;
+}
+
+bool nft_ctx_output_get_ip2name(struct nft_ctx *ctx)
+{
+	return ctx->output.ip2name;
+}
+
+void nft_ctx_output_set_ip2name(struct nft_ctx *ctx, bool val)
+{
+	ctx->output.ip2name = val;
+}
+
+unsigned int nft_ctx_output_get_debug(struct nft_ctx *ctx)
+{
+	return ctx->debug_mask;
+}
+void nft_ctx_output_set_debug(struct nft_ctx *ctx, unsigned int mask)
+{
+	ctx->debug_mask = mask;
+}
+
+bool nft_ctx_output_get_handle(struct nft_ctx *ctx)
+{
+	return ctx->output.handle;
+}
+
+void nft_ctx_output_set_handle(struct nft_ctx *ctx, bool val)
+{
+	ctx->output.handle = val;
+}
+
+bool nft_ctx_output_get_echo(struct nft_ctx *ctx)
+{
+	return ctx->output.echo;
+}
+
+void nft_ctx_output_set_echo(struct nft_ctx *ctx, bool val)
+{
+	ctx->output.echo = val;
 }
 
 static const struct input_descriptor indesc_cmdline = {

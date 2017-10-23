@@ -50,7 +50,26 @@ enum nftables_exit_codes {
 
 struct nft_ctx *nft_ctx_new(uint32_t flags);
 void nft_ctx_free(struct nft_ctx *ctx);
+
+bool nft_ctx_get_dry_run(struct nft_ctx *ctx);
+void nft_ctx_set_dry_run(struct nft_ctx *ctx, bool dry);
+enum numeric_level nft_ctx_output_get_numeric(struct nft_ctx *ctx);
+void nft_ctx_output_set_numeric(struct nft_ctx *ctx, enum numeric_level level);
+bool nft_ctx_output_get_stateless(struct nft_ctx *ctx);
+void nft_ctx_output_set_stateless(struct nft_ctx *ctx, bool val);
+bool nft_ctx_output_get_ip2name(struct nft_ctx *ctx);
+void nft_ctx_output_set_ip2name(struct nft_ctx *ctx, bool val);
+unsigned int nft_ctx_output_get_debug(struct nft_ctx *ctx);
+void nft_ctx_output_set_debug(struct nft_ctx *ctx, unsigned int mask);
+bool nft_ctx_output_get_handle(struct nft_ctx *ctx);
+void nft_ctx_output_set_handle(struct nft_ctx *ctx, bool val);
+bool nft_ctx_output_get_echo(struct nft_ctx *ctx);
+void nft_ctx_output_set_echo(struct nft_ctx *ctx, bool val);
+
 FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp);
+int nft_ctx_add_include_path(struct nft_ctx *ctx, const char *path);
+void nft_ctx_clear_include_paths(struct nft_ctx *ctx);
+
 void nft_ctx_flush_cache(struct nft_ctx *ctx);
 
 int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen);

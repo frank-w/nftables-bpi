@@ -6,8 +6,6 @@
 #include <utils.h>
 #include <nftables/nftables.h>
 
-#define INCLUDE_PATHS_MAX	16
-
 struct output_ctx {
 	unsigned int numeric;
 	unsigned int stateless;
@@ -27,7 +25,7 @@ struct mnl_socket;
 
 struct nft_ctx {
 	struct mnl_socket	*nf_sock;
-	const char		*include_paths[INCLUDE_PATHS_MAX];
+	char			**include_paths;
 	unsigned int		num_include_paths;
 	unsigned int		parser_max_errors;
 	unsigned int		debug_mask;

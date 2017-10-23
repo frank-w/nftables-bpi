@@ -16,3 +16,5 @@ ip protocol tcp counter ip saddr 1.2.3.4 tcp dport 22;ok;ip protocol 6 counter i
 
 # or here.
 ip protocol tcp counter tcp dport 22;ok;ip protocol 6 counter tcp dport 22
+
+ether type ip tcp dport 22;ok

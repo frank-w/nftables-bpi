@@ -1,4 +1,5 @@
-SUBDIRS = linux
+SUBDIRS =		linux		\
+			nftables
 
 noinst_HEADERS = 	cli.h		\
 			datatype.h	\

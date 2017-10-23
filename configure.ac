@@ -140,6 +140,7 @@ AC_CONFIG_FILES([					\
 		Makefile				\
 		src/Makefile				\
 		include/Makefile			\
+		include/nftables/Makefile		\
 		include/linux/Makefile			\
 		include/linux/netfilter/Makefile	\
 		include/linux/netfilter_arp/Makefile	\

@@ -56,7 +56,8 @@ nft_SOURCES =	main.c				\
 		mergesort.c			\
 		scanner.l			\
 		tcpopt.c			\
-		parser_bison.y
+		parser_bison.y			\
+		libnftables.c
 
 if BUILD_CLI
 nft_SOURCES +=	cli.c

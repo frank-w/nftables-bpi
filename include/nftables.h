@@ -4,23 +4,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <utils.h>
-
-enum numeric_level {
-	NUMERIC_NONE,
-	NUMERIC_ADDR,
-	NUMERIC_PORT,
-	NUMERIC_ALL,
-};
-
-enum debug_level {
-	DEBUG_SCANNER		= 0x1,
-	DEBUG_PARSER		= 0x2,
-	DEBUG_EVALUATION	= 0x4,
-	DEBUG_NETLINK		= 0x8,
-	DEBUG_MNL		= 0x10,
-	DEBUG_PROTO_CTX		= 0x20,
-	DEBUG_SEGTREE		= 0x40,
-};
+#include <nftables/nftables.h>
 
 #define INCLUDE_PATHS_MAX	16
 
@@ -51,15 +35,6 @@ struct nft_ctx {
 	bool			check;
 	struct nft_cache	cache;
 	uint32_t		flags;
-};
-
-#define NFT_CTX_DEFAULT		0
-
-enum nftables_exit_codes {
-	NFT_EXIT_SUCCESS	= 0,
-	NFT_EXIT_FAILURE	= 1,
-	NFT_EXIT_NOMEM		= 2,
-	NFT_EXIT_NONL		= 3,
 };
 
 struct input_descriptor;

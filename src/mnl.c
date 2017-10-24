@@ -71,7 +71,7 @@ nft_mnl_talk(struct mnl_ctx *ctx, const void *data, unsigned int len,
 {
 	uint32_t portid = mnl_socket_get_portid(ctx->nf_sock);
 
-	if (ctx->debug_mask & DEBUG_MNL)
+	if (ctx->debug_mask & NFT_DEBUG_MNL)
 		mnl_nlmsg_fprintf(stdout, data, len, sizeof(struct nfgenmsg));
 
 	if (mnl_socket_sendto(ctx->nf_sock, data, len) < 0)
@@ -229,7 +229,7 @@ static ssize_t mnl_nft_socket_sendmsg(const struct netlink_ctx *ctx)
 	nftnl_batch_iovec(ctx->batch, iov, iov_len);
 
 	for (i = 0; i < iov_len; i++) {
-		if (ctx->debug_mask & DEBUG_MNL) {
+		if (ctx->debug_mask & NFT_DEBUG_MNL) {
 			mnl_nlmsg_fprintf(stdout,
 					  iov[i].iov_base, iov[i].iov_len,
 					  sizeof(struct nfgenmsg));
@@ -1122,7 +1122,7 @@ int mnl_nft_event_listener(struct mnl_ctx *ctx,
 			}
 		}
 
-		if (ctx->debug_mask & DEBUG_MNL) {
+		if (ctx->debug_mask & NFT_DEBUG_MNL) {
 			mnl_nlmsg_fprintf(stdout, buf, sizeof(buf),
 					  sizeof(struct nfgenmsg));
 		}

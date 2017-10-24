@@ -472,7 +472,7 @@ int netlink_replace_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
 	if (ctx->octx->echo) {
 		err = cache_update(ctx->nf_sock, ctx->cache,
 				   CMD_INVALID, ctx->msgs,
-				   ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+				   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 		if (err < 0)
 			return err;
 
@@ -510,7 +510,7 @@ void netlink_dump_rule(const struct nftnl_rule *nlr, struct netlink_ctx *ctx)
 {
 	FILE *fp = ctx->octx->output_fp;
 
-	if (!(ctx->debug_mask & DEBUG_NETLINK) || !fp)
+	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_rule_fprintf(fp, nlr, 0, 0);
@@ -520,7 +520,7 @@ void netlink_dump_rule(const struct nftnl_rule *nlr, struct netlink_ctx *ctx)
 void netlink_dump_expr(const struct nftnl_expr *nle,
 		       FILE *fp, unsigned int debug_mask)
 {
-	if (!(debug_mask & DEBUG_NETLINK))
+	if (!(debug_mask & NFT_DEBUG_NETLINK))
 		return;
 
 	nftnl_expr_fprintf(fp, nle, 0, 0);
@@ -580,7 +580,7 @@ void netlink_dump_chain(const struct nftnl_chain *nlc, struct netlink_ctx *ctx)
 {
 	FILE *fp = ctx->octx->output_fp;
 
-	if (!(ctx->debug_mask & DEBUG_NETLINK) || !fp)
+	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_chain_fprintf(fp, nlc, 0, 0);
@@ -1035,7 +1035,7 @@ void netlink_dump_set(const struct nftnl_set *nls, struct netlink_ctx *ctx)
 {
 	FILE *fp = ctx->octx->output_fp;
 
-	if (!(ctx->debug_mask & DEBUG_NETLINK) || !fp)
+	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_set_fprintf(fp, nls, 0, 0);
@@ -1666,7 +1666,7 @@ void netlink_dump_obj(struct nftnl_obj *nln, struct netlink_ctx *ctx)
 {
 	FILE *fp = ctx->octx->output_fp;
 
-	if (!(ctx->debug_mask & DEBUG_NETLINK) || !fp)
+	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_obj_fprintf(fp, nln, 0, 0);
@@ -2895,7 +2895,7 @@ static const char *nftnl_msgtype2str(uint16_t type)
 
 static void netlink_events_debug(uint16_t type, unsigned int debug_mask)
 {
-	if (!(debug_mask & DEBUG_NETLINK))
+	if (!(debug_mask & NFT_DEBUG_NETLINK))
 		return;
 
 	printf("netlink event: %s\n", nftnl_msgtype2str(type));

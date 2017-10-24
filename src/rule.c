@@ -134,7 +134,7 @@ static int cache_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 		.cache		= cache,
 		.msgs		= msgs,
 		.seqnum		= cache->seqnum++,
-		.debug_mask	= debug ? DEBUG_NETLINK : 0,
+		.debug_mask	= debug ? NFT_DEBUG_NETLINK : 0,
 		.octx		= octx,
 	};
 	int ret;

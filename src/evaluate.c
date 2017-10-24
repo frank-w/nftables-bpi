@@ -192,7 +192,7 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 		break;
 	case SYMBOL_SET:
 		ret = cache_update(ctx->nf_sock, ctx->cache, ctx->cmd->op,
-				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -1772,7 +1772,7 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 
 static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 {
-	if (ctx->debug_mask & DEBUG_EVALUATION) {
+	if (ctx->debug_mask & NFT_DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &(*expr)->location,
 				   "Evaluate %s", (*expr)->ops->name);
@@ -2758,7 +2758,7 @@ static int stmt_evaluate_objref(struct eval_ctx *ctx, struct stmt *stmt)
 
 int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 {
-	if (ctx->debug_mask & DEBUG_EVALUATION) {
+	if (ctx->debug_mask & NFT_DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &stmt->location,
 				   "Evaluate %s", stmt->ops->name);
@@ -3041,14 +3041,14 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 		if (ret < 0)
 			return ret;
 
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3059,7 +3059,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 		return rule_evaluate(ctx, cmd->rule);
 	case CMD_OBJ_CHAIN:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3083,7 +3083,7 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3127,7 +3127,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	int ret;
 
 	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 	if (ret < 0)
 		return ret;
 
@@ -3214,7 +3214,7 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 	int ret;
 
 	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 	if (ret < 0)
 		return ret;
 
@@ -3241,7 +3241,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 	int ret;
 
 	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 	if (ret < 0)
 		return ret;
 
@@ -3300,7 +3300,7 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3398,7 +3398,7 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 	int ret;
 
 	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 	if (ret < 0)
 		return ret;
 
@@ -3420,7 +3420,7 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	return cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			    ctx->debug_mask & DEBUG_NETLINK, ctx->octx);
+			    ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
 }
 
 static const char * const cmd_op_name[] = {
@@ -3448,7 +3448,7 @@ static const char *cmd_op_to_name(enum cmd_ops op)
 
 int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 {
-	if (ctx->debug_mask & DEBUG_EVALUATION) {
+	if (ctx->debug_mask & NFT_DEBUG_EVALUATION) {
 		struct error_record *erec;
 
 		erec = erec_create(EREC_INFORMATIONAL, &cmd->location,

@@ -194,7 +194,7 @@ void symbolic_constant_print(const struct symbol_table *tbl,
 	if (quotes)
 		nft_print(octx, "\"");
 
-	if (octx->numeric > NUMERIC_ALL)
+	if (octx->numeric > NFT_NUMERIC_ALL)
 		nft_print(octx, "%" PRIu64 "", val);
 	else
 		nft_print(octx, "%s", s->identifier);
@@ -556,7 +556,7 @@ static void inet_protocol_type_print(const struct expr *expr,
 {
 	struct protoent *p;
 
-	if (octx->numeric < NUMERIC_ALL) {
+	if (octx->numeric < NFT_NUMERIC_ALL) {
 		p = getprotobynumber(mpz_get_uint8(expr->value));
 		if (p != NULL) {
 			nft_print(octx, "%s", p->p_name);
@@ -608,7 +608,7 @@ const struct datatype inet_protocol_type = {
 static void inet_service_type_print(const struct expr *expr,
 				     struct output_ctx *octx)
 {
-	if (octx->numeric >= NUMERIC_PORT) {
+	if (octx->numeric >= NFT_NUMERIC_PORT) {
 		integer_type_print(expr, octx);
 		return;
 	}

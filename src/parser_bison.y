@@ -121,9 +121,9 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 %initial-action {
 	location_init(scanner, state, &yylloc);
-	if (nft->debug_mask & DEBUG_SCANNER)
+	if (nft->debug_mask & NFT_DEBUG_SCANNER)
 		nft_set_debug(1, scanner);
-	if (nft->debug_mask & DEBUG_PARSER)
+	if (nft->debug_mask & NFT_DEBUG_PARSER)
 		yydebug = 1;
 }
 

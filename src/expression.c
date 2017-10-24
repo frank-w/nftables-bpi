@@ -602,11 +602,11 @@ struct expr *relational_expr_alloc(const struct location *loc, enum ops op,
 
 static void range_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	octx->numeric += NUMERIC_ALL + 1;
+	octx->numeric += NFT_NUMERIC_ALL + 1;
 	expr_print(expr->left, octx);
 	nft_print(octx, "-");
 	expr_print(expr->right, octx);
-	octx->numeric -= NUMERIC_ALL + 1;
+	octx->numeric -= NFT_NUMERIC_ALL + 1;
 }
 
 static void range_expr_clone(struct expr *new, const struct expr *expr)

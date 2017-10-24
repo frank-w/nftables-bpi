@@ -127,35 +127,35 @@ static void show_help(const char *name)
 
 static const struct {
 	const char		*name;
-	enum debug_level	level;
+	enum nft_debug_level	level;
 } debug_param[] = {
 	{
 		.name		= "scanner",
-		.level		= DEBUG_SCANNER,
+		.level		= NFT_DEBUG_SCANNER,
 	},
 	{
 		.name		= "parser",
-		.level		= DEBUG_PARSER,
+		.level		= NFT_DEBUG_PARSER,
 	},
 	{
 		.name		= "eval",
-		.level		= DEBUG_EVALUATION,
+		.level		= NFT_DEBUG_EVALUATION,
 	},
 	{
 		.name		= "netlink",
-		.level		= DEBUG_NETLINK,
+		.level		= NFT_DEBUG_NETLINK,
 	},
 	{
 		.name		= "mnl",
-		.level		= DEBUG_MNL,
+		.level		= NFT_DEBUG_MNL,
 	},
 	{
 		.name		= "proto-ctx",
-		.level		= DEBUG_PROTO_CTX,
+		.level		= NFT_DEBUG_PROTO_CTX,
 	},
 	{
 		.name		= "segtree",
-		.level		= DEBUG_SEGTREE,
+		.level		= NFT_DEBUG_SEGTREE,
 	},
 	{
 		.name		= "all",
@@ -166,11 +166,11 @@ static const struct {
 int main(int argc, char * const *argv)
 {
 	char *buf = NULL, *filename = NULL;
-	unsigned int len;
+	enum nft_numeric_level numeric;
 	bool interactive = false;
-	int i, val, rc;
-	enum numeric_level numeric;
 	unsigned int debug_mask;
+	unsigned int len;
+	int i, val, rc;
 
 	nft = nft_ctx_new(NFT_CTX_DEFAULT);
 	nft_ctx_set_output(nft, stdout);
@@ -207,10 +207,10 @@ int main(int argc, char * const *argv)
 			break;
 		case OPT_NUMERIC:
 			numeric = nft_ctx_output_get_numeric(nft);
-			if (numeric == NUMERIC_ALL) {
+			if (numeric == NFT_NUMERIC_ALL) {
 				fprintf(stderr, "Too many numeric options "
 						"used, max. %u\n",
-					NUMERIC_ALL);
+					NFT_NUMERIC_ALL);
 				exit(NFT_EXIT_FAILURE);
 			}
 			nft_ctx_output_set_numeric(nft, numeric + 1);

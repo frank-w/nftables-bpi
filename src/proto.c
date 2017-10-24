@@ -143,7 +143,7 @@ static void proto_ctx_debug(const struct proto_ctx *ctx, enum proto_bases base,
 {
 	unsigned int i;
 
-	if (!(debug_mask & DEBUG_PROTO_CTX))
+	if (!(debug_mask & NFT_DEBUG_PROTO_CTX))
 		return;
 
 	pr_debug("update %s protocol context:\n", proto_base_names[base]);

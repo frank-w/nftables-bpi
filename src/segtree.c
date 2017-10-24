@@ -166,7 +166,7 @@ static void __ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 
 static bool segtree_debug(unsigned int debug_mask)
 {
-	if (debug_mask & DEBUG_SEGTREE)
+	if (debug_mask & NFT_DEBUG_SEGTREE)
 		return true;
 
 	return false;

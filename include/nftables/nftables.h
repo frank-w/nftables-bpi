@@ -16,21 +16,21 @@
 
 struct nft_ctx;
 
-enum debug_level {
-	DEBUG_SCANNER		= 0x1,
-	DEBUG_PARSER		= 0x2,
-	DEBUG_EVALUATION	= 0x4,
-	DEBUG_NETLINK		= 0x8,
-	DEBUG_MNL		= 0x10,
-	DEBUG_PROTO_CTX		= 0x20,
-	DEBUG_SEGTREE		= 0x40,
+enum nft_debug_level {
+	NFT_DEBUG_SCANNER		= 0x1,
+	NFT_DEBUG_PARSER		= 0x2,
+	NFT_DEBUG_EVALUATION		= 0x4,
+	NFT_DEBUG_NETLINK		= 0x8,
+	NFT_DEBUG_MNL			= 0x10,
+	NFT_DEBUG_PROTO_CTX		= 0x20,
+	NFT_DEBUG_SEGTREE		= 0x40,
 };
 
-enum numeric_level {
-	NUMERIC_NONE,
-	NUMERIC_ADDR,
-	NUMERIC_PORT,
-	NUMERIC_ALL,
+enum nft_numeric_level {
+	NFT_NUMERIC_NONE,
+	NFT_NUMERIC_ADDR,
+	NFT_NUMERIC_PORT,
+	NFT_NUMERIC_ALL,
 };
 
 /**
@@ -53,8 +53,8 @@ void nft_ctx_free(struct nft_ctx *ctx);
 
 bool nft_ctx_get_dry_run(struct nft_ctx *ctx);
 void nft_ctx_set_dry_run(struct nft_ctx *ctx, bool dry);
-enum numeric_level nft_ctx_output_get_numeric(struct nft_ctx *ctx);
-void nft_ctx_output_set_numeric(struct nft_ctx *ctx, enum numeric_level level);
+enum nft_numeric_level nft_ctx_output_get_numeric(struct nft_ctx *ctx);
+void nft_ctx_output_set_numeric(struct nft_ctx *ctx, enum nft_numeric_level level);
 bool nft_ctx_output_get_stateless(struct nft_ctx *ctx);
 void nft_ctx_output_set_stateless(struct nft_ctx *ctx, bool val);
 bool nft_ctx_output_get_ip2name(struct nft_ctx *ctx);

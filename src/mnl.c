@@ -94,7 +94,7 @@ static int genid_cb(const struct nlmsghdr *nlh, void *data)
 	return MNL_CB_OK;
 }
 
-void mnl_genid_get(struct mnl_socket *nf_sock, uint32_t seqnum)
+uint16_t mnl_genid_get(struct mnl_socket *nf_sock, uint32_t seqnum)
 {
 	char buf[MNL_SOCKET_BUFFER_SIZE];
 	struct mnl_ctx ctx = {
@@ -106,6 +106,8 @@ void mnl_genid_get(struct mnl_socket *nf_sock, uint32_t seqnum)
 	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETGEN, AF_UNSPEC, 0, seqnum);
 	/* Skip error checking, old kernels sets res_id field to zero. */
 	nft_mnl_talk(&ctx, nlh, nlh->nlmsg_len, genid_cb, NULL);
+
+	return nft_genid;
 }
 
 static int check_genid(const struct nlmsghdr *nlh)

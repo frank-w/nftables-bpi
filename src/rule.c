@@ -153,12 +153,14 @@ int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
 		 enum cmd_ops cmd, struct list_head *msgs, bool debug,
 		 struct output_ctx *octx)
 {
+	uint16_t genid;
 	int ret;
 
-	if (cache->initialized)
-		return 0;
 replay:
-	netlink_genid_get(nf_sock, cache->seqnum++);
+	genid = netlink_genid_get(nf_sock, cache->seqnum++);
+	if (genid && genid == cache->genid)
+		return 0;
+	cache_release(cache);
 	ret = cache_init(nf_sock, cache, cmd, msgs, debug, octx);
 	if (ret < 0) {
 		cache_release(cache);
@@ -168,7 +170,7 @@ replay:
 		}
 		return -1;
 	}
-	cache->initialized = true;
+	cache->genid = genid;
 	return 0;
 }
 
@@ -185,7 +187,7 @@ void cache_flush(struct list_head *table_list)
 void cache_release(struct nft_cache *cache)
 {
 	cache_flush(&cache->list);
-	cache->initialized = false;
+	cache->genid = 0;
 }
 
 /* internal ID to uniquely identify a set in the batch */

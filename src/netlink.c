@@ -75,9 +75,9 @@ void netlink_restart(struct mnl_socket *nf_sock)
 	nf_sock = netlink_open_sock();
 }
 
-void netlink_genid_get(struct mnl_socket *nf_sock, uint32_t seqnum)
+uint16_t netlink_genid_get(struct mnl_socket *nf_sock, uint32_t seqnum)
 {
-	mnl_genid_get(nf_sock, seqnum);
+	return mnl_genid_get(nf_sock, seqnum);
 }
 
 void __noreturn __netlink_abi_error(const char *file, int line,

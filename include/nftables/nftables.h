@@ -70,8 +70,6 @@ FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp);
 int nft_ctx_add_include_path(struct nft_ctx *ctx, const char *path);
 void nft_ctx_clear_include_paths(struct nft_ctx *ctx);
 
-void nft_ctx_flush_cache(struct nft_ctx *ctx);
-
 int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen);
 int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename);
 

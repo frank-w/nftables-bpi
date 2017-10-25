@@ -128,7 +128,6 @@ static void cli_complete(char *line)
 
 	nft_run_cmd_from_buffer(cli_nft, line, len + 2);
 	xfree(line);
-	nft_ctx_flush_cache(cli_nft);
 }
 
 static char **cli_completion(const char *text, int start, int end)

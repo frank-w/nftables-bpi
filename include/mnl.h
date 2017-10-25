@@ -15,7 +15,7 @@ struct mnl_socket *netlink_open_sock(void);
 void netlink_close_sock(struct mnl_socket *nf_sock);
 
 uint32_t mnl_seqnum_alloc(uint32_t *seqnum);
-void mnl_genid_get(struct mnl_socket *nf_sock, uint32_t seqnum);
+uint16_t mnl_genid_get(struct mnl_socket *nf_sock, uint32_t seqnum);
 
 struct mnl_err {
 	struct list_head	head;

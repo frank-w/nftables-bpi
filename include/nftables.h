@@ -16,7 +16,7 @@ struct output_ctx {
 };
 
 struct nft_cache {
-	bool			initialized;
+	uint16_t		genid;
 	struct list_head	list;
 	uint32_t		seqnum;
 };

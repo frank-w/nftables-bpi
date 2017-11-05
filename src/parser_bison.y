@@ -1545,6 +1545,7 @@ type_identifier		:	STRING	{ $$ = $1; }
 			|	MARK	{ $$ = xstrdup("mark"); }
 			|	DSCP	{ $$ = xstrdup("dscp"); }
 			|	ECN	{ $$ = xstrdup("ecn"); }
+			|	CLASSID { $$ = xstrdup("classid"); }
 			;
 
 hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	PRIORITY	prio_spec

@@ -8,6 +8,11 @@ mydiff() {
 	diff -w -I '^# ' "$@"
 }
 
+if [ "$(id -u)" != "0" ] ; then
+	echo "this requires root!"
+	exit 1
+fi
+
 testdir=$(mktemp -d)
 if [ ! -d $testdir ]; then
 	echo "Failed to create test directory" >&2

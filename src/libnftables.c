@@ -290,6 +290,7 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	nft_ctx_set_output(nft, fp);
 	scanner_destroy(scanner);
+	iface_cache_release();
 
 	return rc;
 }
@@ -322,6 +323,7 @@ err:
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	nft_ctx_set_output(nft, fp);
 	scanner_destroy(scanner);
+	iface_cache_release();
 
 	return rc;
 }

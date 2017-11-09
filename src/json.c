@@ -998,7 +998,7 @@ json_t *fwd_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 {
 	json_t *root;
 
-	root = expr_print_json(stmt->fwd.to, octx);
+	root = expr_print_json(stmt->fwd.dev, octx);
 	return json_pack("{s:o}", "fwd", root);
 }
 

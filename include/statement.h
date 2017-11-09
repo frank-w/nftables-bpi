@@ -164,7 +164,9 @@ struct stmt *dup_stmt_alloc(const struct location *loc);
 uint32_t dup_stmt_type(const char *type);
 
 struct fwd_stmt {
-	struct expr		*to;
+	uint8_t			family;
+	struct expr		*addr;
+	struct expr		*dev;
 };
 
 struct stmt *fwd_stmt_alloc(const struct location *loc);

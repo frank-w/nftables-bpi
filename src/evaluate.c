@@ -2512,19 +2512,40 @@ static int stmt_evaluate_dup(struct eval_ctx *ctx, struct stmt *stmt)
 
 static int stmt_evaluate_fwd(struct eval_ctx *ctx, struct stmt *stmt)
 {
-	int err;
+	const struct datatype *dtype;
+	int err, len;
 
 	switch (ctx->pctx.family) {
 	case NFPROTO_NETDEV:
-		if (stmt->fwd.to == NULL)
+		if (stmt->fwd.dev == NULL)
 			return stmt_error(ctx, stmt,
 					  "missing destination interface");
 
 		err = stmt_evaluate_arg(ctx, stmt, &ifindex_type,
 					sizeof(uint32_t) * BITS_PER_BYTE,
-					BYTEORDER_HOST_ENDIAN, &stmt->fwd.to);
+					BYTEORDER_HOST_ENDIAN, &stmt->fwd.dev);
 		if (err < 0)
 			return err;
+
+		if (stmt->fwd.addr != NULL) {
+			switch (stmt->fwd.family) {
+			case NFPROTO_IPV4:
+				dtype = &ipaddr_type;
+				len   = 4 * BITS_PER_BYTE;
+				break;
+			case NFPROTO_IPV6:
+				dtype = &ip6addr_type;
+				len   = 16 * BITS_PER_BYTE;
+				break;
+			default:
+				return stmt_error(ctx, stmt, "missing family");
+			}
+			err = stmt_evaluate_arg(ctx, stmt, dtype, len,
+						BYTEORDER_BIG_ENDIAN,
+						&stmt->fwd.addr);
+			if (err < 0)
+				return err;
+		}
 		break;
 	default:
 		return stmt_error(ctx, stmt, "unsupported family");

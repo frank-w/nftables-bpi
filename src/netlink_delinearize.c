@@ -1109,8 +1109,8 @@ static void netlink_parse_fwd(struct netlink_parse_ctx *ctx,
 			      const struct location *loc,
 			      const struct nftnl_expr *nle)
 {
-	enum nft_registers reg1;
-	struct expr *dev;
+	enum nft_registers reg1, reg2;
+	struct expr *dev, *addr;
 	struct stmt *stmt;
 
 	stmt = fwd_stmt_alloc(loc);
@@ -1125,7 +1125,37 @@ static void netlink_parse_fwd(struct netlink_parse_ctx *ctx,
 		}
 
 		expr_set_type(dev, &ifindex_type, BYTEORDER_HOST_ENDIAN);
-		stmt->fwd.to = dev;
+		stmt->fwd.dev = dev;
+	}
+
+	if (nftnl_expr_is_set(nle, NFTNL_EXPR_FWD_NFPROTO)) {
+		stmt->fwd.family =
+			nftnl_expr_get_u32(nle, NFTNL_EXPR_FWD_NFPROTO);
+	}
+
+	if (nftnl_expr_is_set(nle, NFTNL_EXPR_FWD_SREG_ADDR)) {
+		reg2 = netlink_parse_register(nle, NFTNL_EXPR_FWD_SREG_ADDR);
+		if (reg2) {
+			addr = netlink_get_register(ctx, loc, reg2);
+			if (addr == NULL)
+				return netlink_error(ctx, loc,
+						     "fwd statement has no output expression");
+
+			switch (stmt->fwd.family) {
+			case AF_INET:
+				expr_set_type(addr, &ipaddr_type,
+					      BYTEORDER_BIG_ENDIAN);
+				break;
+			case AF_INET6:
+				expr_set_type(addr, &ip6addr_type,
+					      BYTEORDER_BIG_ENDIAN);
+				break;
+			default:
+				return netlink_error(ctx, loc,
+						     "fwd statement has no family");
+			}
+			stmt->fwd.addr = addr;
+		}
 	}
 
 	ctx->stmt = stmt;
@@ -2398,8 +2428,9 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 				expr_postprocess(&rctx, &stmt->dup.dev);
 			break;
 		case STMT_FWD:
-			if (stmt->fwd.to != NULL)
-				expr_postprocess(&rctx, &stmt->fwd.to);
+			expr_postprocess(&rctx, &stmt->fwd.dev);
+			if (stmt->fwd.addr != NULL)
+				expr_postprocess(&rctx, &stmt->fwd.addr);
 			break;
 		case STMT_XT:
 			stmt_xt_postprocess(&rctx, stmt, rule);

@@ -713,15 +713,37 @@ struct stmt *dup_stmt_alloc(const struct location *loc)
 	return stmt_alloc(loc, &dup_stmt_ops);
 }
 
+static const char * const nfproto_family_name_array[NFPROTO_NUMPROTO] = {
+	[NFPROTO_IPV4]	= "ip",
+	[NFPROTO_IPV6]	= "ip6",
+};
+
+static const char *nfproto_family_name(uint8_t nfproto)
+{
+	if (nfproto >= NFPROTO_NUMPROTO || !nfproto_family_name_array[nfproto])
+		return "unknown";
+
+	return nfproto_family_name_array[nfproto];
+}
+
 static void fwd_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	nft_print(octx, "fwd to ");
-	expr_print(stmt->fwd.to, octx);
+	if (stmt->fwd.addr) {
+		nft_print(octx, "fwd %s to ",
+			  nfproto_family_name(stmt->fwd.family));
+		expr_print(stmt->fwd.addr, octx);
+		nft_print(octx, " device ");
+		expr_print(stmt->fwd.dev, octx);
+	} else {
+		nft_print(octx, "fwd to ");
+		expr_print(stmt->fwd.dev, octx);
+	}
 }
 
 static void fwd_stmt_destroy(struct stmt *stmt)
 {
-	expr_free(stmt->fwd.to);
+	expr_free(stmt->fwd.addr);
+	expr_free(stmt->fwd.dev);
 }
 
 static const struct stmt_ops fwd_stmt_ops = {

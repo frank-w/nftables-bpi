@@ -1563,7 +1563,7 @@ static struct stmt *json_parse_fwd_stmt(struct json_ctx *ctx,
 {
 	struct stmt *stmt = fwd_stmt_alloc(int_loc);
 
-	stmt->fwd.to = json_parse_expr(ctx, value);
+	stmt->fwd.dev = json_parse_expr(ctx, value);
 
 	return stmt;
 }

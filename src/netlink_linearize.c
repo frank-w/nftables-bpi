@@ -1091,15 +1091,26 @@ static void netlink_gen_dup_stmt(struct netlink_linearize_ctx *ctx,
 static void netlink_gen_fwd_stmt(struct netlink_linearize_ctx *ctx,
 				 const struct stmt *stmt)
 {
-	enum nft_registers sreg1;
+	enum nft_registers sreg1, sreg2;
 	struct nftnl_expr *nle;
 
 	nle = alloc_nft_expr("fwd");
 
-	sreg1 = get_register(ctx, stmt->fwd.to);
-	netlink_gen_expr(ctx, stmt->fwd.to, sreg1);
+	sreg1 = get_register(ctx, stmt->fwd.dev);
+	netlink_gen_expr(ctx, stmt->fwd.dev, sreg1);
 	netlink_put_register(nle, NFTNL_EXPR_FWD_SREG_DEV, sreg1);
-	release_register(ctx, stmt->fwd.to);
+
+	if (stmt->fwd.addr != NULL) {
+		sreg2 = get_register(ctx, stmt->fwd.addr);
+		netlink_gen_expr(ctx, stmt->fwd.addr, sreg2);
+		netlink_put_register(nle, NFTNL_EXPR_FWD_SREG_ADDR, sreg2);
+		release_register(ctx, stmt->fwd.addr);
+	}
+	release_register(ctx, stmt->fwd.dev);
+
+	if (stmt->fwd.family)
+		nftnl_expr_set_u32(nle, NFTNL_EXPR_FWD_NFPROTO,
+				   stmt->fwd.family);
 
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }

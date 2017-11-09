@@ -698,6 +698,8 @@ int nft_lex(void *, void *, void *);
 %destructor { expr_free($$); }	rt_expr
 %type <val>			rt_key
 
+%type <val>			fwd_key_proto
+
 %type <expr>			ct_expr
 %destructor { expr_free($$); }	ct_expr
 %type <val>			ct_key		ct_dir	ct_key_dir_optional	ct_key_dir	ct_key_proto_field
@@ -2675,10 +2677,21 @@ dup_stmt		:	DUP	TO	stmt_expr
 			}
 			;
 
-fwd_stmt		:	FWD	TO	expr
+fwd_key_proto		:	IP		{ $$ = NFPROTO_IPV4; }
+			|	IP6		{ $$ = NFPROTO_IPV6; }
+			;
+
+fwd_stmt		:	FWD	TO	stmt_expr
 			{
 				$$ = fwd_stmt_alloc(&@$);
-				$$->fwd.to = $3;
+				$$->fwd.dev = $3;
+			}
+			|	FWD	fwd_key_proto	TO	stmt_expr	DEVICE	stmt_expr
+			{
+				$$ = fwd_stmt_alloc(&@$);
+				$$->fwd.family = $2;
+				$$->fwd.addr = $4;
+				$$->fwd.dev = $6;
 			}
 			;
 

@@ -121,28 +121,17 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 	return 0;
 }
 
-static int cache_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
-		      enum cmd_ops cmd, struct list_head *msgs,
-		      bool debug, struct output_ctx *octx)
+static int cache_init(struct netlink_ctx *ctx, enum cmd_ops cmd)
 {
 	struct handle handle = {
 		.family = NFPROTO_UNSPEC,
 	};
-	struct netlink_ctx ctx = {
-		.list		= LIST_HEAD_INIT(ctx.list),
-		.nf_sock	= nf_sock,
-		.cache		= cache,
-		.msgs		= msgs,
-		.seqnum		= cache->seqnum++,
-		.debug_mask	= debug ? NFT_DEBUG_NETLINK : 0,
-		.octx		= octx,
-	};
 	int ret;
 
-	ret = cache_init_tables(&ctx, &handle, cache);
+	ret = cache_init_tables(ctx, &handle, ctx->cache);
 	if (ret < 0)
 		return ret;
-	ret = cache_init_objects(&ctx, cmd);
+	ret = cache_init_objects(ctx, cmd);
 	if (ret < 0)
 		return ret;
 
@@ -155,13 +144,22 @@ int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
 {
 	uint16_t genid;
 	int ret;
+	struct netlink_ctx ctx = {
+		.list		= LIST_HEAD_INIT(ctx.list),
+		.nf_sock	= nf_sock,
+		.cache		= cache,
+		.msgs		= msgs,
+		.debug_mask	= debug ? NFT_DEBUG_NETLINK : 0,
+		.octx		= octx,
+	};
 
 replay:
-	genid = netlink_genid_get(nf_sock, cache->seqnum++);
+	ctx.seqnum = cache->seqnum++;
+	genid = netlink_genid_get(&ctx);
 	if (genid && genid == cache->genid)
 		return 0;
 	cache_release(cache);
-	ret = cache_init(nf_sock, cache, cmd, msgs, debug, octx);
+	ret = cache_init(&ctx, cmd);
 	if (ret < 0) {
 		cache_release(cache);
 		if (errno == EINTR) {

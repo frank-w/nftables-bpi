@@ -272,7 +272,7 @@ static const struct input_descriptor indesc_cmdline = {
 
 int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 {
-	int rc = NFT_EXIT_SUCCESS;
+	int rc = 0;
 	struct parser_state state;
 	LIST_HEAD(msgs);
 	void *scanner;
@@ -284,7 +284,7 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	scanner_push_buffer(scanner, &indesc_cmdline, buf);
 
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
-		rc = NFT_EXIT_FAILURE;
+		rc = -1;
 
 	fp = nft_ctx_set_output(nft, stderr);
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
@@ -306,18 +306,18 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	rc = cache_update(nft->nf_sock, &nft->cache, CMD_INVALID, &msgs,
 			  nft->debug_mask, &nft->output);
 	if (rc < 0)
-		return NFT_EXIT_FAILURE;
+		return -1;
 
 	parser_init(nft->nf_sock, &nft->cache, &state,
 		    &msgs, nft->debug_mask, &nft->output);
 	scanner = scanner_init(&state);
 	if (scanner_read_file(scanner, filename, &internal_location) < 0) {
-		rc = NFT_EXIT_FAILURE;
+		rc = -1;
 		goto err;
 	}
 
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
-		rc = NFT_EXIT_FAILURE;
+		rc = -1;
 err:
 	fp = nft_ctx_set_output(nft, stderr);
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);

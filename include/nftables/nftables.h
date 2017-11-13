@@ -38,16 +38,6 @@ enum nft_numeric_level {
  */
 #define NFT_CTX_DEFAULT		0
 
-/**
- * Exit codes returned by nft_run_cmd_from_*()
- */
-enum nftables_exit_codes {
-	NFT_EXIT_SUCCESS	= 0,
-	NFT_EXIT_FAILURE	= 1,
-	NFT_EXIT_NOMEM		= 2,
-	NFT_EXIT_NONL		= 3,
-};
-
 struct nft_ctx *nft_ctx_new(uint32_t flags);
 void nft_ctx_free(struct nft_ctx *ctx);
 

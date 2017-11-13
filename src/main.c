@@ -183,11 +183,11 @@ int main(int argc, char * const *argv)
 		switch (val) {
 		case OPT_HELP:
 			show_help(argv[0]);
-			exit(NFT_EXIT_SUCCESS);
+			exit(EXIT_SUCCESS);
 		case OPT_VERSION:
 			printf("%s v%s (%s)\n",
 			       PACKAGE_NAME, PACKAGE_VERSION, RELEASE_NAME);
-			exit(NFT_EXIT_SUCCESS);
+			exit(EXIT_SUCCESS);
 		case OPT_CHECK:
 			nft_ctx_set_dry_run(nft, true);
 			break;
@@ -202,7 +202,7 @@ int main(int argc, char * const *argv)
 				fprintf(stderr,
 					"Failed to add include path '%s'\n",
 					optarg);
-				exit(NFT_EXIT_FAILURE);
+				exit(EXIT_FAILURE);
 			}
 			break;
 		case OPT_NUMERIC:
@@ -211,7 +211,7 @@ int main(int argc, char * const *argv)
 				fprintf(stderr, "Too many numeric options "
 						"used, max. %u\n",
 					NFT_NUMERIC_ALL);
-				exit(NFT_EXIT_FAILURE);
+				exit(EXIT_FAILURE);
 			}
 			nft_ctx_output_set_numeric(nft, numeric + 1);
 			break;
@@ -241,7 +241,7 @@ int main(int argc, char * const *argv)
 				if (i == array_size(debug_param)) {
 					fprintf(stderr, "invalid debug parameter `%s'\n",
 						optarg);
-					exit(NFT_EXIT_FAILURE);
+					exit(EXIT_FAILURE);
 				}
 
 				if (end == NULL)
@@ -257,7 +257,7 @@ int main(int argc, char * const *argv)
 			nft_ctx_output_set_echo(nft, true);
 			break;
 		case OPT_INVALID:
-			exit(NFT_EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
 	}
 
@@ -272,19 +272,19 @@ int main(int argc, char * const *argv)
 				strcat(buf, " ");
 		}
 		strcat(buf, "\n");
-		rc = nft_run_cmd_from_buffer(nft, buf, len + 2);
+		rc = !!nft_run_cmd_from_buffer(nft, buf, len + 2);
 	} else if (filename != NULL) {
-		rc = nft_run_cmd_from_filename(nft, filename);
+		rc = !!nft_run_cmd_from_filename(nft, filename);
 	} else if (interactive) {
 		if (cli_init(nft) < 0) {
 			fprintf(stderr, "%s: interactive CLI not supported in this build\n",
 				argv[0]);
-			exit(NFT_EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
-		return 0;
+		return EXIT_SUCCESS;
 	} else {
 		fprintf(stderr, "%s: no command specified\n", argv[0]);
-		exit(NFT_EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	xfree(buf);

@@ -105,6 +105,10 @@ static void location_update(struct location *loc, struct location *rhs, int n)
 
 #define symbol_value(loc, str) \
 	symbol_expr_alloc(loc, SYMBOL_VALUE, current_scope(state), str)
+
+/* Declare those here to avoid compiler warnings */
+void nft_set_debug(int, void *);
+int nft_lex(void *, void *, void *);
 %}
 
 /* Declaration section */

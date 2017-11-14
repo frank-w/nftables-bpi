@@ -1,3 +1,4 @@
+libnftables.la
 parser.c
 parser.h
 scanner.c

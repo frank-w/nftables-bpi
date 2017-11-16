@@ -1151,6 +1151,10 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 static int do_command_export(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct nftnl_ruleset *rs;
+	FILE *fp = ctx->octx->output_fp;
+
+	if (!fp)
+		return 0;
 
 	do {
 		rs = netlink_dump_ruleset(ctx, &cmd->handle, &cmd->location);
@@ -1158,8 +1162,9 @@ static int do_command_export(struct netlink_ctx *ctx, struct cmd *cmd)
 			return -1;
 	} while (rs == NULL);
 
-	nftnl_ruleset_fprintf(stdout, rs, cmd->export->format, 0);
-	fprintf(stdout, "\n");
+	nftnl_ruleset_fprintf(fp, rs, cmd->export->format, 0);
+	fprintf(fp, "\n");
+	fflush(fp);
 
 	nftnl_ruleset_free(rs);
 	return 0;

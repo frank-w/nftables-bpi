@@ -168,6 +168,9 @@ vi:ts=4 sw=4
 					<para>
 						Read input from <replaceable>filename</replaceable>.
 					</para>
+					<para>
+						nft scripts must start <command>#!/usr/sbin/nft -f</command>
+					</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>

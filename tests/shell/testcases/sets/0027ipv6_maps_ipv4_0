@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Tests IPv4 Mapped IPv6 addresses.
+
+set -e
+
+tmpfile=$(mktemp)
+if [ ! -w $tmpfile ] ; then
+	echo "Failed to create tmp file" >&2
+	exit 0
+fi
+
+trap "rm -rf $tmpfile" EXIT # cleanup if aborted
+
+echo "
+table inet t {
+	set s {
+		type ipv6_addr
+		flags interval
+		elements = { ::ffff:0.0.0.0/96 }
+	}
+}
+" > $tmpfile
+
+$NFT -f $tmpfile

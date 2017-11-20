@@ -1153,9 +1153,6 @@ static int do_command_export(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct nftnl_ruleset *rs;
 	FILE *fp = ctx->octx->output_fp;
 
-	if (!fp)
-		return 0;
-
 	do {
 		rs = netlink_dump_ruleset(ctx, &cmd->handle, &cmd->location);
 		if (rs == NULL && errno != EINTR)
@@ -1163,8 +1160,7 @@ static int do_command_export(struct netlink_ctx *ctx, struct cmd *cmd)
 	} while (rs == NULL);
 
 	nftnl_ruleset_fprintf(fp, rs, cmd->export->format, 0);
-	fprintf(fp, "\n");
-	fflush(fp);
+	nft_print(ctx->octx, "\n");
 
 	nftnl_ruleset_free(rs);
 	return 0;

@@ -173,7 +173,6 @@ int main(int argc, char * const *argv)
 	int i, val, rc;
 
 	nft = nft_ctx_new(NFT_CTX_DEFAULT);
-	nft_ctx_set_output(nft, stdout);
 
 	while (1) {
 		val = getopt_long(argc, argv, OPTSTRING, options, NULL);

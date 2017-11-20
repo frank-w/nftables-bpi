@@ -167,6 +167,7 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 	ctx->parser_max_errors	= 10;
 	init_list_head(&ctx->cache.list);
 	ctx->flags = flags;
+	ctx->output.output_fp = stdout;
 
 	if (flags == NFT_CTX_DEFAULT)
 		nft_ctx_netlink_init(ctx);
@@ -189,6 +190,9 @@ void nft_ctx_free(struct nft_ctx *ctx)
 FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp)
 {
 	FILE *old = ctx->output.output_fp;
+
+	if (!fp || ferror(fp))
+		return NULL;
 
 	ctx->output.output_fp = fp;
 
@@ -333,9 +337,6 @@ int nft_print(struct output_ctx *octx, const char *fmt, ...)
 	int ret;
 	va_list arg;
 
-	if (!octx->output_fp)
-		return -1;
-
 	va_start(arg, fmt);
 	ret = vfprintf(octx->output_fp, fmt, arg);
 	va_end(arg);
@@ -348,9 +349,6 @@ int nft_gmp_print(struct output_ctx *octx, const char *fmt, ...)
 {
 	int ret;
 	va_list arg;
-
-	if (!octx->output_fp)
-		return -1;
 
 	va_start(arg, fmt);
 	ret = gmp_vfprintf(octx->output_fp, fmt, arg);

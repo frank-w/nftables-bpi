@@ -19,7 +19,7 @@ RULESET="table inet filter {
 
 table inet filter {
 	chain input {
-		type filter hook input priority 1; policy drop;
+		type filter hook input priority 1; policy accept;
 	}
 }"
 
@@ -37,7 +37,7 @@ EXPECTED="table inet filter {
 	}
 
 	chain input {
-		type filter hook input priority 1; policy drop;
+		type filter hook input priority 1; policy accept;
 	}
 }"
 

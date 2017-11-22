@@ -145,12 +145,14 @@ void mpz_switch_byteorder(mpz_t rop, unsigned int len)
 /* mini-gmp doesn't have a gmp_printf so we use our own minimal
  * variant here which is able to format a single mpz_t.
  */
-int mpz_printf(const char *f, const mpz_t value)
+int mpz_vfprintf(FILE *fp, const char *f, va_list args)
 {
+	const mpz_t *value = va_arg(args, const mpz_t *);
 	int n = 0;
+
 	while (*f) {
 		if (*f != '%') {
-			if (fputc(*f, stdout) != *f)
+			if (fputc(*f, fp) != *f)
 				return -1;
 
 			++n;
@@ -174,16 +176,16 @@ int mpz_printf(const char *f, const mpz_t value)
 			else
 				return -1;
 
-			len = mpz_sizeinbase(value, base);
+			len = mpz_sizeinbase(*value, base);
 			while (prec-- > len) {
-				if (fputc('0', stdout) != '0')
+				if (fputc('0', fp) != '0')
 					return -1;
 
 				++n;
 			}
 
-			str = mpz_get_str(NULL, base, value);
-			ok = str && fwrite(str, 1, len, stdout) == len;
+			str = mpz_get_str(NULL, base, *value);
+			ok = str && fwrite(str, 1, len, fp) == len;
 			free(str);
 
 			if (!ok)

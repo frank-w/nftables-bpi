@@ -7,9 +7,10 @@
 #include <gmp.h>
 #else
 #include <mini-gmp.h>
-/* mini-gmp doesn't come with gmp_printf, so we use our own minimal variant */
-extern int mpz_printf(const char *format, const mpz_t value);
-#define gmp_printf mpz_printf
+#include <stdio.h>
+/* mini-gmp doesn't come with gmp_vfprintf, so we use our own minimal variant */
+extern int mpz_vfprintf(FILE *fp, const char *format, va_list args);
+#define gmp_vfprintf mpz_vfprintf
 #endif
 
 #include <asm/byteorder.h>

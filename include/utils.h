@@ -15,7 +15,11 @@
 
 #define pr_debug(fmt, arg...) printf(fmt, ##arg)
 
+#if defined(HAVE_LIBGMP)
 #define pr_gmp_debug(fmt, arg...) gmp_printf(fmt, ##arg)
+#else
+#define pr_gmp_debug(fmt, arg...) ({ if (false) {}; 0; })
+#endif
 
 #define __fmtstring(x, y)	__attribute__((format(printf, x, y)))
 #if 0

@@ -235,7 +235,10 @@ static int expr_evaluate_string(struct eval_ctx *ctx, struct expr **exprp)
 	memset(data + len, 0, data_len - len);
 	mpz_export_data(data, expr->value, BYTEORDER_HOST_ENDIAN, len);
 
-	assert(strlen(data) > 0);
+	if (strlen(data) == 0)
+		return expr_error(ctx->msgs, expr,
+				  "Empty string is not allowed");
+
 	datalen = strlen(data) - 1;
 	if (data[datalen] != '*') {
 		/* We need to reallocate the constant expression with the right

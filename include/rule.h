@@ -361,6 +361,8 @@ enum cmd_ops {
  * @CMD_OBJ_EXPR:	expression
  * @CMD_OBJ_MONITOR:	monitor
  * @CMD_OBJ_EXPORT:	export
+ * @CMD_OBJ_METER:	meter
+ * @CMD_OBJ_METERS:	meters
  * @CMD_OBJ_COUNTER:	counter
  * @CMD_OBJ_COUNTERS:	multiple counters
  * @CMD_OBJ_QUOTA:	quota
@@ -381,8 +383,8 @@ enum cmd_obj {
 	CMD_OBJ_EXPR,
 	CMD_OBJ_MONITOR,
 	CMD_OBJ_EXPORT,
-	CMD_OBJ_FLOWTABLE,
-	CMD_OBJ_FLOWTABLES,
+	CMD_OBJ_METER,
+	CMD_OBJ_METERS,
 	CMD_OBJ_MAP,
 	CMD_OBJ_MAPS,
 	CMD_OBJ_COUNTER,

@@ -284,7 +284,7 @@ static void set_print_declaration(const struct set *set,
 	if (set->flags & (NFT_SET_MAP | NFT_SET_OBJECT))
 		type = "map";
 	else if (set->flags & NFT_SET_EVAL)
-		type = "flow table";
+		type = "meter";
 	else
 		type = "set";
 
@@ -1197,7 +1197,7 @@ static int do_list_sets(struct netlink_ctx *ctx, struct cmd *cmd)
 			    (set->flags & NFT_SET_ANONYMOUS ||
 			    set->flags & NFT_SET_MAP))
 				continue;
-			if (cmd->obj == CMD_OBJ_FLOWTABLES &&
+			if (cmd->obj == CMD_OBJ_METERS &&
 			    !(set->flags & NFT_SET_EVAL))
 				continue;
 			if (cmd->obj == CMD_OBJ_MAPS &&
@@ -1580,9 +1580,9 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 		return do_list_set(ctx, cmd, table);
 	case CMD_OBJ_RULESET:
 		return do_list_ruleset(ctx, cmd);
-	case CMD_OBJ_FLOWTABLES:
+	case CMD_OBJ_METERS:
 		return do_list_sets(ctx, cmd);
-	case CMD_OBJ_FLOWTABLE:
+	case CMD_OBJ_METER:
 		return do_list_set(ctx, cmd, table);
 	case CMD_OBJ_MAPS:
 		return do_list_sets(ctx, cmd);
@@ -1650,7 +1650,7 @@ static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 		return netlink_flush_chain(ctx, &cmd->handle, &cmd->location);
 	case CMD_OBJ_SET:
 	case CMD_OBJ_MAP:
-	case CMD_OBJ_FLOWTABLE:
+	case CMD_OBJ_METER:
 		return netlink_flush_setelems(ctx, &cmd->handle,
 					      &cmd->location);
 	case CMD_OBJ_RULESET:

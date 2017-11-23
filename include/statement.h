@@ -165,14 +165,14 @@ struct set_stmt {
 
 extern struct stmt *set_stmt_alloc(const struct location *loc);
 
-struct flow_stmt {
+struct meter_stmt {
 	struct expr		*set;
 	struct expr		*key;
 	struct stmt		*stmt;
-	const char		*table;
+	const char		*name;
 };
 
-extern struct stmt *flow_stmt_alloc(const struct location *loc);
+extern struct stmt *meter_stmt_alloc(const struct location *loc);
 
 /**
  * enum nft_xt_type - xtables statement types
@@ -209,7 +209,7 @@ struct xt_stmt {
  * @STMT_INVALID:	uninitialised
  * @STMT_EXPRESSION:	expression statement (relational)
  * @STMT_VERDICT:	verdict statement
- * @STMT_FLOW:		flow statement
+ * @STMT_METER:		meter statement
  * @STMT_COUNTER:	counters
  * @STMT_PAYLOAD:	payload statement
  * @STMT_META:		meta statement
@@ -234,7 +234,7 @@ enum stmt_types {
 	STMT_INVALID,
 	STMT_EXPRESSION,
 	STMT_VERDICT,
-	STMT_FLOW,
+	STMT_METER,
 	STMT_COUNTER,
 	STMT_PAYLOAD,
 	STMT_META,
@@ -296,7 +296,7 @@ struct stmt {
 	union {
 		struct expr		*expr;
 		struct exthdr_stmt	exthdr;
-		struct flow_stmt	flow;
+		struct meter_stmt	meter;
 		struct counter_stmt	counter;
 		struct payload_stmt	payload;
 		struct meta_stmt	meta;

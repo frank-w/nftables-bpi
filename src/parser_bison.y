@@ -243,6 +243,8 @@ int nft_lex(void *, void *, void *);
 %token SIZE			"size"
 
 %token FLOW			"flow"
+%token METER			"meter"
+%token METERS			"meters"
 
 %token <val> NUM		"number"
 %token <string> STRING		"string"
@@ -555,8 +557,8 @@ int nft_lex(void *, void *, void *);
 %type <stmt>			set_stmt
 %destructor { stmt_free($$); }	set_stmt
 %type <val>			set_stmt_op
-%type <stmt>			flow_stmt flow_stmt_alloc
-%destructor { stmt_free($$); }	flow_stmt flow_stmt_alloc
+%type <stmt>			meter_stmt meter_stmt_alloc
+%destructor { stmt_free($$); }	meter_stmt meter_stmt_alloc
 
 %type <expr>			symbol_expr verdict_expr integer_expr variable_expr
 %destructor { expr_free($$); }	symbol_expr verdict_expr integer_expr variable_expr
@@ -606,8 +608,8 @@ int nft_lex(void *, void *, void *);
 %type <expr>			set_elem_expr_stmt set_elem_expr_stmt_alloc
 %destructor { expr_free($$); }	set_elem_expr_stmt set_elem_expr_stmt_alloc
 
-%type <expr>			flow_key_expr flow_key_expr_alloc
-%destructor { expr_free($$); }	flow_key_expr flow_key_expr_alloc
+%type <expr>			meter_key_expr meter_key_expr_alloc
+%destructor { expr_free($$); }	meter_key_expr meter_key_expr_alloc
 
 %type <expr>			expr initializer_expr keyword_expr
 %destructor { expr_free($$); }	expr initializer_expr keyword_expr
@@ -1084,11 +1086,19 @@ list_cmd		:	TABLE		table_spec
 			}
 			|	FLOW TABLES	ruleset_spec
 			{
-				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_FLOWTABLES, &$3, &@$, NULL);
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_METERS, &$3, &@$, NULL);
 			}
 			|	FLOW TABLE	set_spec
 			{
-				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_FLOWTABLE, &$3, &@$, NULL);
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_METER, &$3, &@$, NULL);
+			}
+			|	METERS		ruleset_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_METERS, &$2, &@$, NULL);
+			}
+			|	METER		set_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_METER, &$2, &@$, NULL);
 			}
 			|	MAPS		ruleset_spec
 			{
@@ -1152,7 +1162,11 @@ flush_cmd		:	TABLE		table_spec
 			}
 			|	FLOW TABLE	set_spec
 			{
-				$$ = cmd_alloc(CMD_FLUSH, CMD_OBJ_FLOWTABLE, &$3, &@$, NULL);
+				$$ = cmd_alloc(CMD_FLUSH, CMD_OBJ_METER, &$3, &@$, NULL);
+			}
+			|	METER		set_spec
+			{
+				$$ = cmd_alloc(CMD_FLUSH, CMD_OBJ_METER, &$2, &@$, NULL);
 			}
 			|	RULESET		ruleset_spec
 			{
@@ -1782,7 +1796,7 @@ stmt_list		:	stmt
 
 stmt			:	verdict_stmt
 			|	match_stmt
-			|	flow_stmt
+			|	meter_stmt
 			|	counter_stmt
 			|	payload_stmt
 			|	meta_stmt
@@ -2468,38 +2482,46 @@ set_stmt_op		:	ADD	{ $$ = NFT_DYNSET_OP_ADD; }
 			|	UPDATE	{ $$ = NFT_DYNSET_OP_UPDATE; }
 			;
 
-flow_stmt		:	flow_stmt_alloc		flow_stmt_opts	'{' flow_key_expr stmt '}'
+meter_stmt		:	meter_stmt_alloc		meter_stmt_opts	'{' meter_key_expr stmt '}'
 			{
-				$1->flow.key  = $4;
-				$1->flow.stmt = $5;
+				$1->meter.key  = $4;
+				$1->meter.stmt = $5;
 				$$->location  = @$;
 				$$ = $1;
 			}
-			|	flow_stmt_alloc		'{' flow_key_expr stmt '}'
+			|	meter_stmt_alloc		'{' meter_key_expr stmt '}'
 			{
-				$1->flow.key  = $3;
-				$1->flow.stmt = $4;
+				$1->meter.key  = $3;
+				$1->meter.stmt = $4;
 				$$->location  = @$;
 				$$ = $1;
 			}
 			;
 
-flow_stmt_alloc		:	FLOW
+meter_stmt_alloc	:	FLOW
 			{
-				$$ = flow_stmt_alloc(&@$);
+				$$ = meter_stmt_alloc(&@$);
+			}
+			|	METER
+			{
+				$$ = meter_stmt_alloc(&@$);
 			}
 			;
 
-flow_stmt_opts		:	flow_stmt_opt
+meter_stmt_opts		:	meter_stmt_opt
 			{
 				$<stmt>$	= $<stmt>0;
 			}
-			|	flow_stmt_opts		flow_stmt_opt
+			|	meter_stmt_opts		meter_stmt_opt
 			;
 
-flow_stmt_opt		:	TABLE			identifier
+meter_stmt_opt		:	TABLE			identifier
 			{
-				$<stmt>0->flow.table = $2;
+				$<stmt>0->meter.name = $2;
+			}
+			|	NAME			identifier
+			{
+				$<stmt>0->meter.name = $2;
 			}
 			;
 
@@ -2738,15 +2760,15 @@ set_list_member_expr	:	opt_newline	set_expr	opt_newline
 			}
 			;
 
-flow_key_expr		:	flow_key_expr_alloc
-			|	flow_key_expr_alloc		set_elem_options
+meter_key_expr		:	meter_key_expr_alloc
+			|	meter_key_expr_alloc		set_elem_options
 			{
 				$$->location = @$;
 				$$ = $1;
 			}
 			;
 
-flow_key_expr_alloc	:	concat_expr
+meter_key_expr_alloc	:	concat_expr
 			{
 				$$ = set_elem_expr_alloc(&@1, $1);
 			}

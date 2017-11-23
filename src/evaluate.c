@@ -2021,37 +2021,37 @@ static int stmt_evaluate_payload(struct eval_ctx *ctx, struct stmt *stmt)
 	return expr_evaluate(ctx, &stmt->payload.val);
 }
 
-static int stmt_evaluate_flow(struct eval_ctx *ctx, struct stmt *stmt)
+static int stmt_evaluate_meter(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	struct expr *key, *set, *setref;
 
 	expr_set_context(&ctx->ectx, NULL, 0);
-	if (expr_evaluate(ctx, &stmt->flow.key) < 0)
+	if (expr_evaluate(ctx, &stmt->meter.key) < 0)
 		return -1;
-	if (expr_is_constant(stmt->flow.key))
-		return expr_error(ctx->msgs, stmt->flow.key,
-				  "Flow key expression can not be constant");
-	if (stmt->flow.key->comment)
-		return expr_error(ctx->msgs, stmt->flow.key,
-				  "Flow key expression can not contain comments");
+	if (expr_is_constant(stmt->meter.key))
+		return expr_error(ctx->msgs, stmt->meter.key,
+				  "Meter key expression can not be constant");
+	if (stmt->meter.key->comment)
+		return expr_error(ctx->msgs, stmt->meter.key,
+				  "Meter key expression can not contain comments");
 
 	/* Declare an empty set */
-	key = stmt->flow.key;
+	key = stmt->meter.key;
 	set = set_expr_alloc(&key->location, NULL);
 	set->set_flags |= NFT_SET_EVAL;
 	if (key->timeout)
 		set->set_flags |= NFT_SET_TIMEOUT;
 
-	setref = implicit_set_declaration(ctx, stmt->flow.table ?: "__ft%d",
+	setref = implicit_set_declaration(ctx, stmt->meter.name ?: "__mt%d",
 					  key, set);
 
-	stmt->flow.set = setref;
+	stmt->meter.set = setref;
 
-	if (stmt_evaluate(ctx, stmt->flow.stmt) < 0)
+	if (stmt_evaluate(ctx, stmt->meter.stmt) < 0)
 		return -1;
-	if (!(stmt->flow.stmt->flags & STMT_F_STATEFUL))
-		return stmt_binary_error(ctx, stmt->flow.stmt, stmt,
-					 "Per-flow statement must be stateful");
+	if (!(stmt->meter.stmt->flags & STMT_F_STATEFUL))
+		return stmt_binary_error(ctx, stmt->meter.stmt, stmt,
+					 "meter statement must be stateful");
 
 	return 0;
 }
@@ -2782,8 +2782,8 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 		return stmt_evaluate_payload(ctx, stmt);
 	case STMT_EXTHDR:
 		return stmt_evaluate_exthdr(ctx, stmt);
-	case STMT_FLOW:
-		return stmt_evaluate_flow(ctx, stmt);
+	case STMT_METER:
+		return stmt_evaluate_meter(ctx, stmt);
 	case STMT_META:
 		return stmt_evaluate_meta(ctx, stmt);
 	case STMT_CT:
@@ -3151,14 +3151,14 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 			return cmd_error(ctx, "Could not process rule: Set '%s' does not exist",
 					 cmd->handle.set);
 		return 0;
-	case CMD_OBJ_FLOWTABLE:
+	case CMD_OBJ_METER:
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
 			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
 					 cmd->handle.table);
 		set = set_lookup(table, cmd->handle.set);
 		if (set == NULL || !(set->flags & NFT_SET_EVAL))
-			return cmd_error(ctx, "Could not process rule: Flow table '%s' does not exist",
+			return cmd_error(ctx, "Could not process rule: Meter '%s' does not exist",
 					 cmd->handle.set);
 		return 0;
 	case CMD_OBJ_MAP:
@@ -3201,7 +3201,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		return 0;
 	case CMD_OBJ_CHAINS:
 	case CMD_OBJ_RULESET:
-	case CMD_OBJ_FLOWTABLES:
+	case CMD_OBJ_METERS:
 	case CMD_OBJ_MAPS:
 		return 0;
 	default:
@@ -3276,14 +3276,14 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 			return cmd_error(ctx, "Could not process rule: Map '%s' does not exist",
 					 cmd->handle.set);
 		return 0;
-	case CMD_OBJ_FLOWTABLE:
+	case CMD_OBJ_METER:
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
 			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
 					 cmd->handle.table);
 		set = set_lookup(table, cmd->handle.set);
 		if (set == NULL || !(set->flags & NFT_SET_EVAL))
-			return cmd_error(ctx, "Could not process rule: Flow table '%s' does not exist",
+			return cmd_error(ctx, "Could not process rule: Meter '%s' does not exist",
 					 cmd->handle.set);
 		return 0;
 	default:

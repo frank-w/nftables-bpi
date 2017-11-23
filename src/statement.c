@@ -107,42 +107,42 @@ struct stmt *verdict_stmt_alloc(const struct location *loc, struct expr *expr)
 	return stmt;
 }
 
-static void flow_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
+static void meter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	nft_print(octx, "flow ");
-	if (stmt->flow.set) {
-		expr_print(stmt->flow.set, octx);
+	nft_print(octx, "meter ");
+	if (stmt->meter.set) {
+		expr_print(stmt->meter.set, octx);
 		nft_print(octx, " ");
 	}
 	nft_print(octx, "{ ");
-	expr_print(stmt->flow.key, octx);
+	expr_print(stmt->meter.key, octx);
 	nft_print(octx, " ");
 
 	octx->stateless++;
-	stmt_print(stmt->flow.stmt, octx);
+	stmt_print(stmt->meter.stmt, octx);
 	octx->stateless--;
 
 	nft_print(octx, "} ");
 
 }
 
-static void flow_stmt_destroy(struct stmt *stmt)
+static void meter_stmt_destroy(struct stmt *stmt)
 {
-	expr_free(stmt->flow.key);
-	expr_free(stmt->flow.set);
-	stmt_free(stmt->flow.stmt);
+	expr_free(stmt->meter.key);
+	expr_free(stmt->meter.set);
+	stmt_free(stmt->meter.stmt);
 }
 
-static const struct stmt_ops flow_stmt_ops = {
-	.type		= STMT_FLOW,
-	.name		= "flow",
-	.print		= flow_stmt_print,
-	.destroy	= flow_stmt_destroy,
+static const struct stmt_ops meter_stmt_ops = {
+	.type		= STMT_METER,
+	.name		= "meter",
+	.print		= meter_stmt_print,
+	.destroy	= meter_stmt_destroy,
 };
 
-struct stmt *flow_stmt_alloc(const struct location *loc)
+struct stmt *meter_stmt_alloc(const struct location *loc)
 {
-	return stmt_alloc(loc, &flow_stmt_ops);
+	return stmt_alloc(loc, &meter_stmt_ops);
 }
 
 static void counter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)

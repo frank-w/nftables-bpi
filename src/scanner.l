@@ -292,6 +292,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "memory"		{ return MEMORY; }
 
 "flow"			{ return FLOW; }
+"meter"			{ return METER; }
+"meters"		{ return METERS; }
 
 "counter"		{ return COUNTER; }
 "name"			{ return NAME; }

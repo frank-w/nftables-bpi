@@ -1143,10 +1143,10 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 	}
 
 	if (dstmt != NULL) {
-		stmt = flow_stmt_alloc(loc);
-		stmt->flow.set  = set_ref_expr_alloc(loc, set);
-		stmt->flow.key  = expr;
-		stmt->flow.stmt = dstmt;
+		stmt = meter_stmt_alloc(loc);
+		stmt->meter.set  = set_ref_expr_alloc(loc, set);
+		stmt->meter.key  = expr;
+		stmt->meter.stmt = dstmt;
 	} else {
 		stmt = set_stmt_alloc(loc);
 		stmt->set.set   = set_ref_expr_alloc(loc, set);
@@ -2209,8 +2209,8 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 		case STMT_PAYLOAD:
 			stmt_payload_postprocess(&rctx);
 			break;
-		case STMT_FLOW:
-			expr_postprocess(&rctx, &stmt->flow.key);
+		case STMT_METER:
+			expr_postprocess(&rctx, &stmt->meter.key);
 			break;
 		case STMT_META:
 			if (stmt->meta.expr != NULL)

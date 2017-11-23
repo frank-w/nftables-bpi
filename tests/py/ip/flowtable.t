@@ -2,4 +2,4 @@
 
 *ip;test-ip;input
 
-flow table xyz { ip saddr timeout 30s counter};ok
+meter name xyz { ip saddr timeout 30s counter};ok

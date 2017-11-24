@@ -557,8 +557,8 @@ int nft_lex(void *, void *, void *);
 %type <stmt>			set_stmt
 %destructor { stmt_free($$); }	set_stmt
 %type <val>			set_stmt_op
-%type <stmt>			meter_stmt meter_stmt_alloc
-%destructor { stmt_free($$); }	meter_stmt meter_stmt_alloc
+%type <stmt>			meter_stmt meter_stmt_alloc flow_stmt_legacy_alloc
+%destructor { stmt_free($$); }	meter_stmt meter_stmt_alloc flow_stmt_legacy_alloc
 
 %type <expr>			symbol_expr verdict_expr integer_expr variable_expr
 %destructor { expr_free($$); }	symbol_expr verdict_expr integer_expr variable_expr
@@ -2482,39 +2482,42 @@ set_stmt_op		:	ADD	{ $$ = NFT_DYNSET_OP_ADD; }
 			|	UPDATE	{ $$ = NFT_DYNSET_OP_UPDATE; }
 			;
 
-meter_stmt		:	meter_stmt_alloc		meter_stmt_opts	'{' meter_key_expr stmt '}'
+meter_stmt		:	flow_stmt_legacy_alloc		flow_stmt_opts	'{' meter_key_expr stmt '}'
 			{
 				$1->meter.key  = $4;
 				$1->meter.stmt = $5;
 				$$->location  = @$;
 				$$ = $1;
 			}
+			|	meter_stmt_alloc		{ $$ = $1; }
 			;
 
-meter_stmt_alloc	:	FLOW
-			{
-				$$ = meter_stmt_alloc(&@$);
-			}
-			|	METER
+flow_stmt_legacy_alloc	:	FLOW
 			{
 				$$ = meter_stmt_alloc(&@$);
 			}
 			;
 
-meter_stmt_opts		:	meter_stmt_opt
+flow_stmt_opts		:	flow_stmt_opt
 			{
 				$<stmt>$	= $<stmt>0;
 			}
-			|	meter_stmt_opts		meter_stmt_opt
+			|	flow_stmt_opts		flow_stmt_opt
 			;
 
-meter_stmt_opt		:	TABLE			identifier
+flow_stmt_opt		:	TABLE			identifier
 			{
 				$<stmt>0->meter.name = $2;
 			}
-			|	NAME			identifier
+			;
+
+meter_stmt_alloc	:	METER	identifier		'{' meter_key_expr stmt '}'
 			{
-				$<stmt>0->meter.name = $2;
+				$$ = meter_stmt_alloc(&@$);
+				$$->meter.name = $2;
+				$$->meter.key  = $4;
+				$$->meter.stmt = $5;
+				$$->location  = @$;
 			}
 			;
 

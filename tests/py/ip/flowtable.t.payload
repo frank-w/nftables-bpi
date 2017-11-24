@@ -1,4 +1,4 @@
-# meter name xyz { ip saddr timeout 30s counter}
+# meter xyz { ip saddr timeout 30s counter}
 xyz test-ip 31
 xyz test-ip 0
 ip test-ip input 

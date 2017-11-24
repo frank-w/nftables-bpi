@@ -2489,13 +2489,6 @@ meter_stmt		:	meter_stmt_alloc		meter_stmt_opts	'{' meter_key_expr stmt '}'
 				$$->location  = @$;
 				$$ = $1;
 			}
-			|	meter_stmt_alloc		'{' meter_key_expr stmt '}'
-			{
-				$1->meter.key  = $3;
-				$1->meter.stmt = $4;
-				$$->location  = @$;
-				$$ = $1;
-			}
 			;
 
 meter_stmt_alloc	:	FLOW

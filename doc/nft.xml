@@ -4350,7 +4350,7 @@ tcp flags syn tcp option maxseg size set rt mtu
 								<entry>quoted string</entry>
 							</row>
 							<row>
-								<entry>syslog-level</entry>
+								<entry>level</entry>
 								<entry>Syslog level of logging</entry>
 								<entry>string: emerg, alert, crit, err, warn [default], notice, info, debug</entry>
 							</row>

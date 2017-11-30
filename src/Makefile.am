@@ -27,7 +27,7 @@ parser_bison.o scanner.o: AM_CFLAGS += -Wno-missing-prototypes -Wno-missing-decl
 
 BUILT_SOURCES = parser_bison.h
 
-lib_LTLIBRARIES = libnftables.la
+noinst_LTLIBRARIES = libnftables.la
 
 libnftables_la_SOURCES =			\
 		rule.c				\

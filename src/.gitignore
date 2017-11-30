@@ -1,3 +1,4 @@
+libnftables.a
 libnftables.la
 parser.c
 parser.h

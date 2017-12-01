@@ -64,3 +64,12 @@ inet test-inet input
   [ payload load 4b @ network header + 12 => reg 1 ]
   [ cmp eq reg 1 0x04030201 ]
 
+# meta secpath exists
+inet test-inet input
+  [ meta load secpath => reg 1 ]
+  [ cmp eq reg 1 0x00000001 ]
+
+# meta secpath missing
+inet test-inet input
+  [ meta load secpath => reg 1 ]
+  [ cmp eq reg 1 0x00000000 ]

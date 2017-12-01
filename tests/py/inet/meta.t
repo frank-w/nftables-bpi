@@ -12,3 +12,5 @@ meta nfproto ipv4 tcp dport 22;ok
 meta nfproto ipv4 ip saddr 1.2.3.4;ok;ip saddr 1.2.3.4
 meta nfproto ipv6 meta l4proto tcp;ok;meta nfproto ipv6 meta l4proto 6
 meta nfproto ipv4 counter ip saddr 1.2.3.4;ok
+meta secpath exists;ok
+meta secpath missing;ok

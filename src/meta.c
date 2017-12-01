@@ -428,6 +428,8 @@ static const struct meta_template meta_templates[] = {
 	[NFT_META_PRANDOM]	= META_TEMPLATE("random",    &integer_type,
 						4 * BITS_PER_BYTE,
 						BYTEORDER_BIG_ENDIAN), /* avoid conversion; doesn't have endianess */
+	[NFT_META_SECPATH]	= META_TEMPLATE("secpath", &boolean_type,
+						BITS_PER_BYTE, BYTEORDER_HOST_ENDIAN),
 };
 
 static bool meta_key_is_qualified(enum nft_meta_keys key)
@@ -439,6 +441,7 @@ static bool meta_key_is_qualified(enum nft_meta_keys key)
 	case NFT_META_PROTOCOL:
 	case NFT_META_PRIORITY:
 	case NFT_META_PRANDOM:
+	case NFT_META_SECPATH:
 		return true;
 	default:
 		return false;

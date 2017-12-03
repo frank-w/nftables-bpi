@@ -10,6 +10,12 @@ extern struct stmt *expr_stmt_alloc(const struct location *loc,
 extern struct stmt *verdict_stmt_alloc(const struct location *loc,
 				       struct expr *expr);
 
+struct flow_stmt {
+	const char		*table_name;
+};
+
+struct stmt *flow_stmt_alloc(const struct location *loc, const char *name);
+
 struct objref_stmt {
 	uint32_t		type;
 	struct expr		*expr;
@@ -231,6 +237,7 @@ extern struct stmt *xt_stmt_alloc(const struct location *loc);
  * @STMT_NOTRACK:	notrack statement
  * @STMT_OBJREF:	stateful object reference statement
  * @STMT_EXTHDR:	extension header statement
+ * @STMT_FLOW_OFFLOAD:	flow offload statement
  */
 enum stmt_types {
 	STMT_INVALID,
@@ -256,6 +263,7 @@ enum stmt_types {
 	STMT_NOTRACK,
 	STMT_OBJREF,
 	STMT_EXTHDR,
+	STMT_FLOW_OFFLOAD,
 };
 
 /**
@@ -316,6 +324,7 @@ struct stmt {
 		struct fwd_stmt		fwd;
 		struct xt_stmt		xt;
 		struct objref_stmt	objref;
+		struct flow_stmt	flow;
 	};
 };
 

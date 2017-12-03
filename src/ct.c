@@ -456,3 +456,26 @@ struct stmt *notrack_stmt_alloc(const struct location *loc)
 {
 	return stmt_alloc(loc, &notrack_stmt_ops);
 }
+
+static void flow_offload_stmt_print(const struct stmt *stmt,
+				    struct output_ctx *octx)
+{
+	printf("flow offload @%s", stmt->flow.table_name);
+}
+
+static const struct stmt_ops flow_offload_stmt_ops = {
+	.type		= STMT_FLOW_OFFLOAD,
+	.name		= "flow_offload",
+	.print		= flow_offload_stmt_print,
+};
+
+struct stmt *flow_offload_stmt_alloc(const struct location *loc,
+				     const char *table_name)
+{
+	struct stmt *stmt;
+
+	stmt = stmt_alloc(loc, &flow_offload_stmt_ops);
+	stmt->flow.table_name	= table_name;
+
+	return stmt;
+}

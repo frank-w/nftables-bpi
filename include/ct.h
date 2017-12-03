@@ -29,6 +29,8 @@ extern struct expr *ct_expr_alloc(const struct location *loc,
 extern void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr);
 
 extern struct stmt *notrack_stmt_alloc(const struct location *loc);
+extern struct stmt *flow_offload_stmt_alloc(const struct location *loc,
+					    const char *table_name);
 
 extern const struct datatype ct_dir_type;
 extern const struct datatype ct_state_type;

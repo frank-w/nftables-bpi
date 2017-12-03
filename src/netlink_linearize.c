@@ -1201,6 +1201,17 @@ static void netlink_gen_notrack_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
+static void netlink_gen_flow_offload_stmt(struct netlink_linearize_ctx *ctx,
+					  const struct stmt *stmt)
+{
+	struct nftnl_expr *nle;
+
+	nle = alloc_nft_expr("flow_offload");
+	nftnl_expr_set_str(nle, NFTNL_EXPR_FLOW_TABLE_NAME,
+			   stmt->flow.table_name);
+	nftnl_rule_add_expr(ctx->nlr, nle);
+}
+
 static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 				 const struct stmt *stmt)
 {
@@ -1300,6 +1311,8 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 		break;
 	case STMT_NOTRACK:
 		return netlink_gen_notrack_stmt(ctx, stmt);
+	case STMT_FLOW_OFFLOAD:
+		return netlink_gen_flow_offload_stmt(ctx, stmt);
 	case STMT_OBJREF:
 		return netlink_gen_objref_stmt(ctx, stmt);
 	default:

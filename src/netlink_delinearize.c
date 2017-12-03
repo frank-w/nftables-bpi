@@ -686,6 +686,16 @@ static void netlink_parse_notrack(struct netlink_parse_ctx *ctx,
 	ctx->stmt = notrack_stmt_alloc(loc);
 }
 
+static void netlink_parse_flow_offload(struct netlink_parse_ctx *ctx,
+				       const struct location *loc,
+				       const struct nftnl_expr *nle)
+{
+	const char *table_name;
+
+	table_name = xstrdup(nftnl_expr_get_str(nle, NFTNL_EXPR_FLOW_TABLE_NAME));
+	ctx->stmt = flow_offload_stmt_alloc(loc, table_name);
+}
+
 static void netlink_parse_ct_stmt(struct netlink_parse_ctx *ctx,
 				  const struct location *loc,
 				  const struct nftnl_expr *nle)
@@ -1294,6 +1304,7 @@ static const struct {
 	{ .name = "hash",	.parse = netlink_parse_hash },
 	{ .name = "fib",	.parse = netlink_parse_fib },
 	{ .name = "tcpopt",	.parse = netlink_parse_exthdr },
+	{ .name = "flow_offload", .parse = netlink_parse_flow_offload },
 };
 
 static int netlink_parse_expr(const struct nftnl_expr *nle,

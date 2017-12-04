@@ -3209,6 +3209,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_CT_HELPERS:
 	case CMD_OBJ_LIMITS:
 	case CMD_OBJ_SETS:
+	case CMD_OBJ_FLOWTABLES:
 		if (cmd->handle.table == NULL)
 			return 0;
 		if (table_lookup(&cmd->handle, ctx->cache) == NULL)

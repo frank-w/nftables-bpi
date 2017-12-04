@@ -89,6 +89,9 @@ int mnl_nft_obj_batch_add(struct nftnl_obj *nln, struct nftnl_batch *batch,
 int mnl_nft_obj_batch_del(struct nftnl_obj *nln, struct nftnl_batch *batch,
 			  unsigned int flags, uint32_t seqnum);
 
+struct nftnl_flowtable_list *
+mnl_nft_flowtable_dump(struct netlink_ctx *ctx, int family, const char *table);
+
 struct nftnl_ruleset *mnl_nft_ruleset_dump(struct netlink_ctx *ctx,
 					   uint32_t family);
 int mnl_nft_event_listener(struct mnl_socket *nf_sock, unsigned int debug_mask,

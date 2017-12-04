@@ -95,6 +95,11 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 			return -1;
 		list_splice_tail_init(&ctx->list, &table->chains);
 
+		ret = netlink_list_flowtables(ctx, &table->handle, &internal_location);
+		if (ret < 0)
+			return -1;
+		list_splice_tail_init(&ctx->list, &table->flowtables);
+
 		if (cmd != CMD_RESET) {
 			ret = netlink_list_objs(ctx, &table->handle, &internal_location);
 			if (ret < 0)
@@ -764,6 +769,7 @@ struct table *table_alloc(void)
 	init_list_head(&table->chains);
 	init_list_head(&table->sets);
 	init_list_head(&table->objs);
+	init_list_head(&table->flowtables);
 	init_list_head(&table->scope.symbols);
 	table->refcnt = 1;
 
@@ -839,6 +845,7 @@ static void table_print_options(const struct table *table, const char **delim,
 
 static void table_print(const struct table *table, struct output_ctx *octx)
 {
+	struct flowtable *flowtable;
 	struct chain *chain;
 	struct obj *obj;
 	struct set *set;
@@ -858,6 +865,11 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 			continue;
 		nft_print(octx, "%s", delim);
 		set_print(set, octx);
+		delim = "\n";
+	}
+	list_for_each_entry(flowtable, &table->flowtables, list) {
+		nft_print(octx, "%s", delim);
+		flowtable_print(flowtable, octx);
 		delim = "\n";
 	}
 	list_for_each_entry(chain, &table->chains, list) {
@@ -1524,6 +1536,114 @@ static int do_list_obj(struct netlink_ctx *ctx, struct cmd *cmd, uint32_t type)
 	return 0;
 }
 
+struct flowtable *flowtable_alloc(const struct location *loc)
+{
+	struct flowtable *flowtable;
+
+	flowtable = xzalloc(sizeof(*flowtable));
+	if (loc != NULL)
+		flowtable->location = *loc;
+
+	flowtable->refcnt = 1;
+	return flowtable;
+}
+
+struct flowtable *flowtable_get(struct flowtable *flowtable)
+{
+	flowtable->refcnt++;
+	return flowtable;
+}
+
+void flowtable_free(struct flowtable *flowtable)
+{
+	if (--flowtable->refcnt > 0)
+		return;
+	handle_free(&flowtable->handle);
+	xfree(flowtable);
+}
+
+void flowtable_add_hash(struct flowtable *flowtable, struct table *table)
+{
+	list_add_tail(&flowtable->list, &table->flowtables);
+}
+
+static void flowtable_print_declaration(const struct flowtable *flowtable,
+					struct print_fmt_options *opts,
+					struct output_ctx *octx)
+{
+	int i;
+
+	nft_print(octx, "%sflowtable", opts->tab);
+
+	if (opts->family != NULL)
+		nft_print(octx, " %s", opts->family);
+
+	if (opts->table != NULL)
+		nft_print(octx, " %s", opts->table);
+
+	nft_print(octx, " %s {%s", flowtable->handle.flowtable, opts->nl);
+
+	nft_print(octx, "%s%shook %s priority %d%s",
+		  opts->tab, opts->tab, "ingress",
+		  flowtable->priority, opts->stmt_separator);
+
+	nft_print(octx, "%s%sdevices = { ", opts->tab, opts->tab);
+	for (i = 0; i < flowtable->dev_array_len; i++) {
+		nft_print(octx, "%s", flowtable->dev_array[i]);
+		if (i + 1 != flowtable->dev_array_len)
+			nft_print(octx, ", ");
+	}
+	nft_print(octx, " }%s", opts->stmt_separator);
+}
+
+static void do_flowtable_print(const struct flowtable *flowtable,
+			       struct print_fmt_options *opts,
+			       struct output_ctx *octx)
+{
+	flowtable_print_declaration(flowtable, opts, octx);
+	nft_print(octx, "%s}%s", opts->tab, opts->nl);
+}
+
+void flowtable_print(const struct flowtable *s, struct output_ctx *octx)
+{
+	struct print_fmt_options opts = {
+		.tab		= "\t",
+		.nl		= "\n",
+		.stmt_separator	= "\n",
+	};
+
+	do_flowtable_print(s, &opts, octx);
+}
+
+static int do_list_flowtables(struct netlink_ctx *ctx, struct cmd *cmd)
+{
+	struct print_fmt_options opts = {
+		.tab		= "\t",
+		.nl		= "\n",
+		.stmt_separator	= "\n",
+	};
+	struct flowtable *flowtable;
+	struct table *table;
+
+	list_for_each_entry(table, &ctx->cache->list, list) {
+		if (cmd->handle.family != NFPROTO_UNSPEC &&
+		    cmd->handle.family != table->handle.family)
+			continue;
+
+		nft_print(ctx->octx, "table %s %s {\n",
+			  family2str(table->handle.family),
+			  table->handle.table);
+
+		list_for_each_entry(flowtable, &table->flowtables, list) {
+			flowtable_print_declaration(flowtable, &opts, ctx->octx);
+			nft_print(ctx->octx, "%s}%s", opts.tab, opts.nl);
+		}
+
+		nft_print(ctx->octx, "}\n");
+	}
+	return 0;
+}
+
 static int do_list_ruleset(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	unsigned int family = cmd->handle.family;
@@ -1671,6 +1791,8 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_LIMIT:
 	case CMD_OBJ_LIMITS:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_LIMIT);
+	case CMD_OBJ_FLOWTABLES:
+		return do_list_flowtables(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

@@ -23,6 +23,7 @@
 #include <libnftnl/expr.h>
 #include <libnftnl/object.h>
 #include <libnftnl/set.h>
+#include <libnftnl/flowtable.h>
 #include <libnftnl/udata.h>
 #include <libnftnl/ruleset.h>
 #include <libnftnl/common.h>
@@ -1539,6 +1540,70 @@ int netlink_reset_objs(struct netlink_ctx *ctx, const struct handle *h,
 
 	err = nftnl_obj_list_foreach(obj_cache, list_obj_cb, ctx);
 	nftnl_obj_list_free(obj_cache);
+	return err;
+}
+
+static struct flowtable *
+netlink_delinearize_flowtable(struct netlink_ctx *ctx,
+			      struct nftnl_flowtable *nlo)
+{
+	struct flowtable *flowtable;
+	const char **dev_array;
+	int len = 0, i;
+
+	flowtable = flowtable_alloc(&netlink_location);
+	flowtable->handle.family =
+		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_FAMILY);
+	flowtable->handle.table =
+		xstrdup(nftnl_flowtable_get_str(nlo, NFTNL_FLOWTABLE_TABLE));
+	flowtable->handle.flowtable =
+		xstrdup(nftnl_flowtable_get_str(nlo, NFTNL_FLOWTABLE_NAME));
+	dev_array = nftnl_flowtable_get_array(nlo, NFTNL_FLOWTABLE_DEVICES);
+	while (dev_array[len] != '\0')
+		len++;
+
+	flowtable->dev_array = calloc(1, len * sizeof(char *));
+	for (i = 0; i < len; i++)
+		flowtable->dev_array[i] = xstrdup(dev_array[i]);
+
+	flowtable->dev_array_len = len;
+
+	flowtable->priority =
+		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_PRIO);
+	flowtable->hooknum =
+		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_HOOKNUM);
+
+	return flowtable;
+}
+
+static int list_flowtable_cb(struct nftnl_flowtable *nls, void *arg)
+{
+	struct netlink_ctx *ctx = arg;
+	struct flowtable *flowtable;
+
+	flowtable = netlink_delinearize_flowtable(ctx, nls);
+	if (flowtable == NULL)
+		return -1;
+	list_add_tail(&flowtable->list, &ctx->list);
+	return 0;
+}
+
+int netlink_list_flowtables(struct netlink_ctx *ctx, const struct handle *h,
+		      const struct location *loc)
+{
+	struct nftnl_flowtable_list *flowtable_cache;
+	int err;
+
+	flowtable_cache = mnl_nft_flowtable_dump(ctx, h->family, h->table);
+	if (flowtable_cache == NULL) {
+		if (errno == EINTR)
+			return -1;
+
+		return 0;
+	}
+
+	err = nftnl_flowtable_list_foreach(flowtable_cache, list_flowtable_cb, ctx);
+	nftnl_flowtable_list_free(flowtable_cache);
 	return err;
 }
 

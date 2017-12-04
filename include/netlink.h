@@ -179,6 +179,10 @@ extern int netlink_add_obj(struct netlink_ctx *ctx, const struct handle *h,
 extern int netlink_delete_obj(struct netlink_ctx *ctx, const struct handle *h,
 			      struct location *loc, uint32_t type);
 
+extern int netlink_list_flowtables(struct netlink_ctx *ctx,
+				   const struct handle *h,
+				   const struct location *loc);
+
 extern void netlink_dump_chain(const struct nftnl_chain *nlc,
 			       struct netlink_ctx *ctx);
 extern void netlink_dump_rule(const struct nftnl_rule *nlr,

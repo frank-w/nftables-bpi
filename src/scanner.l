@@ -299,6 +299,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "meter"			{ return METER; }
 "meters"		{ return METERS; }
 
+"flowtables"		{ return FLOWTABLES; }
+
 "counter"		{ return COUNTER; }
 "name"			{ return NAME; }
 "packets"		{ return PACKETS; }

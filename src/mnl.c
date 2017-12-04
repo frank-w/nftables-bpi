@@ -17,6 +17,7 @@
 #include <libnftnl/expr.h>
 #include <libnftnl/set.h>
 #include <libnftnl/object.h>
+#include <libnftnl/flowtable.h>
 #include <libnftnl/batch.h>
 
 #include <linux/netfilter/nfnetlink.h>
@@ -951,6 +952,63 @@ int mnl_nft_setelem_get(struct netlink_ctx *ctx, struct nftnl_set *nls)
 	nftnl_set_nlmsg_build_payload(nlh, nls);
 
 	return nft_mnl_talk(ctx, nlh, nlh->nlmsg_len, set_elem_cb, nls);
+}
+
+static int flowtable_cb(const struct nlmsghdr *nlh, void *data)
+{
+	struct nftnl_flowtable_list *nln_list = data;
+	struct nftnl_flowtable *n;
+
+	if (check_genid(nlh) < 0)
+		return MNL_CB_ERROR;
+
+	n = nftnl_flowtable_alloc();
+	if (n == NULL)
+		memory_allocation_error();
+
+	if (nftnl_flowtable_nlmsg_parse(nlh, n) < 0)
+		goto err_free;
+
+	nftnl_flowtable_list_add_tail(n, nln_list);
+	return MNL_CB_OK;
+
+err_free:
+	nftnl_flowtable_free(n);
+	return MNL_CB_OK;
+}
+
+struct nftnl_flowtable_list *
+mnl_nft_flowtable_dump(struct netlink_ctx *ctx, int family, const char *table)
+{
+	struct nftnl_flowtable_list *nln_list;
+	char buf[MNL_SOCKET_BUFFER_SIZE];
+	struct nftnl_flowtable *n;
+	struct nlmsghdr *nlh;
+	int ret;
+
+	n = nftnl_flowtable_alloc();
+	if (n == NULL)
+		memory_allocation_error();
+
+	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETFLOWTABLE, family,
+				    NLM_F_DUMP | NLM_F_ACK, ctx->seqnum);
+	if (table != NULL)
+		nftnl_flowtable_set_str(n, NFTNL_FLOWTABLE_TABLE, table);
+	nftnl_flowtable_nlmsg_build_payload(nlh, n);
+	nftnl_flowtable_free(n);
+
+	nln_list = nftnl_flowtable_list_alloc();
+	if (nln_list == NULL)
+		memory_allocation_error();
+
+	ret = nft_mnl_talk(ctx, nlh, nlh->nlmsg_len, flowtable_cb, nln_list);
+	if (ret < 0)
+		goto err;
+
+	return nln_list;
+err:
+	nftnl_flowtable_list_free(nln_list);
+	return NULL;
 }
 
 /*

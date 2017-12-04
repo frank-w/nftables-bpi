@@ -35,6 +35,7 @@ struct position_spec {
  * @chain:	chain name (chains and rules only)
  * @set:	set name (sets only)
  * @obj:	stateful object name (stateful object only)
+ * @flowtable:	flow table name (flow table only)
  * @handle:	rule handle (rules only)
  * @position:	rule position (rules only)
  * @set_id:	set ID (sets only)
@@ -45,6 +46,7 @@ struct handle {
 	const char		*chain;
 	const char		*set;
 	const char		*obj;
+	const char		*flowtable;
 	struct handle_spec	handle;
 	struct position_spec	position;
 	uint32_t		set_id;
@@ -102,6 +104,7 @@ enum table_flags {
  * @chains:	chains contained in the table
  * @sets:	sets contained in the table
  * @objs:	stateful objects contained in the table
+ * @flowtables:	flow tables contained in the table
  * @flags:	table flags
  * @refcnt:	table reference counter
  */
@@ -113,6 +116,7 @@ struct table {
 	struct list_head	chains;
 	struct list_head	sets;
 	struct list_head	objs;
+	struct list_head	flowtables;
 	enum table_flags 	flags;
 	unsigned int		refcnt;
 };
@@ -319,6 +323,24 @@ void obj_print_plain(const struct obj *obj, struct output_ctx *octx);
 const char *obj_type_name(uint32_t type);
 uint32_t obj_type_to_cmd(uint32_t type);
 
+struct flowtable {
+	struct list_head	list;
+	struct handle		handle;
+	struct location		location;
+	unsigned int		hooknum;
+	int			priority;
+	const char		**dev_array;
+	int			dev_array_len;
+	unsigned int		refcnt;
+};
+
+extern struct flowtable *flowtable_alloc(const struct location *loc);
+extern struct flowtable *flowtable_get(struct flowtable *flowtable);
+extern void flowtable_free(struct flowtable *flowtable);
+extern void flowtable_add_hash(struct flowtable *flowtable, struct table *table);
+
+void flowtable_print(const struct flowtable *n, struct output_ctx *octx);
+
 /**
  * enum cmd_ops - command operations
  *
@@ -377,6 +399,7 @@ enum cmd_ops {
  * @CMD_OBJ_QUOTAS:	multiple quotas
  * @CMD_OBJ_LIMIT:	limit
  * @CMD_OBJ_LIMITS:	multiple limits
+ * @CMD_OBJ_FLOWTABLES:	flow tables
  */
 enum cmd_obj {
 	CMD_OBJ_INVALID,
@@ -403,6 +426,7 @@ enum cmd_obj {
 	CMD_OBJ_CT_HELPERS,
 	CMD_OBJ_LIMIT,
 	CMD_OBJ_LIMITS,
+	CMD_OBJ_FLOWTABLES,
 };
 
 struct markup {

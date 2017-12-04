@@ -251,6 +251,8 @@ int nft_lex(void *, void *, void *);
 %token METER			"meter"
 %token METERS			"meters"
 
+%token FLOWTABLES		"flowtables"
+
 %token <val> NUM		"number"
 %token <string> STRING		"string"
 %token <string> QUOTED_STRING	"quoted string"
@@ -1126,6 +1128,10 @@ list_cmd		:	TABLE		table_spec
 			|	METER		set_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_METER, &$2, &@$, NULL);
+			}
+			|       FLOWTABLES      ruleset_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_FLOWTABLES, &$2, &@$, NULL);
 			}
 			|	MAPS		ruleset_spec
 			{

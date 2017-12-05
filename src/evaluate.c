@@ -3481,6 +3481,8 @@ int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 		return 0;
 	case CMD_MONITOR:
 		return cmd_evaluate_monitor(ctx, cmd);
+	case CMD_IMPORT:
+		return 0;
 	default:
 		BUG("invalid command operation %u\n", cmd->op);
 	};

@@ -227,4 +227,13 @@ bool netlink_batch_supported(struct mnl_socket *nf_sock, uint32_t *seqnum);
 
 int netlink_echo_callback(const struct nlmsghdr *nlh, void *data);
 
+struct ruleset_parse {
+	struct netlink_ctx      *nl_ctx;
+	struct cmd              *cmd;
+};
+
+struct nftnl_parse_ctx;
+
+int netlink_markup_parse_cb(const struct nftnl_parse_ctx *ctx);
+
 #endif /* NFTABLES_NETLINK_H */

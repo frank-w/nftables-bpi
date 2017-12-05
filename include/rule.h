@@ -326,6 +326,7 @@ uint32_t obj_type_to_cmd(uint32_t type);
  * @CMD_RESET:		reset container
  * @CMD_FLUSH:		flush container
  * @CMD_RENAME:		rename object
+ * @CMD_IMPORT:		import a ruleset in a given format
  * @CMD_EXPORT:		export the ruleset in a given format
  * @CMD_MONITOR:	event listener
  * @CMD_DESCRIBE:	describe an expression
@@ -341,6 +342,7 @@ enum cmd_ops {
 	CMD_RESET,
 	CMD_FLUSH,
 	CMD_RENAME,
+	CMD_IMPORT,
 	CMD_EXPORT,
 	CMD_MONITOR,
 	CMD_DESCRIBE,
@@ -360,7 +362,7 @@ enum cmd_ops {
  * @CMD_OBJ_RULESET:	ruleset
  * @CMD_OBJ_EXPR:	expression
  * @CMD_OBJ_MONITOR:	monitor
- * @CMD_OBJ_EXPORT:	export
+ * @CMD_OBJ_MARKUP:    import/export
  * @CMD_OBJ_METER:	meter
  * @CMD_OBJ_METERS:	meters
  * @CMD_OBJ_COUNTER:	counter
@@ -382,7 +384,7 @@ enum cmd_obj {
 	CMD_OBJ_RULESET,
 	CMD_OBJ_EXPR,
 	CMD_OBJ_MONITOR,
-	CMD_OBJ_EXPORT,
+	CMD_OBJ_MARKUP,
 	CMD_OBJ_METER,
 	CMD_OBJ_METERS,
 	CMD_OBJ_MAP,
@@ -397,12 +399,12 @@ enum cmd_obj {
 	CMD_OBJ_LIMITS,
 };
 
-struct export {
+struct markup {
 	uint32_t	format;
 };
 
-struct export *export_alloc(uint32_t format);
-void export_free(struct export *e);
+struct markup *markup_alloc(uint32_t format);
+void markup_free(struct markup *m);
 
 enum {
 	CMD_MONITOR_OBJ_ANY,
@@ -454,7 +456,7 @@ struct cmd {
 		struct chain	*chain;
 		struct table	*table;
 		struct monitor	*monitor;
-		struct export	*export;
+		struct markup	*markup;
 		struct obj	*object;
 	};
 	const void		*arg;

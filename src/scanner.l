@@ -274,6 +274,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "reset"			{ return RESET; }
 "flush"			{ return FLUSH; }
 "rename"		{ return RENAME; }
+"import"                { return IMPORT; }
 "export"		{ return EXPORT; }
 "monitor"		{ return MONITOR; }
 
@@ -518,6 +519,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "xml"			{ return XML; }
 "json"			{ return JSON; }
+"vm"                    { return VM; }
 
 "exists"		{ return EXISTS; }
 "missing"		{ return MISSING; }

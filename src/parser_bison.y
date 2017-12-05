@@ -218,6 +218,7 @@ int nft_lex(void *, void *, void *);
 %token FLUSH			"flush"
 %token RENAME			"rename"
 %token DESCRIBE			"describe"
+%token IMPORT			"import"
 %token EXPORT			"export"
 %token MONITOR			"monitor"
 
@@ -473,6 +474,7 @@ int nft_lex(void *, void *, void *);
 
 %token XML			"xml"
 %token JSON			"json"
+%token VM			"vm"
 
 %token NOTRACK			"notrack"
 
@@ -492,8 +494,8 @@ int nft_lex(void *, void *, void *);
 %type <cmd>			line
 %destructor { cmd_free($$); }	line
 
-%type <cmd>			base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd
-%destructor { cmd_free($$); }	base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd
+%type <cmd>			base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
+%destructor { cmd_free($$); }	base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 
 %type <handle>			table_spec chain_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
 %destructor { handle_free(&$$); } table_spec chain_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
@@ -681,7 +683,7 @@ int nft_lex(void *, void *, void *);
 %destructor { expr_free($$); }	fib_expr
 %type <val>			fib_tuple	fib_result	fib_flag
 
-%type <val>			export_format
+%type <val>			markup_format
 %type <string>			monitor_event
 %destructor { xfree($$); }	monitor_event
 %type <val>			monitor_object	monitor_format
@@ -812,6 +814,7 @@ base_cmd		:	/* empty */	add_cmd		{ $$ = $1; }
 			|	RESET		reset_cmd	{ $$ = $2; }
 			|	FLUSH		flush_cmd	{ $$ = $2; }
 			|	RENAME		rename_cmd	{ $$ = $2; }
+			|       IMPORT          import_cmd      { $$ = $2; }
 			|	EXPORT		export_cmd	{ $$ = $2; }
 			|	MONITOR		monitor_cmd	{ $$ = $2; }
 			|	DESCRIBE	describe_cmd	{ $$ = $2; }
@@ -1181,18 +1184,34 @@ rename_cmd		:	CHAIN		chain_spec	identifier
 			}
 			;
 
-export_cmd		:	RULESET		export_format
+import_cmd			:       RULESET         markup_format
 			{
 				struct handle h = { .family = NFPROTO_UNSPEC };
-				struct export *export = export_alloc($2);
-				$$ = cmd_alloc(CMD_EXPORT, CMD_OBJ_EXPORT, &h, &@$, export);
+				struct markup *markup = markup_alloc($2);
+				$$ = cmd_alloc(CMD_IMPORT, CMD_OBJ_MARKUP, &h, &@$, markup);
 			}
-			|	export_format
+			|	markup_format
 			{
 				struct handle h = { .family = NFPROTO_UNSPEC };
-				struct export *export = export_alloc($1);
-				$$ = cmd_alloc(CMD_EXPORT, CMD_OBJ_EXPORT, &h, &@$, export);
+				struct markup *markup = markup_alloc($1);
+				$$ = cmd_alloc(CMD_IMPORT, CMD_OBJ_MARKUP, &h, &@$, markup);
 			}
+			|	JSON		{ $$ = NULL; }
+			;
+
+export_cmd		:	RULESET		markup_format
+			{
+				struct handle h = { .family = NFPROTO_UNSPEC };
+				struct markup *markup = markup_alloc($2);
+				$$ = cmd_alloc(CMD_EXPORT, CMD_OBJ_MARKUP, &h, &@$, markup);
+			}
+			|	markup_format
+			{
+				struct handle h = { .family = NFPROTO_UNSPEC };
+				struct markup *markup = markup_alloc($1);
+				$$ = cmd_alloc(CMD_EXPORT, CMD_OBJ_MARKUP, &h, &@$, markup);
+			}
+			|	JSON		{ $$ = NULL; }
 			;
 
 monitor_cmd		:	monitor_event	monitor_object	monitor_format
@@ -1219,11 +1238,12 @@ monitor_object		:	/* empty */	{ $$ = CMD_MONITOR_OBJ_ANY; }
 			;
 
 monitor_format		:	/* empty */	{ $$ = NFTNL_OUTPUT_DEFAULT; }
-			|	export_format
+			|	markup_format
+			|	JSON		{ $$ = NFTNL_OUTPUT_JSON; }
 			;
 
-export_format		: 	XML 		{ $$ = NFTNL_OUTPUT_XML; }
-			|	JSON		{ $$ = NFTNL_OUTPUT_JSON; }
+markup_format		: 	XML 		{ $$ = NFTNL_OUTPUT_XML; }
+			|	VM JSON		{ $$ = NFTNL_OUTPUT_JSON; }
 			;
 
 describe_cmd		:	primary_expr

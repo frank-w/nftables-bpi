@@ -248,7 +248,7 @@ def chain_create(chain, table, filename):
 
     ret = execute_cmd(cmd, filename, chain.lineno)
     if ret != 0:
-        reason = "I cannot create the chain '" + chain.name
+        reason = "I cannot create the chain '" + chain.name + "'"
         print_error(reason, filename, chain.lineno)
         return -1
 

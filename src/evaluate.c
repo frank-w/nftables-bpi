@@ -746,7 +746,7 @@ static int ct_gen_nh_dependency(struct eval_ctx *ctx, struct expr *ct)
 				    constant_data_ptr(ct->ct.nfproto, left->len));
 	dep = relational_expr_alloc(&ct->location, OP_EQ, left, right);
 
-	left->ops->pctx_update(&ctx->pctx, dep);
+	relational_expr_pctx_update(&ctx->pctx, dep);
 
 	nstmt = expr_stmt_alloc(&dep->location, dep);
 
@@ -1635,9 +1635,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 		 * Update protocol context for payload and meta iiftype
 		 * equality expressions.
 		 */
-		if (left->flags & EXPR_F_PROTOCOL &&
-		    left->ops->pctx_update)
-			left->ops->pctx_update(&ctx->pctx, rel);
+		relational_expr_pctx_update(&ctx->pctx, rel);
 
 		if (left->ops->type == EXPR_CONCAT)
 			return 0;

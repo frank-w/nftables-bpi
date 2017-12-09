@@ -600,6 +600,19 @@ struct expr *relational_expr_alloc(const struct location *loc, enum ops op,
 	return expr;
 }
 
+void relational_expr_pctx_update(struct proto_ctx *ctx,
+				 const struct expr *expr)
+{
+	const struct expr *left = expr->left;
+
+	assert(expr->ops->type == EXPR_RELATIONAL);
+	assert(expr->op == OP_EQ);
+
+	if (left->ops->pctx_update &&
+	    (left->flags & EXPR_F_PROTOCOL))
+		left->ops->pctx_update(ctx, expr);
+}
+
 static void range_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	octx->numeric += NFT_NUMERIC_ALL + 1;

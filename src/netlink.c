@@ -2730,7 +2730,7 @@ restart:
 		list_add_tail(&stmt->list, &unordered);
 
 		desc = ctx->protocol[base].desc;
-		lhs->ops->pctx_update(ctx, rel);
+		relational_expr_pctx_update(ctx, rel);
 	}
 
 	expr_free(rhs);

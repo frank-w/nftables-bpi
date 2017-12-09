@@ -482,8 +482,6 @@ static void meta_expr_pctx_update(struct proto_ctx *ctx,
 	const struct proto_desc *desc;
 	uint8_t protonum;
 
-	assert(expr->op == OP_EQ);
-
 	switch (left->meta.key) {
 	case NFT_META_IIFTYPE:
 		if (h->base < PROTO_BASE_NETWORK_HDR &&

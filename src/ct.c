@@ -327,8 +327,6 @@ static void ct_expr_pctx_update(struct proto_ctx *ctx, const struct expr *expr)
 	const struct proto_desc *base = NULL, *desc;
 	uint32_t nhproto;
 
-	assert(expr->op == OP_EQ);
-
 	nhproto = mpz_get_uint32(right->value);
 
 	base = ctx->protocol[left->ct.base].desc;

@@ -369,6 +369,9 @@ extern struct expr *binop_expr_alloc(const struct location *loc, enum ops op,
 extern struct expr *relational_expr_alloc(const struct location *loc, enum ops op,
 					  struct expr *left, struct expr *right);
 
+extern void relational_expr_pctx_update(struct proto_ctx *ctx,
+					const struct expr *expr);
+
 extern struct expr *verdict_expr_alloc(const struct location *loc,
 				       int verdict, const char *chain);
 

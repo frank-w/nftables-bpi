@@ -84,11 +84,6 @@ static void payload_expr_pctx_update(struct proto_ctx *ctx,
 	const struct proto_desc *base, *desc;
 	unsigned int proto = 0;
 
-	if (!(left->flags & EXPR_F_PROTOCOL))
-		return;
-
-	assert(expr->op == OP_EQ);
-
 	/* Export the data in the correct byte order */
 	assert(right->len / BITS_PER_BYTE <= sizeof(proto));
 	mpz_export_data(constant_data_ptr(proto, right->len), right->value,
@@ -240,7 +235,7 @@ static int payload_add_dependency(struct eval_ctx *ctx,
 		return expr_error(ctx->msgs, expr,
 					  "dependency statement is invalid");
 	}
-	left->ops->pctx_update(&ctx->pctx, dep);
+	relational_expr_pctx_update(&ctx->pctx, dep);
 	*res = stmt;
 	return 0;
 }

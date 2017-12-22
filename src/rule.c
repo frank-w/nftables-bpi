@@ -1316,7 +1316,7 @@ static void obj_print_data(const struct obj *obj,
 			  opts->nl, opts->tab, opts->tab);
 		switch (obj->limit.type) {
 		case NFT_LIMIT_PKTS:
-			nft_print(octx, "limit rate %s%" PRIu64 "/%s",
+			nft_print(octx, "rate %s%" PRIu64 "/%s",
 				  inv ? "over " : "", obj->limit.rate,
 				  get_unit(obj->limit.unit));
 			if (obj->limit.burst > 0)
@@ -1326,7 +1326,7 @@ static void obj_print_data(const struct obj *obj,
 		case NFT_LIMIT_PKT_BYTES:
 			data_unit = get_rate(obj->limit.rate, &rate);
 
-			nft_print(octx, "limit rate %s%" PRIu64 " %s/%s",
+			nft_print(octx, "rate %s%" PRIu64 " %s/%s",
 				  inv ? "over " : "", rate, data_unit,
 				  get_unit(obj->limit.unit));
 			if (obj->limit.burst > 0) {

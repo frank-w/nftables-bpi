@@ -126,6 +126,8 @@ struct nftnl_table *alloc_nftnl_table(const struct handle *h)
 	nftnl_table_set_u32(nlt, NFTNL_TABLE_FAMILY, h->family);
 	if (h->table != NULL)
 		nftnl_table_set(nlt, NFTNL_TABLE_NAME, h->table);
+	if (h->handle.id)
+		nftnl_table_set_u64(nlt, NFTNL_TABLE_HANDLE, h->handle.id);
 
 	return nlt;
 }
@@ -140,7 +142,7 @@ struct nftnl_chain *alloc_nftnl_chain(const struct handle *h)
 
 	nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FAMILY, h->family);
 	nftnl_chain_set_str(nlc, NFTNL_CHAIN_TABLE, h->table);
-	if (h->handle.id != 0)
+	if (h->handle.id)
 		nftnl_chain_set_u64(nlc, NFTNL_CHAIN_HANDLE, h->handle.id);
 	if (h->chain != NULL)
 		nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME, h->chain);
@@ -810,6 +812,7 @@ static struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 	table->handle.family = nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY);
 	table->handle.table  = xstrdup(nftnl_table_get_str(nlt, NFTNL_TABLE_NAME));
 	table->flags	     = nftnl_table_get_u32(nlt, NFTNL_TABLE_FLAGS);
+	table->handle.handle.id = nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE);
 
 	return table;
 }
@@ -838,6 +841,7 @@ int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h,
 		return 0;
 	}
 
+	ctx->data = h;
 	nftnl_table_list_foreach(table_cache, list_table_cb, ctx);
 	nftnl_table_list_free(table_cache);
 	return 0;

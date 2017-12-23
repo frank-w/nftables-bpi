@@ -879,6 +879,8 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 		chain_print(chain, octx);
 		delim = "\n";
 	}
+	if (octx->handle > 0)
+		nft_print(octx, " # handle %" PRIu64, table->handle.handle.id);
 	nft_print(octx, "}\n");
 }
 

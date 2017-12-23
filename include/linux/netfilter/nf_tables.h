@@ -168,12 +168,14 @@ enum nft_table_flags {
  * @NFTA_TABLE_NAME: name of the table (NLA_STRING)
  * @NFTA_TABLE_FLAGS: bitmask of enum nft_table_flags (NLA_U32)
  * @NFTA_TABLE_USE: number of chains in this table (NLA_U32)
+ * @NFTA_TABLE_HANDLE: numeric handle of the table (NLA_U64)
  */
 enum nft_table_attributes {
 	NFTA_TABLE_UNSPEC,
 	NFTA_TABLE_NAME,
 	NFTA_TABLE_FLAGS,
 	NFTA_TABLE_USE,
+	NFTA_TABLE_HANDLE,
 	__NFTA_TABLE_MAX
 };
 #define NFTA_TABLE_MAX		(__NFTA_TABLE_MAX - 1)
@@ -1320,6 +1322,7 @@ enum nft_object_attributes {
  *
  * @NFTA_TRACE_TABLE: name of the table (NLA_STRING)
  * @NFTA_TRACE_CHAIN: name of the chain (NLA_STRING)
+ * @NFTA_TRACE_TABLE_HANDLE: numeric handle of the table (NLA_U64)
  * @NFTA_TRACE_RULE_HANDLE: numeric handle of the rule (NLA_U64)
  * @NFTA_TRACE_TYPE: type of the event (NLA_U32: nft_trace_types)
  * @NFTA_TRACE_VERDICT: verdict returned by hook (NLA_NESTED: nft_verdicts)
@@ -1339,6 +1342,7 @@ enum nft_trace_attributes {
 	NFTA_TRACE_UNSPEC,
 	NFTA_TRACE_TABLE,
 	NFTA_TRACE_CHAIN,
+	NFTA_TRACE_TABLE_HANDLE,
 	NFTA_TRACE_RULE_HANDLE,
 	NFTA_TRACE_TYPE,
 	NFTA_TRACE_VERDICT,

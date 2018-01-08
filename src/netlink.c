@@ -2918,7 +2918,7 @@ static int netlink_events_newgen_cb(const struct nlmsghdr *nlh, int type,
 				break;
 			strncpy(name, mnl_attr_get_str(attr), sizeof(name));
 			break;
-		case NFTA_GEN_PROC_ID:
+		case NFTA_GEN_PROC_PID:
 			if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
 				break;
 			pid = ntohl(mnl_attr_get_u32(attr));

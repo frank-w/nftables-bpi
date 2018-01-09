@@ -507,8 +507,8 @@ int nft_lex(void *, void *, void *);
 %type <cmd>			base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 %destructor { cmd_free($$); }	base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 
-%type <handle>			table_spec tableid_spec chain_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
-%destructor { handle_free(&$$); } table_spec tableid_spec chain_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
+%type <handle>			table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
+%destructor { handle_free(&$$); } table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
 %type <handle>			set_spec set_identifier flowtable_identifier obj_spec obj_identifier
 %destructor { handle_free(&$$); } set_spec set_identifier obj_spec obj_identifier
 %type <val>			family_spec family_spec_explicit chain_policy prio_spec
@@ -1033,6 +1033,10 @@ delete_cmd		:	TABLE		table_spec
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_TABLE, &$2, &@$, NULL);
 			}
 			|	CHAIN		chain_spec
+			{
+				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_CHAIN, &$2, &@$, NULL);
+			}
+			| 	CHAIN 		chainid_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_CHAIN, &$2, &@$, NULL);
 			}
@@ -1827,6 +1831,14 @@ chain_spec		:	table_spec	identifier
 			{
 				$$		= $1;
 				$$.chain	= $2;
+			}
+			;
+
+chainid_spec 		: 	table_spec 	HANDLE NUM
+			{
+				$$ 			= $1;
+				$$.handle.location 	= @$;
+				$$.handle.id 		= $3;
 			}
 			;
 

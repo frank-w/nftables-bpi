@@ -42,6 +42,7 @@ extern const struct location netlink_location;
  * @octx:	output context
  * @debug_mask:	display debugging information
  * @cache:	cache context
+ * @range_merge: merge adjacent/overlapping ranges in new set elements
  */
 struct netlink_ctx {
 	struct mnl_socket	*nf_sock;
@@ -55,6 +56,7 @@ struct netlink_ctx {
 	unsigned int		debug_mask;
 	struct output_ctx	*octx;
 	struct nft_cache	*cache;
+	bool			range_merge;
 };
 
 extern struct nftnl_table *alloc_nftnl_table(const struct handle *h);

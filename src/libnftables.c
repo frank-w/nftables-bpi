@@ -43,6 +43,7 @@ static int nft_netlink(struct nft_ctx *nft,
 		ctx.nf_sock = nf_sock;
 		ctx.cache = &nft->cache;
 		ctx.debug_mask = nft->debug_mask;
+		ctx.range_merge = nft->range_merge;
 		init_list_head(&ctx.list);
 		ret = do_command(&ctx, cmd);
 		if (ret < 0)

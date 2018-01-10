@@ -375,8 +375,26 @@ static int set_overlap(struct list_head *msgs, const struct set *set,
 	return 0;
 }
 
+static int intervals_overlap(struct list_head *msgs,
+			     struct elementary_interval **intervals,
+			     unsigned int keylen)
+{
+	unsigned int i, j;
+
+	for (i = 0; i < keylen - 1; i++) {
+		for (j = i + 1; j < keylen; j++) {
+			if (interval_overlap(intervals[i], intervals[j]))
+				return expr_error(msgs, intervals[j]->expr,
+					"interval overlaps with previous one");
+		}
+	}
+
+	return 0;
+}
+
 static int set_to_segtree(struct list_head *msgs, struct set *set,
-			  struct expr *init, struct seg_tree *tree, bool add)
+			  struct expr *init, struct seg_tree *tree,
+			  bool add, bool merge)
 {
 	struct elementary_interval *intervals[init->size];
 	struct expr *i, *next;
@@ -393,6 +411,12 @@ static int set_to_segtree(struct list_head *msgs, struct set *set,
 	}
 
 	n = expr_to_intervals(init, tree->keylen, intervals);
+
+	if (add && !merge) {
+		err = intervals_overlap(msgs, intervals, n);
+		if (err < 0)
+			return err;
+	}
 
 	list_for_each_entry_safe(i, next, &init->expressions, list) {
 		list_del(&i->list);
@@ -450,7 +474,7 @@ static bool segtree_needs_first_segment(const struct set *set,
 
 static void segtree_linearize(struct list_head *list, const struct set *set,
 			      const struct expr *init, struct seg_tree *tree,
-			      bool add)
+			      bool add, bool merge)
 {
 	bool needs_first_segment = segtree_needs_first_segment(set, init, add);
 	struct elementary_interval *ei, *nei, *prev = NULL;
@@ -489,7 +513,8 @@ static void segtree_linearize(struct list_head *list, const struct set *set,
 				mpz_sub_ui(q, ei->left, 1);
 				nei = ei_alloc(p, q, NULL, EI_F_INTERVAL_END);
 				list_add_tail(&nei->list, list);
-			} else if (add && ei->expr->ops->type != EXPR_MAPPING) {
+			} else if (add && merge &&
+			           ei->expr->ops->type != EXPR_MAPPING) {
 				/* Merge contiguous segments only in case of
 				 * new additions.
 				 */
@@ -550,16 +575,17 @@ static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 }
 
 int set_to_intervals(struct list_head *errs, struct set *set,
-		     struct expr *init, bool add, unsigned int debug_mask)
+		     struct expr *init, bool add, unsigned int debug_mask,
+		     bool merge)
 {
 	struct elementary_interval *ei, *next;
 	struct seg_tree tree;
 	LIST_HEAD(list);
 
 	seg_tree_init(&tree, set, init, debug_mask);
-	if (set_to_segtree(errs, set, init, &tree, add) < 0)
+	if (set_to_segtree(errs, set, init, &tree, add, merge) < 0)
 		return -1;
-	segtree_linearize(&list, set, init, &tree, add);
+	segtree_linearize(&list, set, init, &tree, add, merge);
 
 	init->size = 0;
 	list_for_each_entry_safe(ei, next, &list, list) {

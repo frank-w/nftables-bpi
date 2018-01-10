@@ -52,10 +52,10 @@ ip test-ip4 input
   [ byteorder reg 1 = hton(reg 1, 4, 4) ]
   [ lookup reg 1 set __set%d ]
 
-# meta length { 33-55, 55-88, 100-120}
+# meta length { 33-55, 56-88, 100-120}
 __set%d test-ip4 7
 __set%d test-ip4 0
-	element 00000000  : 1 [end]	element 21000000  : 0 [end]	element 59000000  : 1 [end]	element 64000000  : 0 [end]	element 79000000  : 1 [end]
+	element 00000000  : 1 [end]	element 21000000  : 0 [end]	element 38000000  : 0 [end]	element 59000000  : 1 [end]	element 64000000  : 0 [end]	element 79000000  : 1 [end]
 ip test-ip4 input
   [ meta load len => reg 1 ]
   [ byteorder reg 1 = hton(reg 1, 4, 4) ]

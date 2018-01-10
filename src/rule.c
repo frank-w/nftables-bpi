@@ -997,7 +997,8 @@ static int do_add_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	set = set_lookup(table, h->set);
 
 	if (set->flags & NFT_SET_INTERVAL &&
-	    set_to_intervals(ctx->msgs, set, init, true, ctx->debug_mask) < 0)
+	    set_to_intervals(ctx->msgs, set, init, true,
+			     ctx->debug_mask, ctx->range_merge) < 0)
 		return -1;
 
 	return __do_add_setelems(ctx, h, set, init, flags);
@@ -1009,7 +1010,7 @@ static int do_add_set(struct netlink_ctx *ctx, const struct handle *h,
 	if (set->init != NULL) {
 		if (set->flags & NFT_SET_INTERVAL &&
 		    set_to_intervals(ctx->msgs, set, set->init, true,
-				     ctx->debug_mask) < 0)
+				     ctx->debug_mask, ctx->range_merge) < 0)
 			return -1;
 	}
 	if (netlink_add_set(ctx, h, set, flags) < 0)
@@ -1108,7 +1109,8 @@ static int do_delete_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	set = set_lookup(table, h->set);
 
 	if (set->flags & NFT_SET_INTERVAL &&
-	    set_to_intervals(ctx->msgs, set, expr, false, ctx->debug_mask) < 0)
+	    set_to_intervals(ctx->msgs, set, expr, false,
+			     ctx->debug_mask, ctx->range_merge) < 0)
 		return -1;
 
 	if (netlink_delete_setelems(ctx, h, expr) < 0)

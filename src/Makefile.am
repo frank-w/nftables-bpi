@@ -22,9 +22,6 @@ AM_CFLAGS = -Wall								\
 
 AM_YFLAGS = -d
 
-# yacc and lex generate dirty code
-parser_bison.o scanner.o: AM_CFLAGS += -Wno-missing-prototypes -Wno-missing-declarations -Wno-implicit-function-declaration -Wno-nested-externs -Wno-undef -Wno-redundant-decls
-
 BUILT_SOURCES = parser_bison.h
 
 noinst_LTLIBRARIES = libnftables.la
@@ -56,18 +53,28 @@ libnftables_la_SOURCES =			\
 		iface.c				\
 		services.c			\
 		mergesort.c			\
-		scanner.l			\
 		tcpopt.c			\
-		parser_bison.y			\
 		libnftables.c
 
+# yacc and lex generate dirty code
+noinst_LTLIBRARIES += libparser.la
+libparser_la_SOURCES = parser_bison.y scanner.l
+libparser_la_CFLAGS = ${AM_CFLAGS} \
+		      -Wno-missing-prototypes \
+		      -Wno-missing-declarations \
+		      -Wno-implicit-function-declaration \
+		      -Wno-nested-externs \
+		      -Wno-undef \
+		      -Wno-redundant-decls
+
+libnftables_la_LIBADD = ${LIBMNL_LIBS} ${LIBNFTNL_LIBS} libparser.la
+
 if BUILD_MINIGMP
-mini-gmp.o: AM_CFLAGS += -Wno-sign-compare
-
-libnftables_la_SOURCES += mini-gmp.c
+noinst_LTLIBRARIES += libminigmp.la
+libminigmp_la_SOURCES = mini-gmp.c
+libminigmp_la_CFLAGS = ${AM_CFLAGS} -Wno-sign-compare
+libnftables_la_LIBADD += libminigmp.la
 endif
-
-libnftables_la_LIBADD = ${LIBMNL_LIBS} ${LIBNFTNL_LIBS}
 
 if BUILD_XTABLES
 libnftables_la_SOURCES += xt.c

@@ -1242,6 +1242,7 @@ static int expr_evaluate_set(struct eval_ctx *ctx, struct expr **expr)
 	return 0;
 }
 
+static int binop_transfer(struct eval_ctx *ctx, struct expr **expr);
 static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 {
 	struct expr_ctx ectx = ctx->ectx;
@@ -1277,8 +1278,12 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 		ctx->set = mappings->set;
 		if (expr_evaluate(ctx, &map->mappings->set->init) < 0)
 			return -1;
-		ctx->set = NULL;
+		expr_set_context(&ctx->ectx, ctx->set->key->dtype, ctx->set->key->len);
+		if (binop_transfer(ctx, expr) < 0)
+			return -1;
 
+		map = *expr;
+		ctx->set = NULL;
 		map->mappings->set->flags |= map->mappings->set->init->set_flags;
 		break;
 	case EXPR_SYMBOL:
@@ -1408,6 +1413,8 @@ static int binop_can_transfer(struct eval_ctx *ctx,
 	switch (right->ops->type) {
 	case EXPR_VALUE:
 		break;
+	case EXPR_SET_ELEM:
+		return binop_can_transfer(ctx, left, right->key);
 	case EXPR_RANGE:
 		err = binop_can_transfer(ctx, left, right->left);
 		if (err <= 0)
@@ -1442,6 +1449,8 @@ static int binop_transfer_one(struct eval_ctx *ctx,
 	switch ((*right)->ops->type) {
 	case EXPR_VALUE:
 		break;
+	case EXPR_SET_ELEM:
+		return binop_transfer_one(ctx, left, &(*right)->key);
 	case EXPR_RANGE:
 		err = binop_transfer_one(ctx, left, &(*right)->left);
 		if (err < 0)
@@ -1516,6 +1525,7 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 			switch (i->key->ops->type) {
 			case EXPR_VALUE:
 			case EXPR_RANGE:
+			case EXPR_SET_ELEM:
 				err = binop_can_transfer(ctx, left, i->key);
 				if (err <= 0)
 					return err;
@@ -1530,6 +1540,7 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 			switch (i->key->ops->type) {
 			case EXPR_VALUE:
 			case EXPR_RANGE:
+			case EXPR_SET_ELEM:
 				if (binop_transfer_one(ctx, left, &i->key) < 0)
 					return -1;
 				break;

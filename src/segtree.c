@@ -809,7 +809,7 @@ void interval_map_decompose(struct expr *set)
 			struct expr *tmp;
 
 			tmp = constant_expr_alloc(&low->location, low->dtype,
-						  low->byteorder, low->len,
+						  low->byteorder, expr_value(low)->len,
 						  NULL);
 
 			mpz_add(range, range, expr_value(low)->value);

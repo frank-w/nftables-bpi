@@ -1403,6 +1403,20 @@ static int expr_evaluate_hash(struct eval_ctx *ctx, struct expr **exprp)
 static int binop_can_transfer(struct eval_ctx *ctx,
 			      struct expr *left, struct expr *right)
 {
+	int err;
+
+	switch (right->ops->type) {
+	case EXPR_VALUE:
+		break;
+	case EXPR_RANGE:
+		err = binop_can_transfer(ctx, left, right->left);
+		if (err <= 0)
+			return err;
+		return binop_can_transfer(ctx, left, right->right);
+	default:
+		return 0;
+	}
+
 	switch (left->op) {
 	case OP_LSHIFT:
 		if (mpz_scan1(right->value, 0) < mpz_get_uint32(left->right->value))
@@ -1423,6 +1437,20 @@ static int binop_can_transfer(struct eval_ctx *ctx,
 static int binop_transfer_one(struct eval_ctx *ctx,
 			      const struct expr *left, struct expr **right)
 {
+	int err;
+
+	switch ((*right)->ops->type) {
+	case EXPR_VALUE:
+		break;
+	case EXPR_RANGE:
+		err = binop_transfer_one(ctx, left, &(*right)->left);
+		if (err < 0)
+			return err;
+		return binop_transfer_one(ctx, left, &(*right)->right);
+	default:
+		return 0;
+	}
+
 	expr_get(*right);
 
 	switch (left->op) {
@@ -1463,15 +1491,10 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 			return -1;
 		break;
 	case EXPR_RANGE:
-		err = binop_can_transfer(ctx, left, (*expr)->right->left);
+		err = binop_can_transfer(ctx, left, (*expr)->right);
 		if (err <= 0)
 			return err;
-		err = binop_can_transfer(ctx, left, (*expr)->right->right);
-		if (err <= 0)
-			return err;
-		if (binop_transfer_one(ctx, left, &(*expr)->right->left) < 0)
-			return -1;
-		if (binop_transfer_one(ctx, left, &(*expr)->right->right) < 0)
+		if (binop_transfer_one(ctx, left, &(*expr)->right) < 0)
 			return -1;
 		break;
 	case EXPR_SET:
@@ -1492,15 +1515,8 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 		list_for_each_entry(i, &(*expr)->right->set->init->expressions, list) {
 			switch (i->key->ops->type) {
 			case EXPR_VALUE:
-				err = binop_can_transfer(ctx, left, i->key);
-				if (err <= 0)
-					return err;
-				break;
 			case EXPR_RANGE:
-				err = binop_can_transfer(ctx, left, i->key->left);
-				if (err <= 0)
-					return err;
-				err = binop_can_transfer(ctx, left, i->key->right);
+				err = binop_can_transfer(ctx, left, i->key);
 				if (err <= 0)
 					return err;
 				break;
@@ -1513,13 +1529,8 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 			list_del(&i->list);
 			switch (i->key->ops->type) {
 			case EXPR_VALUE:
-				if (binop_transfer_one(ctx, left, &i->key) < 0)
-					return -1;
-				break;
 			case EXPR_RANGE:
-				if (binop_transfer_one(ctx, left, &i->key->left) < 0)
-					return -1;
-				if (binop_transfer_one(ctx, left, &i->key->right) < 0)
+				if (binop_transfer_one(ctx, left, &i->key) < 0)
 					return -1;
 				break;
 			default:

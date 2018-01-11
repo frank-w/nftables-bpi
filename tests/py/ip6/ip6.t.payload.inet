@@ -41,6 +41,18 @@ inet test-inet input
   [ bitwise reg 1 = (reg=1 & 0x0000c00f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d ]
 
+# ip6 dscp vmap { 0x04 : accept, 0x3f : continue } counter
+__map%d test-inet b size 2
+__map%d test-inet 0
+	element 00000001  : 0 [end]	element 0000c00f  : 0 [end]
+ip6 test-ip6 input
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x0000000a ]
+  [ payload load 2b @ network header + 0 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x0000c00f ) ^ 0x00000000 ]
+  [ lookup reg 1 set __map%d dreg 0 ]
+  [ counter pkts 0 bytes 0 ]
+
 # ip6 flowlabel 22
 inet test-inet input
   [ meta load nfproto => reg 1 ]
@@ -100,6 +112,17 @@ inet test-inet input
   [ payload load 3b @ network header + 1 => reg 1 ]
   [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d 0x1 ]
+
+# ip6 flowlabel vmap { 0 : accept, 2 : continue } 
+__map%d test-inet b size 2
+__map%d test-inet 0
+	element 00000000  : 0 [end]	element 00020000  : 0 [end]
+inet test-inet input 
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x0000000a ]
+  [ payload load 3b @ network header + 1 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
+  [ lookup reg 1 set __map%d dreg 0 ]
 
 # ip6 length 22
 inet test-inet input

@@ -52,6 +52,18 @@ inet test-inet input
   [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
+# ip dscp vmap { cs1 : continue , cs4 : accept } counter
+__map%d test-inet b size 2
+__map%d test-inet 0
+	element 00000020  : 0 [end]	element 00000080  : 0 [end]
+inet test-inet input 
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x00000002 ]
+  [ payload load 1b @ network header + 1 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
+  [ lookup reg 1 set __map%d dreg 0 ]
+  [ counter pkts 0 bytes 0 ]
+
 # ip length 232
 inet test-inet input
   [ meta load nfproto => reg 1 ]
@@ -682,6 +694,18 @@ inet test-inet input
   [ payload load 1b @ network header + 0 => reg 1 ]
   [ bitwise reg 1 = (reg=1 & 0x0000000f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000000f ]
+
+# ip hdrlength vmap { 0-4 : drop, 5 : accept, 6 : continue } counter
+__map%d test-inet f size 4
+__map%d test-inet 0
+	element 00000000  : 0 [end]	element 00000005  : 0 [end]	element 00000006  : 0 [end]	element 00000007  : 1 [end]
+inet test-inet input 
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x00000002 ]
+  [ payload load 1b @ network header + 0 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x0000000f ) ^ 0x00000000 ]
+  [ lookup reg 1 set __map%d dreg 0 ]
+  [ counter pkts 0 bytes 0 ]
 
 # iif "lo" ip daddr set 127.0.0.1
 inet test-inet input

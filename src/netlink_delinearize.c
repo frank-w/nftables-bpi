@@ -1648,7 +1648,7 @@ static void __binop_adjust(const struct expr *binop, struct expr *right,
 				binop_adjust_one(binop, i->key->right, shift);
 				break;
 			case EXPR_SET_ELEM:
-				binop_adjust_one(binop, i->key->key, shift);
+				__binop_adjust(binop, i->key->key, shift);
 				break;
 			default:
 				BUG("unknown expression type %s\n", i->key->ops->name);

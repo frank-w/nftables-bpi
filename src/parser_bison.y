@@ -509,8 +509,8 @@ int nft_lex(void *, void *, void *);
 
 %type <handle>			table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
 %destructor { handle_free(&$$); } table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
-%type <handle>			set_spec set_identifier flowtable_identifier obj_spec obj_identifier
-%destructor { handle_free(&$$); } set_spec set_identifier obj_spec obj_identifier
+%type <handle>			set_spec setid_spec set_identifier flowtable_identifier obj_spec obj_identifier
+%destructor { handle_free(&$$); } set_spec setid_spec set_identifier obj_spec obj_identifier
 %type <val>			family_spec family_spec_explicit chain_policy prio_spec
 
 %type <string>			dev_spec quota_unit
@@ -1045,6 +1045,10 @@ delete_cmd		:	TABLE		table_spec
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_RULE, &$2, &@$, NULL);
 			}
 			|	SET		set_spec
+			{
+				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SET, &$2, &@$, NULL);
+			}
+			| 	SET 		setid_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SET, &$2, &@$, NULL);
 			}
@@ -1853,6 +1857,14 @@ set_spec		:	table_spec	identifier
 			{
 				$$		= $1;
 				$$.set		= $2;
+			}
+			;
+
+setid_spec 		: 	table_spec 	HANDLE NUM
+			{
+				$$ 			= $1;
+				$$.handle.location 	= @$;
+				$$.handle.id 		= $3;
 			}
 			;
 

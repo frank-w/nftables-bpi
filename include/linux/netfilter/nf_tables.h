@@ -319,6 +319,7 @@ enum nft_set_desc_attributes {
  * @NFTA_SET_GC_INTERVAL: garbage collection interval (NLA_U32)
  * @NFTA_SET_USERDATA: user data (NLA_BINARY)
  * @NFTA_SET_OBJ_TYPE: stateful object type (NLA_U32: NFT_OBJECT_*)
+ * @NFTA_SET_HANDLE: numeric handle of the set (NLA_U64)
  */
 enum nft_set_attributes {
 	NFTA_SET_UNSPEC,
@@ -337,6 +338,7 @@ enum nft_set_attributes {
 	NFTA_SET_USERDATA,
 	NFTA_SET_PAD,
 	NFTA_SET_OBJ_TYPE,
+	NFTA_SET_HANDLE,
 	__NFTA_SET_MAX
 };
 #define NFTA_SET_MAX		(__NFTA_SET_MAX - 1)

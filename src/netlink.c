@@ -195,6 +195,8 @@ struct nftnl_set *alloc_nftnl_set(const struct handle *h)
 		nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set);
 	if (h->set_id)
 		nftnl_set_set_u32(nls, NFTNL_SET_ID, h->set_id);
+	if (h->handle.id)
+		nftnl_set_set_u64(nls, NFTNL_SET_HANDLE, h->handle.id);
 
 	return nls;
 }
@@ -981,6 +983,7 @@ static struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 					   nftnl_set_get_u32(nls, NFTNL_SET_KEY_LEN) * BITS_PER_BYTE,
 					   NULL);
 	set->flags   = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
+	set->handle.handle.id = nftnl_set_get_u64(nls, NFTNL_SET_HANDLE);
 
 	set->objtype = objtype;
 
@@ -1123,6 +1126,7 @@ int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h,
 		return 0;
 	}
 
+	ctx->data = h;
 	err = nftnl_set_list_foreach(set_cache, list_set_cb, ctx);
 	nftnl_set_list_free(set_cache);
 	return err;

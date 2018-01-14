@@ -377,7 +377,11 @@ static void do_set_print(const struct set *set, struct print_fmt_options *opts,
 		expr_print(set->init, octx);
 		nft_print(octx, "%s", opts->nl);
 	}
-	nft_print(octx, "%s}%s", opts->tab, opts->nl);
+	nft_print(octx, "%s}", opts->tab);
+	if (octx->handle > 0)
+		nft_print(octx, " # handle %" PRIu64, set->handle.handle.id);
+	nft_print(octx, "%s", opts->nl);
+
 }
 
 void set_print(const struct set *s, struct output_ctx *octx)

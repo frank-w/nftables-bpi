@@ -23,7 +23,7 @@ AC_DEFINE([_GNU_SOURCE], [], [Enable various GNU extensions])
 AC_DEFINE([_STDC_FORMAT_MACROS], [], [printf-style format macros])
 
 AC_ARG_ENABLE([debug],
-	      AS_HELP_STRING([--enable-debug], [Disable debugging symbols]),
+	      AS_HELP_STRING([--disable-debug], [Disable debugging symbols]),
 	      AS_IF([test "x$enable_debug" = "xno"], [with_debug=no], [with_debug=yes]),
 	      [with_debug=yes])
 AC_SUBST(with_debug)

@@ -125,7 +125,6 @@ AC_CHECK_FUNCS([memmove memset strchr strdup strerror strtoull])
 
 AC_CONFIG_FILES([					\
 		Makefile				\
-		libnftables.pc				\
 		src/Makefile				\
 		include/Makefile			\
 		include/nftables/Makefile		\

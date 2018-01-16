@@ -6,6 +6,3 @@ SUBDIRS = 	src	\
 		files
 
 EXTRA_DIST =	tests
-
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libnftables.pc

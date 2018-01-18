@@ -1011,6 +1011,22 @@ err:
 	return NULL;
 }
 
+int mnl_nft_flowtable_batch_add(struct nftnl_flowtable *flo,
+				struct nftnl_batch *batch, unsigned int flags,
+				uint32_t seqnum)
+{
+	struct nlmsghdr *nlh;
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
+				    NFT_MSG_NEWFLOWTABLE,
+				    nftnl_flowtable_get_u32(flo, NFTNL_FLOWTABLE_FAMILY),
+				    NLM_F_CREATE | flags, seqnum);
+	nftnl_flowtable_nlmsg_build_payload(nlh, flo);
+	mnl_nft_batch_continue(batch);
+
+	return 0;
+}
+
 /*
  * ruleset
  */

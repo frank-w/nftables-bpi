@@ -45,6 +45,8 @@ void handle_merge(struct handle *dst, const struct handle *src)
 		dst->chain = xstrdup(src->chain);
 	if (dst->set == NULL && src->set != NULL)
 		dst->set = xstrdup(src->set);
+	if (dst->flowtable == NULL && src->flowtable != NULL)
+		dst->flowtable = xstrdup(src->flowtable);
 	if (dst->obj == NULL && src->obj != NULL)
 		dst->obj = xstrdup(src->obj);
 	if (dst->handle.id == 0)
@@ -899,6 +901,7 @@ struct cmd *cmd_alloc(enum cmd_ops op, enum cmd_obj obj,
 void nft_cmd_expand(struct cmd *cmd)
 {
 	struct list_head new_cmds;
+	struct flowtable *ft;
 	struct table *table;
 	struct chain *chain;
 	struct rule *rule;
@@ -936,6 +939,14 @@ void nft_cmd_expand(struct cmd *cmd)
 			handle_merge(&h, &set->handle);
 			new = cmd_alloc(CMD_ADD, CMD_OBJ_SET, &h,
 					&set->location, set_get(set));
+			list_add_tail(&new->list, &new_cmds);
+		}
+		list_for_each_entry(ft, &table->flowtables, list) {
+			handle_merge(&ft->handle, &table->handle);
+			memset(&h, 0, sizeof(h));
+			handle_merge(&h, &ft->handle);
+			new = cmd_alloc(CMD_ADD, CMD_OBJ_FLOWTABLE, &h,
+					&ft->location, flowtable_get(ft));
 			list_add_tail(&new->list, &new_cmds);
 		}
 		list_for_each_entry(chain, &table->chains, list) {
@@ -1023,6 +1034,9 @@ void cmd_free(struct cmd *cmd)
 		case CMD_OBJ_CT_HELPER:
 		case CMD_OBJ_LIMIT:
 			obj_free(cmd->object);
+			break;
+		case CMD_OBJ_FLOWTABLE:
+			flowtable_free(cmd->flowtable);
 			break;
 		default:
 			BUG("invalid command object type %u\n", cmd->obj);
@@ -1115,6 +1129,9 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_CT_HELPER:
 	case CMD_OBJ_LIMIT:
 		return netlink_add_obj(ctx, &cmd->handle, cmd->object, flags);
+	case CMD_OBJ_FLOWTABLE:
+		return netlink_add_flowtable(ctx, &cmd->handle, cmd->flowtable,
+					     flags);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

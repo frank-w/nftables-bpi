@@ -7,6 +7,7 @@
 #include <libnftnl/expr.h>
 #include <libnftnl/set.h>
 #include <libnftnl/object.h>
+#include <libnftnl/flowtable.h>
 
 #include <linux/netlink.h>
 #include <linux/netfilter/nf_tables.h>
@@ -182,6 +183,9 @@ extern int netlink_delete_obj(struct netlink_ctx *ctx, const struct handle *h,
 extern int netlink_list_flowtables(struct netlink_ctx *ctx,
 				   const struct handle *h,
 				   const struct location *loc);
+extern int netlink_add_flowtable(struct netlink_ctx *ctx,
+				 const struct handle *h, struct flowtable *ft,
+				 uint32_t flags);
 
 extern void netlink_dump_chain(const struct nftnl_chain *nlc,
 			       struct netlink_ctx *ctx);

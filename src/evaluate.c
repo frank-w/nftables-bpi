@@ -2910,6 +2910,24 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 	return 0;
 }
 
+static uint32_t str2hooknum(uint32_t family, const char *hook);
+
+static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
+{
+	struct table *table;
+
+	table = table_lookup_global(ctx);
+	if (table == NULL)
+		return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
+				 ctx->cmd->handle.table);
+
+	ft->hooknum = str2hooknum(NFPROTO_NETDEV, ft->hookstr);
+	if (ft->hooknum == NF_INET_NUMHOOKS)
+		return chain_error(ctx, ft, "invalid hook %s", ft->hookstr);
+
+	return 0;
+}
+
 static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule)
 {
 	struct stmt *stmt, *tstmt = NULL;
@@ -3082,6 +3100,14 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 		return chain_evaluate(ctx, cmd->chain);
 	case CMD_OBJ_TABLE:
 		return table_evaluate(ctx, cmd->table);
+	case CMD_OBJ_FLOWTABLE:
+		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
+				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+		if (ret < 0)
+			return ret;
+
+		handle_merge(&cmd->flowtable->handle, &cmd->handle);
+		return flowtable_evaluate(ctx, cmd->flowtable);
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:

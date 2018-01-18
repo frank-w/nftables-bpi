@@ -146,6 +146,7 @@ int nft_lex(void *, void *, void *);
 	struct expr		*expr;
 	struct set		*set;
 	struct obj		*obj;
+	struct flowtable	*flowtable;
 	struct counter		*counter;
 	struct quota		*quota;
 	struct ct		*ct;
@@ -192,6 +193,7 @@ int nft_lex(void *, void *, void *);
 
 %token HOOK			"hook"
 %token DEVICE			"device"
+%token DEVICES			"devices"
 %token TABLE			"table"
 %token TABLES			"tables"
 %token CHAIN			"chain"
@@ -203,6 +205,7 @@ int nft_lex(void *, void *, void *);
 %token ELEMENT			"element"
 %token MAP			"map"
 %token MAPS			"maps"
+%token FLOWTABLE		"flowtable"
 %token HANDLE			"handle"
 %token RULESET			"ruleset"
 %token TRACE			"trace"
@@ -503,9 +506,9 @@ int nft_lex(void *, void *, void *);
 %type <cmd>			base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 %destructor { cmd_free($$); }	base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 
-%type <handle>			table_spec chain_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
-%destructor { handle_free(&$$); } table_spec chain_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
-%type <handle>			set_spec set_identifier obj_spec obj_identifier
+%type <handle>			table_spec chain_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
+%destructor { handle_free(&$$); } table_spec chain_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
+%type <handle>			set_spec set_identifier flowtable_identifier obj_spec obj_identifier
 %destructor { handle_free(&$$); } set_spec set_identifier obj_spec obj_identifier
 %type <val>			family_spec family_spec_explicit chain_policy prio_spec
 
@@ -528,6 +531,9 @@ int nft_lex(void *, void *, void *);
 
 %type <set>			map_block_alloc map_block
 %destructor { set_free($$); }	map_block_alloc
+
+%type <flowtable>		flowtable_block_alloc flowtable_block
+%destructor { flowtable_free($$); }	flowtable_block_alloc
 
 %type <obj>			obj_block_alloc counter_block quota_block ct_helper_block limit_block
 %destructor { obj_free($$); }	obj_block_alloc
@@ -609,8 +615,8 @@ int nft_lex(void *, void *, void *);
 %type <expr>			verdict_map_expr verdict_map_list_expr verdict_map_list_member_expr
 %destructor { expr_free($$); }	verdict_map_expr verdict_map_list_expr verdict_map_list_member_expr
 
-%type <expr>			set_expr set_block_expr set_list_expr set_list_member_expr
-%destructor { expr_free($$); }	set_expr set_block_expr set_list_expr set_list_member_expr
+%type <expr>			set_expr set_block_expr set_list_expr set_list_member_expr flowtable_expr flowtable_list_expr flowtable_expr_member
+%destructor { expr_free($$); }	set_expr set_block_expr set_list_expr set_list_member_expr flowtable_expr flowtable_list_expr flowtable_expr_member
 %type <expr>			set_elem_expr set_elem_expr_alloc set_lhs_expr set_rhs_expr
 %destructor { expr_free($$); }	set_elem_expr set_elem_expr_alloc set_lhs_expr set_rhs_expr
 %type <expr>			set_elem_expr_stmt set_elem_expr_stmt_alloc
@@ -895,6 +901,13 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SETELEM, &$2, &@$, $3);
 			}
+			|	FLOWTABLE	flowtable_spec	flowtable_block_alloc
+						'{'	flowtable_block	'}'
+			{
+				$5->location = @5;
+				handle_merge(&$3->handle, &$2);
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_FLOWTABLE, &$2, &@$, $5);
+			}
 			|	COUNTER		obj_spec
 			{
 				struct obj *obj;
@@ -969,6 +982,13 @@ create_cmd		:	TABLE		table_spec
 			|	ELEMENT		set_spec	set_block_expr
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_SETELEM, &$2, &@$, $3);
+			}
+			|	FLOWTABLE	flowtable_spec	flowtable_block_alloc
+						'{'	flowtable_block	'}'
+			{
+				$5->location = @5;
+				handle_merge(&$3->handle, &$2);
+				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_FLOWTABLE, &$2, &@$, $5);
 			}
 			|	COUNTER		obj_spec
 			{
@@ -1338,6 +1358,17 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 				list_add_tail(&$4->list, &$1->sets);
 				$$ = $1;
 			}
+
+			|	table_block	FLOWTABLE	flowtable_identifier
+					flowtable_block_alloc	'{'	flowtable_block	'}'
+					stmt_separator
+			{
+				$4->location = @3;
+				handle_merge(&$4->handle, &$3);
+				handle_free(&$3);
+				list_add_tail(&$4->list, &$1->flowtables);
+				$$ = $1;
+			}
 			|	table_block	COUNTER		obj_identifier
 					obj_block_alloc	'{'	counter_block	'}'
 					stmt_separator
@@ -1536,6 +1567,62 @@ set_mechanism		:	POLICY		set_policy_spec
 
 set_policy_spec		:	PERFORMANCE	{ $$ = NFT_SET_POL_PERFORMANCE; }
 			|	MEMORY		{ $$ = NFT_SET_POL_MEMORY; }
+			;
+
+flowtable_block_alloc	:	/* empty */
+			{
+				$$ = flowtable_alloc(NULL);
+			}
+			;
+
+flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
+			|	flowtable_block	common_block
+			|	flowtable_block	stmt_separator
+			|	flowtable_block	HOOK		STRING	PRIORITY        prio_spec	stmt_separator
+			{
+				$$->hookstr	= chain_hookname_lookup($3);
+				if ($$->hookstr == NULL) {
+					erec_queue(error(&@3, "unknown chain hook %s", $3),
+						   state->msgs);
+					xfree($3);
+					YYERROR;
+				}
+				xfree($3);
+
+				$$->priority = $5;
+			}
+			|	flowtable_block	DEVICES		'='	flowtable_expr	stmt_separator
+			{
+				$$->dev_expr = $4;
+			}
+			;
+
+flowtable_expr		:	'{'	flowtable_list_expr	'}'
+			{
+				$2->location = @$;
+				$$ = $2;
+			}
+			;
+
+flowtable_list_expr	:	flowtable_expr_member
+			{
+				$$ = compound_expr_alloc(&@$, NULL);
+				compound_expr_add($$, $1);
+			}
+			|	flowtable_list_expr	COMMA	flowtable_expr_member
+			{
+				compound_expr_add($1, $3);
+				$$ = $1;
+			}
+			|	flowtable_list_expr	COMMA	opt_newline
+			;
+
+flowtable_expr_member	:	STRING
+			{
+				$$ = symbol_expr_alloc(&@$, SYMBOL_VALUE,
+						       current_scope(state),
+						       $1);
+			}
 			;
 
 data_type_atom_expr	:	type_identifier
@@ -1743,6 +1830,21 @@ set_identifier		:	identifier
 			{
 				memset(&$$, 0, sizeof($$));
 				$$.set		= $1;
+			}
+			;
+
+
+flowtable_spec		:	table_spec	identifier
+			{
+				$$		= $1;
+				$$.flowtable	= $2;
+			}
+			;
+
+flowtable_identifier	:	identifier
+			{
+				memset(&$$, 0, sizeof($$));
+				$$.flowtable	= $1;
 			}
 			;
 

@@ -326,10 +326,13 @@ uint32_t obj_type_to_cmd(uint32_t type);
 struct flowtable {
 	struct list_head	list;
 	struct handle		handle;
+	struct scope		scope;
 	struct location		location;
+	const char *		hookstr;
 	unsigned int		hooknum;
 	int			priority;
 	const char		**dev_array;
+	struct expr		*dev_expr;
 	int			dev_array_len;
 	unsigned int		refcnt;
 };
@@ -387,6 +390,8 @@ enum cmd_ops {
  * @CMD_OBJ_CHAIN:	chain
  * @CMD_OBJ_CHAINS:	multiple chains
  * @CMD_OBJ_TABLE:	table
+ * @CMD_OBJ_FLOWTABLE:	flowtable
+ * @CMD_OBJ_FLOWTABLES:	flowtables
  * @CMD_OBJ_RULESET:	ruleset
  * @CMD_OBJ_EXPR:	expression
  * @CMD_OBJ_MONITOR:	monitor
@@ -426,6 +431,7 @@ enum cmd_obj {
 	CMD_OBJ_CT_HELPERS,
 	CMD_OBJ_LIMIT,
 	CMD_OBJ_LIMITS,
+	CMD_OBJ_FLOWTABLE,
 	CMD_OBJ_FLOWTABLES,
 };
 
@@ -485,6 +491,7 @@ struct cmd {
 		struct rule	*rule;
 		struct chain	*chain;
 		struct table	*table;
+		struct flowtable *flowtable;
 		struct monitor	*monitor;
 		struct markup	*markup;
 		struct obj	*object;

@@ -702,8 +702,8 @@ struct expr *range_expr_alloc(const struct location *loc,
 	return expr;
 }
 
-static struct expr *compound_expr_alloc(const struct location *loc,
-					const struct expr_ops *ops)
+struct expr *compound_expr_alloc(const struct location *loc,
+				 const struct expr_ops *ops)
 {
 	struct expr *expr;
 

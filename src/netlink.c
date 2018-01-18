@@ -297,6 +297,8 @@ __alloc_nftnl_obj(const struct handle *h, uint32_t type)
 		nftnl_obj_set_str(nlo, NFTNL_OBJ_NAME, h->obj);
 
 	nftnl_obj_set_u32(nlo, NFTNL_OBJ_TYPE, type);
+	if (h->handle.id)
+		nftnl_obj_set_u64(nlo, NFTNL_OBJ_HANDLE, h->handle.id);
 
 	return nlo;
 }
@@ -1457,6 +1459,8 @@ static struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 		xstrdup(nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE));
 	obj->handle.obj =
 		xstrdup(nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME));
+	obj->handle.handle.id =
+		nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
 
 	type = nftnl_obj_get_u32(nlo, NFTNL_OBJ_TYPE);
 	switch (type) {
@@ -2419,6 +2423,7 @@ static void netlink_events_cache_delobj(struct netlink_mon_handler *monh,
 
 	name     = nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME);
 	type	 = nftnl_obj_get_u32(nlo, NFTNL_OBJ_TYPE);
+	h.handle.id	= nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
 
 	t = table_lookup(&h, monh->cache);
 	if (t == NULL) {

@@ -38,7 +38,7 @@ vi:ts=4 sw=4
 	<refnamediv>
 		<refname>nft</refname>
 		<refpurpose>
-			Administration tool for packet filtering and classification
+			Administration tool of the nftables framework for packet filtering and classification
 		</refpurpose>
 	</refnamediv>
 
@@ -73,8 +73,9 @@ vi:ts=4 sw=4
 	<refsect1>
 		<title>Description</title>
 		<para>
-			nft is used to set up, maintain and inspect packet
-			filtering and classification rules in the Linux kernel.
+			nft is the command line tool used to set up, maintain and inspect packet
+			filtering and classification rules in the Linux kernel, in the nftables framework.
+			The Linux kernel subsystem is known as nf_tables, and 'nf' stands for Netfilter.
 		</para>
 	</refsect1>
 

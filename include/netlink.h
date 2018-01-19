@@ -186,6 +186,9 @@ extern int netlink_list_flowtables(struct netlink_ctx *ctx,
 extern int netlink_add_flowtable(struct netlink_ctx *ctx,
 				 const struct handle *h, struct flowtable *ft,
 				 uint32_t flags);
+extern int netlink_delete_flowtable(struct netlink_ctx *ctx,
+				    const struct handle *h,
+				    struct location *loc);
 
 extern void netlink_dump_chain(const struct nftnl_chain *nlc,
 			       struct netlink_ctx *ctx);

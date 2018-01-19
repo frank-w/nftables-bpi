@@ -1221,6 +1221,9 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_LIMIT:
 		return netlink_delete_obj(ctx, &cmd->handle, &cmd->location,
 					  NFT_OBJECT_LIMIT);
+	case CMD_OBJ_FLOWTABLE:
+		return netlink_delete_flowtable(ctx, &cmd->handle,
+						&cmd->location);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

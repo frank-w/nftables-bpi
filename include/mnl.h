@@ -95,6 +95,9 @@ mnl_nft_flowtable_dump(struct netlink_ctx *ctx, int family, const char *table);
 int mnl_nft_flowtable_batch_add(struct nftnl_flowtable *flo,
 				struct nftnl_batch *batch, unsigned int flags,
 				uint32_t seqnum);
+int mnl_nft_flowtable_batch_del(struct nftnl_flowtable *flow,
+				struct nftnl_batch *batch, unsigned int flags,
+				uint32_t seqnum);
 
 struct nftnl_ruleset *mnl_nft_ruleset_dump(struct netlink_ctx *ctx,
 					   uint32_t family);

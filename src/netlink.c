@@ -1547,6 +1547,24 @@ int netlink_add_flowtable(struct netlink_ctx *ctx, const struct handle *h,
 	return err;
 }
 
+int netlink_delete_flowtable(struct netlink_ctx *ctx, const struct handle *h,
+			     struct location *loc)
+{
+	struct nftnl_flowtable *flo;
+	int err;
+
+	flo = alloc_nftnl_flowtable(h, NULL);
+	netlink_dump_flowtable(flo, ctx);
+
+	err = mnl_nft_flowtable_batch_del(flo, ctx->batch, 0, ctx->seqnum);
+	if (err < 0)
+		netlink_io_error(ctx, loc, "Could not delete flowtable: %s",
+				 strerror(errno));
+	nftnl_flowtable_free(flo);
+
+	return err;
+}
+
 static int list_obj_cb(struct nftnl_obj *nls, void *arg)
 {
 	struct netlink_ctx *ctx = arg;

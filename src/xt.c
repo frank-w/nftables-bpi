@@ -26,6 +26,78 @@
 #include <linux/netfilter_arp/arp_tables.h>
 #include <linux/netfilter_bridge/ebtables.h>
 
+void xt_stmt_xlate(const struct stmt *stmt)
+{
+	struct xt_xlate *xl = xt_xlate_alloc(10240);
+
+	switch (stmt->xt.type) {
+	case NFT_XT_MATCH:
+		if (stmt->xt.match == NULL && stmt->xt.opts) {
+			printf("%s", stmt->xt.opts);
+		} else if (stmt->xt.match->xlate) {
+			struct xt_xlate_mt_params params = {
+				.ip		= stmt->xt.entry,
+				.match		= stmt->xt.match->m,
+				.numeric        = 0,
+			};
+
+			stmt->xt.match->xlate(xl, &params);
+			printf("%s", xt_xlate_get(xl));
+		} else if (stmt->xt.match->print) {
+			printf("#");
+			stmt->xt.match->print(&stmt->xt.entry,
+					      stmt->xt.match->m, 0);
+		}
+		break;
+	case NFT_XT_WATCHER:
+	case NFT_XT_TARGET:
+		if (stmt->xt.target == NULL && stmt->xt.opts) {
+			printf("%s", stmt->xt.opts);
+		} else if (stmt->xt.target->xlate) {
+			struct xt_xlate_tg_params params = {
+				.ip		= stmt->xt.entry,
+				.target		= stmt->xt.target->t,
+				.numeric        = 0,
+			};
+
+			stmt->xt.target->xlate(xl, &params);
+			printf("%s", xt_xlate_get(xl));
+		} else if (stmt->xt.target->print) {
+			printf("#");
+			stmt->xt.target->print(NULL, stmt->xt.target->t, 0);
+		}
+		break;
+	default:
+		break;
+	}
+
+	xt_xlate_free(xl);
+}
+
+void xt_stmt_release(const struct stmt *stmt)
+{
+	switch (stmt->xt.type) {
+	case NFT_XT_MATCH:
+		if (!stmt->xt.match)
+			break;
+		if (stmt->xt.match->m)
+			xfree(stmt->xt.match->m);
+		xfree(stmt->xt.match);
+		break;
+	case NFT_XT_WATCHER:
+	case NFT_XT_TARGET:
+		if (!stmt->xt.target)
+			break;
+		if (stmt->xt.target->t)
+			xfree(stmt->xt.target->t);
+		xfree(stmt->xt.target);
+		break;
+	default:
+		break;
+	}
+	xfree(stmt->xt.entry);
+}
+
 static void *xt_entry_alloc(struct xt_stmt *xt, uint32_t af)
 {
 	union nft_entry {
@@ -143,7 +215,7 @@ void netlink_parse_match(struct netlink_parse_ctx *ctx,
 	m->u.match_size = mt_len + XT_ALIGN(sizeof(struct xt_entry_match));
 	m->u.user.revision = nftnl_expr_get_u32(nle, NFTNL_EXPR_MT_REV);
 
-	stmt = stmt_alloc(loc, NULL);
+	stmt = xt_stmt_alloc(loc);
 	stmt->xt.name = strdup(name);
 	stmt->xt.type = NFT_XT_MATCH;
 	stmt->xt.match = xt_match_clone(mt);
@@ -180,7 +252,7 @@ void netlink_parse_target(struct netlink_parse_ctx *ctx,
 	t->u.user.revision = nftnl_expr_get_u32(nle, NFTNL_EXPR_TG_REV);
 	strcpy(t->u.user.name, tg->name);
 
-	stmt = stmt_alloc(loc, NULL);
+	stmt = xt_stmt_alloc(loc);
 	stmt->xt.name = strdup(name);
 	stmt->xt.type = NFT_XT_TARGET;
 	stmt->xt.target = xt_target_clone(tg);

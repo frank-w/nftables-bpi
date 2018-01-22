@@ -485,6 +485,21 @@ void symbol_bind(struct scope *scope, const char *identifier, struct expr *expr)
 	list_add_tail(&sym->list, &scope->symbols);
 }
 
+int symbol_unbind(struct scope *scope, const char *identifier)
+{
+	struct symbol *sym;
+
+	sym = symbol_lookup(scope, identifier);
+	if (!sym)
+		return -1;
+
+	list_del(&sym->list);
+	xfree(sym->identifier);
+	expr_free(sym->expr);
+	xfree(sym);
+	return 0;
+}
+
 struct symbol *symbol_lookup(const struct scope *scope, const char *identifier)
 {
 	struct symbol *sym;

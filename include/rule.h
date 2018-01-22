@@ -82,6 +82,7 @@ struct symbol {
 
 extern void symbol_bind(struct scope *scope, const char *identifier,
 			struct expr *expr);
+extern int symbol_unbind(struct scope *scope, const char *identifier);
 extern struct symbol *symbol_lookup(const struct scope *scope,
 				    const char *identifier);
 

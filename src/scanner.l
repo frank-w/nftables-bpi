@@ -233,6 +233,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "include"		{ return INCLUDE; }
 "define"		{ return DEFINE; }
+"redefine"		{ return REDEFINE; }
+"undefine"		{ return UNDEFINE; }
 
 "describe"		{ return DESCRIBE; }
 

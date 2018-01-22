@@ -185,6 +185,8 @@ int nft_lex(void *, void *, void *);
 
 %token INCLUDE			"include"
 %token DEFINE			"define"
+%token REDEFINE			"redefine"
+%token UNDEFINE			"undefine"
 
 %token FIB			"fib"
 
@@ -761,6 +763,26 @@ common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
 				}
 
 				symbol_bind(scope, $2, $4);
+				xfree($2);
+			}
+			|	REDEFINE	identifier	'='	initializer_expr	stmt_separator
+			{
+				struct scope *scope = current_scope(state);
+
+				/* ignore missing identifier */
+				symbol_unbind(scope, $2);
+				symbol_bind(scope, $2, $4);
+				xfree($2);
+			}
+			|	UNDEFINE	identifier	stmt_separator
+			{
+				struct scope *scope = current_scope(state);
+
+				if (symbol_unbind(scope, $2) < 0) {
+					erec_queue(error(&@2, "undefined symbol '%s'", $2),
+						   state->msgs);
+					YYERROR;
+				}
 				xfree($2);
 			}
 			|	error		stmt_separator

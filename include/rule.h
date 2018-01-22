@@ -220,6 +220,7 @@ extern struct rule *rule_lookup(const struct chain *chain, uint64_t handle);
  * @init:	initializer
  * @rg_cache:	cached range element (left)
  * @policy:	set mechanism policy
+ * @automerge:	merge adjacents and overlapping elements, if possible
  * @desc:	set mechanism desc
  */
 struct set {
@@ -237,6 +238,7 @@ struct set {
 	struct expr		*init;
 	struct expr		*rg_cache;
 	uint32_t		policy;
+	bool			automerge;
 	struct {
 		uint32_t	size;
 	} desc;
@@ -528,6 +530,7 @@ enum udata_type {
 enum udata_set_type {
 	UDATA_SET_KEYBYTEORDER,
 	UDATA_SET_DATABYTEORDER,
+	UDATA_SET_MERGE_ELEMENTS,
 	__UDATA_SET_MAX,
 };
 #define UDATA_SET_MAX (__UDATA_SET_MAX - 1)

@@ -234,6 +234,7 @@ int nft_lex(void *, void *, void *);
 
 %token CONSTANT			"constant"
 %token INTERVAL			"interval"
+%token AUTOMERGE		"auto-merge"
 %token TIMEOUT			"timeout"
 %token GC_INTERVAL		"gc-interval"
 %token ELEMENTS			"elements"
@@ -1405,6 +1406,11 @@ set_block		:	/* empty */	{ $$ = $<set>-1; }
 			|	set_block	ELEMENTS	'='		set_block_expr
 			{
 				$1->init = $4;
+				$$ = $1;
+			}
+			|	set_block	AUTOMERGE
+			{
+				$1->automerge = true;
 				$$ = $1;
 			}
 			|	set_block	set_mechanism	stmt_separator

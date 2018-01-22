@@ -31,7 +31,6 @@ struct nft_ctx {
 	unsigned int		debug_mask;
 	struct output_ctx	output;
 	bool			check;
-	bool			range_merge;
 	struct nft_cache	cache;
 	uint32_t		flags;
 };

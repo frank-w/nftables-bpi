@@ -883,6 +883,7 @@ filter input iif $int_ifs accept
 				<arg choice="opt">elements = { <replaceable>element</replaceable>[,...] } ;</arg>
 				<arg choice="opt">size <replaceable>size</replaceable> ;</arg>
 				<arg choice="opt">policy <replaceable>policy</replaceable> ;</arg>
+				<arg choice="opt">auto-merge <replaceable>auto-merge</replaceable> ;</arg>
 				}
 			</cmdsynopsis>
 			<cmdsynopsis>
@@ -1012,6 +1013,11 @@ filter input iif $int_ifs accept
 						<entry>policy</entry>
 						<entry>set policy</entry>
 						<entry>string: performance [default], memory</entry>
+					</row>
+					<row>
+						<entry>auto-merge</entry>
+						<entry>automatic merge of adjacent/overlapping set elements (only for interval sets)</entry>
+						<entry></entry>
 					</row>
 				</tbody>
 			</tgroup>

@@ -1052,6 +1052,7 @@ static int set_parse_udata_cb(const struct nftnl_udata *attr, void *data)
 	switch (type) {
 	case UDATA_SET_KEYBYTEORDER:
 	case UDATA_SET_DATABYTEORDER:
+	case UDATA_SET_MERGE_ELEMENTS:
 		if (len != sizeof(uint32_t))
 			return -1;
 		break;
@@ -1070,6 +1071,7 @@ static struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	enum byteorder keybyteorder = BYTEORDER_INVALID;
 	enum byteorder databyteorder = BYTEORDER_INVALID;
 	const struct datatype *keytype, *datatype;
+	bool automerge = false;
 	const char *udata;
 	struct set *set;
 	uint32_t ulen;
@@ -1087,6 +1089,9 @@ static struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 		if (ud[UDATA_SET_DATABYTEORDER])
 			databyteorder =
 				nftnl_udata_get_u32(ud[UDATA_SET_DATABYTEORDER]);
+		if (ud[UDATA_SET_MERGE_ELEMENTS])
+			automerge =
+				nftnl_udata_get_u32(ud[UDATA_SET_MERGE_ELEMENTS]);
 	}
 
 	key = nftnl_set_get_u32(nls, NFTNL_SET_KEY_TYPE);
@@ -1119,6 +1124,7 @@ static struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	set->handle.family = nftnl_set_get_u32(nls, NFTNL_SET_FAMILY);
 	set->handle.table  = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_TABLE));
 	set->handle.set    = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_NAME));
+	set->automerge	   = automerge;
 
 	set->key     = constant_expr_alloc(&netlink_location,
 					   set_datatype_alloc(keytype, keybyteorder),
@@ -1236,6 +1242,11 @@ static int netlink_add_set_batch(struct netlink_ctx *ctx,
 	if (set->flags & NFT_SET_MAP &&
 	    !nftnl_udata_put_u32(udbuf, UDATA_SET_DATABYTEORDER,
 				 set->datatype->byteorder))
+		memory_allocation_error();
+
+	if (set->automerge &&
+	    !nftnl_udata_put_u32(udbuf, UDATA_SET_MERGE_ELEMENTS,
+				 set->automerge))
 		memory_allocation_error();
 
 	nftnl_set_set_data(nls, NFTNL_SET_USERDATA, nftnl_udata_buf_data(udbuf),

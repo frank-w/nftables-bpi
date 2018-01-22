@@ -1,0 +1,33 @@
+#!/bin/bash
+
+tmpfile=$(mktemp)
+if [ ! -w $tmpfile ] ; then
+	echo "Failed to create tmp file" >&2
+	exit 0
+fi
+
+trap "rm -rf $tmpfile" EXIT # cleanup if aborted
+
+
+EXPECTED='table inet t {
+	flowtable f {
+		hook ingress priority 10
+		devices = { eth0, wlan0 }
+	}
+
+	chain c {
+		flow offload @f
+	}
+}'
+
+echo "$EXPECTED" > $tmpfile
+set -e
+$NFT -f $tmpfile
+
+GET="$($NFT list ruleset)"
+
+if [ "$EXPECTED" != "$GET" ] ; then
+	DIFF="$(which diff)"
+	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	exit 1
+fi

@@ -68,7 +68,9 @@ kernel_cleanup() {
 	nft_set_hash nft_set_rbtree nft_set_bitmap \
 	nft_chain_nat_ipv4 nft_chain_nat_ipv6 \
 	nf_tables_inet nf_tables_bridge nf_tables_arp \
-	nf_tables_ipv4 nf_tables_ipv6 nf_tables
+	nf_tables_ipv4 nf_tables_ipv6 nf_tables \
+	nf_flow_table nf_flow_table_ipv4 nf_flow_tables_ipv6 \
+	nf_flow_table_inet nft_flow_offload
 }
 
 find_tests() {

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+$NFT add table x
+$NFT add chain x x
+$NFT add flowtable x y { hook ingress priority 0\; devices = { eth0, wlan0 }\;}
+$NFT add rule x x flow offload @y
+$NFT delete flowtable x y
+echo "E: delete flowtable in use"

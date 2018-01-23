@@ -141,7 +141,7 @@ vi:ts=4 sw=4
 				<term><option>-a, --handle</option></term>
 				<listitem>
 					<para>
-						Show rule handles in output.
+						Show object handles in output.
 					</para>
 				</listitem>
 			</varlistentry>
@@ -555,6 +555,14 @@ filter input iif $int_ifs accept
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>
 			</cmdsynopsis>
+			<cmdsynopsis>
+				<group choice="req">
+					<arg>delete</arg>
+				</group>
+				<command>table</command>
+				<arg choice="opt"><replaceable>family</replaceable></arg>
+				<literal> handle </literal><replaceable>handle</replaceable>
+			</cmdsynopsis>
 		</para>
 
 		<para>
@@ -645,6 +653,15 @@ filter input iif $int_ifs accept
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>
 				<replaceable>chain</replaceable>
+			</cmdsynopsis>
+			<cmdsynopsis>
+				<group choice="req">
+					<arg>delete</arg>
+				</group>
+				<command>chain</command>
+				<arg choice="opt"><replaceable>family</replaceable></arg>
+				<replaceable>table</replaceable>
+				<literal> handle </literal><replaceable>handle</replaceable>
 			</cmdsynopsis>
 			<cmdsynopsis>
 				<literal>rename</literal>
@@ -923,6 +940,15 @@ table inet filter {
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>
 				<replaceable>set</replaceable>
+			</cmdsynopsis>
+			<cmdsynopsis>
+				<group choice="req">
+					<arg>delete</arg>
+				</group>
+				<command> set</command>
+				<arg choice="opt"><replaceable>family</replaceable></arg>
+				<replaceable>table</replaceable>
+				<literal> handle </literal><replaceable>handle</replaceable>
 			</cmdsynopsis>
 			<cmdsynopsis>
 				<group choice="req">
@@ -1291,6 +1317,15 @@ table inet filter {
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>
 				<replaceable>object</replaceable>
+			</cmdsynopsis>
+			<cmdsynopsis>
+				<group choice="req">
+					<arg>delete</arg>
+				</group>
+				<command> type</command>
+				<arg choice="opt"><replaceable>family</replaceable></arg>
+				<replaceable>table</replaceable>
+				<literal> handle </literal><replaceable>handle</replaceable>
 			</cmdsynopsis>
 		</para>
 		<para>

@@ -5,6 +5,7 @@ In this testsuite, automated testing is done for following nft compile options:
   cli support
   enable debugging symbols
   use mini-gmp
+  enable man page
   enable pdf documentation
   libxtables support
 

@@ -9,7 +9,8 @@ log_file="`pwd`/tests.log"
 tarball="nftables-0.8.1.tar.bz2"
 dir=../..
 cmd=./configure
-argument=( --without-cli --enable-debug --with-mini-gmp --enable-pdf-doc --with-xtables )
+argument=( --without-cli --enable-debug --with-mini-gmp --enable-man-doc
+	    --enable-pdf-doc --with-xtables)
 ok=0
 failed=0
 

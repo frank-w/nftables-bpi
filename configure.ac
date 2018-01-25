@@ -128,9 +128,6 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.h malloc.h \
 		  stddef.h stdint.h stdlib.h string.h unistd.h], ,
 		 AC_MSG_ERROR([Header file not found]))
 
-# Checks for library functions.
-AC_CHECK_FUNCS([memmove memset strchr strdup strerror strtoull])
-
 AC_CONFIG_FILES([					\
 		Makefile				\
 		src/Makefile				\

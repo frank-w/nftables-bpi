@@ -108,6 +108,7 @@ static struct expr *netlink_parse_concat_expr(struct netlink_parse_ctx *ctx,
 					      unsigned int len)
 {
 	struct expr *concat, *expr;
+	unsigned int consumed;
 
 	concat = concat_expr_alloc(loc);
 	while (len > 0) {
@@ -119,7 +120,9 @@ static struct expr *netlink_parse_concat_expr(struct netlink_parse_ctx *ctx,
 		}
 		compound_expr_add(concat, expr);
 
-		len -= netlink_padded_len(expr->len);
+		consumed = netlink_padded_len(expr->len);
+		assert(consumed > 0);
+		len -= consumed;
 		reg += netlink_register_space(expr->len);
 	}
 	return concat;

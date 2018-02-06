@@ -87,6 +87,7 @@ static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 	set->handle.set = xstrdup(name);
 	set->key	= key;
 	set->init	= expr;
+	set->automerge	= set->flags & NFT_SET_INTERVAL;
 
 	if (ctx->table != NULL)
 		list_add_tail(&set->list, &ctx->table->sets);

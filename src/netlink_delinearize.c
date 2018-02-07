@@ -2247,7 +2247,7 @@ static void stmt_payload_postprocess(struct rule_pp_ctx *ctx)
 
 /*
  * We can only remove payload dependencies if they occur without
- * a statment with side effects in between.
+ * a statement with side effects in between.
  *
  * For instance:
  * 'ip protocol tcp tcp dport 22 counter' is same as

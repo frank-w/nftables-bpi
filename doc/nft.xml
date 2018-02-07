@@ -3568,7 +3568,7 @@ inet filter output rt ip6 nexthop fd00::1
 							</row>
 							<row>
 								<entry>vtag</entry>
-								<entry>Verfication Tag</entry>
+								<entry>Verification Tag</entry>
 								<entry>integer (32 bit)</entry>
 							</row>
 							<row>

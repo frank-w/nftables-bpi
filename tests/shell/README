@@ -10,7 +10,7 @@ To run the test suite (as root):
 
 Test files are executables files with the pattern <<name_N>>, where N is the
 expected return code of the executable. Since they are located with `find',
-test-files can be spreaded in any sub-directories.
+test-files can be spread in any sub-directories.
 
 You can turn on a verbose execution by calling:
  % ./run-tests.sh -v

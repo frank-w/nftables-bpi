@@ -482,13 +482,13 @@ static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
 }
 
 /**
- * payload_dependency_kill - kill a redundant payload depedency
+ * payload_dependency_kill - kill a redundant payload dependency
  *
  * @ctx: payload dependency context
  * @expr: higher layer payload expression
  *
  * Kill a redundant payload expression if a higher layer payload expression
- * implies its existance. Skip this if the dependency is a network payload and
+ * implies its existence. Skip this if the dependency is a network payload and
  * we are in bridge, netdev and inet families.
  */
 void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,

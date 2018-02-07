@@ -384,7 +384,7 @@ def set_add_elements(set_element, set_name, state, filename, lineno):
             print_error(reason, filename, lineno)
             return -1
 
-        # Add element into a all_set.
+        # Add element into all_set.
         if ret == 0 and state == "ok":
             for e in set_element:
                 all_set[set_name].add(e)

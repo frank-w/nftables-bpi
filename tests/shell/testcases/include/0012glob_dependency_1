@@ -38,7 +38,7 @@ RULESET1="add table x"
 RULESET2="add chain x y"
 RULESET3="include \"$tmpdir/*\""
 
-# Note different order when compared with 0011dir_depencency_0. The idea
+# Note different order when compared with 0011dir_dependency_0. The idea
 # here is to introduce wrong order to get the loading fail.
 echo "$RULESET1" > $tmpfile2
 echo "$RULESET2" > $tmpfile1

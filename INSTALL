@@ -43,7 +43,7 @@ Installation instructions for nftables
 
  --datarootdir=
 
- 	The base directory for arch-independant files. Defaults to
+	The base directory for arch-independent files. Defaults to
 	$prefix/share.
 
  --disable-debug

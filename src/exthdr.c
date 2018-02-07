@@ -26,8 +26,8 @@
 static void exthdr_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	if (expr->exthdr.op == NFT_EXTHDR_OP_TCPOPT) {
-		/* Offset calcualtion is a bit hacky at this point.
-		 * There might be an tcp option one day with another
+		/* Offset calculation is a bit hacky at this point.
+		 * There might be a tcp option one day with another
 		 * multiplicator
 		 */
 		unsigned int offset = expr->exthdr.offset / 64;

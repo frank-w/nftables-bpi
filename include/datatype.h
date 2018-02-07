@@ -129,7 +129,7 @@ enum datatype_flags {
  * @subtypes:	number of subtypes (concat type)
  * @name:	type name
  * @desc:	type description
- * @basetype:	basetype for subtypes, determines type compatibilty
+ * @basetype:	basetype for subtypes, determines type compatibility
  * @basefmt:	format string for basetype
  * @print:	function to print a constant of this type
  * @parse:	function to parse a symbol and return an expression

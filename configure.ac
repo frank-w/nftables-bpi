@@ -73,7 +73,7 @@ AM_COND_IF([BUILD_MAN], [
 	      [AS_IF([test "$DOCBOOK2MAN" != "no"], [DB2MAN="$DOCBOOK2MAN"],
 		     [AS_IF([test "$DB2X_DOCBOOK2MAN" != "no"],
 			    [DB2MAN="$DB2X_DOCBOOK2MAN"],
-			    [AC_MSG_WARN([docbookx2-man/db2x_docbook2man not found, no manpages will be built])]
+			    [AC_MSG_ERROR([docbookx2-man/db2x_docbook2man not found, required for building man pages])]
 		     )]
 	     )]
 	)

@@ -29,6 +29,7 @@
 #include <rule.h>
 #include <statement.h>
 #include <expression.h>
+#include <headers.h>
 #include <utils.h>
 #include <parser.h>
 #include <erec.h>

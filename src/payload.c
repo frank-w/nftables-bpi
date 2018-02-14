@@ -438,7 +438,7 @@ void payload_dependency_store(struct payload_dep_ctx *ctx,
  * implies its existance.
  */
 void __payload_dependency_kill(struct payload_dep_ctx *ctx,
-			       enum proto_bases base)
+			       enum proto_bases base, unsigned int family)
 {
 	if (ctx->pbase != PROTO_BASE_INVALID &&
 	    ctx->pbase == base &&
@@ -453,19 +453,21 @@ void __payload_dependency_kill(struct payload_dep_ctx *ctx,
 	}
 }
 
-void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr)
+void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
+			     unsigned int family)
 {
-	__payload_dependency_kill(ctx, expr->payload.base);
+	__payload_dependency_kill(ctx, expr->payload.base, family);
 }
 
-void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr)
+void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
+			    unsigned int family)
 {
 	switch (expr->exthdr.op) {
 	case NFT_EXTHDR_OP_TCPOPT:
-		__payload_dependency_kill(ctx, PROTO_BASE_TRANSPORT_HDR);
+		__payload_dependency_kill(ctx, PROTO_BASE_TRANSPORT_HDR, family);
 		break;
 	case NFT_EXTHDR_OP_IPV6:
-		__payload_dependency_kill(ctx, PROTO_BASE_NETWORK_HDR);
+		__payload_dependency_kill(ctx, PROTO_BASE_NETWORK_HDR, family);
 		break;
 	default:
 		break;

@@ -1352,7 +1352,8 @@ static void payload_match_expand(struct rule_pp_ctx *ctx,
 		    left->flags & EXPR_F_PROTOCOL) {
 			payload_dependency_store(&ctx->pdctx, nstmt, base - stacked);
 		} else {
-			payload_dependency_kill(&ctx->pdctx, nexpr->left);
+			payload_dependency_kill(&ctx->pdctx, nexpr->left,
+						ctx->pctx.family);
 			if (expr->op == OP_EQ && left->flags & EXPR_F_PROTOCOL)
 				payload_dependency_store(&ctx->pdctx, nstmt, base - stacked);
 		}
@@ -1383,7 +1384,7 @@ static void payload_match_postprocess(struct rule_pp_ctx *ctx,
 		payload_expr_complete(payload, &ctx->pctx);
 		expr_set_type(expr->right, payload->dtype,
 			      payload->byteorder);
-		payload_dependency_kill(&ctx->pdctx, payload);
+		payload_dependency_kill(&ctx->pdctx, payload, ctx->pctx.family);
 		break;
 	}
 }
@@ -1406,7 +1407,8 @@ static void ct_meta_common_postprocess(struct rule_pp_ctx *ctx,
 		    left->flags & EXPR_F_PROTOCOL) {
 			payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
 		} else if (ctx->pdctx.pbase < PROTO_BASE_TRANSPORT_HDR) {
-			__payload_dependency_kill(&ctx->pdctx, base);
+			__payload_dependency_kill(&ctx->pdctx, base,
+						  ctx->pctx.family);
 			if (left->flags & EXPR_F_PROTOCOL)
 				payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
 		}
@@ -1814,7 +1816,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 		break;
 	case EXPR_PAYLOAD:
 		payload_expr_complete(expr, &ctx->pctx);
-		payload_dependency_kill(&ctx->pdctx, expr);
+		payload_dependency_kill(&ctx->pdctx, expr, ctx->pctx.family);
 		break;
 	case EXPR_VALUE:
 		// FIXME
@@ -1837,7 +1839,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 		expr_postprocess(ctx, &expr->key);
 		break;
 	case EXPR_EXTHDR:
-		exthdr_dependency_kill(&ctx->pdctx, expr);
+		exthdr_dependency_kill(&ctx->pdctx, expr, ctx->pctx.family);
 		break;
 	case EXPR_SET_REF:
 	case EXPR_META:
@@ -1870,14 +1872,16 @@ static void stmt_reject_postprocess(struct rule_pp_ctx *rctx)
 		stmt->reject.expr->dtype = &icmp_code_type;
 		if (stmt->reject.type == NFT_REJECT_TCP_RST)
 			__payload_dependency_kill(&rctx->pdctx,
-						  PROTO_BASE_TRANSPORT_HDR);
+						  PROTO_BASE_TRANSPORT_HDR,
+						  rctx->pctx.family);
 		break;
 	case NFPROTO_IPV6:
 		stmt->reject.family = rctx->pctx.family;
 		stmt->reject.expr->dtype = &icmpv6_code_type;
 		if (stmt->reject.type == NFT_REJECT_TCP_RST)
 			__payload_dependency_kill(&rctx->pdctx,
-						  PROTO_BASE_TRANSPORT_HDR);
+						  PROTO_BASE_TRANSPORT_HDR,
+						  rctx->pctx.family);
 		break;
 	case NFPROTO_INET:
 		if (stmt->reject.type == NFT_REJECT_ICMPX_UNREACH) {

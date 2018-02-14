@@ -428,6 +428,23 @@ void payload_dependency_store(struct payload_dep_ctx *ctx,
 	ctx->pdep  = stmt;
 }
 
+/**
+ * payload_dependency_exists - there is a payload dependency in place
+ * @ctx: payload dependency context
+ * @base: payload protocol base
+ *
+ * Check if we have seen a protocol key payload expression for this base, we can
+ * usually remove it if we can infer it from another payload expression in the
+ * upper base.
+ */
+bool payload_dependency_exists(const struct payload_dep_ctx *ctx,
+			       enum proto_bases base)
+{
+	return ctx->pbase != PROTO_BASE_INVALID &&
+	       ctx->pbase == base &&
+	       ctx->pdep != NULL;
+}
+
 static void payload_dependency_release(struct payload_dep_ctx *ctx)
 {
 	list_del(&ctx->pdep->list);
@@ -448,19 +465,16 @@ static void payload_dependency_release(struct payload_dep_ctx *ctx)
  * Kill a redundant payload expression if a higher layer payload expression
  * implies its existance.
  */
-void __payload_dependency_kill(struct payload_dep_ctx *ctx,
-			       enum proto_bases base, unsigned int family)
+void __payload_dependency_kill(struct payload_dep_ctx *ctx, unsigned int family)
 {
-	if (ctx->pbase != PROTO_BASE_INVALID &&
-	    ctx->pbase == base &&
-	    ctx->pdep != NULL)
-		payload_dependency_release(ctx);
+	payload_dependency_release(ctx);
 }
 
 void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 			     unsigned int family)
 {
-	__payload_dependency_kill(ctx, expr->payload.base, family);
+	if (payload_dependency_exists(ctx, expr->payload.base))
+		__payload_dependency_kill(ctx, family);
 }
 
 void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
@@ -468,10 +482,12 @@ void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 {
 	switch (expr->exthdr.op) {
 	case NFT_EXTHDR_OP_TCPOPT:
-		__payload_dependency_kill(ctx, PROTO_BASE_TRANSPORT_HDR, family);
+		if (payload_dependency_exists(ctx, PROTO_BASE_TRANSPORT_HDR))
+			__payload_dependency_kill(ctx, family);
 		break;
 	case NFT_EXTHDR_OP_IPV6:
-		__payload_dependency_kill(ctx, PROTO_BASE_NETWORK_HDR, family);
+		if (payload_dependency_exists(ctx, PROTO_BASE_NETWORK_HDR))
+			__payload_dependency_kill(ctx, family);
 		break;
 	default:
 		break;

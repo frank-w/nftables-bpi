@@ -40,8 +40,9 @@ void payload_dependency_reset(struct payload_dep_ctx *ctx);
 extern void payload_dependency_store(struct payload_dep_ctx *ctx,
 				     struct stmt *stmt,
 				     enum proto_bases base);
+extern bool payload_dependency_exists(const struct payload_dep_ctx *ctx,
+				      enum proto_bases base);
 extern void __payload_dependency_kill(struct payload_dep_ctx *ctx,
-				      enum proto_bases base,
 				      unsigned int family);
 extern void payload_dependency_kill(struct payload_dep_ctx *ctx,
 				    struct expr *expr, unsigned int family);

@@ -1407,8 +1407,9 @@ static void ct_meta_common_postprocess(struct rule_pp_ctx *ctx,
 		    left->flags & EXPR_F_PROTOCOL) {
 			payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
 		} else if (ctx->pdctx.pbase < PROTO_BASE_TRANSPORT_HDR) {
-			__payload_dependency_kill(&ctx->pdctx, base,
-						  ctx->pctx.family);
+			if (payload_dependency_exists(&ctx->pdctx, base))
+				__payload_dependency_kill(&ctx->pdctx,
+							  ctx->pctx.family);
 			if (left->flags & EXPR_F_PROTOCOL)
 				payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
 		}
@@ -1870,17 +1871,19 @@ static void stmt_reject_postprocess(struct rule_pp_ctx *rctx)
 	case NFPROTO_IPV4:
 		stmt->reject.family = rctx->pctx.family;
 		stmt->reject.expr->dtype = &icmp_code_type;
-		if (stmt->reject.type == NFT_REJECT_TCP_RST)
+		if (stmt->reject.type == NFT_REJECT_TCP_RST &&
+		    payload_dependency_exists(&rctx->pdctx,
+					      PROTO_BASE_TRANSPORT_HDR))
 			__payload_dependency_kill(&rctx->pdctx,
-						  PROTO_BASE_TRANSPORT_HDR,
 						  rctx->pctx.family);
 		break;
 	case NFPROTO_IPV6:
 		stmt->reject.family = rctx->pctx.family;
 		stmt->reject.expr->dtype = &icmpv6_code_type;
-		if (stmt->reject.type == NFT_REJECT_TCP_RST)
+		if (stmt->reject.type == NFT_REJECT_TCP_RST &&
+		    payload_dependency_exists(&rctx->pdctx,
+					      PROTO_BASE_TRANSPORT_HDR))
 			__payload_dependency_kill(&rctx->pdctx,
-						  PROTO_BASE_TRANSPORT_HDR,
 						  rctx->pctx.family);
 		break;
 	case NFPROTO_INET:

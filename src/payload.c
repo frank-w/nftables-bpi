@@ -456,6 +456,31 @@ void payload_dependency_release(struct payload_dep_ctx *ctx)
 	ctx->pdep  = NULL;
 }
 
+static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
+					unsigned int family, struct expr *expr)
+{
+	struct expr *dep = ctx->pdep->expr;
+
+	/* Protocol key payload expression at network base such as 'ip6 nexthdr'
+	 * need to be left in place since it implicitly restricts matching to
+	 * IPv6 for the bridge, inet and netdev families.
+	 */
+	switch (family) {
+	case NFPROTO_BRIDGE:
+	case NFPROTO_NETDEV:
+	case NFPROTO_INET:
+		if (dep->left->ops->type == EXPR_PAYLOAD &&
+		    dep->left->payload.base == PROTO_BASE_NETWORK_HDR &&
+		    (dep->left->payload.desc == &proto_ip ||
+		     dep->left->payload.desc == &proto_ip6) &&
+		    expr->payload.base == PROTO_BASE_TRANSPORT_HDR)
+			return false;
+		break;
+	}
+
+	return true;
+}
+
 /**
  * payload_dependency_kill - kill a redundant payload depedency
  *
@@ -463,12 +488,14 @@ void payload_dependency_release(struct payload_dep_ctx *ctx)
  * @expr: higher layer payload expression
  *
  * Kill a redundant payload expression if a higher layer payload expression
- * implies its existance.
+ * implies its existance. Skip this if the dependency is a network payload and
+ * we are in bridge, netdev and inet families.
  */
 void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 			     unsigned int family)
 {
-	if (payload_dependency_exists(ctx, expr->payload.base))
+	if (payload_dependency_exists(ctx, expr->payload.base) &&
+	    payload_may_dependency_kill(ctx, family, expr))
 		payload_dependency_release(ctx);
 }
 

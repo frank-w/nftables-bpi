@@ -1408,8 +1408,7 @@ static void ct_meta_common_postprocess(struct rule_pp_ctx *ctx,
 			payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
 		} else if (ctx->pdctx.pbase < PROTO_BASE_TRANSPORT_HDR) {
 			if (payload_dependency_exists(&ctx->pdctx, base))
-				__payload_dependency_kill(&ctx->pdctx,
-							  ctx->pctx.family);
+				payload_dependency_release(&ctx->pdctx);
 			if (left->flags & EXPR_F_PROTOCOL)
 				payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
 		}
@@ -1874,8 +1873,7 @@ static void stmt_reject_postprocess(struct rule_pp_ctx *rctx)
 		if (stmt->reject.type == NFT_REJECT_TCP_RST &&
 		    payload_dependency_exists(&rctx->pdctx,
 					      PROTO_BASE_TRANSPORT_HDR))
-			__payload_dependency_kill(&rctx->pdctx,
-						  rctx->pctx.family);
+			payload_dependency_release(&rctx->pdctx);
 		break;
 	case NFPROTO_IPV6:
 		stmt->reject.family = rctx->pctx.family;
@@ -1883,8 +1881,7 @@ static void stmt_reject_postprocess(struct rule_pp_ctx *rctx)
 		if (stmt->reject.type == NFT_REJECT_TCP_RST &&
 		    payload_dependency_exists(&rctx->pdctx,
 					      PROTO_BASE_TRANSPORT_HDR))
-			__payload_dependency_kill(&rctx->pdctx,
-						  rctx->pctx.family);
+			payload_dependency_release(&rctx->pdctx);
 		break;
 	case NFPROTO_INET:
 		if (stmt->reject.type == NFT_REJECT_ICMPX_UNREACH) {

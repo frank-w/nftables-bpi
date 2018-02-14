@@ -445,7 +445,7 @@ bool payload_dependency_exists(const struct payload_dep_ctx *ctx,
 	       ctx->pdep != NULL;
 }
 
-static void payload_dependency_release(struct payload_dep_ctx *ctx)
+void payload_dependency_release(struct payload_dep_ctx *ctx)
 {
 	list_del(&ctx->pdep->list);
 	stmt_free(ctx->pdep);
@@ -457,7 +457,7 @@ static void payload_dependency_release(struct payload_dep_ctx *ctx)
 }
 
 /**
- * __payload_dependency_kill - kill a redundant payload depedency
+ * payload_dependency_kill - kill a redundant payload depedency
  *
  * @ctx: payload dependency context
  * @expr: higher layer payload expression
@@ -465,16 +465,11 @@ static void payload_dependency_release(struct payload_dep_ctx *ctx)
  * Kill a redundant payload expression if a higher layer payload expression
  * implies its existance.
  */
-void __payload_dependency_kill(struct payload_dep_ctx *ctx, unsigned int family)
-{
-	payload_dependency_release(ctx);
-}
-
 void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 			     unsigned int family)
 {
 	if (payload_dependency_exists(ctx, expr->payload.base))
-		__payload_dependency_kill(ctx, family);
+		payload_dependency_release(ctx);
 }
 
 void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
@@ -483,11 +478,11 @@ void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 	switch (expr->exthdr.op) {
 	case NFT_EXTHDR_OP_TCPOPT:
 		if (payload_dependency_exists(ctx, PROTO_BASE_TRANSPORT_HDR))
-			__payload_dependency_kill(ctx, family);
+			payload_dependency_release(ctx);
 		break;
 	case NFT_EXTHDR_OP_IPV6:
 		if (payload_dependency_exists(ctx, PROTO_BASE_NETWORK_HDR))
-			__payload_dependency_kill(ctx, family);
+			payload_dependency_release(ctx);
 		break;
 	default:
 		break;

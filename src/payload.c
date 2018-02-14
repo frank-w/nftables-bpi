@@ -428,6 +428,17 @@ void payload_dependency_store(struct payload_dep_ctx *ctx,
 	ctx->pdep  = stmt;
 }
 
+static void payload_dependency_release(struct payload_dep_ctx *ctx)
+{
+	list_del(&ctx->pdep->list);
+	stmt_free(ctx->pdep);
+
+	ctx->pbase = PROTO_BASE_INVALID;
+	if (ctx->pdep == ctx->prev)
+		ctx->prev = NULL;
+	ctx->pdep  = NULL;
+}
+
 /**
  * __payload_dependency_kill - kill a redundant payload depedency
  *
@@ -442,15 +453,8 @@ void __payload_dependency_kill(struct payload_dep_ctx *ctx,
 {
 	if (ctx->pbase != PROTO_BASE_INVALID &&
 	    ctx->pbase == base &&
-	    ctx->pdep != NULL) {
-		list_del(&ctx->pdep->list);
-		stmt_free(ctx->pdep);
-
-		ctx->pbase = PROTO_BASE_INVALID;
-		if (ctx->pdep == ctx->prev)
-			ctx->prev = NULL;
-		ctx->pdep  = NULL;
-	}
+	    ctx->pdep != NULL)
+		payload_dependency_release(ctx);
 }
 
 void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,

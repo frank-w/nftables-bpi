@@ -662,6 +662,10 @@ void payload_expr_expand(struct list_head *list, struct expr *expr,
 
 	for (i = 1; i < array_size(desc->templates); i++) {
 		tmpl = &desc->templates[i];
+
+		if (tmpl->len == 0)
+			break;
+
 		if (tmpl->offset != expr->payload.offset)
 			continue;
 

@@ -3423,8 +3423,19 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 
 static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 {
+	if (cmd->markup->format == __NFT_OUTPUT_NOTSUPP)
+		return cmd_error(ctx, "this output type is not supported");
+
 	return cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
 			    ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+}
+
+static int cmd_evaluate_import(struct eval_ctx *ctx, struct cmd *cmd)
+{
+	if (cmd->markup->format == __NFT_OUTPUT_NOTSUPP)
+		return cmd_error(ctx, "this output type not supported");
+
+	return 0;
 }
 
 static const char * const cmd_op_name[] = {
@@ -3486,7 +3497,7 @@ int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_MONITOR:
 		return cmd_evaluate_monitor(ctx, cmd);
 	case CMD_IMPORT:
-		return 0;
+		return cmd_evaluate_import(ctx, cmd);
 	default:
 		BUG("invalid command operation %u\n", cmd->op);
 	};

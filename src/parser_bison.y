@@ -1198,7 +1198,6 @@ import_cmd			:       RULESET         markup_format
 				struct markup *markup = markup_alloc($1);
 				$$ = cmd_alloc(CMD_IMPORT, CMD_OBJ_MARKUP, &h, &@$, markup);
 			}
-			|	JSON		{ $$ = NULL; }
 			;
 
 export_cmd		:	RULESET		markup_format
@@ -1213,7 +1212,6 @@ export_cmd		:	RULESET		markup_format
 				struct markup *markup = markup_alloc($1);
 				$$ = cmd_alloc(CMD_EXPORT, CMD_OBJ_MARKUP, &h, &@$, markup);
 			}
-			|	JSON		{ $$ = NULL; }
 			;
 
 monitor_cmd		:	monitor_event	monitor_object	monitor_format
@@ -1241,10 +1239,10 @@ monitor_object		:	/* empty */	{ $$ = CMD_MONITOR_OBJ_ANY; }
 
 monitor_format		:	/* empty */	{ $$ = NFTNL_OUTPUT_DEFAULT; }
 			|	markup_format
-			|	JSON		{ $$ = NFTNL_OUTPUT_JSON; }
 			;
 
-markup_format		: 	XML 		{ $$ = NFTNL_OUTPUT_XML; }
+markup_format		: 	XML 		{ $$ = __NFT_OUTPUT_NOTSUPP; }
+			|	JSON		{ $$ = __NFT_OUTPUT_NOTSUPP; }
 			|	VM JSON		{ $$ = NFTNL_OUTPUT_JSON; }
 			;
 

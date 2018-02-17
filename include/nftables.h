@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdarg.h>
+#include <limits.h>
 #include <utils.h>
 #include <nftables/nftables.h>
 

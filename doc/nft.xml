@@ -5096,7 +5096,7 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 				XML, JSON or native nft format.
 			</para>
 			<para>
-				To filter events related to a concrete object, use one of the keywords 'tables', 'chains', 'sets', 'rules', 'elements'				      , 'ruleset'.
+				To filter events related to a concrete object, use one of the keywords 'tables', 'chains', 'sets', 'rules', 'elements', 'ruleset'.
 			</para>
 			<para>
 				To filter events related to a concrete action, use keyword 'new' or 'destroy'.

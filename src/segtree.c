@@ -182,7 +182,8 @@ static bool segtree_debug(unsigned int debug_mask)
  * be ordered by descending interval size, meaning the new interval never
  * extends over more than two existing intervals.
  */
-static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
+static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
+		     struct elementary_interval *new, bool merge)
 {
 	struct elementary_interval *lei, *rei;
 	mpz_t p;
@@ -199,6 +200,8 @@ static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 		pr_gmp_debug("insert: [%Zx %Zx]\n", new->left, new->right);
 
 	if (lei != NULL && rei != NULL && lei == rei) {
+		if (!merge)
+			goto err;
 		/*
 		 * The new interval is entirely contained in the same interval,
 		 * split it into two parts:
@@ -220,6 +223,8 @@ static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 		ei_destroy(lei);
 	} else {
 		if (lei != NULL) {
+			if (!merge)
+				goto err;
 			/*
 			 * Left endpoint is within lei, adjust it so we have:
 			 *
@@ -238,6 +243,8 @@ static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 			}
 		}
 		if (rei != NULL) {
+			if (!merge)
+				goto err;
 			/*
 			 * Right endpoint is within rei, adjust it so we have:
 			 *
@@ -260,6 +267,11 @@ static void ei_insert(struct seg_tree *tree, struct elementary_interval *new)
 	__ei_insert(tree, new);
 
 	mpz_clear(p);
+
+	return 0;
+err:
+	return expr_binary_error(msgs, lei->expr, new->expr,
+				 "conflicting intervals specified");
 }
 
 /*
@@ -290,18 +302,6 @@ static int interval_cmp(const void *p1, const void *p2)
 
 	mpz_clear(d);
 	return ret;
-}
-
-static bool interval_conflict(const struct elementary_interval *e1,
-			      const struct elementary_interval *e2)
-{
-	if (mpz_cmp(e1->left, e2->left) <= 0 &&
-	    mpz_cmp(e1->right, e2->left) >= 0 &&
-	    mpz_cmp(e1->size, e2->size) == 0 &&
-	    !expr_cmp(e1->expr->right, e2->expr->right))
-		return true;
-	else
-		return false;
 }
 
 static unsigned int expr_to_intervals(const struct expr *set,
@@ -375,23 +375,6 @@ static int set_overlap(struct list_head *msgs, const struct set *set,
 	return 0;
 }
 
-static int intervals_overlap(struct list_head *msgs,
-			     struct elementary_interval **intervals,
-			     unsigned int keylen)
-{
-	unsigned int i, j;
-
-	for (i = 0; i < keylen - 1; i++) {
-		for (j = i + 1; j < keylen; j++) {
-			if (interval_overlap(intervals[i], intervals[j]))
-				return expr_error(msgs, intervals[j]->expr,
-					"interval overlaps with previous one");
-		}
-	}
-
-	return 0;
-}
-
 static int set_to_segtree(struct list_head *msgs, struct set *set,
 			  struct expr *init, struct seg_tree *tree,
 			  bool add, bool merge)
@@ -412,12 +395,6 @@ static int set_to_segtree(struct list_head *msgs, struct set *set,
 
 	n = expr_to_intervals(init, tree->keylen, intervals);
 
-	if (add && !merge) {
-		err = intervals_overlap(msgs, intervals, n);
-		if (err < 0)
-			return err;
-	}
-
 	list_for_each_entry_safe(i, next, &init->expressions, list) {
 		list_del(&i->list);
 		expr_free(i);
@@ -432,14 +409,9 @@ static int set_to_segtree(struct list_head *msgs, struct set *set,
 	 * Insert elements into tree
 	 */
 	for (n = 0; n < init->size; n++) {
-		if (init->set_flags & NFT_SET_MAP &&
-		    n < init->size - 1 &&
-		    interval_conflict(intervals[n], intervals[n+1]))
-			return expr_binary_error(msgs,
-					intervals[n]->expr,
-					intervals[n+1]->expr,
-					"conflicting intervals specified");
-		ei_insert(tree, intervals[n]);
+		err = ei_insert(msgs, tree, intervals[n], merge);
+		if (err < 0)
+			return err;
 	}
 
 	return 0;

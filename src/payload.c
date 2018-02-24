@@ -172,6 +172,7 @@ void payload_init_raw(struct expr *expr, enum proto_bases base,
 	expr->payload.base	= base;
 	expr->payload.offset	= offset;
 	expr->len		= len;
+	expr->dtype		= &integer_type;
 }
 
 unsigned int payload_hdr_field(const struct expr *expr)

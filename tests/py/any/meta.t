@@ -15,7 +15,7 @@ meta length 33-45;ok
 meta length != 33-45;ok
 meta length { 33, 55, 67, 88};ok
 meta length { 33-55, 67-88};ok
-meta length { 33-55, 56-88, 100-120};ok;meta length { 33-55, 56-88, 100-120}
+meta length { 33-55, 56-88, 100-120};ok;meta length { 33-88, 100-120}
 meta length != { 33, 55, 67, 88};ok
 meta length { 33-55};ok
 meta length != { 33-55};ok

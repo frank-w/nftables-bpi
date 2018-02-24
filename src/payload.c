@@ -535,7 +535,7 @@ void payload_expr_complete(struct expr *expr, const struct proto_ctx *ctx)
 	assert(expr->ops->type == EXPR_PAYLOAD);
 
 	desc = ctx->protocol[expr->payload.base].desc;
-	if (desc == NULL)
+	if (desc == NULL || desc == &proto_inet)
 		return;
 	assert(desc->base == expr->payload.base);
 

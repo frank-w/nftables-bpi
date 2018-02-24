@@ -1,7 +1,8 @@
-#! /sbin/nft -nf
-#
-# Examples of set and map usage
-#
+#!/usr/sbin/nft -f
+
+# This example file shows how to use sets and maps in the nftables framework.
+# This script is meant to be loaded with `nft -f <file>`
+# For up-to-date information please visit https://wiki.nftables.org
 
 # symbolic anonymous set definition built from symbolic singleton definitions
 define int_if1	 = eth0

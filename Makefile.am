@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS	= -I m4
 
 SUBDIRS = 	src	\
 		include	\
-		doc	\
-		files
+		doc
 
-EXTRA_DIST =	tests
+EXTRA_DIST =	tests	\
+		files

@@ -1,0 +1,32 @@
+#!/usr/sbin/nft -f
+
+# Here is an example of different families, hooks and priorities in the
+# nftables framework, all mixed together.
+# This script is mean to be loaded with `nft -f <file>`
+# For up-to-date information please visit https://wiki.nftables.org
+
+flush ruleset
+
+# native dual stack IPv4 & IPv6 family
+include "./inet-filter.nft"
+
+# netdev family at ingress hook. Attached to a given NIC
+include "./netdev-ingress.nft"
+
+# IPv4 family, typical iptables tables/chains layout
+include "./ipv4-filter.nft"
+include "./ipv4-mangle.nft"
+include "./ipv4-nat.nft"
+include "./ipv4-raw.nft"
+
+# IPv6 family, typical ip6tables tables/chains layout
+include "./ipv6-filter.nft"
+include "./ipv6-mangle.nft"
+include "./ipv6-nat.nft"
+include "./ipv6-raw.nft"
+
+# ARP family, typical arptables tables/chain layout
+include "./arp-filter.nft"
+
+# bridge family, typical ebtables tables/chain layout
+include "./bridge-filter.nft"

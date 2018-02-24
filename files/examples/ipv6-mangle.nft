@@ -1,4 +1,4 @@
-#! @sbindir@nft -f
+#!/usr/sbin/nft -f
 
 table ip6 mangle {
 	chain output		{ type route hook output priority -150; }

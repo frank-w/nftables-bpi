@@ -1,0 +1,7 @@
+#!/usr/sbin/nft -f
+
+# mind the NIC, it must exists
+table netdev filter {
+        chain loinput { type filter hook ingress device lo priority 0; }
+}
+

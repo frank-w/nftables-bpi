@@ -3757,6 +3757,65 @@ inet filter output rt ip6 nexthop fd00::1
 				</table>
 			</para>
 		</refsect2>
+		<refsect2>
+			<title>Raw payload expression</title>
+			<para>
+				<cmdsynopsis>
+						<command>@</command>
+						<arg opt="req"><replaceable>base,offset,length</replaceable></arg>
+				</cmdsynopsis>
+			</para>
+
+			The raw payload expression instructs to load <replaceable>length</replaceable>bits starting at <replaceable>offset</replaceable>bits.
+			Bit 0 refers the the very first bit -- in the C programming language, this corresponds to the topmost bit, i.e. 0x80 in case of an octet.
+			They are useful to match headers that do not have a human-readable template expression yet.
+			Note that nft will not add dependencies for Raw payload expressions.
+			If you e.g. want to match protocol fields of a transport header with protocol number 5, you need to manually
+			exclude packets that have a different transport header, for instance my using <literal>meta l4proto 5</literal> before
+			the raw expression.
+
+			<table frame="all">
+				<title>Supported payload protocol bases</title>
+				<tgroup cols="2" align="left" colsep="1" rowsep="1">
+					<colspec colname="c1"/>
+					<colspec colname="c2"/>
+					<thead>
+						<row>
+							<entry>Base</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>ll</entry>
+							<entry>Link layer, for example the ethernet header</entry>
+						</row>
+						<row>
+							<entry>nh</entry>
+							<entry>Network header, for example IPv4 or IPv6</entry>
+						</row>
+						<row>
+							<entry>th</entry>
+							<entry>Transport Header, for example TCP</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+			<para>
+				<example>
+					<title>Matching destination port of both UDP and TCP</title>
+					<programlisting>
+inet filter input meta l4proto {tcp, udp} @th,16,16 { dns, http }
+					</programlisting>
+				</example>
+				<example>
+					<title>Rewrite arp packet target hardware address if target protocol address matches a given address</title>
+					<programlisting>
+input meta iifname enp2s0 arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566 accept
+					</programlisting>
+				</example>
+			</para>
+		</refsect2>
 
 		<refsect2>
 			<title>Extension header expressions</title>

@@ -3465,6 +3465,9 @@ payload_raw_expr	:	AT	payload_base_spec	COMMA	NUM	COMMA	NUM
 				$$->payload.offset	= $4;
 				$$->len			= $6;
 				$$->dtype		= &integer_type;
+				$$->byteorder		= BYTEORDER_BIG_ENDIAN;
+				$$->payload.is_raw	= true;
+				$$->flags		= 0;
 			}
 			;
 

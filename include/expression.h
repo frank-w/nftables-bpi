@@ -279,6 +279,7 @@ struct expr {
 			const struct proto_hdr_template	*tmpl;
 			enum proto_bases		base;
 			unsigned int			offset;
+			bool				is_raw;
 		} payload;
 		struct {
 			/* EXPR_EXTHDR */

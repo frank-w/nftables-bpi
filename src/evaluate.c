@@ -609,6 +609,9 @@ static int __expr_evaluate_payload(struct eval_ctx *ctx, struct expr *expr)
 	struct stmt *nstmt;
 	int err;
 
+	if (expr->ops->type == EXPR_PAYLOAD && expr->payload.is_raw)
+		return 0;
+
 	desc = ctx->pctx.protocol[base].desc;
 	if (desc == NULL) {
 		if (payload_gen_dependency(ctx, payload, &nstmt) < 0)

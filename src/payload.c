@@ -48,7 +48,7 @@ static void payload_expr_print(const struct expr *expr, struct output_ctx *octx)
 	if (payload_is_known(expr))
 		nft_print(octx, "%s %s", desc->name, tmpl->token);
 	else
-		nft_print(octx, "payload @%s,%u,%u",
+		nft_print(octx, "@%s,%u,%u",
 			  proto_base_tokens[expr->payload.base],
 			  expr->payload.offset, expr->len);
 }

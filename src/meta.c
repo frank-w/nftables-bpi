@@ -369,6 +369,15 @@ const struct datatype devgroup_type = {
 	.flags		= DTYPE_F_PREFIX,
 };
 
+const struct datatype ifname_type = {
+	.type		= TYPE_IFNAME,
+	.name		= "ifname",
+	.desc		= "network interface name",
+	.byteorder	= BYTEORDER_HOST_ENDIAN,
+	.size		= IFNAMSIZ * BITS_PER_BYTE,
+	.basetype	= &string_type,
+};
+
 static const struct meta_template meta_templates[] = {
 	[NFT_META_LEN]		= META_TEMPLATE("length",    &integer_type,
 						4 * 8, BYTEORDER_HOST_ENDIAN),
@@ -384,14 +393,14 @@ static const struct meta_template meta_templates[] = {
 						4 * 8, BYTEORDER_HOST_ENDIAN),
 	[NFT_META_IIF]		= META_TEMPLATE("iif",       &ifindex_type,
 						4 * 8, BYTEORDER_HOST_ENDIAN),
-	[NFT_META_IIFNAME]	= META_TEMPLATE("iifname",   &string_type,
+	[NFT_META_IIFNAME]	= META_TEMPLATE("iifname",   &ifname_type,
 						IFNAMSIZ * BITS_PER_BYTE,
 						BYTEORDER_HOST_ENDIAN),
 	[NFT_META_IIFTYPE]	= META_TEMPLATE("iiftype",   &arphrd_type,
 						2 * 8, BYTEORDER_HOST_ENDIAN),
 	[NFT_META_OIF]		= META_TEMPLATE("oif",	     &ifindex_type,
 						4 * 8, BYTEORDER_HOST_ENDIAN),
-	[NFT_META_OIFNAME]	= META_TEMPLATE("oifname",   &string_type,
+	[NFT_META_OIFNAME]	= META_TEMPLATE("oifname",   &ifname_type,
 						IFNAMSIZ * BITS_PER_BYTE,
 						BYTEORDER_HOST_ENDIAN),
 	[NFT_META_OIFTYPE]	= META_TEMPLATE("oiftype",   &arphrd_type,
@@ -404,10 +413,10 @@ static const struct meta_template meta_templates[] = {
 						1    , BYTEORDER_HOST_ENDIAN),
 	[NFT_META_RTCLASSID]	= META_TEMPLATE("rtclassid", &realm_type,
 						4 * 8, BYTEORDER_HOST_ENDIAN),
-	[NFT_META_BRI_IIFNAME]	= META_TEMPLATE("ibriport",  &string_type,
+	[NFT_META_BRI_IIFNAME]	= META_TEMPLATE("ibriport",  &ifname_type,
 						IFNAMSIZ * BITS_PER_BYTE,
 						BYTEORDER_HOST_ENDIAN),
-	[NFT_META_BRI_OIFNAME]	= META_TEMPLATE("obriport",  &string_type,
+	[NFT_META_BRI_OIFNAME]	= META_TEMPLATE("obriport",  &ifname_type,
 						IFNAMSIZ * BITS_PER_BYTE,
 						BYTEORDER_HOST_ENDIAN),
 	[NFT_META_PKTTYPE]	= META_TEMPLATE("pkttype",   &pkttype_type,

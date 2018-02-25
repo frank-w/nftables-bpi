@@ -38,5 +38,6 @@ extern const struct datatype gid_type;
 extern const struct datatype uid_type;
 extern const struct datatype devgroup_type;
 extern const struct datatype pkttype_type;
+extern const struct datatype ifname_type;
 
 #endif /* NFTABLES_META_H */

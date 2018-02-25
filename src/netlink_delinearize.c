@@ -271,9 +271,8 @@ static void netlink_parse_cmp(struct netlink_parse_ctx *ctx,
 	right = netlink_alloc_value(loc, &nld);
 
 	if (left->len > right->len &&
-	    left->dtype != &string_type) {
-		return netlink_error(ctx, loc,
-				     "Relational expression size mismatch");
+	    expr_basetype(left) != &string_type) {
+		return netlink_error(ctx, loc, "Relational expression size mismatch");
 	} else if (left->len > 0 && left->len < right->len) {
 		left = netlink_parse_concat_expr(ctx, loc, sreg, right->len);
 		if (left == NULL)
@@ -1728,7 +1727,7 @@ static struct expr *string_wildcard_expr_alloc(struct location *loc,
 	data[pos] = '*';
 	data[pos + 1] = '\0';
 
-	return constant_expr_alloc(loc, &string_type, BYTEORDER_HOST_ENDIAN,
+	return constant_expr_alloc(loc, expr->dtype, BYTEORDER_HOST_ENDIAN,
 				   expr->len + BITS_PER_BYTE, data);
 }
 
@@ -1744,7 +1743,7 @@ static void escaped_string_wildcard_expr_alloc(struct expr **exprp,
 	data[pos - 1] = '\\';
 	data[pos] = '*';
 
-	tmp = constant_expr_alloc(&expr->location, &string_type,
+	tmp = constant_expr_alloc(&expr->location, expr->dtype,
 				  BYTEORDER_HOST_ENDIAN,
 				  expr->len + BITS_PER_BYTE, data);
 	expr_free(expr);
@@ -1789,7 +1788,7 @@ static struct expr *expr_postprocess_string(struct expr *expr)
 {
 	struct expr *mask;
 
-	assert(expr->dtype->type == TYPE_STRING);
+	assert(expr_basetype(expr)->type == TYPE_STRING);
 	if (__expr_postprocess_string(&expr))
 		return expr;
 
@@ -1893,7 +1892,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 		if (expr->byteorder == BYTEORDER_HOST_ENDIAN)
 			mpz_switch_byteorder(expr->value, expr->len / BITS_PER_BYTE);
 
-		if (expr->dtype->type == TYPE_STRING)
+		if (expr_basetype(expr)->type == TYPE_STRING)
 			*exprp = expr_postprocess_string(expr);
 
 		if (expr->dtype->basetype != NULL &&

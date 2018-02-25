@@ -2572,7 +2572,7 @@ filter output icmpv6 type { echo-request, echo-reply }
 							<row>
 								<entry>iifname</entry>
 								<entry>Input interface name</entry>
-								<entry>string</entry>
+								<entry>ifname</entry>
 							</row>
 							<row>
 								<entry>iiftype</entry>
@@ -2587,7 +2587,7 @@ filter output icmpv6 type { echo-request, echo-reply }
 							<row>
 								<entry>oifname</entry>
 								<entry>Output interface name</entry>
-								<entry>string</entry>
+								<entry>ifname</entry>
 							</row>
 							<row>
 								<entry>oiftype</entry>
@@ -2612,12 +2612,12 @@ filter output icmpv6 type { echo-request, echo-reply }
 							<row>
 								<entry>ibriport</entry>
 								<entry>Input bridge interface name</entry>
-								<entry>string</entry>
+								<entry>ifname</entry>
 							</row>
 							<row>
 								<entry>obriport</entry>
 								<entry>Output bridge interface name</entry>
-								<entry>string</entry>
+								<entry>ifname</entry>
 							</row>
 							<row>
 								<entry>pkttype</entry>

@@ -364,7 +364,7 @@ static void netlink_gen_cmp(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_lookup(ctx, expr, dreg);
 	case EXPR_PREFIX:
 		sreg = get_register(ctx, expr->left);
-		if (expr->left->dtype->type != TYPE_STRING) {
+		if (expr_basetype(expr->left)->type != TYPE_STRING) {
 			len = div_round_up(expr->right->len, BITS_PER_BYTE);
 			netlink_gen_expr(ctx, expr->left, sreg);
 			right = netlink_gen_prefix(ctx, expr, sreg);

@@ -245,7 +245,7 @@ static int expr_evaluate_string(struct eval_ctx *ctx, struct expr **exprp)
 		/* We need to reallocate the constant expression with the right
 		 * expression length to avoid problems on big endian.
 		 */
-		value = constant_expr_alloc(&expr->location, &string_type,
+		value = constant_expr_alloc(&expr->location, ctx->ectx.dtype,
 					    BYTEORDER_HOST_ENDIAN,
 					    expr->len, data);
 		expr_free(expr);
@@ -260,20 +260,20 @@ static int expr_evaluate_string(struct eval_ctx *ctx, struct expr **exprp)
 		memset(unescaped_str, 0, sizeof(unescaped_str));
 		xstrunescape(data, unescaped_str);
 
-		value = constant_expr_alloc(&expr->location, &string_type,
+		value = constant_expr_alloc(&expr->location, ctx->ectx.dtype,
 					    BYTEORDER_HOST_ENDIAN,
 					    expr->len, unescaped_str);
 		expr_free(expr);
 		*exprp = value;
 		return 0;
 	}
-	value = constant_expr_alloc(&expr->location, &string_type,
+	value = constant_expr_alloc(&expr->location, ctx->ectx.dtype,
 				    BYTEORDER_HOST_ENDIAN,
 				    datalen * BITS_PER_BYTE, data);
 
 	prefix = prefix_expr_alloc(&expr->location, value,
 				   datalen * BITS_PER_BYTE);
-	prefix->dtype = &string_type;
+	prefix->dtype = ctx->ectx.dtype;
 	prefix->flags |= EXPR_F_CONSTANT;
 	prefix->byteorder = BYTEORDER_HOST_ENDIAN;
 
@@ -1769,6 +1769,7 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 	    meta->meta.key == NFT_META_NFPROTO)
 		return expr_error(ctx->msgs, meta,
 					  "meta nfproto is only useful in the inet family");
+
 	return expr_evaluate_primary(ctx, exprp);
 }
 

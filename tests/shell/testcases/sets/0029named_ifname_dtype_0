@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# support for ifname in named sets
+
+tmpfile=$(mktemp)
+if [ ! -w $tmpfile ] ; then
+	echo "Failed to create tmp file" >&2
+	exit 0
+fi
+
+trap "rm -rf $tmpfile" EXIT # cleanup if aborted
+
+EXPECTED="table inet t {
+	set s {
+		type ifname
+		elements = { \"eth0\" }
+	}
+
+	chain c {
+		iifname @s accept
+		oifname @s accept
+	}
+}"
+
+set -e
+echo "$EXPECTED" > $tmpfile
+$NFT -f $tmpfile
+
+GET="$($NFT list ruleset)"
+if [ "$EXPECTED" != "$GET" ] ; then
+        DIFF="$(which diff)"
+        [ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+        exit 1
+fi
+

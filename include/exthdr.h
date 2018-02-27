@@ -14,6 +14,7 @@
 struct exthdr_desc {
 	const char			*name;
 	uint8_t				type;
+	int				proto_key;
 	struct proto_hdr_template	templates[10];
 };
 

@@ -93,6 +93,16 @@ struct expr *exthdr_expr_alloc(const struct location *loc,
 			  BYTEORDER_BIG_ENDIAN, tmpl->len);
 	expr->exthdr.desc = desc;
 	expr->exthdr.tmpl = tmpl;
+	if (desc != NULL && desc->proto_key >= 0) {
+		switch (desc->proto_key) {
+		case 0:
+			expr->exthdr.op = NFT_EXTHDR_OP_RT0;
+			break;
+		case 2:
+			expr->exthdr.op = NFT_EXTHDR_OP_RT2;
+			break;
+		}
+	}
 	return expr;
 }
 
@@ -151,7 +161,11 @@ void exthdr_init_raw(struct expr *expr, uint8_t type,
 	expr->exthdr.offset = offset;
 	expr->exthdr.desc = NULL;
 
-	if (type < array_size(exthdr_protocols))
+	if (op == NFT_EXTHDR_OP_RT0)
+		expr->exthdr.desc = &exthdr_rt0;
+	else if (op == NFT_EXTHDR_OP_RT2)
+		expr->exthdr.desc = &exthdr_rt2;
+	else if (type < array_size(exthdr_protocols))
 		expr->exthdr.desc = exthdr_protocols[type];
 
 	if (expr->exthdr.desc == NULL)
@@ -236,6 +250,9 @@ const struct exthdr_desc exthdr_hbh = {
  */
 
 const struct exthdr_desc exthdr_rt2 = {
+	.name           = "rt2",
+	.type           = IPPROTO_ROUTING,
+	.proto_key	= 2,
 	.templates	= {
 		[RT2HDR_RESERVED]	= {},
 		[RT2HDR_ADDR]		= {},
@@ -246,6 +263,9 @@ const struct exthdr_desc exthdr_rt2 = {
 	HDR_TEMPLATE(__name, __dtype, struct ip6_rthdr0, __member)
 
 const struct exthdr_desc exthdr_rt0 = {
+	.name           = "rt0",
+	.type           = IPPROTO_ROUTING,
+	.proto_key      = 0,
 	.templates	= {
 		[RT0HDR_RESERVED]	= RT0_FIELD("reserved", ip6r0_reserved, &integer_type),
 		[RT0HDR_ADDR_1]		= RT0_FIELD("addr[1]", ip6r0_addr[0], &ip6addr_type),
@@ -260,6 +280,7 @@ const struct exthdr_desc exthdr_rt0 = {
 const struct exthdr_desc exthdr_rt = {
 	.name		= "rt",
 	.type		= IPPROTO_ROUTING,
+	.proto_key      = -1,
 #if 0
 	.protocol_key	= RTHDR_TYPE,
 	.protocols	= {

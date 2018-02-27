@@ -456,8 +456,12 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "rt"			{ return RT; }
 "rt0"			{ return RT0; }
 "rt2"			{ return RT2; }
+"srh"			{ return RT4; }
 "seg-left"		{ return SEG_LEFT; }
 "addr"			{ return ADDR; }
+"last-entry"		{ return LAST_ENT; }
+"tag"			{ return TAG; }
+"sid"			{ return SID; }
 
 "hbh"			{ return HBH; }
 

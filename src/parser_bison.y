@@ -364,8 +364,12 @@ int nft_lex(void *, void *, void *);
 %token RT			"rt"
 %token RT0			"rt0"
 %token RT2			"rt2"
+%token RT4			"srh"
 %token SEG_LEFT			"seg-left"
 %token ADDR			"addr"
+%token LAST_ENT			"last-entry"
+%token TAG			"tag"
+%token SID			"sid"
 
 %token HBH			"hbh"
 
@@ -674,9 +678,9 @@ int nft_lex(void *, void *, void *);
 %type <expr>			hbh_hdr_expr	frag_hdr_expr		dst_hdr_expr
 %destructor { expr_free($$); }	hbh_hdr_expr	frag_hdr_expr		dst_hdr_expr
 %type <val>			hbh_hdr_field	frag_hdr_field		dst_hdr_field
-%type <expr>			rt_hdr_expr	rt0_hdr_expr		rt2_hdr_expr
-%destructor { expr_free($$); }	rt_hdr_expr	rt0_hdr_expr		rt2_hdr_expr
-%type <val>			rt_hdr_field	rt0_hdr_field		rt2_hdr_field
+%type <expr>			rt_hdr_expr	rt0_hdr_expr		rt2_hdr_expr	rt4_hdr_expr
+%destructor { expr_free($$); }	rt_hdr_expr	rt0_hdr_expr		rt2_hdr_expr	rt4_hdr_expr
+%type <val>			rt_hdr_field	rt0_hdr_field		rt2_hdr_field	rt4_hdr_field
 %type <expr>			mh_hdr_expr
 %destructor { expr_free($$); }	mh_hdr_expr
 %type <val>			mh_hdr_field
@@ -3921,6 +3925,7 @@ exthdr_expr		:	hbh_hdr_expr
 			|	rt_hdr_expr
 			|	rt0_hdr_expr
 			|	rt2_hdr_expr
+			|	rt4_hdr_expr
 			|	frag_hdr_expr
 			|	dst_hdr_expr
 			|	mh_hdr_expr
@@ -3967,6 +3972,21 @@ rt2_hdr_expr		:	RT2	rt2_hdr_field
 			;
 
 rt2_hdr_field		:	ADDR		{ $$ = RT2HDR_ADDR; }
+			;
+
+rt4_hdr_expr		:	RT4	rt4_hdr_field
+			{
+				$$ = exthdr_expr_alloc(&@$, &exthdr_rt4, $2);
+			}
+			;
+
+rt4_hdr_field		:	LAST_ENT	{ $$ = RT4HDR_LASTENT; }
+			|	FLAGS		{ $$ = RT4HDR_FLAGS; }
+			|	TAG		{ $$ = RT4HDR_TAG; }
+			|	SID		'['	NUM	']'
+			{
+				$$ = RT4HDR_SID_1 + $3 - 1;
+			}
 			;
 
 frag_hdr_expr		:	FRAG	frag_hdr_field

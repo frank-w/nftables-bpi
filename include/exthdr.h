@@ -57,6 +57,14 @@ enum rt2_hdr_fields {
 	RT2HDR_ADDR,
 };
 
+enum rt4_hdr_fields {
+	RT4HDR_INVALID,
+	RT4HDR_LASTENT,
+	RT4HDR_FLAGS,
+	RT4HDR_TAG,
+	RT4HDR_SID_1,
+};
+
 enum frag_hdr_fields {
 	FRAGHDR_INVALID,
 	FRAGHDR_NEXTHDR,
@@ -87,6 +95,7 @@ extern const struct exthdr_desc exthdr_hbh;
 extern const struct exthdr_desc exthdr_rt;
 extern const struct exthdr_desc exthdr_rt0;
 extern const struct exthdr_desc exthdr_rt2;
+extern const struct exthdr_desc exthdr_rt4;
 extern const struct exthdr_desc exthdr_frag;
 extern const struct exthdr_desc exthdr_dst;
 extern const struct exthdr_desc exthdr_mh;

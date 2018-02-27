@@ -112,6 +112,18 @@ struct ip6_mh {
 	uint8_t		data[0];
 };
 
+/* Type 4 Routing header - well known as srh */
+struct ip6_rt4 {
+	uint8_t		ip6r4_nxt;		/* next header			*/
+	uint8_t		ip6r4_len;		/* length in units of 8 octets	*/
+	uint8_t		ip6r4_type;		/* always zero			*/
+	uint8_t		ip6r4_segleft;		/* segments left		*/
+	uint8_t		ip6r4_last_entry;	/* last entry			*/
+	uint8_t		ip6r4_flags;		/* flags			*/
+	uint16_t	ip6r4_tag;		/* tag				*/
+	struct in6_addr	ip6r4_segments[0];	/* SID list			*/
+};
+
 /* RFC 3775 */
 #define IP6_MH_TYPE_BRR		0	/* Binding Refresh Request	*/
 #define IP6_MH_TYPE_HOTI	1	/* HOTI Message			*/

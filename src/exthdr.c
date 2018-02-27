@@ -101,6 +101,9 @@ struct expr *exthdr_expr_alloc(const struct location *loc,
 		case 2:
 			expr->exthdr.op = NFT_EXTHDR_OP_RT2;
 			break;
+		case 4:
+			expr->exthdr.op = NFT_EXTHDR_OP_RT4;
+			break;
 		}
 	}
 	return expr;
@@ -165,6 +168,8 @@ void exthdr_init_raw(struct expr *expr, uint8_t type,
 		expr->exthdr.desc = &exthdr_rt0;
 	else if (op == NFT_EXTHDR_OP_RT2)
 		expr->exthdr.desc = &exthdr_rt2;
+	else if (op == NFT_EXTHDR_OP_RT4)
+		expr->exthdr.desc = &exthdr_rt4;
 	else if (type < array_size(exthdr_protocols))
 		expr->exthdr.desc = exthdr_protocols[type];
 
@@ -273,6 +278,24 @@ const struct exthdr_desc exthdr_rt0 = {
 		// ...
 	},
 };
+
+#define RT4_FIELD(__name, __member, __dtype) \
+	HDR_TEMPLATE(__name, __dtype, struct ip6_rt4, __member)
+
+const struct exthdr_desc exthdr_rt4 = {
+	.name		= "srh",
+	.type		= IPPROTO_ROUTING,
+	.proto_key	= 4,
+	.templates      = {
+		[RT4HDR_LASTENT]	= RT4_FIELD("last-entry", ip6r4_last_entry, &integer_type),
+		[RT4HDR_FLAGS]		= RT4_FIELD("flags", ip6r4_flags, &integer_type),
+		[RT4HDR_TAG]		= RT4_FIELD("tag", ip6r4_tag, &integer_type),
+		[RT4HDR_SID_1]		= RT4_FIELD("sid[1]", ip6r4_segments[0], &ip6addr_type),
+		[RT4HDR_SID_1 + 1]	= RT4_FIELD("sid[1]", ip6r4_segments[0], &ip6addr_type),
+		// ...
+	},
+};
+
 
 #define RT_FIELD(__name, __member, __dtype) \
 	HDR_TEMPLATE(__name, __dtype, struct ip6_rthdr, __member)

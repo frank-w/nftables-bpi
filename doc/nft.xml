@@ -2523,6 +2523,9 @@ filter output icmpv6 type { echo-request, echo-reply }
 				Qualified meta expressions require the <command>meta</command> keyword before the
 				meta key, unqualified meta expressions can be specified by using the meta key directly
 				or as qualified meta expressions.
+
+				Meta l4proto is useful to match a particular transport protocol that is part of either
+				an IPv4 or IPv6 packet.  It will also skip any IPv6 extension headers present in an IPv6 packet.
 			</para>
 			<para>
 				<table frame="all">
@@ -2548,6 +2551,11 @@ filter output icmpv6 type { echo-request, echo-reply }
 								<entry>nfproto</entry>
 								<entry>real hook protocol family, useful only in inet table</entry>
 								<entry>integer (32 bit)</entry>
+							</row>
+							<row>
+								<entry>l4proto</entry>
+								<entry>layer 4 protocol, skips ipv6 extension headers</entry>
+								<entry>integer (8 bit)</entry>
 							</row>
 							<row>
 								<entry>protocol</entry>
@@ -3227,6 +3235,15 @@ inet filter output rt ip6 nexthop fd00::1
 				</cmdsynopsis>
 			</para>
 			<para>
+				This expression refers to the ipv6 header fields.
+				Caution when using <command>ip6 nexthdr</command>, the value only refers to
+				the next header, i.e. <command>ip6 nexthdr tcp</command> will only match if the ipv6 packet does not
+				contain any extension headers.  Packets that are fragmented or e.g. contain a routing extension headers
+				will not be matched.
+				Please use <command>meta l4proto</command> if you wish to match the real transport header and
+				ignore any additional extension headers instead.
+			</para>
+			<para>
 				<table frame="all">
 					<title>IPv6 header expression</title>
 					<tgroup cols='3' align='left' colsep='1' rowsep='1'>
@@ -3290,8 +3307,15 @@ inet filter output rt ip6 nexthop fd00::1
 					</tgroup>
 				</table>
 			</para>
+			<para>
+				<example>
+					<title>matching if first extension header indicates a fragment</title>
+					<programlisting>
+ip6 nexthdr ipv6-frag counter
+					</programlisting>
+				</example>
+			</para>
 		</refsect2>
-
 		<refsect2>
 			<title>ICMPv6 header expression</title>
 			<para>

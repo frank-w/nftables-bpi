@@ -2028,9 +2028,9 @@ static int netlink_events_table_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_XML:
 	case NFTNL_OUTPUT_JSON:
-		nftnl_table_fprintf(stdout, nlt, monh->format,
-				    netlink_msg2nftnl_of(type));
-		fprintf(stdout, "\n");
+		nftnl_table_fprintf(monh->ctx->octx->output_fp, nlt,
+				    monh->format, netlink_msg2nftnl_of(type));
+		nft_mon_print(monh, "\n");
 		break;
 	}
 
@@ -2070,9 +2070,9 @@ static int netlink_events_chain_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_XML:
 	case NFTNL_OUTPUT_JSON:
-		nftnl_chain_fprintf(stdout, nlc, monh->format,
-				    netlink_msg2nftnl_of(type));
-		fprintf(stdout, "\n");
+		nftnl_chain_fprintf(monh->ctx->octx->output_fp, nlc,
+				    monh->format, netlink_msg2nftnl_of(type));
+		nft_mon_print(monh, "\n");
 		break;
 	}
 
@@ -2117,9 +2117,9 @@ static int netlink_events_set_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_XML:
 	case NFTNL_OUTPUT_JSON:
-		nftnl_set_fprintf(stdout, nls, monh->format,
-				netlink_msg2nftnl_of(type));
-		fprintf(stdout, "\n");
+		nftnl_set_fprintf(monh->ctx->octx->output_fp, nls,
+				  monh->format, netlink_msg2nftnl_of(type));
+		nft_mon_print(monh, "\n");
 		break;
 	}
 out:
@@ -2266,9 +2266,9 @@ static int netlink_events_setelem_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_XML:
 	case NFTNL_OUTPUT_JSON:
-		nftnl_set_fprintf(stdout, nls, monh->format,
-				  netlink_msg2nftnl_of(type));
-		fprintf(stdout, "\n");
+		nftnl_set_fprintf(monh->ctx->octx->output_fp, nls,
+				  monh->format, netlink_msg2nftnl_of(type));
+		nft_mon_print(monh, "\n");
 		break;
 	}
 out:
@@ -2311,9 +2311,9 @@ static int netlink_events_obj_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_XML:
 	case NFTNL_OUTPUT_JSON:
-		nftnl_obj_fprintf(stdout, nlo, monh->format,
-				  netlink_msg2nftnl_of(type));
-		fprintf(stdout, "\n");
+		nftnl_obj_fprintf(monh->ctx->octx->output_fp, nlo,
+				  monh->format, netlink_msg2nftnl_of(type));
+		nft_mon_print(monh, "\n");
 		break;
 	}
 
@@ -2367,9 +2367,9 @@ static int netlink_events_rule_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_XML:
 	case NFTNL_OUTPUT_JSON:
-		nftnl_rule_fprintf(stdout, nlr, monh->format,
-				 netlink_msg2nftnl_of(type));
-		fprintf(stdout, "\n");
+		nftnl_rule_fprintf(monh->ctx->octx->output_fp, nlr,
+				   monh->format, netlink_msg2nftnl_of(type));
+		nft_mon_print(monh, "\n");
 		break;
 	}
 
@@ -2998,7 +2998,6 @@ static int netlink_events_cb(const struct nlmsghdr *nlh, void *data)
 		ret = netlink_events_newgen_cb(nlh, type, monh);
 		break;
 	}
-	fflush(stdout);
 
 	return ret;
 }

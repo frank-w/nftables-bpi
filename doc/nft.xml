@@ -1663,13 +1663,23 @@ filter output ip daddr localhost
 				</table>
 			</para>
 			<para>
-				The IPv6 address type is used for IPv6 addresses.  FIXME
+				The IPv6 address type is used for IPv6 addresses.
+				Addresses are specified as a host name or as hexadecimal halfwords separated
+				by colons.  Addresses might be enclosed in square brackets ("[]") to differentiate them
+				from port numbers.
 			</para>
 			<example>
 				<title>IPv6 address specification</title>
 				<programlisting>
 # abbreviated loopback address
 filter output ip6 daddr ::1
+				</programlisting>
+			<example>
+			</example>
+				<title>IPv6 address specification with bracket notation</title>
+				<programlisting>
+# without [] the port number (22) would be parsed as part of ipv6 address
+ip6 nat prerouting tcp dport 2222 dnat to [1ce::d0]:22
 				</programlisting>
 			</example>
 		</refsect2>

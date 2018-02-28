@@ -823,6 +823,9 @@ filter input iif $int_ifs accept
 			</cmdsynopsis>
 		</para>
 		<para>
+			Rules are added to <literal>chain</literal> in the given <literal>table</literal>.
+			If the <literal>family</literal> is not specified, the <literal>ip</literal> family
+			is used.
 			Rules are constructed from two kinds of components according to a set
 			of grammatical rules: expressions and statements.
 		</para>
@@ -864,6 +867,30 @@ filter input iif $int_ifs accept
 				</listitem>
 			</varlistentry>
 		</variablelist>
+
+			<example>
+				<title>add a rule to ip table input chain</title>
+				<programlisting>
+nft add rule filter output ip daddr 192.168.0.0/24 accept # 'ip filter' is assumed
+# same command, slightly more verbose
+nft add rule ip filter output ip daddr 192.168.0.0/24 accept
+
+				</programlisting>
+			</example>
+			<example>
+				<title>delete rule from inet table</title>
+				<programlisting>
+# nft -a list ruleset
+table inet filter {
+        chain input {
+                type filter hook input priority 0; policy accept;
+                ct state established,related accept # handle 4
+                ip saddr 10.1.1.1 tcp dport ssh accept # handle 5
+		...
+# delete the rule with handle 5
+# nft delete rule inet filter input handle 5
+				</programlisting>
+			</example>
 	</refsect1>
 
 	<refsect1>

@@ -20,7 +20,7 @@ static void hash_expr_print(const struct expr *expr, struct output_ctx *octx)
 	switch (expr->hash.type) {
 	case NFT_HASH_SYM:
 		nft_print(octx, "symhash");
-	break;
+		break;
 	case NFT_HASH_JENKINS:
 	default:
 		nft_print(octx, "jhash ");

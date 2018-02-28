@@ -2712,6 +2712,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 
 		map->mappings->set->flags |=
 			map->mappings->set->init->set_flags;
+		/* fall through */
 	case EXPR_SYMBOL:
 		if (expr_evaluate(ctx, &map->mappings) < 0)
 			return -1;

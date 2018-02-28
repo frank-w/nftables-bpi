@@ -289,7 +289,7 @@ static void ct_print(enum nft_ct_keys key, int8_t dir, uint8_t nfproto,
 	}
 
 	switch (key) {
-	case NFT_CT_SRC: /* fallthrough */
+	case NFT_CT_SRC:
 	case NFT_CT_DST:
 		desc = proto_find_upper(&proto_inet, nfproto);
 		if (desc)

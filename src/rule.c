@@ -1341,7 +1341,7 @@ static void obj_print_data(const struct obj *obj,
 		}
 		}
 		break;
-	case NFT_OBJECT_CT_HELPER: {
+	case NFT_OBJECT_CT_HELPER:
 		nft_print(octx, "ct helper %s {\n", obj->handle.obj);
 		nft_print(octx, "\t\ttype \"%s\" protocol ",
 			  obj->ct_helper.name);
@@ -1349,7 +1349,6 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, "\t\tl3proto %s",
 			  family2str(obj->ct_helper.l3proto));
 		break;
-		}
 	case NFT_OBJECT_LIMIT: {
 		bool inv = obj->limit.flags & NFT_LIMIT_F_INV;
 		const char *data_unit;
@@ -1661,11 +1660,13 @@ static int do_command_reset(struct netlink_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_COUNTERS:
 		dump = true;
+		/* fall through */
 	case CMD_OBJ_COUNTER:
 		type = NFT_OBJECT_COUNTER;
 		break;
 	case CMD_OBJ_QUOTAS:
 		dump = true;
+		/* fall through */
 	case CMD_OBJ_QUOTA:
 		type = NFT_OBJECT_QUOTA;
 		break;

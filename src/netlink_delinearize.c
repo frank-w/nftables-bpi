@@ -1485,6 +1485,7 @@ static void ct_meta_common_postprocess(struct rule_pp_ctx *ctx,
 	case OP_NEQ:
 		if (right->ops->type != EXPR_SET && right->ops->type != EXPR_SET_REF)
 			break;
+		/* fall through */
 	case OP_LOOKUP:
 		expr_set_type(right, left->dtype, left->byteorder);
 		break;

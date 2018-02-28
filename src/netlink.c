@@ -2600,14 +2600,18 @@ static void netlink_events_cache_update(struct netlink_mon_handler *monh,
 	}
 }
 
-static void trace_print_hdr(const struct nftnl_trace *nlt)
+static void trace_print_hdr(const struct nftnl_trace *nlt,
+			    struct output_ctx *octx)
 {
-	printf("trace id %08x ", nftnl_trace_get_u32(nlt, NFTNL_TRACE_ID));
-	printf("%s ", family2str(nftnl_trace_get_u32(nlt, NFTNL_TRACE_FAMILY)));
+	nft_print(octx, "trace id %08x %s ",
+		  nftnl_trace_get_u32(nlt, NFTNL_TRACE_ID),
+		  family2str(nftnl_trace_get_u32(nlt, NFTNL_TRACE_FAMILY)));
 	if (nftnl_trace_is_set(nlt, NFTNL_TRACE_TABLE))
-		printf("%s ", nftnl_trace_get_str(nlt, NFTNL_TRACE_TABLE));
+		nft_print(octx, "%s ",
+			  nftnl_trace_get_str(nlt, NFTNL_TRACE_TABLE));
 	if (nftnl_trace_is_set(nlt, NFTNL_TRACE_CHAIN))
-		printf("%s ", nftnl_trace_get_str(nlt, NFTNL_TRACE_CHAIN));
+		nft_print(octx, "%s ",
+			  nftnl_trace_get_str(nlt, NFTNL_TRACE_CHAIN));
 }
 
 static void trace_print_expr(const struct nftnl_trace *nlt, unsigned int attr,
@@ -2624,7 +2628,7 @@ static void trace_print_expr(const struct nftnl_trace *nlt, unsigned int attr,
 	rel  = relational_expr_alloc(&netlink_location, OP_EQ, lhs, rhs);
 
 	expr_print(rel, octx);
-	printf(" ");
+	nft_print(octx, " ");
 	expr_free(rel);
 }
 
@@ -2674,12 +2678,12 @@ static void trace_print_rule(const struct nftnl_trace *nlt,
 	if (!rule)
 		return;
 
-	trace_print_hdr(nlt);
-	printf("rule ");
+	trace_print_hdr(nlt, octx);
+	nft_print(octx, "rule ");
 	rule_print(rule, octx);
-	printf(" (");
+	nft_print(octx, " (");
 	trace_print_verdict(nlt, octx);
-	printf(")\n");
+	nft_print(octx, ")\n");
 }
 
 static void trace_gen_stmts(struct list_head *stmts,
@@ -2788,9 +2792,9 @@ static void trace_print_packet(const struct nftnl_trace *nlt,
 	uint32_t nfproto;
 	struct stmt *stmt, *next;
 
-	trace_print_hdr(nlt);
+	trace_print_hdr(nlt, octx);
 
-	printf("packet: ");
+	nft_print(octx, "packet: ");
 	if (nftnl_trace_is_set(nlt, NFTNL_TRACE_IIF))
 		trace_print_expr(nlt, NFTNL_TRACE_IIF,
 				 meta_expr_alloc(&netlink_location,
@@ -2826,10 +2830,10 @@ static void trace_print_packet(const struct nftnl_trace *nlt,
 
 	list_for_each_entry_safe(stmt, next, &stmts, list) {
 		stmt_print(stmt, octx);
-		printf(" ");
+		nft_print(octx, " ");
 		stmt_free(stmt);
 	}
-	printf("\n");
+	nft_print(octx, "\n");
 }
 
 static int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
@@ -2857,11 +2861,11 @@ static int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFT_TRACETYPE_POLICY:
 	case NFT_TRACETYPE_RETURN:
-		trace_print_hdr(nlt);
+		trace_print_hdr(nlt, monh->ctx->octx);
 
 		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_VERDICT)) {
 			trace_print_verdict(nlt, monh->ctx->octx);
-			printf(" ");
+			nft_mon_print(monh, " ");
 		}
 
 		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_MARK))
@@ -2869,7 +2873,7 @@ static int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 					 meta_expr_alloc(&netlink_location,
 							 NFT_META_MARK),
 					 monh->ctx->octx);
-		printf("\n");
+		nft_mon_print(monh, "\n");
 		break;
 	}
 

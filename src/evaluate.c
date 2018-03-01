@@ -2143,8 +2143,10 @@ static int stmt_reject_gen_dependency(struct eval_ctx *ctx, struct stmt *stmt,
 	if (ret <= 0)
 		return ret;
 
-	if (payload_gen_dependency(ctx, payload, &nstmt) < 0)
-		return -1;
+	if (payload_gen_dependency(ctx, payload, &nstmt) < 0) {
+		ret = -1;
+		goto out;
+	}
 
 	/*
 	 * Unlike payload deps this adds the dependency at the beginning, i.e.
@@ -2155,7 +2157,9 @@ static int stmt_reject_gen_dependency(struct eval_ctx *ctx, struct stmt *stmt,
 	 * Otherwise we'd log things that won't be rejected.
 	 */
 	list_add(&nstmt->list, &ctx->rule->stmts);
-	return 0;
+out:
+	xfree(payload);
+	return ret;
 }
 
 static int stmt_evaluate_reject_inet_family(struct eval_ctx *ctx,

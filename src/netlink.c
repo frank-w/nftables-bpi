@@ -59,7 +59,8 @@ struct mnl_socket *netlink_open_sock(void)
 	if (nf_sock == NULL)
 		netlink_init_error();
 
-	fcntl(mnl_socket_get_fd(nf_sock), F_SETFL, O_NONBLOCK);
+	if (fcntl(mnl_socket_get_fd(nf_sock), F_SETFL, O_NONBLOCK))
+		netlink_init_error();
 
 	return nf_sock;
 }

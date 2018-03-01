@@ -472,14 +472,14 @@ static void netlink_parse_payload_stmt(struct netlink_parse_ctx *ctx,
 	offset = nftnl_expr_get_u32(nle, NFTNL_EXPR_PAYLOAD_OFFSET) * BITS_PER_BYTE;
 	len    = nftnl_expr_get_u32(nle, NFTNL_EXPR_PAYLOAD_LEN) * BITS_PER_BYTE;
 
-	expr = payload_expr_alloc(loc, NULL, 0);
-	payload_init_raw(expr, base, offset, len);
-
 	sreg = netlink_parse_register(nle, NFTNL_EXPR_PAYLOAD_SREG);
 	val  = netlink_get_register(ctx, loc, sreg);
 	if (val == NULL)
 		return netlink_error(ctx, loc,
 				     "payload statement has no expression");
+
+	expr = payload_expr_alloc(loc, NULL, 0);
+	payload_init_raw(expr, base, offset, len);
 
 	stmt = payload_stmt_alloc(loc, expr, val);
 
@@ -525,9 +525,11 @@ static void netlink_parse_exthdr(struct netlink_parse_ctx *ctx,
 
 		sreg = netlink_parse_register(nle, NFTNL_EXPR_EXTHDR_SREG);
 		val = netlink_get_register(ctx, loc, sreg);
-		if (val == NULL)
+		if (val == NULL) {
+			xfree(expr);
 			return netlink_error(ctx, loc,
 					     "exthdr statement has no expression");
+		}
 
 		expr_set_type(val, expr->dtype, expr->byteorder);
 
@@ -558,22 +560,27 @@ static void netlink_parse_hash(struct netlink_parse_ctx *ctx,
 		sreg = netlink_parse_register(nle, NFTNL_EXPR_HASH_SREG);
 		hexpr = netlink_get_register(ctx, loc, sreg);
 
-		if (hexpr == NULL)
-			return
+		if (hexpr == NULL) {
 			netlink_error(ctx, loc,
 				      "hash statement has no expression");
+			goto out_err;
+		}
 		len = nftnl_expr_get_u32(nle,
 					 NFTNL_EXPR_HASH_LEN) * BITS_PER_BYTE;
 		if (hexpr->len < len) {
+			xfree(hexpr);
 			hexpr = netlink_parse_concat_expr(ctx, loc, sreg, len);
 			if (hexpr == NULL)
-				return;
+				goto out_err;
 		}
 		expr->hash.expr = hexpr;
 	}
 
 	dreg = netlink_parse_register(nle, NFTNL_EXPR_HASH_DREG);
 	netlink_set_register(ctx, dreg, expr);
+	return;
+out_err:
+	xfree(expr);
 }
 
 static void netlink_parse_fib(struct netlink_parse_ctx *ctx,
@@ -855,10 +862,11 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 	reg1 = netlink_parse_register(nle, NFTNL_EXPR_NAT_REG_ADDR_MIN);
 	if (reg1) {
 		addr = netlink_get_register(ctx, loc, reg1);
-		if (addr == NULL)
-			return netlink_error(ctx, loc,
-					     "NAT statement has no address "
-					     "expression");
+		if (addr == NULL) {
+			netlink_error(ctx, loc,
+				      "NAT statement has no address expression");
+			goto out_err;
+		}
 
 		if (family == AF_INET)
 			expr_set_type(addr, &ipaddr_type, BYTEORDER_BIG_ENDIAN);
@@ -871,10 +879,11 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 	reg2 = netlink_parse_register(nle, NFTNL_EXPR_NAT_REG_ADDR_MAX);
 	if (reg2 && reg2 != reg1) {
 		addr = netlink_get_register(ctx, loc, reg2);
-		if (addr == NULL)
-			return netlink_error(ctx, loc,
-					     "NAT statement has no address "
-					     "expression");
+		if (addr == NULL) {
+			netlink_error(ctx, loc,
+				      "NAT statement has no address expression");
+			goto out_err;
+		}
 
 		if (family == AF_INET)
 			expr_set_type(addr, &ipaddr_type, BYTEORDER_BIG_ENDIAN);
@@ -889,10 +898,11 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 	reg1 = netlink_parse_register(nle, NFTNL_EXPR_NAT_REG_PROTO_MIN);
 	if (reg1) {
 		proto = netlink_get_register(ctx, loc, reg1);
-		if (proto == NULL)
-			return netlink_error(ctx, loc,
-					     "NAT statement has no proto "
-					     "expression");
+		if (proto == NULL) {
+			netlink_error(ctx, loc,
+				      "NAT statement has no proto expression");
+			goto out_err;
+		}
 
 		expr_set_type(proto, &inet_service_type, BYTEORDER_BIG_ENDIAN);
 		stmt->nat.proto = proto;
@@ -901,10 +911,11 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 	reg2 = netlink_parse_register(nle, NFTNL_EXPR_NAT_REG_PROTO_MAX);
 	if (reg2 && reg2 != reg1) {
 		proto = netlink_get_register(ctx, loc, reg2);
-		if (proto == NULL)
-			return netlink_error(ctx, loc,
-					     "NAT statement has no proto "
-					     "expression");
+		if (proto == NULL) {
+			netlink_error(ctx, loc,
+				      "NAT statement has no proto expression");
+			goto out_err;
+		}
 
 		expr_set_type(proto, &inet_service_type, BYTEORDER_BIG_ENDIAN);
 		if (stmt->nat.proto != NULL)
@@ -913,6 +924,9 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 	}
 
 	ctx->stmt = stmt;
+	return;
+out_err:
+	xfree(stmt);
 }
 
 static void netlink_parse_masq(struct netlink_parse_ctx *ctx,
@@ -933,10 +947,11 @@ static void netlink_parse_masq(struct netlink_parse_ctx *ctx,
 	reg1 = netlink_parse_register(nle, NFTNL_EXPR_MASQ_REG_PROTO_MIN);
 	if (reg1) {
 		proto = netlink_get_register(ctx, loc, reg1);
-		if (proto == NULL)
-			return netlink_error(ctx, loc,
-					     "MASQUERADE statement"
-					     "has no proto expression");
+		if (proto == NULL) {
+			netlink_error(ctx, loc,
+				      "MASQUERADE statement has no proto expression");
+			goto out_err;
+		}
 		expr_set_type(proto, &inet_service_type, BYTEORDER_BIG_ENDIAN);
 		stmt->masq.proto = proto;
 	}
@@ -944,10 +959,11 @@ static void netlink_parse_masq(struct netlink_parse_ctx *ctx,
 	reg2 = netlink_parse_register(nle, NFTNL_EXPR_MASQ_REG_PROTO_MAX);
 	if (reg2 && reg2 != reg1) {
 		proto = netlink_get_register(ctx, loc, reg2);
-		if (proto == NULL)
-			return netlink_error(ctx, loc,
-					     "MASQUERADE statement"
-					     "has no proto expression");
+		if (proto == NULL) {
+			netlink_error(ctx, loc,
+				      "MASQUERADE statement has no proto expression");
+			goto out_err;
+		}
 		expr_set_type(proto, &inet_service_type, BYTEORDER_BIG_ENDIAN);
 		if (stmt->masq.proto != NULL)
 			proto = range_expr_alloc(loc, stmt->masq.proto, proto);
@@ -955,6 +971,9 @@ static void netlink_parse_masq(struct netlink_parse_ctx *ctx,
 	}
 
 	ctx->stmt = stmt;
+	return;
+out_err:
+	xfree(stmt);
 }
 
 static void netlink_parse_redir(struct netlink_parse_ctx *ctx,
@@ -976,10 +995,11 @@ static void netlink_parse_redir(struct netlink_parse_ctx *ctx,
 	reg1 = netlink_parse_register(nle, NFTNL_EXPR_REDIR_REG_PROTO_MIN);
 	if (reg1) {
 		proto = netlink_get_register(ctx, loc, reg1);
-		if (proto == NULL)
-			return netlink_error(ctx, loc,
-					     "redirect statement has no proto "
-					     "expression");
+		if (proto == NULL) {
+			netlink_error(ctx, loc,
+				      "redirect statement has no proto expression");
+			goto out_err;
+		}
 
 		expr_set_type(proto, &inet_service_type, BYTEORDER_BIG_ENDIAN);
 		stmt->redir.proto = proto;
@@ -988,10 +1008,11 @@ static void netlink_parse_redir(struct netlink_parse_ctx *ctx,
 	reg2 = netlink_parse_register(nle, NFTNL_EXPR_REDIR_REG_PROTO_MAX);
 	if (reg2 && reg2 != reg1) {
 		proto = netlink_get_register(ctx, loc, reg2);
-		if (proto == NULL)
-			return netlink_error(ctx, loc,
-					     "redirect statement has no proto "
-					     "expression");
+		if (proto == NULL) {
+			netlink_error(ctx, loc,
+				      "redirect statement has no proto expression");
+			goto out_err;
+		}
 
 		expr_set_type(proto, &inet_service_type, BYTEORDER_BIG_ENDIAN);
 		if (stmt->redir.proto != NULL)
@@ -1001,6 +1022,9 @@ static void netlink_parse_redir(struct netlink_parse_ctx *ctx,
 	}
 
 	ctx->stmt = stmt;
+	return;
+out_err:
+	xfree(stmt);
 }
 
 static void netlink_parse_dup(struct netlink_parse_ctx *ctx,
@@ -1016,9 +1040,11 @@ static void netlink_parse_dup(struct netlink_parse_ctx *ctx,
 	reg1 = netlink_parse_register(nle, NFTNL_EXPR_DUP_SREG_ADDR);
 	if (reg1) {
 		addr = netlink_get_register(ctx, loc, reg1);
-		if (addr == NULL)
-			return netlink_error(ctx, loc,
-					     "DUP statement has no destination expression");
+		if (addr == NULL) {
+			netlink_error(ctx, loc,
+				      "DUP statement has no destination expression");
+			goto out_err;
+		}
 
 		switch (ctx->table->handle.family) {
 		case NFPROTO_IPV4:
@@ -1035,9 +1061,11 @@ static void netlink_parse_dup(struct netlink_parse_ctx *ctx,
 	reg2 = netlink_parse_register(nle, NFTNL_EXPR_DUP_SREG_DEV);
 	if (reg2) {
 		dev = netlink_get_register(ctx, loc, reg2);
-		if (dev == NULL)
-			return netlink_error(ctx, loc,
-					     "DUP statement has no output expression");
+		if (dev == NULL) {
+			netlink_error(ctx, loc,
+				      "DUP statement has no output expression");
+			goto out_err;
+		}
 
 		expr_set_type(dev, &ifindex_type, BYTEORDER_HOST_ENDIAN);
 		if (stmt->dup.to == NULL)
@@ -1047,6 +1075,9 @@ static void netlink_parse_dup(struct netlink_parse_ctx *ctx,
 	}
 
 	ctx->stmt = stmt;
+	return;
+out_err:
+	xfree(stmt);
 }
 
 static void netlink_parse_fwd(struct netlink_parse_ctx *ctx,
@@ -1062,15 +1093,20 @@ static void netlink_parse_fwd(struct netlink_parse_ctx *ctx,
 	reg1 = netlink_parse_register(nle, NFTNL_EXPR_FWD_SREG_DEV);
 	if (reg1) {
 		dev = netlink_get_register(ctx, loc, reg1);
-		if (dev == NULL)
-			return netlink_error(ctx, loc,
-					     "fwd statement has no output expression");
+		if (dev == NULL) {
+			netlink_error(ctx, loc,
+				      "fwd statement has no output expression");
+			goto out_err;
+		}
 
 		expr_set_type(dev, &ifindex_type, BYTEORDER_HOST_ENDIAN);
 		stmt->fwd.to = dev;
 	}
 
 	ctx->stmt = stmt;
+	return;
+out_err:
+	xfree(stmt);
 }
 
 static void netlink_parse_queue(struct netlink_parse_ctx *ctx,
@@ -1137,10 +1173,11 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 	dnle = nftnl_expr_get(nle, NFTNL_EXPR_DYNSET_EXPR, NULL);
 	if (dnle != NULL) {
 		if (netlink_parse_expr(dnle, ctx) < 0)
-			return;
-		if (ctx->stmt == NULL)
-			return netlink_error(ctx, loc,
-					     "Could not parse dynset stmt");
+			goto out_err;
+		if (ctx->stmt == NULL) {
+			netlink_error(ctx, loc, "Could not parse dynset stmt");
+			goto out_err;
+		}
 		dstmt = ctx->stmt;
 	}
 
@@ -1157,6 +1194,9 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 	}
 
 	ctx->stmt = stmt;
+	return;
+out_err:
+	xfree(expr);
 }
 
 static void netlink_parse_objref(struct netlink_parse_ctx *ctx,

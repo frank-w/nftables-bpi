@@ -38,20 +38,12 @@
 static struct nft_ctx *cli_nft;
 static char histfile[PATH_MAX];
 static char *multiline;
-static bool eof;
 
 static char *cli_append_multiline(char *line)
 {
+	size_t len = strlen(line);
 	bool complete = false;
-	size_t len;
 	char *s;
-
-	if (line == NULL && multiline == NULL) {
-		eof = true;
-		return NULL;
-	}
-
-	len = strlen(line);
 
 	if (len == 0)
 		return NULL;
@@ -155,7 +147,7 @@ int cli_init(struct nft_ctx *nft)
 	read_history(histfile);
 	history_set_pos(history_length);
 
-	while (!eof)
+	while (true)
 		rl_callback_read_char();
 	return 0;
 }

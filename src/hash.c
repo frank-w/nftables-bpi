@@ -36,7 +36,7 @@ static void hash_expr_print(const struct expr *expr, struct output_ctx *octx)
 
 static bool hash_expr_cmp(const struct expr *e1, const struct expr *e2)
 {
-	return (e1->hash.expr ||
+	return (!e1->hash.expr ||
 		expr_cmp(e1->hash.expr, e2->hash.expr)) &&
 	       e1->hash.mod == e2->hash.mod &&
 	       e1->hash.seed_set == e2->hash.seed_set &&

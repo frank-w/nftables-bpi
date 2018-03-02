@@ -1462,6 +1462,11 @@ map_block_alloc		:	/* empty */
 map_block		:	/* empty */	{ $$ = $<set>-1; }
 			|	map_block	common_block
 			|	map_block	stmt_separator
+			|	map_block	TIMEOUT		time_spec	stmt_separator
+			{
+				$1->timeout = $3 * 1000;
+				$$ = $1;
+			}
 			|	map_block	TYPE
 						data_type_expr	COLON	data_type_expr
 						stmt_separator

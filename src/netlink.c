@@ -589,43 +589,9 @@ void netlink_dump_chain(const struct nftnl_chain *nlc, struct netlink_ctx *ctx)
 	fprintf(fp, "\n");
 }
 
-static int netlink_add_chain_compat(struct netlink_ctx *ctx,
-				    const struct handle *h,
-				    const struct location *loc,
-				    const struct chain *chain, uint32_t flags)
-{
-	struct nftnl_chain *nlc;
-	int err;
-
-	nlc = alloc_nftnl_chain(h);
-	if (chain != NULL) {
-		if (chain->flags & CHAIN_F_BASECHAIN) {
-			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_HOOKNUM,
-					    chain->hooknum);
-			nftnl_chain_set_s32(nlc, NFTNL_CHAIN_PRIO,
-					    chain->priority);
-			nftnl_chain_set_str(nlc, NFTNL_CHAIN_TYPE,
-					    chain->type);
-		}
-		if (chain->policy != -1)
-			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_POLICY,
-					    chain->policy);
-	}
-
-	netlink_dump_chain(nlc, ctx);
-	err = mnl_nft_chain_add(ctx, nlc, flags);
-	nftnl_chain_free(nlc);
-
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not add chain: %s",
-				 strerror(errno));
-	return err;
-}
-
-static int netlink_add_chain_batch(struct netlink_ctx *ctx,
-				   const struct handle *h,
-				   const struct location *loc,
-				   const struct chain *chain, uint32_t flags)
+int netlink_add_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
+			    const struct location *loc,
+			    const struct chain *chain, uint32_t flags)
 {
 	struct nftnl_chain *nlc;
 	int err;
@@ -658,40 +624,10 @@ static int netlink_add_chain_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-int netlink_add_chain(struct netlink_ctx *ctx, const struct handle *h,
-		      const struct location *loc, const struct chain *chain,
-		      uint32_t flags)
-{
-	if (ctx->batch_supported)
-		return netlink_add_chain_batch(ctx, h, loc, chain, flags);
-	else
-		return netlink_add_chain_compat(ctx, h, loc, chain, flags);
-}
-
-static int netlink_rename_chain_compat(struct netlink_ctx *ctx,
-				       const struct handle *h,
-				       const struct location *loc,
-				       const char *name)
-{
-	struct nftnl_chain *nlc;
-	int err;
-
-	nlc = alloc_nftnl_chain(h);
-	nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME, name);
-	netlink_dump_chain(nlc, ctx);
-	err = mnl_nft_chain_add(ctx, nlc, 0);
-	nftnl_chain_free(nlc);
-
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not rename chain: %s",
-				 strerror(errno));
-	return err;
-}
-
-static int netlink_rename_chain_batch(struct netlink_ctx *ctx,
-				      const struct handle *h,
-				      const struct location *loc,
-				      const char *name)
+int netlink_rename_chain_batch(struct netlink_ctx *ctx,
+			       const struct handle *h,
+			       const struct location *loc,
+			       const char *name)
 {
 	struct nftnl_chain *nlc;
 	int err;
@@ -708,36 +644,8 @@ static int netlink_rename_chain_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-int netlink_rename_chain(struct netlink_ctx *ctx, const struct handle *h,
-			 const struct location *loc, const char *name)
-{
-	if (ctx->batch_supported)
-		return netlink_rename_chain_batch(ctx, h, loc, name);
-	else
-		return netlink_rename_chain_compat(ctx, h, loc, name);
-}
-
-static int netlink_del_chain_compat(struct netlink_ctx *ctx,
-				    const struct handle *h,
-				    const struct location *loc)
-{
-	struct nftnl_chain *nlc;
-	int err;
-
-	nlc = alloc_nftnl_chain(h);
-	netlink_dump_chain(nlc, ctx);
-	err = mnl_nft_chain_delete(ctx, nlc, 0);
-	nftnl_chain_free(nlc);
-
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete chain: %s",
-				 strerror(errno));
-	return err;
-}
-
-static int netlink_del_chain_batch(struct netlink_ctx *ctx,
-				   const struct handle *h,
-				   const struct location *loc)
+int netlink_delete_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
+			    const struct location *loc)
 {
 	struct nftnl_chain *nlc;
 	int err;
@@ -751,15 +659,6 @@ static int netlink_del_chain_batch(struct netlink_ctx *ctx,
 		netlink_io_error(ctx, loc, "Could not delete chain: %s",
 				 strerror(errno));
 	return err;
-}
-
-int netlink_delete_chain(struct netlink_ctx *ctx, const struct handle *h,
-			 const struct location *loc)
-{
-	if (ctx->batch_supported)
-		return netlink_del_chain_batch(ctx, h, loc);
-	else
-		return netlink_del_chain_compat(ctx, h, loc);
 }
 
 static struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
@@ -863,28 +762,9 @@ int netlink_flush_chain(struct netlink_ctx *ctx, const struct handle *h,
 	return netlink_del_rule_batch(ctx, h, loc);
 }
 
-static int netlink_add_table_compat(struct netlink_ctx *ctx,
-				    const struct handle *h,
-				    const struct location *loc,
-				    const struct table *table, uint32_t flags)
-{
-	struct nftnl_table *nlt;
-	int err;
-
-	nlt = alloc_nftnl_table(h);
-	err = mnl_nft_table_add(ctx, nlt, flags);
-	nftnl_table_free(nlt);
-
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not add table: %s",
-				 strerror(errno));
-	return err;
-}
-
-static int netlink_add_table_batch(struct netlink_ctx *ctx,
-				   const struct handle *h,
-				   const struct location *loc,
-				   const struct table *table, uint32_t flags)
+int netlink_add_table_batch(struct netlink_ctx *ctx, const struct handle *h,
+			    const struct location *loc,
+			    const struct table *table, uint32_t flags)
 {
 	struct nftnl_table *nlt;
 	int err;
@@ -904,36 +784,8 @@ static int netlink_add_table_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-int netlink_add_table(struct netlink_ctx *ctx, const struct handle *h,
-		      const struct location *loc,
-		      const struct table *table, uint32_t flags)
-{
-	if (ctx->batch_supported)
-		return netlink_add_table_batch(ctx, h, loc, table, flags);
-	else
-		return netlink_add_table_compat(ctx, h, loc, table, flags);
-}
-
-static int netlink_del_table_compat(struct netlink_ctx *ctx,
-				    const struct handle *h,
-				    const struct location *loc)
-{
-	struct nftnl_table *nlt;
-	int err;
-
-	nlt = alloc_nftnl_table(h);
-	err = mnl_nft_table_delete(ctx, nlt, 0);
-	nftnl_table_free(nlt);
-
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete table: %s",
-				 strerror(errno));
-	return err;
-}
-
-static int netlink_del_table_batch(struct netlink_ctx *ctx,
-				   const struct handle *h,
-				   const struct location *loc)
+int netlink_delete_table_batch(struct netlink_ctx *ctx, const struct handle *h,
+			    const struct location *loc)
 {
 	struct nftnl_table *nlt;
 	int err;
@@ -946,15 +798,6 @@ static int netlink_del_table_batch(struct netlink_ctx *ctx,
 		netlink_io_error(ctx, loc, "Could not delete table: %s",
 				 strerror(errno));
 	return err;
-}
-
-int netlink_delete_table(struct netlink_ctx *ctx, const struct handle *h,
-			 const struct location *loc)
-{
-	if (ctx->batch_supported)
-		return netlink_del_table_batch(ctx, h, loc);
-	else
-		return netlink_del_table_compat(ctx, h, loc);
 }
 
 static struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
@@ -1160,41 +1003,9 @@ static struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	return set;
 }
 
-static int netlink_add_set_compat(struct netlink_ctx *ctx,
-				  const struct handle *h, struct set *set,
-				  uint32_t flags)
-{
-	struct nftnl_set *nls;
-	int err;
-
-	nls = alloc_nftnl_set(h);
-	nftnl_set_set_u32(nls, NFTNL_SET_FLAGS, set->flags);
-	nftnl_set_set_u32(nls, NFTNL_SET_KEY_TYPE,
-			  dtype_map_to_kernel(set->key->dtype));
-	nftnl_set_set_u32(nls, NFTNL_SET_KEY_LEN,
-			  div_round_up(set->key->len, BITS_PER_BYTE));
-	if (set->flags & NFT_SET_MAP) {
-		nftnl_set_set_u32(nls, NFTNL_SET_DATA_TYPE,
-				  dtype_map_to_kernel(set->datatype));
-		nftnl_set_set_u32(nls, NFTNL_SET_DATA_LEN,
-				  set->datalen / BITS_PER_BYTE);
-	}
-	netlink_dump_set(nls, ctx);
-
-	err = mnl_nft_set_add(ctx, nls, NLM_F_ECHO | flags);
-	if (err < 0)
-		netlink_io_error(ctx, &set->location, "Could not add set: %s",
-				 strerror(errno));
-
-	set->handle.set = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_NAME));
-	nftnl_set_free(nls);
-
-	return err;
-}
-
-static int netlink_add_set_batch(struct netlink_ctx *ctx,
-				 const struct handle *h, struct set *set,
-				 uint32_t flags)
+int netlink_add_set_batch(struct netlink_ctx *ctx,
+			  const struct handle *h, struct set *set,
+			  uint32_t flags)
 {
 	struct nftnl_udata_buf *udbuf;
 	struct nftnl_set *nls;
@@ -1265,35 +1076,8 @@ static int netlink_add_set_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-int netlink_add_set(struct netlink_ctx *ctx, const struct handle *h,
-		    struct set *set, uint32_t flags)
-{
-	if (ctx->batch_supported)
-		return netlink_add_set_batch(ctx, h, set, flags);
-	else
-		return netlink_add_set_compat(ctx, h, set, flags);
-}
-
-static int netlink_del_set_compat(struct netlink_ctx *ctx,
-				  const struct handle *h,
-				  const struct location *loc)
-{
-	struct nftnl_set *nls;
-	int err;
-
-	nls = alloc_nftnl_set(h);
-	err = mnl_nft_set_delete(ctx, nls, 0);
-	nftnl_set_free(nls);
-
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete set: %s",
-				 strerror(errno));
-	return err;
-}
-
-static int netlink_del_set_batch(struct netlink_ctx *ctx,
-				 const struct handle *h,
-				 const struct location *loc)
+int netlink_delete_set_batch(struct netlink_ctx *ctx, const struct handle *h,
+			  const struct location *loc)
 {
 	struct nftnl_set *nls;
 	int err;
@@ -1306,15 +1090,6 @@ static int netlink_del_set_batch(struct netlink_ctx *ctx,
 		netlink_io_error(ctx, loc, "Could not delete set: %s",
 				 strerror(errno));
 	return err;
-}
-
-int netlink_delete_set(struct netlink_ctx *ctx, const struct handle *h,
-		       const struct location *loc)
-{
-	if (ctx->batch_supported)
-		return netlink_del_set_batch(ctx, h, loc);
-	else
-		return netlink_del_set_compat(ctx, h, loc);
 }
 
 static int list_set_cb(struct nftnl_set *nls, void *arg)
@@ -1359,9 +1134,8 @@ static void alloc_setelem_cache(const struct expr *set, struct nftnl_set *nls)
 	}
 }
 
-static int netlink_add_setelems_batch(struct netlink_ctx *ctx,
-				      const struct handle *h,
-				      const struct expr *expr, uint32_t flags)
+int netlink_add_setelems_batch(struct netlink_ctx *ctx, const struct handle *h,
+			       const struct expr *expr, uint32_t flags)
 {
 	struct nftnl_set *nls;
 	int err;
@@ -1379,38 +1153,8 @@ static int netlink_add_setelems_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-static int netlink_add_setelems_compat(struct netlink_ctx *ctx,
-				       const struct handle *h,
-				       const struct expr *expr, uint32_t flags)
-{
-	struct nftnl_set *nls;
-	int err;
-
-	nls = alloc_nftnl_set(h);
-	alloc_setelem_cache(expr, nls);
-	netlink_dump_set(nls, ctx);
-
-	err = mnl_nft_setelem_add(ctx, nls, flags);
-	nftnl_set_free(nls);
-	if (err < 0)
-		netlink_io_error(ctx, &expr->location,
-				 "Could not add set elements: %s",
-				 strerror(errno));
-	return err;
-}
-
-int netlink_add_setelems(struct netlink_ctx *ctx, const struct handle *h,
-			 const struct expr *expr, uint32_t flags)
-{
-	if (ctx->batch_supported)
-		return netlink_add_setelems_batch(ctx, h, expr, flags);
-	else
-		return netlink_add_setelems_compat(ctx, h, expr, flags);
-}
-
-static int netlink_del_setelems_batch(struct netlink_ctx *ctx,
-				      const struct handle *h,
-				      const struct expr *expr)
+int netlink_delete_setelems_batch(struct netlink_ctx *ctx,
+			       const struct handle *h, const struct expr *expr)
 {
 	struct nftnl_set *nls;
 	int err;
@@ -1421,26 +1165,6 @@ static int netlink_del_setelems_batch(struct netlink_ctx *ctx,
 	netlink_dump_set(nls, ctx);
 
 	err = mnl_nft_setelem_batch_del(nls, ctx->batch, 0, ctx->seqnum);
-	nftnl_set_free(nls);
-	if (err < 0)
-		netlink_io_error(ctx, &expr->location,
-				 "Could not delete set elements: %s",
-				 strerror(errno));
-	return err;
-}
-
-static int netlink_del_setelems_compat(struct netlink_ctx *ctx,
-				       const struct handle *h,
-				       const struct expr *expr)
-{
-	struct nftnl_set *nls;
-	int err;
-
-	nls = alloc_nftnl_set(h);
-	alloc_setelem_cache(expr, nls);
-	netlink_dump_set(nls, ctx);
-
-	err = mnl_nft_setelem_delete(ctx, nls, 0);
 	nftnl_set_free(nls);
 	if (err < 0)
 		netlink_io_error(ctx, &expr->location,
@@ -1620,15 +1344,6 @@ static int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 out:
 	compound_expr_add(set->init, expr);
 	return 0;
-}
-
-int netlink_delete_setelems(struct netlink_ctx *ctx, const struct handle *h,
-			    const struct expr *expr)
-{
-	if (ctx->batch_supported)
-		return netlink_del_setelems_batch(ctx, h, expr);
-	else
-		return netlink_del_setelems_compat(ctx, h, expr);
 }
 
 static int list_setelem_cb(struct nftnl_set_elem *nlse, void *arg)

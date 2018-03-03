@@ -771,8 +771,6 @@ common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
 			{
 				struct scope *scope = current_scope(state);
 
-				/* ignore missing identifier */
-				symbol_unbind(scope, $2);
 				symbol_bind(scope, $2, $4);
 				xfree($2);
 			}
@@ -2584,16 +2582,17 @@ match_stmt		:	relational_expr
 variable_expr		:	'$'	identifier
 			{
 				struct scope *scope = current_scope(state);
+				struct symbol *sym;
 
-				if (symbol_lookup(scope, $2) == NULL) {
+				sym = symbol_get(scope, $2);
+				if (!sym) {
 					erec_queue(error(&@2, "unknown identifier '%s'", $2),
 						   state->msgs);
 					xfree($2);
 					YYERROR;
 				}
 
-				$$ = symbol_expr_alloc(&@$, SYMBOL_DEFINE,
-						       scope, $2);
+				$$ = variable_expr_alloc(&@$, scope, sym);
 				xfree($2);
 			}
 			;

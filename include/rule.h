@@ -73,18 +73,21 @@ extern void scope_release(const struct scope *scope);
  * @list:	scope symbol list node
  * @identifier:	identifier
  * @expr:	initializer
+ * @refcnt:	reference counter
  */
 struct symbol {
 	struct list_head	list;
 	const char		*identifier;
 	struct expr		*expr;
+	int			refcnt;
 };
 
 extern void symbol_bind(struct scope *scope, const char *identifier,
 			struct expr *expr);
-extern int symbol_unbind(struct scope *scope, const char *identifier);
+extern int symbol_unbind(const struct scope *scope, const char *identifier);
 extern struct symbol *symbol_lookup(const struct scope *scope,
 				    const char *identifier);
+struct symbol *symbol_get(const struct scope *scope, const char *identifier);
 
 enum table_flags {
 	TABLE_F_DORMANT		= (1 << 0),

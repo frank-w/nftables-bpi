@@ -467,6 +467,7 @@ void scope_release(const struct scope *scope)
 	struct symbol *sym, *next;
 
 	list_for_each_entry_safe(sym, next, &scope->symbols, list) {
+		assert(sym->refcnt == 1);
 		list_del(&sym->list);
 		xfree(sym->identifier);
 		expr_free(sym->expr);
@@ -481,22 +482,48 @@ void symbol_bind(struct scope *scope, const char *identifier, struct expr *expr)
 	sym = xzalloc(sizeof(*sym));
 	sym->identifier = xstrdup(identifier);
 	sym->expr = expr;
+	sym->refcnt = 1;
 
-	list_add_tail(&sym->list, &scope->symbols);
+	list_add(&sym->list, &scope->symbols);
 }
 
-int symbol_unbind(struct scope *scope, const char *identifier)
+struct symbol *symbol_get(const struct scope *scope, const char *identifier)
 {
 	struct symbol *sym;
 
 	sym = symbol_lookup(scope, identifier);
 	if (!sym)
-		return -1;
+		return NULL;
 
+	sym->refcnt++;
+
+	return sym;
+}
+
+static void symbol_put(struct symbol *sym)
+{
+	if (--sym->refcnt == 0) {
+		xfree(sym->identifier);
+		expr_free(sym->expr);
+		xfree(sym);
+	}
+}
+
+static void symbol_remove(struct symbol *sym)
+{
 	list_del(&sym->list);
-	xfree(sym->identifier);
-	expr_free(sym->expr);
-	xfree(sym);
+	symbol_put(sym);
+}
+
+int symbol_unbind(const struct scope *scope, const char *identifier)
+{
+	struct symbol *sym, *next;
+
+	list_for_each_entry_safe(sym, next, &scope->symbols, list) {
+		if (!strcmp(sym->identifier, identifier))
+			symbol_remove(sym);
+	}
+
 	return 0;
 }
 

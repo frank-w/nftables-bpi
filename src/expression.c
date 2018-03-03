@@ -254,6 +254,45 @@ struct expr *symbol_expr_alloc(const struct location *loc,
 	return expr;
 }
 
+static void variable_expr_print(const struct expr *expr,
+				struct output_ctx *octx)
+{
+	nft_print(octx, "$%s", expr->sym->identifier);
+}
+
+static void variable_expr_clone(struct expr *new, const struct expr *expr)
+{
+	new->scope      = expr->scope;
+	new->sym	= expr->sym;
+
+	expr->sym->refcnt++;
+}
+
+static void variable_expr_destroy(struct expr *expr)
+{
+	expr->sym->refcnt--;
+}
+
+static const struct expr_ops variable_expr_ops = {
+	.type		= EXPR_VARIABLE,
+	.name		= "variable",
+	.print		= variable_expr_print,
+	.clone		= variable_expr_clone,
+	.destroy	= variable_expr_destroy,
+};
+
+struct expr *variable_expr_alloc(const struct location *loc,
+				 struct scope *scope, struct symbol *sym)
+{
+	struct expr *expr;
+
+	expr = expr_alloc(loc, &variable_expr_ops, &invalid_type,
+			  BYTEORDER_INVALID, 0);
+	expr->scope	 = scope;
+	expr->sym	 = sym;
+	return expr;
+}
+
 static void constant_expr_print(const struct expr *expr,
 				 struct output_ctx *octx)
 {

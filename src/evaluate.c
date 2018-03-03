@@ -168,7 +168,6 @@ static struct table *table_lookup_global(struct eval_ctx *ctx)
 static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 {
 	struct error_record *erec;
-	struct symbol *sym;
 	struct table *table;
 	struct set *set;
 	struct expr *new;
@@ -182,14 +181,6 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 			erec_queue(erec, ctx->msgs);
 			return -1;
 		}
-		break;
-	case SYMBOL_DEFINE:
-		sym = symbol_lookup((*expr)->scope, (*expr)->identifier);
-		if (sym == NULL)
-			return expr_error(ctx->msgs, *expr,
-					  "undefined identifier '%s'",
-					  (*expr)->identifier);
-		new = expr_clone(sym->expr);
 		break;
 	case SYMBOL_SET:
 		ret = cache_update(ctx->nf_sock, ctx->cache, ctx->cmd->op,
@@ -1776,6 +1767,16 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 	return expr_evaluate_primary(ctx, exprp);
 }
 
+static int expr_evaluate_variable(struct eval_ctx *ctx, struct expr **exprp)
+{
+	struct expr *new = expr_clone((*exprp)->sym->expr);
+
+	expr_free(*exprp);
+	*exprp = new;
+
+	return expr_evaluate(ctx, exprp);
+}
+
 static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 {
 	if (ctx->debug_mask & NFT_DEBUG_EVALUATION) {
@@ -1791,6 +1792,8 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 	switch ((*expr)->ops->type) {
 	case EXPR_SYMBOL:
 		return expr_evaluate_symbol(ctx, expr);
+	case EXPR_VARIABLE:
+		return expr_evaluate_variable(ctx, expr);
 	case EXPR_SET_REF:
 		return 0;
 	case EXPR_VALUE:

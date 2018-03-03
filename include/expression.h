@@ -16,6 +16,7 @@
  * @EXPR_INVALID:	uninitialized type, should not happen
  * @EXPR_VERDICT:	nftables verdict expression
  * @EXPR_SYMBOL:	unparsed symbol
+ * @EXPR_VARIABLE:	variable
  * @EXPR_VALUE:		literal numeric or string expression
  * @EXPR_PREFIX:	prefixed expression
  * @EXPR_RANGE:		literal range
@@ -41,6 +42,7 @@ enum expr_types {
 	EXPR_INVALID,
 	EXPR_VERDICT,
 	EXPR_SYMBOL,
+	EXPR_VARIABLE,
 	EXPR_VALUE,
 	EXPR_PREFIX,
 	EXPR_RANGE,
@@ -97,7 +99,6 @@ extern const char *expr_op_symbols[];
 
 enum symbol_types {
 	SYMBOL_VALUE,
-	SYMBOL_DEFINE,
 	SYMBOL_SET,
 };
 
@@ -224,6 +225,10 @@ struct expr {
 			const struct scope	*scope;
 			const char		*identifier;
 			enum symbol_types	symtype;
+		};
+		struct {
+			/* EXPR_VARIABLE */
+			struct symbol		*sym;
 		};
 		struct {
 			/* EXPR_VERDICT */
@@ -386,6 +391,9 @@ static inline void symbol_expr_set_type(struct expr *expr,
 	if (expr->ops->type == EXPR_SYMBOL)
 		expr->dtype = dtype;
 }
+
+struct expr *variable_expr_alloc(const struct location *loc,
+				 struct scope *scope, struct symbol *sym);
 
 extern struct expr *constant_expr_alloc(const struct location *loc,
 					const struct datatype *dtype,

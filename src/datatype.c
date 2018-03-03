@@ -854,21 +854,20 @@ enum {
 	SECS	= (1 << 3),
 };
 
-static uint32_t str2int(char *tmp, const char *c, int k)
+static uint32_t str2int(const char *str)
 {
-	if (k == 0)
-		return 0;
+	int ret, number;
 
-	strncpy(tmp, c-k, k+1);
-	return atoi(tmp);
+	ret = sscanf(str, "%d", &number);
+	return ret == 1 ? number : 0;
 }
 
 struct error_record *time_parse(const struct location *loc, const char *str,
 				uint64_t *res)
 {
+	unsigned int max_digits = strlen("12345678");
 	int i, len;
 	unsigned int k = 0;
-	char tmp[8];
 	const char *c;
 	uint64_t d = 0, h = 0, m = 0, s = 0;
 	uint32_t mask = 0;
@@ -882,7 +881,7 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 				return error(loc,
 					     "Day has been specified twice");
 
-			d = str2int(tmp, c, k);
+			d = str2int(c - k);
 			k = 0;
 			mask |= DAY;
 			break;
@@ -891,7 +890,7 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 				return error(loc,
 					     "Hour has been specified twice");
 
-			h = str2int(tmp, c, k);
+			h = str2int(c - k);
 			k = 0;
 			mask |= HOUR;
 			break;
@@ -900,7 +899,7 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 				return error(loc,
 					     "Minute has been specified twice");
 
-			m = str2int(tmp, c, k);
+			m = str2int(c - k);
 			k = 0;
 			mask |= MIN;
 			break;
@@ -909,7 +908,7 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 				return error(loc,
 					     "Second has been specified twice");
 
-			s = str2int(tmp, c, k);
+			s = str2int(c - k);
 			k = 0;
 			mask |= SECS;
 			break;
@@ -917,7 +916,7 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 			if (!isdigit(*c))
 				return error(loc, "wrong time format");
 
-			if (k++ >= array_size(tmp))
+			if (k++ >= max_digits)
 				return error(loc, "value too large");
 			break;
 		}

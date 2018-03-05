@@ -766,6 +766,8 @@ void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 			  chain->type, chain->hookstr,
 			  chain->priority, chain_policy2str(chain->policy));
 	}
+	if (octx->handle > 0)
+		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
 
 	nft_print(octx, "\n");
 }

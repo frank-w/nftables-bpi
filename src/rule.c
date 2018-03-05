@@ -888,9 +888,12 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 		chain_print(chain, octx);
 		delim = "\n";
 	}
+	nft_print(octx, "}");
+
 	if (octx->handle > 0)
 		nft_print(octx, " # handle %" PRIu64, table->handle.handle.id);
-	nft_print(octx, "}\n");
+
+	nft_print(octx, "\n");
 }
 
 struct cmd *cmd_alloc(enum cmd_ops op, enum cmd_obj obj,
@@ -1502,10 +1505,12 @@ static void obj_print_declaration(const struct obj *obj,
 
 	obj_print_data(obj, opts, octx);
 
-	nft_print(octx, "%s%s}%s", opts->nl, opts->tab, opts->nl);
+	nft_print(octx, "%s%s}", opts->nl, opts->tab);
 
 	if (octx->handle > 0)
-		nft_print(octx, "# handle %" PRIu64, obj->handle.handle.id);
+		nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+	nft_print(octx, "%s", opts->nl);
 }
 
 void obj_print(const struct obj *obj, struct output_ctx *octx)

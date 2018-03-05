@@ -9,7 +9,7 @@ fi
 trap "rm -rf $tmpfile" EXIT # cleanup if aborted
 
 echo "add table x
-add set x y { type ipv4_addr; size 128; timeout 30s; }"
+add set x y { type ipv4_addr; size 128; timeout 30s; }" > $tmpfile
 
 set -e
 $NFT -f $tmpfile

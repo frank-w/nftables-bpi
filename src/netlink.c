@@ -16,6 +16,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include <libnftnl/table.h>
 #include <libnftnl/trace.h>
@@ -1888,8 +1889,12 @@ static int netlink_events_table_cb(const struct nlmsghdr *nlh, int type,
 
 		family = nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY);
 
-		nft_mon_print(monh, "%s %s\n", family2str(family),
+		nft_mon_print(monh, "%s %s", family2str(family),
 		       nftnl_table_get_str(nlt, NFTNL_TABLE_NAME));
+		if (monh->ctx->octx->handle > 0)
+			nft_mon_print(monh, " # handle %" PRIu64 "",
+				      nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE));
+		nft_mon_print(monh, "\n");
 		break;
 	case NFTNL_OUTPUT_XML:
 	case NFTNL_OUTPUT_JSON:

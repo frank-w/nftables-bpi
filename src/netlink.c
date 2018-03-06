@@ -1371,6 +1371,7 @@ int netlink_get_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	int err;
 
 	nls = alloc_nftnl_set(h);
+	netlink_dump_set(nls, ctx);
 
 	err = mnl_nft_setelem_get(ctx, nls);
 	if (err < 0) {
@@ -1393,6 +1394,48 @@ int netlink_get_setelems(struct netlink_ctx *ctx, const struct handle *h,
 
 	if (set->flags & NFT_SET_INTERVAL)
 		interval_map_decompose(set->init);
+out:
+	if (err < 0)
+		netlink_io_error(ctx, loc, "Could not receive set elements: %s",
+				 strerror(errno));
+	return err;
+}
+
+int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
+			const struct location *loc, struct table *table,
+			struct set *set, struct expr *init)
+{
+	struct nftnl_set *nls, *nls_out = NULL;
+	int err = 0;
+
+	nls = alloc_nftnl_set(h);
+	alloc_setelem_cache(init, nls);
+
+	netlink_dump_set(nls, ctx);
+
+	nls_out = mnl_nft_setelem_get_one(ctx, nls);
+	if (!nls_out) {
+		nftnl_set_free(nls);
+		if (errno == EINTR)
+			return -1;
+
+		err = -1;
+		goto out;
+	}
+
+	ctx->set = set;
+	set->init = set_expr_alloc(loc, set);
+	nftnl_set_elem_foreach(nls_out, list_setelem_cb, ctx);
+
+	if (!(set->flags & NFT_SET_INTERVAL))
+		list_expr_sort(&ctx->set->init->expressions);
+
+	nftnl_set_free(nls);
+	nftnl_set_free(nls_out);
+	ctx->set = NULL;
+
+	if (set->flags & NFT_SET_INTERVAL)
+		get_set_decompose(table, set);
 out:
 	if (err < 0)
 		netlink_io_error(ctx, loc, "Could not receive set elements: %s",

@@ -433,6 +433,11 @@ extern int set_to_intervals(struct list_head *msgs, struct set *set,
 			    unsigned int debug_mask, bool merge);
 extern void interval_map_decompose(struct expr *set);
 
+extern struct expr *get_set_intervals(const struct set *set,
+				      const struct expr *init);
+struct table;
+extern void get_set_decompose(struct table *table, struct set *set);
+
 extern struct expr *mapping_expr_alloc(const struct location *loc,
 				       struct expr *from, struct expr *to);
 extern struct expr *map_expr_alloc(const struct location *loc,

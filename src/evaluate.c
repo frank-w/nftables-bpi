@@ -3146,6 +3146,34 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 	}
 }
 
+static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
+{
+	struct table *table;
+	struct set *set;
+	int ret;
+
+	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+	if (ret < 0)
+		return ret;
+
+	switch (cmd->obj) {
+	case CMD_OBJ_SETELEM:
+		table = table_lookup(&cmd->handle, ctx->cache);
+		if (table == NULL)
+			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
+					 cmd->handle.table);
+		set = set_lookup(table, cmd->handle.set);
+		if (set == NULL || set->flags & (NFT_SET_MAP | NFT_SET_EVAL))
+			return cmd_error(ctx, "Could not process rule: Set '%s' does not exist",
+					 cmd->handle.set);
+
+		return setelem_evaluate(ctx, &cmd->expr);
+	default:
+		BUG("invalid command object type %u\n", cmd->obj);
+	}
+}
+
 static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 				 uint32_t obj_type)
 {
@@ -3486,6 +3514,7 @@ static const char * const cmd_op_name[] = {
 	[CMD_CREATE]	= "create",
 	[CMD_INSERT]	= "insert",
 	[CMD_DELETE]	= "delete",
+	[CMD_GET]	= "get",
 	[CMD_LIST]	= "list",
 	[CMD_FLUSH]	= "flush",
 	[CMD_RENAME]	= "rename",
@@ -3523,6 +3552,8 @@ int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 		return cmd_evaluate_add(ctx, cmd);
 	case CMD_DELETE:
 		return cmd_evaluate_delete(ctx, cmd);
+	case CMD_GET:
+		return cmd_evaluate_get(ctx, cmd);
 	case CMD_LIST:
 		return cmd_evaluate_list(ctx, cmd);
 	case CMD_RESET:

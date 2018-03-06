@@ -79,6 +79,8 @@ int mnl_nft_setelem_batch_del(struct nftnl_set *nls, struct nftnl_batch *batch,
 int mnl_nft_setelem_batch_flush(struct nftnl_set *nls, struct nftnl_batch *batch,
 				unsigned int flags, uint32_t seqnum);
 int mnl_nft_setelem_get(struct netlink_ctx *ctx, struct nftnl_set *nls);
+struct nftnl_set *mnl_nft_setelem_get_one(struct netlink_ctx *ctx,
+					  struct nftnl_set *nls);
 
 struct nftnl_obj_list *mnl_nft_obj_dump(struct netlink_ctx *ctx, int family,
 					const char *table,

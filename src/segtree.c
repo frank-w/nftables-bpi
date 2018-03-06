@@ -578,6 +578,120 @@ int set_to_intervals(struct list_head *errs, struct set *set,
 	return 0;
 }
 
+static void set_elem_add(const struct set *set, struct expr *init, mpz_t value,
+			 uint32_t flags)
+{
+	struct expr *expr;
+
+	expr = constant_expr_alloc(&internal_location, set->key->dtype,
+				   set->key->byteorder, set->key->len, NULL);
+	mpz_set(expr->value, value);
+	expr = set_elem_expr_alloc(&internal_location, expr);
+	expr->flags = flags;
+
+	compound_expr_add(init, expr);
+}
+
+struct expr *get_set_intervals(const struct set *set, const struct expr *init)
+{
+	struct expr *new_init;
+	mpz_t low, high;
+	struct expr *i;
+
+	mpz_init2(low, set->key->len);
+	mpz_init2(high, set->key->len);
+
+	new_init = list_expr_alloc(&internal_location);
+
+	list_for_each_entry(i, &init->expressions, list) {
+		switch (i->key->ops->type) {
+		case EXPR_VALUE:
+			set_elem_add(set, new_init, i->key->value, i->flags);
+			break;
+		default:
+			range_expr_value_low(low, i);
+			set_elem_add(set, new_init, low, 0);
+			range_expr_value_high(high, i);
+			mpz_add_ui(high, high, 1);
+			set_elem_add(set, new_init, high, EXPR_F_INTERVAL_END);
+			break;
+		}
+	}
+
+	mpz_clear(low);
+	mpz_clear(high);
+
+	return new_init;
+}
+
+static struct expr *get_set_interval_end(const struct table *table,
+					 const char *set_name,
+					 struct expr *left)
+{
+	struct set *set;
+	mpz_t low, high;
+	struct expr *i;
+
+	set = set_lookup(table, set_name);
+	mpz_init2(low, set->key->len);
+	mpz_init2(high, set->key->len);
+
+	list_for_each_entry(i, &set->init->expressions, list) {
+		switch (i->key->ops->type) {
+		case EXPR_RANGE:
+			range_expr_value_low(low, i);
+			if (mpz_cmp(low, left->key->value) == 0) {
+				left = range_expr_alloc(&internal_location,
+							expr_clone(left->key),
+							expr_clone(i->key->right));
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	mpz_clear(low);
+	mpz_clear(high);
+
+	return left;
+}
+
+void get_set_decompose(struct table *table, struct set *set)
+{
+	struct expr *i, *next, *new;
+	struct expr *left = NULL;
+	struct expr *new_init;
+
+	new_init = set_expr_alloc(&internal_location, set);
+
+	list_for_each_entry_safe(i, next, &set->init->expressions, list) {
+		if (i->flags & EXPR_F_INTERVAL_END && left) {
+			list_del(&left->list);
+			list_del(&i->list);
+			mpz_sub_ui(i->key->value, i->key->value, 1);
+			new = range_expr_alloc(&internal_location, left, i);
+			compound_expr_add(new_init, new);
+			left = NULL;
+		} else {
+			if (left) {
+				left = get_set_interval_end(table,
+							    set->handle.set,
+							    left);
+				compound_expr_add(new_init, left);
+			}
+			left = i;
+		}
+	}
+	if (left) {
+		left = get_set_interval_end(table, set->handle.set, left);
+		compound_expr_add(new_init, left);
+	}
+
+	set->init = new_init;
+}
+
 static bool range_is_prefix(const mpz_t range)
 {
 	mpz_t tmp;

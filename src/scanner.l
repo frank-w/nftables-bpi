@@ -274,6 +274,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "create"		{ return CREATE; }
 "insert"		{ return INSERT; }
 "delete"		{ return DELETE; }
+"get"			{ return GET; }
 "list"			{ return LIST; }
 "reset"			{ return RESET; }
 "flush"			{ return FLUSH; }

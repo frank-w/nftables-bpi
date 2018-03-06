@@ -941,6 +941,37 @@ int mnl_nft_setelem_batch_del(struct nftnl_set *nls, struct nftnl_batch *batch,
 				     seqnum);
 }
 
+struct nftnl_set *mnl_nft_setelem_get_one(struct netlink_ctx *ctx,
+					  struct nftnl_set *nls_in)
+{
+	char buf[MNL_SOCKET_BUFFER_SIZE];
+	struct nftnl_set *nls_out;
+	struct nlmsghdr *nlh;
+	int err;
+
+	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETSETELEM,
+				    nftnl_set_get_u32(nls_in, NFTNL_SET_FAMILY),
+				    NLM_F_ACK, ctx->seqnum);
+	nftnl_set_elems_nlmsg_build_payload(nlh, nls_in);
+
+	nls_out = nftnl_set_alloc();
+	if (!nls_out)
+		return NULL;
+
+	nftnl_set_set_str(nls_out, NFTNL_SET_TABLE,
+			  nftnl_set_get_str(nls_in, NFTNL_SET_TABLE));
+	nftnl_set_set_str(nls_out, NFTNL_SET_NAME,
+			  nftnl_set_get_str(nls_in, NFTNL_SET_NAME));
+
+	err = nft_mnl_talk(ctx, nlh, nlh->nlmsg_len, set_elem_cb, nls_out);
+	if (err < 0) {
+		nftnl_set_free(nls_out);
+		return NULL;
+	}
+
+	return nls_out;
+}
+
 int mnl_nft_setelem_get(struct netlink_ctx *ctx, struct nftnl_set *nls)
 {
 	char buf[MNL_SOCKET_BUFFER_SIZE];
@@ -948,8 +979,8 @@ int mnl_nft_setelem_get(struct netlink_ctx *ctx, struct nftnl_set *nls)
 
 	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETSETELEM,
 				    nftnl_set_get_u32(nls, NFTNL_SET_FAMILY),
-				    NLM_F_DUMP|NLM_F_ACK, ctx->seqnum);
-	nftnl_set_nlmsg_build_payload(nlh, nls);
+				    NLM_F_DUMP | NLM_F_ACK, ctx->seqnum);
+	nftnl_set_elems_nlmsg_build_payload(nlh, nls);
 
 	return nft_mnl_talk(ctx, nlh, nlh->nlmsg_len, set_elem_cb, nls);
 }

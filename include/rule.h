@@ -255,6 +255,7 @@ struct set {
 extern struct set *set_alloc(const struct location *loc);
 extern struct set *set_get(struct set *set);
 extern void set_free(struct set *set);
+extern struct set *set_clone(const struct set *set);
 extern void set_add_hash(struct set *set, struct table *table);
 extern struct set *set_lookup(const struct table *table, const char *name);
 extern struct set *set_lookup_global(uint32_t family, const char *table,
@@ -353,6 +354,7 @@ void flowtable_print(const struct flowtable *n, struct output_ctx *octx);
  * @CMD_CREATE:		create object (exclusive)
  * @CMD_INSERT:		insert object
  * @CMD_DELETE:		delete object
+ * @CMD_GET:		get object
  * @CMD_LIST:		list container
  * @CMD_RESET:		reset container
  * @CMD_FLUSH:		flush container
@@ -369,6 +371,7 @@ enum cmd_ops {
 	CMD_CREATE,
 	CMD_INSERT,
 	CMD_DELETE,
+	CMD_GET,
 	CMD_LIST,
 	CMD_RESET,
 	CMD_FLUSH,

@@ -219,6 +219,7 @@ int nft_lex(void *, void *, void *);
 %token CREATE			"create"
 %token INSERT			"insert"
 %token DELETE			"delete"
+%token GET			"get"
 %token LIST			"list"
 %token RESET			"reset"
 %token FLUSH			"flush"
@@ -504,8 +505,8 @@ int nft_lex(void *, void *, void *);
 %type <cmd>			line
 %destructor { cmd_free($$); }	line
 
-%type <cmd>			base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
-%destructor { cmd_free($$); }	base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
+%type <cmd>			base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd get_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
+%destructor { cmd_free($$); }	base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd get_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 
 %type <handle>			table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
 %destructor { handle_free(&$$); } table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
@@ -843,6 +844,7 @@ base_cmd		:	/* empty */	add_cmd		{ $$ = $1; }
 			|	CREATE		create_cmd	{ $$ = $2; }
 			|	INSERT		insert_cmd	{ $$ = $2; }
 			|	DELETE		delete_cmd	{ $$ = $2; }
+			|	GET		get_cmd		{ $$ = $2; }
 			|	LIST		list_cmd	{ $$ = $2; }
 			|	RESET		reset_cmd	{ $$ = $2; }
 			|	FLUSH		flush_cmd	{ $$ = $2; }
@@ -1091,6 +1093,12 @@ delete_cmd		:	TABLE		table_spec
 			| 	LIMIT 		objid_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_LIMIT, &$2, &@$, NULL);
+			}
+			;
+
+get_cmd			:	ELEMENT		set_spec	set_block_expr
+			{
+				$$ = cmd_alloc(CMD_GET, CMD_OBJ_SETELEM, &$2, &@$, $3);
 			}
 			;
 

@@ -210,6 +210,26 @@ struct set *set_alloc(const struct location *loc)
 	return set;
 }
 
+struct set *set_clone(const struct set *set)
+{
+	struct set *new_set;
+
+	new_set			= set_alloc(NULL);
+	handle_merge(&new_set->handle, &set->handle);
+	new_set->flags		= set->flags;
+	new_set->gc_int		= set->gc_int;
+	new_set->timeout	= set->timeout;
+	new_set->key		= expr_clone(set->key);
+	new_set->datatype	= set->datatype;
+	new_set->datalen	= set->datalen;
+	new_set->objtype	= set->objtype;
+	new_set->policy		= set->policy;
+	new_set->automerge	= set->automerge;
+	new_set->desc.size	= set->desc.size;
+
+	return new_set;
+}
+
 struct set *set_get(struct set *set)
 {
 	set->refcnt++;
@@ -1772,6 +1792,14 @@ static int do_list_chains(struct netlink_ctx *ctx, struct cmd *cmd)
 	return 0;
 }
 
+static void __do_list_set(struct netlink_ctx *ctx, struct cmd *cmd,
+			  struct table *table, struct set *set)
+{
+	table_print_declaration(table, ctx->octx);
+	set_print(set, ctx->octx);
+	nft_print(ctx->octx, "}\n");
+}
+
 static int do_list_set(struct netlink_ctx *ctx, struct cmd *cmd,
 		       struct table *table)
 {
@@ -1781,9 +1809,7 @@ static int do_list_set(struct netlink_ctx *ctx, struct cmd *cmd,
 	if (set == NULL)
 		return -1;
 
-	table_print_declaration(table, ctx->octx);
-	set_print(set, ctx->octx);
-	nft_print(ctx->octx, "}\n");
+	__do_list_set(ctx, cmd, table, set);
 
 	return 0;
 }
@@ -1832,6 +1858,56 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 		return do_list_obj(ctx, cmd, NFT_OBJECT_LIMIT);
 	case CMD_OBJ_FLOWTABLES:
 		return do_list_flowtables(ctx, cmd);
+	default:
+		BUG("invalid command object type %u\n", cmd->obj);
+	}
+
+	return 0;
+}
+
+static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
+			   struct table *table)
+{
+	struct set *set, *new_set;
+	struct expr *init;
+	int err;
+
+	set = set_lookup(table, cmd->handle.set);
+
+	/* Create a list of elements based of what we got from command line. */
+	if (set->flags & NFT_SET_INTERVAL)
+		init = get_set_intervals(set, cmd->expr);
+	else
+		init = cmd->expr;
+
+	new_set = set_clone(set);
+
+	/* Fetch from kernel the elements that have been requested .*/
+	err = netlink_get_setelem(ctx, &cmd->handle, &cmd->location,
+				  table, new_set, init);
+	if (err < 0)
+		return err;
+
+	__do_list_set(ctx, cmd, table, new_set);
+
+	if (set->flags & NFT_SET_INTERVAL)
+		expr_free(init);
+
+	set_free(new_set);
+
+	return 0;
+}
+
+static int do_command_get(struct netlink_ctx *ctx, struct cmd *cmd)
+{
+	struct table *table = NULL;
+
+	if (cmd->handle.table != NULL)
+		table = table_lookup(&cmd->handle, ctx->cache);
+
+	switch (cmd->obj) {
+	case CMD_OBJ_SETELEM:
+		return do_get_setelems(ctx, cmd, table);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -2017,6 +2093,8 @@ int do_command(struct netlink_ctx *ctx, struct cmd *cmd)
 		return do_command_replace(ctx, cmd);
 	case CMD_DELETE:
 		return do_command_delete(ctx, cmd);
+	case CMD_GET:
+		return do_command_get(ctx, cmd);
 	case CMD_LIST:
 		return do_command_list(ctx, cmd);
 	case CMD_RESET:

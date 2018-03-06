@@ -167,6 +167,9 @@ extern int netlink_delete_setelems_batch(struct netlink_ctx *ctx, const struct h
 				   const struct expr *expr);
 extern int netlink_get_setelems(struct netlink_ctx *ctx, const struct handle *h,
 				const struct location *loc, struct set *set);
+extern int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
+			       const struct location *loc, struct table *table,
+			       struct set *set, struct expr *init);
 extern int netlink_flush_setelems(struct netlink_ctx *ctx, const struct handle *h,
 				  const struct location *loc);
 

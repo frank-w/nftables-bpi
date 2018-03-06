@@ -76,7 +76,7 @@ AM_COND_IF([BUILD_PDF], [
 ])
 
 PKG_CHECK_MODULES([LIBMNL], [libmnl >= 1.0.3])
-PKG_CHECK_MODULES([LIBNFTNL], [libnftnl >= 1.0.9])
+PKG_CHECK_MODULES([LIBNFTNL], [libnftnl >= 1.1.0])
 
 AC_ARG_WITH([mini-gmp], [AS_HELP_STRING([--with-mini-gmp],
             [Use builtin mini-gmp (for embedded builds)])], [],

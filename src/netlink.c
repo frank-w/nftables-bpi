@@ -1370,7 +1370,6 @@ int netlink_get_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	int err;
 
 	nls = alloc_nftnl_set(h);
-	netlink_dump_set(nls, ctx);
 
 	err = mnl_nft_setelem_get(ctx, nls);
 	if (err < 0) {

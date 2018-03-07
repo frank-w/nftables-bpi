@@ -108,6 +108,4 @@ int mnl_nft_event_listener(struct mnl_socket *nf_sock, unsigned int debug_mask,
 			   int (*cb)(const struct nlmsghdr *nlh, void *data),
 			   void *cb_data);
 
-bool mnl_batch_supported(struct mnl_socket *nf_sock, uint32_t *seqnum);
-
 #endif /* _NFTABLES_MNL_H_ */

@@ -52,7 +52,6 @@ struct netlink_ctx {
 	const void		*data;
 	uint32_t		seqnum;
 	struct nftnl_batch	*batch;
-	bool			batch_supported;
 	unsigned int		debug_mask;
 	struct output_ctx	*octx;
 	struct nft_cache	*cache;
@@ -246,8 +245,6 @@ struct netlink_mon_handler {
 
 extern int netlink_monitor(struct netlink_mon_handler *monhandler,
 			    struct mnl_socket *nf_sock);
-bool netlink_batch_supported(struct mnl_socket *nf_sock, uint32_t *seqnum);
-
 int netlink_echo_callback(const struct nlmsghdr *nlh, void *data);
 
 struct ruleset_parse {

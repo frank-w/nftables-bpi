@@ -1749,9 +1749,6 @@ int netlink_flush_ruleset(struct netlink_ctx *ctx, const struct handle *h,
 	struct nftnl_table *nlt;
 	int err;
 
-	if (!ctx->batch_supported)
-		return netlink_io_error(ctx, loc, "Operation not supported");
-
 	nlt = alloc_nftnl_table(h);
 	err = mnl_nft_table_batch_del(nlt, ctx->batch, 0, ctx->seqnum);
 	nftnl_table_free(nlt);
@@ -2343,9 +2340,4 @@ int netlink_markup_parse_cb(const struct nftnl_parse_ctx *ctx)
 				 "Could not import: %s", strerror(errno));
 
 	return 0;
-}
-
-bool netlink_batch_supported(struct mnl_socket *nf_sock, uint32_t *seqnum)
-{
-	return mnl_batch_supported(nf_sock, seqnum);
 }

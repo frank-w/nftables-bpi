@@ -27,7 +27,6 @@ static int nft_netlink(struct nft_ctx *nft,
 	struct cmd *cmd;
 	struct mnl_err *err, *tmp;
 	LIST_HEAD(err_list);
-	bool batch_supported = netlink_batch_supported(nf_sock, &seqnum);
 	int ret = 0;
 
 	if (list_empty(&state->cmds))
@@ -41,7 +40,6 @@ static int nft_netlink(struct nft_ctx *nft,
 		ctx.msgs = msgs;
 		ctx.seqnum = cmd->seqnum = mnl_seqnum_alloc(&seqnum);
 		ctx.batch = batch;
-		ctx.batch_supported = batch_supported;
 		ctx.octx = &nft->output;
 		ctx.nf_sock = nf_sock;
 		ctx.cache = &nft->cache;

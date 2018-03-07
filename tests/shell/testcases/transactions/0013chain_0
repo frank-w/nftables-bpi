@@ -27,17 +27,3 @@ if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2
         exit 1
 fi
-
-EXPECTED="table ip w {
-	chain y {
-		type filter hook output priority 0; policy accept;
-	}
-}"
-
-GET="$($NFT list ruleset)"
-
-if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
-	exit 1
-fi

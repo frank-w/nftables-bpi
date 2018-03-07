@@ -30,17 +30,3 @@ if [ $? -ne 0 ] ; then
         echo "E: unable to load ruleset" >&2
         exit 1
 fi
-
-EXPECTED="table ip x {
-	chain y {
-		ip saddr { 1.1.1.0/24, 2.2.2.0/24, 3.3.3.0/24 }
-	}
-}"
-
-GET="$($NFT list ruleset)"
-
-if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
-	exit 1
-fi

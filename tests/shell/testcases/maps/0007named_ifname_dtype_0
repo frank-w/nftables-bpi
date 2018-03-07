@@ -26,10 +26,3 @@ set -e
 echo "$EXPECTED" > $tmpfile
 $NFT -f $tmpfile
 
-GET="$($NFT list ruleset)"
-if [ "$EXPECTED" != "$GET" ] ; then
-        DIFF="$(which diff)"
-        [ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
-        exit 1
-fi
-

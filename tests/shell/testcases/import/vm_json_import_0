@@ -61,11 +61,3 @@ $NFT -f $tmpfile
 $NFT export vm json > $tmpfile
 $NFT flush ruleset
 cat $tmpfile | $NFT import vm json
-
-RESULT="$($NFT list ruleset)"
-
-
-if [ "$RULESET" != "$RESULT" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$RULESET") <(echo "$RESULT")
-fi

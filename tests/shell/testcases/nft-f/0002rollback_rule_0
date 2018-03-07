@@ -48,13 +48,3 @@ if [ $? -eq 0 ]	; then
 	echo "E: bogus ruleset loaded?" >&2
 	exit 1
 fi
-
-KERNEL_RULESET="$($NFT list ruleset -nn)"
-
-if [ "$GOOD_RULESET" != "$KERNEL_RULESET" ] ; then
-        DIFF="$(which diff)"
-        [ -x $DIFF ] && $DIFF -u <(echo "$GOOD_RULESET") <(echo "$KERNEL_RULESET")
-        exit 1
-fi
-
-exit 0

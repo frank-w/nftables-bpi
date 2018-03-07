@@ -1,0 +1,10 @@
+table inet t {
+	flowtable f {
+		hook ingress priority 10
+		devices = { eth0, wlan0 }
+	}
+
+	chain c {
+		flow offload @f
+	}
+}

@@ -32,17 +32,3 @@ add element x y $(generate)" > $tmpfile
 $NFT -f $tmpfile
 echo "delete element x y $(generate)" > $tmpfile
 $NFT -f $tmpfile
-
-
-EXPECTED="table ip x {
-	set y {
-		type ipv4_addr
-	}
-}"
-GET=$($NFT list ruleset)
-if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
-	exit 1
-fi
-

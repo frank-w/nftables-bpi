@@ -25,17 +25,3 @@ echo "add element x y { 10.0.${n}.0/24 : 10.0.0.${n} }" > $tmpfile
 
 $NFT -f $tmpfile
 
-EXPECTED="table ip x {
-	map y {
-		type ipv4_addr : ipv4_addr
-		flags interval
-		elements = { 10.0.1.0/24 : 10.0.0.1, 10.0.2.0/24 : 10.0.0.2 }
-	}
-}"
-GET=$($NFT list ruleset)
-if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
-	exit 1
-fi
-

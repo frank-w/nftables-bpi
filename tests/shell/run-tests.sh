@@ -4,6 +4,8 @@
 TESTDIR="./$(dirname $0)/"
 RETURNCODE_SEPARATOR="_"
 SRC_NFT="$(dirname $0)/../../src/nft"
+POSITIVE_RET=0
+DIFF=$(which diff)
 
 msg_error() {
 	echo "E: $1 ..." >&2
@@ -43,15 +45,21 @@ if [ ! -x "$MODPROBE" ] ; then
 	msg_error "no modprobe binary found"
 fi
 
+if [ "$1" == "-v" ] ; then
+	VERBOSE=y
+	shift
+fi
+
+if [ "$1" == "-g" ] ; then
+	DUMPGEN=y
+	shift
+fi
+
 if [ -x "$1" ] ; then
 	if grep ^.*${RETURNCODE_SEPARATOR}[0-9]\\+$ <<< $1 >/dev/null ; then
 		SINGLE=$1
 		VERBOSE=y
 	fi
-fi
-
-if [ "$1" == "-v" ] ; then
-	VERBOSE=y
 fi
 
 kernel_cleanup() {
@@ -97,9 +105,33 @@ do
 	echo -en "\033[1A\033[K" # clean the [EXECUTING] foobar line
 
 	if [ "$rc_got" == "$rc_spec" ] ; then
-		msg_info "[OK]		$testfile"
-		[ "$VERBOSE" == "y" ] && [ ! -z "$test_output" ] && echo "$test_output"
-		((ok++))
+		# check nft dump only for positive tests
+		rc_spec="${POSITIVE_RET}"
+		dumppath="$(dirname ${testfile})/dumps"
+		dumpfile="${dumppath}/$(basename ${testfile}).nft"
+		if [ "$rc_got" == "${POSITIVE_RET}" ] && [ -f ${dumpfile} ]; then
+			test_output=$(${DIFF} ${dumpfile} <(nft list ruleset) 2>&1)
+			rc_spec=$?
+		fi
+
+		if [ "$rc_spec" == "${POSITIVE_RET}" ]; then
+			msg_info "[OK]		$testfile"
+			[ "$VERBOSE" == "y" ] && [ ! -z "$test_output" ] && echo "$test_output"
+			((ok++))
+
+			if [ "$DUMPGEN" == "y" ] && [ "$rc_got" == "${POSITIVE_RET}" ] && [ ! -f "${dumpfile}" ]; then
+				mkdir -p "${dumppath}"
+				nft list ruleset > "${dumpfile}"
+			fi
+		else
+			((failed++))
+			if [ "$VERBOSE" == "y" ] ; then
+				msg_warn "[DUMP FAIL]	$testfile: dump diff detected"
+				[ ! -z "$test_output" ] && echo "$test_output"
+			else
+				msg_warn "[DUMP FAIL]	$testfile"
+			fi
+		fi
 	else
 		((failed++))
 		if [ "$VERBOSE" == "y" ] ; then

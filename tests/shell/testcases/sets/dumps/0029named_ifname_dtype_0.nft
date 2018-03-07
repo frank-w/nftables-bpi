@@ -1,0 +1,11 @@
+table inet t {
+	set s {
+		type ifname
+		elements = { "eth0" }
+	}
+
+	chain c {
+		iifname @s accept
+		oifname @s accept
+	}
+}

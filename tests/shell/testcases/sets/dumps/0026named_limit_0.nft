@@ -1,0 +1,10 @@
+table ip filter {
+	limit http-traffic {
+		rate 1/second
+	}
+
+	chain input {
+		type filter hook input priority 0; policy accept;
+		limit name tcp dport map { http : "http-traffic", https : "http-traffic" }
+	}
+}

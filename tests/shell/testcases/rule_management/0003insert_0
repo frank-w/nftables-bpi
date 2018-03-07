@@ -9,19 +9,3 @@ $NFT add chain t c
 $NFT insert rule t c accept
 $NFT insert rule t c drop
 $NFT insert rule t c masquerade
-
-EXPECTED="table ip t {
-	chain c {
-		masquerade
-		drop
-		accept
-	}
-}"
-
-GET="$($NFT list ruleset)"
-
-if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
-	exit 1
-fi

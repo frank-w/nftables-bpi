@@ -44,6 +44,7 @@ libnftables_la_SOURCES =			\
 		netlink.c			\
 		netlink_linearize.c		\
 		netlink_delinearize.c		\
+		monitor.c			\
 		segtree.c			\
 		rbtree.c			\
 		gmputil.c			\

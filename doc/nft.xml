@@ -913,6 +913,31 @@ table inet filter {
 	<refsect1>
 		<title>Sets</title>
 		<para>
+		nftables offers two kinds of set concepts.
+		Anonymous sets are sets that have no specific name.  The set members are enclosed in curly braces,
+		with commas to separate elements when creating the rule the set is used in.
+		Once that rule is removed, the set is removed as well.
+		They cannot be updated, i.e. once an anoymous set is declared it cannot be changed anymore except by
+		removing/altering the rule that uses the anonymous set.
+		<example>
+			<title>Using anyonymous sets to accept particular subnets and ports</title>
+			<programlisting>
+        nft add rule filter input ip saddr { 10.0.0.0/8, 192.168.0.0/16 } tcp dport { 22, 443 } accept
+			</programlisting>
+		</example>
+		Named sets are sets that need to be defined first before they can be referenced
+		in rules.  Unlike anonymous sets, elements can be added to or removed from a named set at any time.
+		Sets are referenced from rules using an <literal>@</literal> prefixed to the sets name.
+			<example>
+				<title>Using named sets to accept addressesand ports</title>
+				<programlisting>
+        nft add rule filter input ip saddr @allowed_hosts tcp dport @allowed_ports accept
+				</programlisting>
+			The sets <literal>allowed_hosts</literal> and <literal>allowed_ports</literal>need to
+			be created first.  The next section describes nft set syntax in more detail.
+			</example>
+		</para>
+		<para>
 			<cmdsynopsis>
 				<literal>add</literal>
 				<command> set</command>
@@ -1044,7 +1069,7 @@ table inet filter {
 					</row>
 					<row>
 						<entry>timeout</entry>
-						<entry>time an element stays in the set</entry>
+						<entry>time an element stays in the set, mandatory if set is added to from the packet path (ruleset).</entry>
 						<entry>string, decimal followed by unit. Units are: d, h, m, s</entry>
 					</row>
 					<row>
@@ -1059,7 +1084,7 @@ table inet filter {
 					</row>
 					<row>
 						<entry>size</entry>
-						<entry>maximun number of elements in the set</entry>
+						<entry>maximun number of elements in the set, mandatory if set is added to from the packet path (ruleset).</entry>
 						<entry>unsigned integer (64 bit)</entry>
 					</row>
 					<row>
@@ -5338,6 +5363,58 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 			</para>
 		</refsect2>
 
+		<refsect2>
+			<title>Set statement</title>
+			<para>
+				The set statement is used to dynamically add or update elements in a set from the packet path.
+				The set <literal>setname</literal> must already exist in the given table.
+				Furhermore, any set that will be dynamically updated from the nftables ruleset must specify
+				both a maximum set size (to prevent memory exhaustion) and a timeout (so that number of entries in
+				set will not grow indefinitely).
+				The set statement can be used to e.g. create dynamic blacklists.
+			</para>
+			<para>
+				<cmdsynopsis>
+						<command>set</command>
+						<group choice="req">
+							<arg>add</arg>
+							<arg>update</arg>
+						</group>
+						<replaceable>expression</replaceable>
+							<arg choice="opt">timeout <replaceable>timeout</replaceable></arg>
+							<arg choice="opt">comment<replaceable>string</replaceable></arg>
+						<replaceable>@setname</replaceable>
+				</cmdsynopsis>
+			</para>
+			<para>
+				<example>
+					<title>Example for simple blacklist</title>
+					<programlisting>
+    # declare a set, bound to table "filter", in family "ip".  Timeout and size are mandatory because we will add elements from packet path.
+    nft add set ip filter blackhole "{ type ipv4_addr; flags timeout; size 65536; }"
+
+    # whitelist internal interface.
+    nft add rule ip filter input meta iifname "internal" accept
+
+    # drop packets coming from blacklisted ip addresses.
+    nft add rule ip filter input ip saddr @blackhole counter drop
+
+    # add source ip addresses to the backlist if more than 10 tcp connection requests occured per second and ip address.
+    # entries will timeout after one minute, after which they might be re-added if limit condition persists.
+    nft add rule ip filter input tcp flags syn tcp dport ssh flow table flood { ip saddr timeout 10s limit rate over 10/second} set add ip saddr timeout 1m @blackhole drop
+
+    # inspect state of the rate limit meter:
+    nft list meter ip filter flood
+
+    # inspect content of blackhole:
+    nft list set ip filter blackhole
+
+    # manually add two addresses to the set:
+    nft add element filter blackhole { 10.2.3.4, 10.23.1.42 }
+					</programlisting>
+				</example>
+			</para>
+		</refsect2>
 	</refsect1>
 
 	<refsect1>

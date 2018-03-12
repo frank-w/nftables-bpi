@@ -1588,7 +1588,7 @@ int netlink_add_flowtable(struct netlink_ctx *ctx, const struct handle *h,
 		dev_array[i++] = expr->identifier;
 
 	dev_array[i] = NULL;
-	nftnl_flowtable_set_array(flo, NFTNL_FLOWTABLE_DEVICES, dev_array);
+	nftnl_flowtable_set(flo, NFTNL_FLOWTABLE_DEVICES, dev_array);
 
 	netlink_dump_flowtable(flo, ctx);
 
@@ -1678,7 +1678,7 @@ netlink_delinearize_flowtable(struct netlink_ctx *ctx,
 			      struct nftnl_flowtable *nlo)
 {
 	struct flowtable *flowtable;
-	const char **dev_array;
+	const char * const *dev_array;
 	int len = 0, i;
 
 	flowtable = flowtable_alloc(&netlink_location);
@@ -1688,8 +1688,8 @@ netlink_delinearize_flowtable(struct netlink_ctx *ctx,
 		xstrdup(nftnl_flowtable_get_str(nlo, NFTNL_FLOWTABLE_TABLE));
 	flowtable->handle.flowtable =
 		xstrdup(nftnl_flowtable_get_str(nlo, NFTNL_FLOWTABLE_NAME));
-	dev_array = nftnl_flowtable_get_array(nlo, NFTNL_FLOWTABLE_DEVICES);
-	while (dev_array[len] != '\0')
+	dev_array = nftnl_flowtable_get(nlo, NFTNL_FLOWTABLE_DEVICES);
+	while (dev_array[len])
 		len++;
 
 	flowtable->dev_array = calloc(1, len * sizeof(char *));

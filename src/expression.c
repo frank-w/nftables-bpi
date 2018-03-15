@@ -496,8 +496,6 @@ const char *expr_op_symbols[] = {
 	[OP_GT]		= ">",
 	[OP_LTE]	= "<=",
 	[OP_GTE]	= ">=",
-	[OP_RANGE]	= "within range",
-	[OP_LOOKUP]	= NULL,
 };
 
 static void unary_expr_print(const struct expr *expr, struct output_ctx *octx)
@@ -562,10 +560,6 @@ static void binop_arg_print(const struct expr *op, const struct expr *arg,
 
 static bool must_print_eq_op(const struct expr *expr)
 {
-	if (expr->right->dtype->basetype != NULL &&
-	    expr->right->dtype->basetype->type == TYPE_BITMASK)
-		return true;
-
 	return expr->left->ops->type == EXPR_BINOP;
 }
 
@@ -645,7 +639,7 @@ void relational_expr_pctx_update(struct proto_ctx *ctx,
 	const struct expr *left = expr->left;
 
 	assert(expr->ops->type == EXPR_RELATIONAL);
-	assert(expr->op == OP_EQ);
+	assert(expr->op == OP_EQ || expr->op == OP_IMPLICIT);
 
 	if (left->ops->pctx_update &&
 	    (left->flags & EXPR_F_PROTOCOL))

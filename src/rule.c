@@ -2130,6 +2130,16 @@ static int payload_match_stmt_cmp(const void *p1, const void *p2)
 	return e1->left->payload.offset - e2->left->payload.offset;
 }
 
+static bool relational_ops_match(const struct expr *e1, const struct expr *e2)
+{
+	enum ops op1, op2;
+
+	op1 = e1->op == OP_IMPLICIT ? OP_EQ : e1->op;
+	op2 = e2->op == OP_IMPLICIT ? OP_EQ : e2->op;
+
+	return op1 == op2;
+}
+
 static void payload_do_merge(struct stmt *sa[], unsigned int n)
 {
 	struct expr *last, *this, *expr1, *expr2;
@@ -2144,7 +2154,7 @@ static void payload_do_merge(struct stmt *sa[], unsigned int n)
 		this = stmt->expr;
 
 		if (!payload_can_merge(last->left, this->left) ||
-		    last->op != this->op) {
+		    !relational_ops_match(last, this)) {
 			last = this;
 			j = i;
 			continue;
@@ -2227,6 +2237,7 @@ static void payload_try_merge(const struct rule *rule)
 			continue;
 		switch (stmt->expr->op) {
 		case OP_EQ:
+		case OP_IMPLICIT:
 		case OP_NEQ:
 			break;
 		default:

@@ -297,6 +297,7 @@ static enum nft_cmp_ops netlink_gen_cmp_op(enum ops op)
 {
 	switch (op) {
 	case OP_EQ:
+	case OP_IMPLICIT:
 		return NFT_CMP_EQ;
 	case OP_NEQ:
 		return NFT_CMP_NEQ;
@@ -316,6 +317,9 @@ static enum nft_cmp_ops netlink_gen_cmp_op(enum ops op)
 static void netlink_gen_range(struct netlink_linearize_ctx *ctx,
 			      const struct expr *expr,
 			      enum nft_registers dreg);
+static void netlink_gen_flagcmp(struct netlink_linearize_ctx *ctx,
+				const struct expr *expr,
+				enum nft_registers dreg);
 
 static struct expr *netlink_gen_prefix(struct netlink_linearize_ctx *ctx,
 				       const struct expr *expr,
@@ -362,6 +366,8 @@ static void netlink_gen_cmp(struct netlink_linearize_ctx *ctx,
 	case EXPR_SET:
 	case EXPR_SET_REF:
 		return netlink_gen_lookup(ctx, expr, dreg);
+	case EXPR_LIST:
+		return netlink_gen_flagcmp(ctx, expr, dreg);
 	case EXPR_PREFIX:
 		sreg = get_register(ctx, expr->left);
 		if (expr_basetype(expr->left)->type != TYPE_STRING) {
@@ -376,6 +382,11 @@ static void netlink_gen_cmp(struct netlink_linearize_ctx *ctx,
 		}
 		break;
 	default:
+		if (expr->op == OP_IMPLICIT &&
+		    expr->right->dtype->basetype != NULL &&
+		    expr->right->dtype->basetype->type == TYPE_BITMASK)
+			return netlink_gen_flagcmp(ctx, expr, dreg);
+
 		sreg = get_register(ctx, expr->left);
 		len = div_round_up(expr->right->len, BITS_PER_BYTE);
 		right = expr->right;
@@ -421,8 +432,8 @@ static void netlink_gen_range(struct netlink_linearize_ctx *ctx,
 			       nld.value, nld.len);
 		nftnl_rule_add_expr(ctx->nlr, nle);
 		break;
-	case OP_RANGE:
 	case OP_EQ:
+	case OP_IMPLICIT:
 		nle = alloc_nft_expr("cmp");
 		netlink_put_register(nle, NFTNL_EXPR_CMP_SREG, sreg);
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_CMP_OP,
@@ -491,6 +502,7 @@ static void netlink_gen_relational(struct netlink_linearize_ctx *ctx,
 				   enum nft_registers dreg)
 {
 	switch (expr->op) {
+	case OP_IMPLICIT:
 	case OP_EQ:
 	case OP_NEQ:
 	case OP_LT:
@@ -498,12 +510,6 @@ static void netlink_gen_relational(struct netlink_linearize_ctx *ctx,
 	case OP_LTE:
 	case OP_GTE:
 		return netlink_gen_cmp(ctx, expr, dreg);
-	case OP_RANGE:
-		return netlink_gen_range(ctx, expr, dreg);
-	case OP_FLAGCMP:
-		return netlink_gen_flagcmp(ctx, expr, dreg);
-	case OP_LOOKUP:
-		return netlink_gen_lookup(ctx, expr, dreg);
 	default:
 		BUG("invalid relational operation %u\n", expr->op);
 	}

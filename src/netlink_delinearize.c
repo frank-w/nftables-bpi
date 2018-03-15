@@ -323,7 +323,7 @@ static void netlink_parse_lookup(struct netlink_parse_ctx *ctx,
 		if (dreg != NFT_REG_VERDICT)
 			return netlink_set_register(ctx, dreg, expr);
 	} else {
-		expr = relational_expr_alloc(loc, OP_LOOKUP, left, right);
+		expr = relational_expr_alloc(loc, OP_EQ, left, right);
 	}
 
 	if (nftnl_expr_is_set(nle, NFTNL_EXPR_LOOKUP_FLAGS)) {
@@ -1524,9 +1524,14 @@ static void ct_meta_common_postprocess(struct rule_pp_ctx *ctx,
 	const struct expr *left = expr->left;
 	struct expr *right = expr->right;
 
+	if (right->ops->type == EXPR_SET || right->ops->type == EXPR_SET_REF)
+		expr_set_type(right, left->dtype, left->byteorder);
+
 	switch (expr->op) {
 	case OP_EQ:
-		if (expr->right->ops->type == EXPR_RANGE)
+		if (expr->right->ops->type == EXPR_RANGE ||
+		    expr->right->ops->type == EXPR_SET ||
+		    expr->right->ops->type == EXPR_SET_REF)
 			break;
 
 		relational_expr_pctx_update(&ctx->pctx, expr);
@@ -1543,14 +1548,6 @@ static void ct_meta_common_postprocess(struct rule_pp_ctx *ctx,
 				payload_dependency_store(&ctx->pdctx, ctx->stmt, base);
 		}
 		break;
-	case OP_NEQ:
-		if (right->ops->type != EXPR_SET && right->ops->type != EXPR_SET_REF)
-			break;
-		/* fall through */
-	case OP_LOOKUP:
-		expr_set_type(right, left->dtype, left->byteorder);
-		break;
-
 	default:
 		break;
 	}
@@ -1729,13 +1726,13 @@ static void relational_binop_postprocess(struct rule_pp_ctx *ctx, struct expr *e
 		/* Flag comparison: data & flags != 0
 		 *
 		 * Split the flags into a list of flag values and convert the
-		 * op to OP_FLAGCMP.
+		 * op to OP_EQ.
 		 */
 		expr_free(value);
 
 		expr->left  = expr_get(binop->left);
 		expr->right = binop_tree_to_list(NULL, binop->right);
-		expr->op    = OP_FLAGCMP;
+		expr->op    = OP_EQ;
 
 		expr_free(binop);
 	} else if (binop->left->dtype->flags & DTYPE_F_PREFIX &&

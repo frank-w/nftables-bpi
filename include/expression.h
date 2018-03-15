@@ -85,12 +85,6 @@ enum ops {
 	OP_GT,
 	OP_LTE,
 	OP_GTE,
-	/* Range comparison */
-	OP_RANGE,
-	/* Flag comparison */
-	OP_FLAGCMP,
-	/* Set lookup */
-	OP_LOOKUP,
 	__OP_MAX
 };
 #define OP_MAX		(__OP_MAX - 1)

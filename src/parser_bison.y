@@ -3185,7 +3185,7 @@ relational_expr		:	expr	/* implicit */	rhs_expr
 			}
 			|	expr	/* implicit */	list_rhs_expr
 			{
-				$$ = relational_expr_alloc(&@$, OP_FLAGCMP, $1, $2);
+				$$ = relational_expr_alloc(&@$, OP_IMPLICIT, $1, $2);
 			}
 			|	expr	relational_op	rhs_expr
 			{

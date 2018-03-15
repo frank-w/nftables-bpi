@@ -1565,28 +1565,6 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 		return -1;
 	right = rel->right;
 
-	if (rel->op == OP_IMPLICIT) {
-		switch (right->ops->type) {
-		case EXPR_RANGE:
-			rel->op = OP_RANGE;
-			break;
-		case EXPR_SET:
-		case EXPR_SET_REF:
-			rel->op = OP_LOOKUP;
-			break;
-		case EXPR_LIST:
-			rel->op = OP_FLAGCMP;
-			break;
-		default:
-			if (right->dtype->basetype != NULL &&
-			    right->dtype->basetype->type == TYPE_BITMASK)
-				rel->op = OP_FLAGCMP;
-			else
-				rel->op = OP_EQ;
-			break;
-		}
-	}
-
 	if (!expr_is_constant(right))
 		return expr_binary_error(ctx->msgs, right, rel,
 					 "Right hand side of relational "
@@ -1598,56 +1576,34 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 					 "constant value",
 					 expr_op_symbols[rel->op]);
 
-	switch (rel->op) {
-	case OP_LOOKUP:
-		/* A literal set expression implicitly declares the set */
-		if (right->ops->type == EXPR_SET)
-			right = rel->right =
-				implicit_set_declaration(ctx, "__set%d",
-							 left, right);
-		else if (!datatype_equal(left->dtype, right->dtype))
-			return expr_binary_error(ctx->msgs, right, left,
-						 "datatype mismatch, expected %s, "
-						 "set has type %s",
-						 left->dtype->desc,
-						 right->dtype->desc);
+	if (!datatype_equal(left->dtype, right->dtype))
+		return expr_binary_error(ctx->msgs, right, left,
+					 "datatype mismatch, expected %s, "
+					 "expression has type %s",
+					 left->dtype->desc,
+					 right->dtype->desc);
 
-		/* Data for range lookups needs to be in big endian order */
-		if (right->set->flags & NFT_SET_INTERVAL &&
-		    byteorder_conversion(ctx, &rel->left,
-					 BYTEORDER_BIG_ENDIAN) < 0)
-			return -1;
-		left = rel->left;
-		break;
+	switch (rel->op) {
 	case OP_EQ:
-		if (!datatype_equal(left->dtype, right->dtype))
-			return expr_binary_error(ctx->msgs, right, left,
-						 "datatype mismatch, expected %s, "
-						 "expression has type %s",
-						 left->dtype->desc,
-						 right->dtype->desc);
+	case OP_IMPLICIT:
 		/*
 		 * Update protocol context for payload and meta iiftype
 		 * equality expressions.
 		 */
-		relational_expr_pctx_update(&ctx->pctx, rel);
-
-		if (left->ops->type == EXPR_CONCAT)
-			return 0;
+		if (expr_is_singleton(right))
+			relational_expr_pctx_update(&ctx->pctx, rel);
 
 		/* fall through */
 	case OP_NEQ:
-	case OP_FLAGCMP:
-		if (!datatype_equal(left->dtype, right->dtype))
-			return expr_binary_error(ctx->msgs, right, left,
-						 "datatype mismatch, expected %s, "
-						 "expression has type %s",
-						 left->dtype->desc,
-						 right->dtype->desc);
-
 		switch (right->ops->type) {
 		case EXPR_RANGE:
-			goto range;
+			if (byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)
+				return -1;
+			if (byteorder_conversion(ctx, &right->left, BYTEORDER_BIG_ENDIAN) < 0)
+				return -1;
+			if (byteorder_conversion(ctx, &right->right, BYTEORDER_BIG_ENDIAN) < 0)
+				return -1;
+			break;
 		case EXPR_PREFIX:
 			if (byteorder_conversion(ctx, &right->prefix, left->byteorder) < 0)
 				return -1;
@@ -1657,12 +1613,10 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 				return -1;
 			break;
 		case EXPR_SET:
-			assert(rel->op == OP_NEQ);
 			right = rel->right =
 				implicit_set_declaration(ctx, "__set%d", left, right);
 			/* fall through */
 		case EXPR_SET_REF:
-			assert(rel->op == OP_NEQ);
 			/* Data for range lookups needs to be in big endian order */
 			if (right->set->flags & NFT_SET_INTERVAL &&
 			    byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)
@@ -1676,13 +1630,6 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 	case OP_GT:
 	case OP_LTE:
 	case OP_GTE:
-		if (!datatype_equal(left->dtype, right->dtype))
-			return expr_binary_error(ctx->msgs, right, left,
-						 "datatype mismatch, expected %s, "
-						 "expression has type %s",
-						 left->dtype->desc,
-						 right->dtype->desc);
-
 		switch (left->ops->type) {
 		case EXPR_CONCAT:
 			return expr_binary_error(ctx->msgs, left, rel,
@@ -1704,33 +1651,6 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 		if (byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)
 			return -1;
 		if (byteorder_conversion(ctx, &rel->right, BYTEORDER_BIG_ENDIAN) < 0)
-			return -1;
-		break;
-	case OP_RANGE:
-		if (!datatype_equal(left->dtype, right->dtype))
-			return expr_binary_error(ctx->msgs, right, left,
-						 "datatype mismatch, expected %s, "
-						 "expression has type %s",
-						 left->dtype->desc,
-						 right->dtype->desc);
-
-range:
-		switch (left->ops->type) {
-		case EXPR_CONCAT:
-			return expr_binary_error(ctx->msgs, left, rel,
-					"Relational expression (%s) is undefined"
-				        "for %s expressions",
-					expr_op_symbols[rel->op],
-					left->ops->name);
-		default:
-			break;
-		}
-
-		if (byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)
-			return -1;
-		if (byteorder_conversion(ctx, &right->left, BYTEORDER_BIG_ENDIAN) < 0)
-			return -1;
-		if (byteorder_conversion(ctx, &right->right, BYTEORDER_BIG_ENDIAN) < 0)
 			return -1;
 		break;
 	default:

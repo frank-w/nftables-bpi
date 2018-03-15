@@ -615,9 +615,9 @@ static const char * const set_stmt_op_names[] = {
 
 static void set_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	nft_print(octx, "set %s ", set_stmt_op_names[stmt->set.op]);
+	nft_print(octx, "%s set { ", set_stmt_op_names[stmt->set.op]);
 	expr_print(stmt->set.key, octx);
-	nft_print(octx, " ");
+	nft_print(octx, "} ");
 	expr_print(stmt->set.set, octx);
 }
 

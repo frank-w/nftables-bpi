@@ -110,7 +110,7 @@ do
 		dumppath="$(dirname ${testfile})/dumps"
 		dumpfile="${dumppath}/$(basename ${testfile}).nft"
 		if [ "$rc_got" == "${POSITIVE_RET}" ] && [ -f ${dumpfile} ]; then
-			test_output=$(${DIFF} ${dumpfile} <(nft list ruleset) 2>&1)
+			test_output=$(${DIFF} ${dumpfile} <($NFT list ruleset) 2>&1)
 			rc_spec=$?
 		fi
 

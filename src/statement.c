@@ -639,6 +639,34 @@ struct stmt *set_stmt_alloc(const struct location *loc)
 	return stmt_alloc(loc, &set_stmt_ops);
 }
 
+static void map_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
+{
+	nft_print(octx, "%s map { ", set_stmt_op_names[stmt->map.op]);
+	expr_print(stmt->map.map->map->key, octx);
+	nft_print(octx, " : ");
+	expr_print(stmt->map.map->mappings, octx);
+	nft_print(octx, " } ");
+	expr_print(stmt->map.set, octx);
+}
+
+static void map_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->map.map);
+	expr_free(stmt->map.set);
+}
+
+static const struct stmt_ops map_stmt_ops = {
+	.type		= STMT_MAP,
+	.name		= "map",
+	.print		= map_stmt_print,
+	.destroy	= map_stmt_destroy,
+};
+
+struct stmt *map_stmt_alloc(const struct location *loc)
+{
+	return stmt_alloc(loc, &map_stmt_ops);
+}
+
 static void dup_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	nft_print(octx, "dup");

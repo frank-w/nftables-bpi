@@ -1234,6 +1234,33 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
+static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
+				 const struct stmt *stmt)
+{
+	struct nftnl_expr *nle;
+	enum nft_registers sreg_key;
+	enum nft_registers sreg_data;
+
+	sreg_key = get_register(ctx, stmt->map.map->map->key);
+	netlink_gen_expr(ctx, stmt->map.map->map->key, sreg_key);
+
+	sreg_data = get_register(ctx, stmt->map.map->mappings);
+	netlink_gen_expr(ctx, stmt->map.map->mappings, sreg_data);
+
+	release_register(ctx, stmt->map.map->map->key);
+	release_register(ctx, stmt->map.map->mappings);
+
+	nle = alloc_nft_expr("dynset");
+	netlink_put_register(nle, NFTNL_EXPR_DYNSET_SREG_KEY, sreg_key);
+	netlink_put_register(nle, NFTNL_EXPR_DYNSET_SREG_DATA, sreg_data);
+
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_OP, stmt->map.op);
+	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, stmt->map.set->identifier);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, stmt->map.set->set->handle.set_id);
+
+	nftnl_rule_add_expr(ctx->nlr, nle);
+}
+
 static void netlink_gen_meter_stmt(struct netlink_linearize_ctx *ctx,
 				   const struct stmt *stmt)
 {
@@ -1315,6 +1342,8 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_flow_offload_stmt(ctx, stmt);
 	case STMT_OBJREF:
 		return netlink_gen_objref_stmt(ctx, stmt);
+	case STMT_MAP:
+		return netlink_gen_map_stmt(ctx, stmt);
 	default:
 		BUG("unknown statement type %s\n", stmt->ops->name);
 	}

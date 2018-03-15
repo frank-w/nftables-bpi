@@ -171,6 +171,14 @@ struct set_stmt {
 
 extern struct stmt *set_stmt_alloc(const struct location *loc);
 
+struct map_stmt {
+	struct expr		*set;
+	struct expr		*map;
+	enum nft_dynset_ops	op;
+};
+
+extern struct stmt *map_stmt_alloc(const struct location *loc);
+
 struct meter_stmt {
 	struct expr		*set;
 	struct expr		*key;
@@ -238,6 +246,7 @@ extern struct stmt *xt_stmt_alloc(const struct location *loc);
  * @STMT_OBJREF:	stateful object reference statement
  * @STMT_EXTHDR:	extension header statement
  * @STMT_FLOW_OFFLOAD:	flow offload statement
+ * @STMT_MAP:		map statement
  */
 enum stmt_types {
 	STMT_INVALID,
@@ -264,6 +273,7 @@ enum stmt_types {
 	STMT_OBJREF,
 	STMT_EXTHDR,
 	STMT_FLOW_OFFLOAD,
+	STMT_MAP,
 };
 
 /**
@@ -325,6 +335,7 @@ struct stmt {
 		struct xt_stmt		xt;
 		struct objref_stmt	objref;
 		struct flow_stmt	flow;
+		struct map_stmt		map;
 	};
 };
 

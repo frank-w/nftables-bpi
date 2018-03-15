@@ -2681,6 +2681,14 @@ static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 	return 0;
 }
 
+static int stmt_evaluate_map(struct eval_ctx *ctx, struct stmt *stmt)
+{
+	if (expr_evaluate(ctx, &stmt->map.map->map) < 0)
+		return -1;
+
+	return 0;
+}
+
 static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	struct expr *map = stmt->objref.expr;
@@ -2822,6 +2830,8 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 		return stmt_evaluate_set(ctx, stmt);
 	case STMT_OBJREF:
 		return stmt_evaluate_objref(ctx, stmt);
+	case STMT_MAP:
+		return stmt_evaluate_map(ctx, stmt);
 	default:
 		BUG("unknown statement type %s\n", stmt->ops->name);
 	}

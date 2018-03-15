@@ -1150,11 +1150,11 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 				 const struct location *loc,
 				 const struct nftnl_expr *nle)
 {
+	struct expr *expr, *expr_data = NULL;
+	enum nft_registers sreg, sreg_data;
 	const struct nftnl_expr *dnle;
-	struct expr *expr;
 	struct stmt *stmt, *dstmt;
 	struct set *set;
-	enum nft_registers sreg;
 	const char *name;
 
 	name = nftnl_expr_get_str(nle, NFTNL_EXPR_DYNSET_SET_NAME);
@@ -1191,11 +1191,21 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 		dstmt = ctx->stmt;
 	}
 
+	if (nftnl_expr_is_set(nle, NFTNL_EXPR_DYNSET_SREG_DATA)) {
+		sreg_data = netlink_parse_register(nle, NFTNL_EXPR_DYNSET_SREG_DATA);
+		expr_data = netlink_get_register(ctx, loc, sreg_data);
+	}
+
 	if (dstmt != NULL) {
 		stmt = meter_stmt_alloc(loc);
 		stmt->meter.set  = set_ref_expr_alloc(loc, set);
 		stmt->meter.key  = expr;
 		stmt->meter.stmt = dstmt;
+	} else if (expr_data != NULL) {
+		stmt = map_stmt_alloc(loc);
+		stmt->map.set	= set_ref_expr_alloc(loc, set);
+		stmt->map.map	= map_expr_alloc(loc, expr, expr_data);
+		stmt->map.op	= nftnl_expr_get_u32(nle, NFTNL_EXPR_DYNSET_OP);
 	} else {
 		stmt = set_stmt_alloc(loc);
 		stmt->set.set   = set_ref_expr_alloc(loc, set);

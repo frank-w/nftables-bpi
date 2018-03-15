@@ -577,6 +577,8 @@ int nft_lex(void *, void *, void *);
 %type <stmt>			set_stmt
 %destructor { stmt_free($$); }	set_stmt
 %type <val>			set_stmt_op
+%type <stmt>			map_stmt
+%destructor { stmt_free($$); }	map_stmt
 %type <stmt>			meter_stmt meter_stmt_alloc flow_stmt_legacy_alloc
 %destructor { stmt_free($$); }	meter_stmt meter_stmt_alloc flow_stmt_legacy_alloc
 
@@ -2046,6 +2048,7 @@ stmt			:	verdict_stmt
 			|	dup_stmt
 			|	fwd_stmt
 			|	set_stmt
+			|	map_stmt
 			;
 
 verdict_stmt		:	verdict_expr
@@ -2714,6 +2717,15 @@ set_stmt		:	SET	set_stmt_op	set_elem_expr_stmt	symbol_expr
 
 set_stmt_op		:	ADD	{ $$ = NFT_DYNSET_OP_ADD; }
 			|	UPDATE	{ $$ = NFT_DYNSET_OP_UPDATE; }
+			;
+
+map_stmt		:	set_stmt_op	MAP '{'	set_elem_expr_stmt	COLON	set_elem_expr_stmt	'}'	symbol_expr
+			{
+				$$ = map_stmt_alloc(&@$);
+				$$->map.op  = $1;
+				$$->map.map = map_expr_alloc(&@$, $4, $6);
+				$$->map.set = $8;
+			}
 			;
 
 meter_stmt		:	flow_stmt_legacy_alloc		flow_stmt_opts	'{' meter_key_expr stmt '}'

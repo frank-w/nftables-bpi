@@ -5375,15 +5375,15 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 			</para>
 			<para>
 				<cmdsynopsis>
-						<command>set</command>
 						<group choice="req">
 							<arg>add</arg>
 							<arg>update</arg>
 						</group>
-						<replaceable>expression</replaceable>
-							<arg choice="opt">timeout <replaceable>timeout</replaceable></arg>
-							<arg choice="opt">comment<replaceable>string</replaceable></arg>
 						<replaceable>@setname</replaceable>
+						<replaceable>{ expression </replaceable>
+							<arg choice="opt">timeout <replaceable>timeout</replaceable></arg>
+							<arg choice="opt">comment <replaceable>string</replaceable></arg>
+						<replaceable>}</replaceable>
 				</cmdsynopsis>
 			</para>
 			<para>
@@ -5401,7 +5401,7 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 
     # add source ip addresses to the backlist if more than 10 tcp connection requests occured per second and ip address.
     # entries will timeout after one minute, after which they might be re-added if limit condition persists.
-    nft add rule ip filter input tcp flags syn tcp dport ssh flow table flood { ip saddr timeout 10s limit rate over 10/second} set add ip saddr timeout 1m @blackhole drop
+    nft add rule ip filter input tcp flags syn tcp dport ssh meter flood { ip saddr timeout 10s limit rate over 10/second} add @blackhole { ip saddr timeout 1m } drop
 
     # inspect state of the rate limit meter:
     nft list meter ip filter flood

@@ -2713,18 +2713,25 @@ set_stmt		:	SET	set_stmt_op	set_elem_expr_stmt	symbol_expr
 				$$->set.key = $3;
 				$$->set.set = $4;
 			}
+			|	set_stmt_op	symbol_expr	'{' set_elem_expr_stmt	'}'
+			{
+				$$ = set_stmt_alloc(&@$);
+				$$->set.op  = $1;
+				$$->set.key = $4;
+				$$->set.set = $2;
+			}
 			;
 
 set_stmt_op		:	ADD	{ $$ = NFT_DYNSET_OP_ADD; }
 			|	UPDATE	{ $$ = NFT_DYNSET_OP_UPDATE; }
 			;
 
-map_stmt		:	set_stmt_op	MAP '{'	set_elem_expr_stmt	COLON	set_elem_expr_stmt	'}'	symbol_expr
+map_stmt		:	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	COLON	set_elem_expr_stmt	'}'
 			{
 				$$ = map_stmt_alloc(&@$);
 				$$->map.op  = $1;
 				$$->map.map = map_expr_alloc(&@$, $4, $6);
-				$$->map.set = $8;
+				$$->map.set = $2;
 			}
 			;
 

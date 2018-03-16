@@ -4075,6 +4075,15 @@ input meta iifname enp2s0 arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh
 				</group>
 			</cmdsynopsis>
 			<cmdsynopsis>
+				<command>srh</command>
+				<group choice="req">
+					<arg>flags</arg>
+					<arg>tag</arg>
+					<arg>sid</arg>
+					<arg>seg-left</arg>
+				</group>
+			</cmdsynopsis>
+			<cmdsynopsis>
 				<command>tcp option</command>
 				<group choice="req">
 					<arg>eol</arg>
@@ -4153,6 +4162,10 @@ input meta iifname enp2s0 arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh
 							<row>
 								<entry>mh</entry>
 								<entry>Mobility Header</entry>
+							</row>
+							<row>
+								<entry>srh</entry>
+								<entry>Segment Routing Header</entry>
 							</row>
 						</tbody>
 					</tgroup>

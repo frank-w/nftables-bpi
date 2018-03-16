@@ -93,19 +93,6 @@ struct expr *exthdr_expr_alloc(const struct location *loc,
 			  BYTEORDER_BIG_ENDIAN, tmpl->len);
 	expr->exthdr.desc = desc;
 	expr->exthdr.tmpl = tmpl;
-	if (desc != NULL && desc->proto_key >= 0) {
-		switch (desc->proto_key) {
-		case 0:
-			expr->exthdr.op = NFT_EXTHDR_OP_RT0;
-			break;
-		case 2:
-			expr->exthdr.op = NFT_EXTHDR_OP_RT2;
-			break;
-		case 4:
-			expr->exthdr.op = NFT_EXTHDR_OP_RT4;
-			break;
-		}
-	}
 	return expr;
 }
 
@@ -148,6 +135,24 @@ const struct exthdr_desc *exthdr_find_proto(uint8_t proto)
 	return exthdr_protocols[proto];
 }
 
+static const struct proto_hdr_template *
+exthdr_rt_find(struct expr *expr, const struct exthdr_desc *desc)
+{
+	const struct proto_hdr_template *tmpl;
+	unsigned int i;
+
+	for (i = 0; i < array_size(desc->templates); i++) {
+		tmpl = &desc->templates[i];
+		if (tmpl->offset == expr->exthdr.offset &&
+		    tmpl->len == expr->len) {
+			expr->exthdr.desc = desc;
+			return tmpl;
+		}
+	}
+
+	return NULL;
+}
+
 void exthdr_init_raw(struct expr *expr, uint8_t type,
 		     unsigned int offset, unsigned int len,
 		     enum nft_exthdr_op op, uint32_t flags)
@@ -164,13 +169,7 @@ void exthdr_init_raw(struct expr *expr, uint8_t type,
 	expr->exthdr.offset = offset;
 	expr->exthdr.desc = NULL;
 
-	if (op == NFT_EXTHDR_OP_RT0)
-		expr->exthdr.desc = &exthdr_rt0;
-	else if (op == NFT_EXTHDR_OP_RT2)
-		expr->exthdr.desc = &exthdr_rt2;
-	else if (op == NFT_EXTHDR_OP_RT4)
-		expr->exthdr.desc = &exthdr_rt4;
-	else if (type < array_size(exthdr_protocols))
+	if (type < array_size(exthdr_protocols))
 		expr->exthdr.desc = exthdr_protocols[type];
 
 	if (expr->exthdr.desc == NULL)
@@ -179,6 +178,18 @@ void exthdr_init_raw(struct expr *expr, uint8_t type,
 	for (i = 0; i < array_size(expr->exthdr.desc->templates); i++) {
 		tmpl = &expr->exthdr.desc->templates[i];
 		if (tmpl->offset == offset && tmpl->len == len)
+			goto out;
+	}
+
+	if (expr->exthdr.desc == &exthdr_rt) {
+		tmpl = exthdr_rt_find(expr, &exthdr_rt4);
+		if (tmpl)
+			goto out;
+		tmpl = exthdr_rt_find(expr, &exthdr_rt0);
+		if (tmpl)
+			goto out;
+		tmpl =	exthdr_rt_find(expr, &exthdr_rt2);
+		if (tmpl)
 			goto out;
 	}
 
@@ -274,7 +285,7 @@ const struct exthdr_desc exthdr_rt0 = {
 	.templates	= {
 		[RT0HDR_RESERVED]	= RT0_FIELD("reserved", ip6r0_reserved, &integer_type),
 		[RT0HDR_ADDR_1]		= RT0_FIELD("addr[1]", ip6r0_addr[0], &ip6addr_type),
-		[RT0HDR_ADDR_1 + 1]	= RT0_FIELD("addr[2]", ip6r0_addr[0], &ip6addr_type),
+		[RT0HDR_ADDR_1 + 1]	= RT0_FIELD("addr[2]", ip6r0_addr[1], &ip6addr_type),
 		// ...
 	},
 };
@@ -291,7 +302,7 @@ const struct exthdr_desc exthdr_rt4 = {
 		[RT4HDR_FLAGS]		= RT4_FIELD("flags", ip6r4_flags, &integer_type),
 		[RT4HDR_TAG]		= RT4_FIELD("tag", ip6r4_tag, &integer_type),
 		[RT4HDR_SID_1]		= RT4_FIELD("sid[1]", ip6r4_segments[0], &ip6addr_type),
-		[RT4HDR_SID_1 + 1]	= RT4_FIELD("sid[1]", ip6r4_segments[0], &ip6addr_type),
+		[RT4HDR_SID_1 + 1]	= RT4_FIELD("sid[2]", ip6r4_segments[1], &ip6addr_type),
 		// ...
 	},
 };

@@ -2713,13 +2713,6 @@ set_stmt		:	SET	set_stmt_op	set_elem_expr_stmt	symbol_expr
 				$$->set.key = $3;
 				$$->set.set = $4;
 			}
-			|	set_stmt_op	SET	'{' set_elem_expr_stmt	'}' symbol_expr
-			{
-				$$ = set_stmt_alloc(&@$);
-				$$->set.op  = $1;
-				$$->set.key = $4;
-				$$->set.set = $6;
-			}
 			;
 
 set_stmt_op		:	ADD	{ $$ = NFT_DYNSET_OP_ADD; }

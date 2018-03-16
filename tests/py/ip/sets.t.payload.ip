@@ -29,7 +29,7 @@ ip test-ip4 input
   [ lookup reg 1 set set5 ]
   [ immediate reg 0 drop ]
 
-# set add ip saddr . ip daddr @set5
+# add @set5 { ip saddr . ip daddr }
 ip test-ip4 input
   [ payload load 4b @ network header + 12 => reg 1 ]
   [ payload load 4b @ network header + 16 => reg 9 ]

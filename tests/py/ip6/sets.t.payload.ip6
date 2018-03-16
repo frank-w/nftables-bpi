@@ -17,7 +17,7 @@ ip6 test-ip6 input
   [ lookup reg 1 set set5 ]
   [ immediate reg 0 drop ]
 
-# set add ip6 saddr . ip6 daddr @set5
+# add @set5 { ip6 saddr . ip6 daddr }
 ip6 test-ip6 input
   [ payload load 16b @ network header + 8 => reg 1 ]
   [ payload load 16b @ network header + 24 => reg 2 ]

@@ -49,7 +49,7 @@ ip saddr != @set33 drop;fail
 
 !set5 type ipv4_addr . ipv4_addr;ok
 ip saddr . ip daddr @set5 drop;ok
-set add ip saddr . ip daddr @set5;ok
+add @set5 { ip saddr . ip daddr };ok
 
 # test nested anonymous sets
 ip saddr { { 1.1.1.0, 3.3.3.0 }, 2.2.2.0 };ok;ip saddr { 1.1.1.0, 2.2.2.0, 3.3.3.0 }

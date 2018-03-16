@@ -12,6 +12,6 @@ $NFT add set t s2 { type ipv4_addr \; }
 $NFT add set t s3 { type ipv4_addr \; size 1024\; }
 $NFT add chain t c {type filter hook input priority 0 \; }
 
-$NFT add rule t c meta iifname foobar set add ip protocol @s1
-$NFT add rule t c meta iifname foobar set add ip daddr @s2
-$NFT add rule t c meta iifname foobar set add ip daddr @s3
+$NFT add rule t c meta iifname foobar add @s1 { ip protocol }
+$NFT add rule t c meta iifname foobar add @s2 { ip daddr }
+$NFT add rule t c meta iifname foobar add @s3 { ip daddr }

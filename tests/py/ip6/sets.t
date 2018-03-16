@@ -39,4 +39,4 @@ ip6 saddr != @set33 drop;fail
 
 !set5 type ipv6_addr . ipv6_addr;ok
 ip6 saddr . ip6 daddr @set5 drop;ok
-set add ip6 saddr . ip6 daddr @set5;ok
+add @set5 { ip6 saddr . ip6 daddr };ok

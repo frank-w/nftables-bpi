@@ -39,7 +39,7 @@ netdev test-netdev ingress
   [ lookup reg 1 set set5 ]
   [ immediate reg 0 drop ]
 
-# set add ip saddr . ip daddr @set5
+# add @set5 { ip saddr . ip daddr }
 netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]

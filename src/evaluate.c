@@ -2465,42 +2465,6 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 	return 0;
 }
 
-static int stmt_evaluate_masq(struct eval_ctx *ctx, struct stmt *stmt)
-{
-	int err;
-
-	err = nat_evaluate_family(ctx, stmt);
-	if (err < 0)
-		return err;
-
-	if (stmt->masq.proto != NULL) {
-		err = nat_evaluate_transport(ctx, stmt, &stmt->masq.proto);
-		if (err < 0)
-			return err;
-	}
-
-	stmt->flags |= STMT_F_TERMINAL;
-	return 0;
-}
-
-static int stmt_evaluate_redir(struct eval_ctx *ctx, struct stmt *stmt)
-{
-	int err;
-
-	err = nat_evaluate_family(ctx, stmt);
-	if (err < 0)
-		return err;
-
-	if (stmt->redir.proto != NULL) {
-		err = nat_evaluate_transport(ctx, stmt, &stmt->redir.proto);
-		if (err < 0)
-			return err;
-	}
-
-	stmt->flags |= STMT_F_TERMINAL;
-	return 0;
-}
-
 static int stmt_evaluate_dup(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	int err;
@@ -2758,10 +2722,6 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 		return stmt_evaluate_reject(ctx, stmt);
 	case STMT_NAT:
 		return stmt_evaluate_nat(ctx, stmt);
-	case STMT_MASQ:
-		return stmt_evaluate_masq(ctx, stmt);
-	case STMT_REDIR:
-		return stmt_evaluate_redir(ctx, stmt);
 	case STMT_QUEUE:
 		return stmt_evaluate_queue(ctx, stmt);
 	case STMT_DUP:

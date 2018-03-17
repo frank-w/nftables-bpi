@@ -946,15 +946,43 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 	enum nft_registers pmin_reg, pmax_reg;
 	int registers = 0;
 	int family;
+	int nftnl_flag_attr;
+	int nftnl_reg_pmin, nftnl_reg_pmax;
 
-	nle = alloc_nft_expr("nat");
-	nftnl_expr_set_u32(nle, NFTNL_EXPR_NAT_TYPE, stmt->nat.type);
+	switch (stmt->nat.type) {
+	case NFT_NAT_SNAT:
+	case NFT_NAT_DNAT:
+		nle = alloc_nft_expr("nat");
+		nftnl_expr_set_u32(nle, NFTNL_EXPR_NAT_TYPE, stmt->nat.type);
 
-	family = nftnl_rule_get_u32(ctx->nlr, NFTNL_RULE_FAMILY);
-	nftnl_expr_set_u32(nle, NFTNL_EXPR_NAT_FAMILY, family);
+		family = nftnl_rule_get_u32(ctx->nlr, NFTNL_RULE_FAMILY);
+		nftnl_expr_set_u32(nle, NFTNL_EXPR_NAT_FAMILY, family);
+
+		nftnl_flag_attr = NFTNL_EXPR_NAT_FLAGS;
+		nftnl_reg_pmin = NFTNL_EXPR_NAT_REG_PROTO_MIN;
+		nftnl_reg_pmax = NFTNL_EXPR_NAT_REG_PROTO_MAX;
+		break;
+	case NFT_NAT_MASQ:
+		nle = alloc_nft_expr("masq");
+
+		nftnl_flag_attr = NFTNL_EXPR_MASQ_FLAGS;
+		nftnl_reg_pmin = NFTNL_EXPR_MASQ_REG_PROTO_MIN;
+		nftnl_reg_pmax = NFTNL_EXPR_MASQ_REG_PROTO_MAX;
+		break;
+	case NFT_NAT_REDIR:
+		nle = alloc_nft_expr("redir");
+
+		nftnl_flag_attr = NFTNL_EXPR_REDIR_FLAGS;
+		nftnl_reg_pmin = NFTNL_EXPR_REDIR_REG_PROTO_MIN;
+		nftnl_reg_pmax = NFTNL_EXPR_REDIR_REG_PROTO_MAX;
+		break;
+	default:
+		BUG("unknown nat type %d\n", stmt->nat.type);
+		break;
+	}
 
 	if (stmt->nat.flags != 0)
-		nftnl_expr_set_u32(nle, NFTNL_EXPR_NAT_FLAGS, stmt->nat.flags);
+		nftnl_expr_set_u32(nle, nftnl_flag_attr, stmt->nat.flags);
 
 	if (stmt->nat.addr) {
 		amin_reg = get_register(ctx, NULL);
@@ -988,98 +1016,11 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 
 			netlink_gen_expr(ctx, stmt->nat.proto->left, pmin_reg);
 			netlink_gen_expr(ctx, stmt->nat.proto->right, pmax_reg);
-			netlink_put_register(nle, NFTNL_EXPR_NAT_REG_PROTO_MIN,
-					     pmin_reg);
-			netlink_put_register(nle, NFTNL_EXPR_NAT_REG_PROTO_MAX,
-					     pmax_reg);
+			netlink_put_register(nle, nftnl_reg_pmin, pmin_reg);
+			netlink_put_register(nle, nftnl_reg_pmax, pmax_reg);
 		} else {
 			netlink_gen_expr(ctx, stmt->nat.proto, pmin_reg);
-			netlink_put_register(nle, NFTNL_EXPR_NAT_REG_PROTO_MIN,
-					     pmin_reg);
-		}
-	}
-
-	while (registers > 0) {
-		release_register(ctx, NULL);
-		registers--;
-	}
-
-	nftnl_rule_add_expr(ctx->nlr, nle);
-}
-
-static void netlink_gen_masq_stmt(struct netlink_linearize_ctx *ctx,
-				  const struct stmt *stmt)
-{
-	enum nft_registers pmin_reg, pmax_reg;
-	struct nftnl_expr *nle;
-	int registers = 0;
-
-	nle = alloc_nft_expr("masq");
-	if (stmt->masq.flags != 0)
-		nftnl_expr_set_u32(nle, NFTNL_EXPR_MASQ_FLAGS,
-				      stmt->masq.flags);
-	if (stmt->masq.proto) {
-		pmin_reg = get_register(ctx, NULL);
-		registers++;
-
-		if (stmt->masq.proto->ops->type == EXPR_RANGE) {
-			pmax_reg = get_register(ctx, NULL);
-			registers++;
-
-			netlink_gen_expr(ctx, stmt->masq.proto->left, pmin_reg);
-			netlink_gen_expr(ctx, stmt->masq.proto->right, pmax_reg);
-			netlink_put_register(nle, NFTNL_EXPR_MASQ_REG_PROTO_MIN, pmin_reg);
-			netlink_put_register(nle, NFTNL_EXPR_MASQ_REG_PROTO_MAX, pmax_reg);
-		} else {
-			netlink_gen_expr(ctx, stmt->masq.proto, pmin_reg);
-			netlink_put_register(nle, NFTNL_EXPR_MASQ_REG_PROTO_MIN, pmin_reg);
-		}
-	}
-
-	while (registers > 0) {
-		release_register(ctx, NULL);
-		registers--;
-	}
-
-	nftnl_rule_add_expr(ctx->nlr, nle);
-}
-
-static void netlink_gen_redir_stmt(struct netlink_linearize_ctx *ctx,
-				   const struct stmt *stmt)
-{
-	struct nftnl_expr *nle;
-	enum nft_registers pmin_reg, pmax_reg;
-	int registers = 0;
-
-	nle = alloc_nft_expr("redir");
-
-	if (stmt->redir.flags != 0)
-		nftnl_expr_set_u32(nle, NFTNL_EXPR_REDIR_FLAGS,
-				      stmt->redir.flags);
-
-	if (stmt->redir.proto) {
-		pmin_reg = get_register(ctx, NULL);
-		registers++;
-
-		if (stmt->redir.proto->ops->type == EXPR_RANGE) {
-			pmax_reg = get_register(ctx, NULL);
-			registers++;
-
-			netlink_gen_expr(ctx, stmt->redir.proto->left,
-					 pmin_reg);
-			netlink_gen_expr(ctx, stmt->redir.proto->right,
-					 pmax_reg);
-			netlink_put_register(nle,
-					     NFTNL_EXPR_REDIR_REG_PROTO_MIN,
-					     pmin_reg);
-			netlink_put_register(nle,
-					     NFTNL_EXPR_REDIR_REG_PROTO_MAX,
-					     pmax_reg);
-		} else {
-			netlink_gen_expr(ctx, stmt->redir.proto, pmin_reg);
-			netlink_put_register(nle,
-					     NFTNL_EXPR_REDIR_REG_PROTO_MIN,
-					     pmin_reg);
+			netlink_put_register(nle, nftnl_reg_pmin, pmin_reg);
 		}
 	}
 
@@ -1310,10 +1251,6 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_reject_stmt(ctx, stmt);
 	case STMT_NAT:
 		return netlink_gen_nat_stmt(ctx, stmt);
-	case STMT_MASQ:
-		return netlink_gen_masq_stmt(ctx, stmt);
-	case STMT_REDIR:
-		return netlink_gen_redir_stmt(ctx, stmt);
 	case STMT_DUP:
 		return netlink_gen_dup_stmt(ctx, stmt);
 	case STMT_QUEUE:

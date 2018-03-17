@@ -2417,16 +2417,8 @@ reject_opts		:       /* empty */
 nat_stmt		:	nat_stmt_alloc	nat_stmt_args
 			;
 
-nat_stmt_alloc		:	SNAT
-			{
-				$$ = nat_stmt_alloc(&@$);
-				$$->nat.type = NFT_NAT_SNAT;
-			}
-			|	DNAT
-			{
-				$$ = nat_stmt_alloc(&@$);
-				$$->nat.type = NFT_NAT_DNAT;
-			}
+nat_stmt_alloc		:	SNAT	{ $$ = nat_stmt_alloc(&@$, NFT_NAT_SNAT); }
+			|	DNAT	{ $$ = nat_stmt_alloc(&@$, NFT_NAT_DNAT); }
 			;
 
 primary_stmt_expr	:	symbol_expr		{ $$ = $1; }
@@ -2576,21 +2568,21 @@ masq_stmt		:	masq_stmt_alloc		masq_stmt_args
 			|	masq_stmt_alloc
 			;
 
-masq_stmt_alloc		:	MASQUERADE 	{ $$ = masq_stmt_alloc(&@$); }
+masq_stmt_alloc		:	MASQUERADE	{ $$ = nat_stmt_alloc(&@$, NFT_NAT_MASQ); }
 			;
 
 masq_stmt_args		:	TO 	COLON	stmt_expr
 			{
-				$<stmt>0->masq.proto = $3;
+				$<stmt>0->nat.proto = $3;
 			}
 			|	TO 	COLON	stmt_expr	nf_nat_flags
 			{
-				$<stmt>0->masq.proto = $3;
-				$<stmt>0->masq.flags = $4;
+				$<stmt>0->nat.proto = $3;
+				$<stmt>0->nat.flags = $4;
 			}
 			|	nf_nat_flags
 			{
-				$<stmt>0->masq.flags = $1;
+				$<stmt>0->nat.flags = $1;
 			}
 			;
 
@@ -2598,30 +2590,30 @@ redir_stmt		:	redir_stmt_alloc	redir_stmt_arg
 			|	redir_stmt_alloc
 			;
 
-redir_stmt_alloc	:	REDIRECT	{ $$ = redir_stmt_alloc(&@$); }
+redir_stmt_alloc	:	REDIRECT	{ $$ = nat_stmt_alloc(&@$, NFT_NAT_REDIR); }
 			;
 
 redir_stmt_arg		:	TO	stmt_expr
 			{
-				$<stmt>0->redir.proto = $2;
+				$<stmt>0->nat.proto = $2;
 			}
 			|	TO	COLON	stmt_expr
 			{
-				$<stmt>0->redir.proto = $3;
+				$<stmt>0->nat.proto = $3;
 			}
 			|	nf_nat_flags
 			{
-				$<stmt>0->redir.flags = $1;
+				$<stmt>0->nat.flags = $1;
 			}
 			|	TO	stmt_expr	nf_nat_flags
 			{
-				$<stmt>0->redir.proto = $2;
-				$<stmt>0->redir.flags = $3;
+				$<stmt>0->nat.proto = $2;
+				$<stmt>0->nat.flags = $3;
 			}
 			|	TO	COLON	stmt_expr	nf_nat_flags
 			{
-				$<stmt>0->redir.proto = $3;
-				$<stmt>0->redir.flags = $4;
+				$<stmt>0->nat.proto = $3;
+				$<stmt>0->nat.flags = $4;
 			}
 			;
 

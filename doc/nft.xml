@@ -178,7 +178,7 @@ vi:ts=4 sw=4
 				<term><option>-i, --interactive</option></term>
 				<listitem>
 					<para>
-						Read input from an interactive readline CLI.
+						Read input from an interactive readline CLI.  You can use <command>quit</command> to exit, or use the <literal>EOF</literal> marker, normally this is <literal>CTRL-D</literal>.
 					</para>
 				</listitem>
 			</varlistentry>
@@ -547,6 +547,19 @@ filter input iif $int_ifs accept
 			<cmdsynopsis>
 				<group choice="req">
 					<arg>add</arg>
+					<arg>create</arg>
+				</group>
+				<command>table</command>
+				<arg choice="opt"><replaceable>family</replaceable></arg>
+				<replaceable>table</replaceable>
+				<arg choice="opt">
+					<arg choice="req">
+						flags <replaceable>flags</replaceable>
+					</arg>
+				</arg>
+			</cmdsynopsis>
+			<cmdsynopsis>
+				<group choice="req">
 					<arg>delete</arg>
 					<arg>list</arg>
 					<arg>flush</arg>
@@ -583,6 +596,54 @@ filter input iif $int_ifs accept
 			keyword can be used to test which family (ipv4 or ipv6) context the packet is being processed in.
 
 			When no address family is specified, <literal>ip</literal> is used by default.
+
+			The only difference between <command>add</command> and <command>create</command> is that the former will
+			not return an error if the specified table already exists while <command>create</command> will return an error.
+
+			<table frame="all">
+			<title>Table flags</title>
+			<tgroup cols='2' align='left' colsep='1' rowsep='1'>
+				<colspec colname='c1'/>
+				<colspec colname='c2'/>
+				<thead>
+					<row>
+						<entry>Flag</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>dormant</entry>
+						<entry>table is not evalauted any more (base chains are unregistered)</entry>
+					</row>
+				</tbody>
+			</tgroup>
+			</table>
+		</para>
+
+		<para>
+			<example>
+				<title>Add, change, delete a table</title>
+				<programlisting>
+# start nft in interactive mode
+nft --interactive
+
+# create a new table.
+create table inet mytable
+
+# add a new base chain: get input packets
+add chain inet mytable myin { type filter hook input priority 0; }
+
+# add a single counter to the chain
+add rule inet mytable myin counter
+
+# disable the table temporarily -- rules are not evaluated anymore
+add table inet mytable { flags dormant; }
+
+# make table active again:
+add table inet mytable
+				</programlisting>
+			</example>
 		</para>
 
 		<variablelist>

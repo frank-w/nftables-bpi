@@ -165,7 +165,9 @@ replay:
 	genid = netlink_genid_get(&ctx);
 	if (genid && genid == cache->genid)
 		return 0;
-	cache_release(cache);
+	if (cache->genid)
+		cache_release(cache);
+
 	ret = cache_init(&ctx, cmd);
 	if (ret < 0) {
 		cache_release(cache);

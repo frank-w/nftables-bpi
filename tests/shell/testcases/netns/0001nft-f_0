@@ -8,14 +8,6 @@ if [ ! -x "$IP" ] ; then
 	exit 1
 fi
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
 RULESET="table ip t {
 	set s {
 		type ipv4_addr
@@ -91,8 +83,7 @@ if [ $? -ne 0 ] ; then
 	exit 1
 fi
 
-echo "$RULESET" > $tmpfile
-$IP netns exec $NETNS_NAME $NFT -f $tmpfile
+$IP netns exec $NETNS_NAME $NFT -f - <<< $RULESET
 if [ $? -ne 0 ] ; then
 	echo "E: unable to load ruleset in netns" >&2
 	$IP netns del $NETNS_NAME

@@ -4,15 +4,7 @@
 # * creating a valid interval set
 # * referencing it from a valid rule
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
-echo "
+RULESET="
 table inet t {
 	set s1 {
 		type ipv4_addr
@@ -41,7 +33,7 @@ table inet t {
 		ip6 nexthdr @s3 accept
 		tcp dport @s4 accept
 	}
-}" > $tmpfile
+}"
 
 set -e
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET

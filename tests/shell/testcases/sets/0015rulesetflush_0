@@ -1,14 +1,6 @@
 #!/bin/bash
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
-echo "flush ruleset
+RULESET="flush ruleset
 add table t
 add chain t c
 
@@ -18,9 +10,9 @@ table inet filter {
 
 add element inet filter blacklist_v4 {
 192.168.0.1/24,
-}" >$tmpfile
+}"
 
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET
 
 # make sure flush ruleset works right
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET

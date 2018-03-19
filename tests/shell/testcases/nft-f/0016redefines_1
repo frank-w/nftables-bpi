@@ -2,15 +2,7 @@
 
 set -e
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
-echo "
+RULESET="
 table ip x {
         chain y {
                 define unused = 4.4.4.4
@@ -20,7 +12,7 @@ table ip x {
                 ip saddr $address
                 undefine unused
         }
-}" >> $tmpfile
+}"
 
 EXPECTED="table ip x {
         chain y {
@@ -29,7 +21,7 @@ EXPECTED="table ip x {
         }
 }"
 
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET
 
 GET="$($NFT list ruleset)"
 

@@ -2,14 +2,6 @@
 
 set -e
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-        echo "Failed to create tmp file" >&2
-        exit 0
-fi
-
-#trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
 RULESET='
 define set1 = {
 	2.2.2.0/24,
@@ -24,8 +16,7 @@ table ip x {
 	}
 }'
 
-echo "$RULESET" > $tmpfile
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET
 if [ $? -ne 0 ] ; then
         echo "E: unable to load ruleset" >&2
         exit 1

@@ -2,22 +2,13 @@
 
 set -e
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-        echo "Failed to create tmp file" >&2
-        exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
 RULESET="add table x
 add chain x y
 flush ruleset
 add table w
 add chain w y"
 
-echo "$RULESET" > $tmpfile
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET
 if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2
         exit 1

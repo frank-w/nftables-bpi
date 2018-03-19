@@ -5,14 +5,6 @@
 
 set -e
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-        echo "Failed to create tmp file" >&2
-        exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
 RULESET="flush ruleset
 table inet t {
 	set s { type ipv4_addr; flags interval; }
@@ -22,6 +14,5 @@ add element inet t s {
 	192.168.0.1/24,
 }"
 
-echo "$RULESET" > $tmpfile
-$NFT -f $tmpfile
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET
+$NFT -f - <<< $RULESET

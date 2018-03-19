@@ -4,24 +4,13 @@
 # shows how disjoint intervals are seen as overlaps
 # NOTE this is only an issue with two separate nft calls
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
 n=1
-echo "add table x
+RULESET="add table x
 add map x y { type ipv4_addr : ipv4_addr; flags interval; }
-add element x y { 10.0.${n}.0/24 : 10.0.0.${n} }" > $tmpfile
+add element x y { 10.0.${n}.0/24 : 10.0.0.${n} }"
 
 set -e
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET
 
 n=2
-echo "add element x y { 10.0.${n}.0/24 : 10.0.0.${n} }" > $tmpfile
-
-$NFT -f $tmpfile
-
+$NFT "add element x y { 10.0.${n}.0/24 : 10.0.0.${n} }"

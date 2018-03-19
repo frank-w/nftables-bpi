@@ -2,15 +2,7 @@
 
 # tests different spots, datatypes and usages for nft defines
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
-echo "
+RULESET="
 define d_iifname = whatever
 define d_oifname = \$d_iifname
 define d_iif = lo
@@ -38,7 +30,7 @@ table inet t {
 		tcp dport \$d_ports
 		udp dport vmap { \$d_ports : accept }
 	}
-}" >> $tmpfile
+}"
 
 set -e
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET

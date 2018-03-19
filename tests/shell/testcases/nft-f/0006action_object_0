@@ -2,14 +2,6 @@
 
 # test loading a ruleset with the 'action object' pattern
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -f $tmpfile" EXIT # cleanup if aborted
-
 set -e
 
 FAMILIES="ip ip6 inet arp bridge"
@@ -29,7 +21,7 @@ generate1()
 	add element $family t m {10080:drop}
 	insert rule $family t c meta l4proto tcp tcp dport vmap @m
 	add rule $family t c meta l4proto udp udp sport vmap {1111:accept}
-	" >> $tmpfile
+	"
 }
 
 generate2()
@@ -41,25 +33,24 @@ generate2()
 	delete element $family t s {8080}
 	delete chain $family t c
 	delete table $family t
-	" >> $tmpfile
+	"
 }
 
-for family in $FAMILIES ; do
+RULESET=$(for family in $FAMILIES ; do
 	generate1 $family
-done
+done)
 
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET
 if [ $? -ne 0 ] ; then
 	echo "E: unable to load ruleset 1" >&2
 	exit 1
 fi
 
-echo "" > $tmpfile
-for family in $FAMILIES ; do
+RULESET=$(for family in $FAMILIES ; do
 	generate2 $family
-done
+done)
 
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET
 if [ $? -ne 0 ] ; then
 	echo "E: unable to load ruleset 2" >&2
 	exit 1

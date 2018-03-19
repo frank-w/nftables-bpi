@@ -1,14 +1,5 @@
 #!/bin/bash
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
-
 EXPECTED='table inet t {
 	flowtable f {
 		hook ingress priority 10
@@ -20,6 +11,5 @@ EXPECTED='table inet t {
 	}
 }'
 
-echo "$EXPECTED" > $tmpfile
 set -e
-$NFT -f $tmpfile
+$NFT -f - <<< $EXPECTED

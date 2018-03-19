@@ -4,15 +4,7 @@
 # * creating valid named objects
 # * referencing them from a valid rule
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-	echo "Failed to create tmp file" >&2
-	exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
-echo "
+RULESET="
 table inet x {
 	counter user123 {
 		packets 12 bytes 1433
@@ -35,7 +27,7 @@ table inet x {
 		counter name ip saddr map { 192.168.2.2 : "user123", 1.1.1.1 : "user123", 2.2.2.2 : "user123"}
 		quota name ip saddr map @test drop
 	}
-}" > $tmpfile
+}"
 
 set -e
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET

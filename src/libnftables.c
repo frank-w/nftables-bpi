@@ -313,6 +313,9 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (rc < 0)
 		return -1;
 
+	if (!strcmp(filename, "-"))
+		filename = "/dev/stdin";
+
 	parser_init(nft->nf_sock, &nft->cache, &state,
 		    &msgs, nft->debug_mask, &nft->output);
 	scanner = scanner_init(&state);

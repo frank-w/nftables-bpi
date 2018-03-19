@@ -167,7 +167,7 @@ vi:ts=4 sw=4
 				<term><option>-f, --file <replaceable>filename</replaceable></option></term>
 				<listitem>
 					<para>
-						Read input from <replaceable>filename</replaceable>.
+						Read input from <replaceable>filename</replaceable>. If <replaceable>filename</replaceable> is <literal>-</literal>, read from <literal>stdin</literal>.
 					</para>
 					<para>
 						nft scripts must start <command>#!/usr/sbin/nft -f</command>

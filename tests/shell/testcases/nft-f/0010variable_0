@@ -2,14 +2,6 @@
 
 set -e
 
-tmpfile=$(mktemp)
-if [ ! -w $tmpfile ] ; then
-        echo "Failed to create tmp file" >&2
-        exit 0
-fi
-
-trap "rm -rf $tmpfile" EXIT # cleanup if aborted
-
 RULESET="define whitelist_v4 = { 1.1.1.1 }
 
 table inet filter {
@@ -18,5 +10,4 @@ table inet filter {
 add element inet filter whitelist_v4 \$whitelist_v4
 "
 
-echo "$RULESET" > $tmpfile
-$NFT -f $tmpfile
+$NFT -f - <<< $RULESET

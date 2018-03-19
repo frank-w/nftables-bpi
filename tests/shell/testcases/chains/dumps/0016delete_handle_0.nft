@@ -2,9 +2,6 @@ table ip test-ip {
 	chain x {
 	}
 
-	chain y {
-	}
-
 	chain z {
 	}
 }
@@ -13,8 +10,5 @@ table ip6 test-ip6 {
 	}
 
 	chain y {
-	}
-
-	chain z {
 	}
 }

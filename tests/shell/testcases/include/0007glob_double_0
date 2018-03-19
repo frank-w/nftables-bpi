@@ -8,36 +8,24 @@ if [ ! -d $tmpdir ] ; then
         exit 0
 fi
 
-tmpfile1=$(mktemp -p $tmpdir)
-if [ ! -w $tmpfile1 ] ; then
-        echo "Failed to create tmp file" >&2
-        exit 0
-fi
-
-tmpfile2=$(mktemp -p $tmpdir)
-if [ ! -w $tmpfile2 ] ; then
-        echo "Failed to create tmp file" >&2
-        exit 0
-fi
-
-tmpfile3=$(mktemp)
-if [ ! -w $tmpfile3 ] ; then
+tmpfile=$(mktemp)
+if [ ! -w $tmpfile ] ; then
         echo "Failed to create tmp file" >&2
         exit 0
 fi
 
 # cleanup if aborted
-trap "rm -rf $tmpfile1 $tmpfile2 $tmpfile3 && rmdir $tmpdir" EXIT
+trap "rm -rf $tmpdir $tmpfile" EXIT
 
 RULESET1="add table x"
 RULESET2="add table y"
 RULESET3="include \"$tmpdir/*\""
 
-echo "$RULESET1" > $tmpfile1
-echo "$RULESET2" > $tmpfile2
-echo "$RULESET3" > $tmpfile3
+echo "$RULESET1" > $tmpdir/table_x
+echo "$RULESET2" > $tmpdir/table_y
+echo "$RULESET3" > $tmpfile
 
-$NFT -f $tmpfile3
+$NFT -f $tmpfile
 
 if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2

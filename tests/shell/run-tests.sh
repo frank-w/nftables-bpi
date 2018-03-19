@@ -55,12 +55,14 @@ if [ "$1" == "-g" ] ; then
 	shift
 fi
 
-if [ -x "$1" ] ; then
-	if grep ^.*${RETURNCODE_SEPARATOR}[0-9]\\+$ <<< $1 >/dev/null ; then
-		SINGLE=$1
+for arg in "$@"; do
+	if grep ^.*${RETURNCODE_SEPARATOR}[0-9]\\+$ <<< $arg >/dev/null ; then
+		SINGLE+=" $arg"
 		VERBOSE=y
+	else
+		msg_error "unknown parameter '$arg'"
 	fi
-fi
+done
 
 kernel_cleanup() {
 	$NFT flush ruleset

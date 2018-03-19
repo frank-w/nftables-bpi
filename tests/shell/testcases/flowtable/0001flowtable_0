@@ -3,7 +3,7 @@
 EXPECTED='table inet t {
 	flowtable f {
 		hook ingress priority 10
-		devices = { eth0, wlan0 }
+		devices = { lo }
 	}
 
 	chain c {

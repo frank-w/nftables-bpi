@@ -481,9 +481,9 @@ filter input iif $int_ifs accept
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 			</cmdsynopsis>
 			<cmdsynopsis>
-				<arg choice="req">export</arg>
+				<arg choice="plain">export</arg>
 				<arg choice="opt"><command>ruleset</command></arg>
-				<arg choice="req"><replaceable>format</replaceable></arg>
+				<arg choice="plain"><replaceable>format</replaceable></arg>
 			</cmdsynopsis>
 		</para>
 
@@ -569,9 +569,7 @@ filter input iif $int_ifs accept
 				<replaceable>table</replaceable>
 			</cmdsynopsis>
 			<cmdsynopsis>
-				<group choice="req">
-					<arg>delete</arg>
-				</group>
+				<literal>delete</literal>
 				<command>table</command>
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<literal> handle </literal><replaceable>handle</replaceable>
@@ -716,9 +714,7 @@ add table inet mytable
 				<replaceable>chain</replaceable>
 			</cmdsynopsis>
 			<cmdsynopsis>
-				<group choice="req">
-					<arg>delete</arg>
-				</group>
+				<literal>delete</literal>
 				<command>chain</command>
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>
@@ -994,7 +990,7 @@ table inet filter {
 				<programlisting>
         nft add rule filter input ip saddr @allowed_hosts tcp dport @allowed_ports accept
 				</programlisting>
-			The sets <literal>allowed_hosts</literal> and <literal>allowed_ports</literal>need to
+			The sets <literal>allowed_hosts</literal> and <literal>allowed_ports</literal> need to
 			be created first.  The next section describes nft set syntax in more detail.
 			</example>
 		</para>
@@ -1028,9 +1024,7 @@ table inet filter {
 				<replaceable>set</replaceable>
 			</cmdsynopsis>
 			<cmdsynopsis>
-				<group choice="req">
-					<arg>delete</arg>
-				</group>
+				<literal>delete</literal>
 				<command> set</command>
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>
@@ -1405,9 +1399,7 @@ table inet filter {
 				<replaceable>object</replaceable>
 			</cmdsynopsis>
 			<cmdsynopsis>
-				<group choice="req">
-					<arg>delete</arg>
-				</group>
+				<literal>delete</literal>
 				<command> type</command>
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>

@@ -65,7 +65,7 @@ void expr_free(struct expr *expr)
 		return;
 	if (--expr->refcnt > 0)
 		return;
-	if (expr->ops->destroy)
+	if (expr->ops && expr->ops->destroy)
 		expr->ops->destroy(expr);
 	xfree(expr);
 }

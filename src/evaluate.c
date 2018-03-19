@@ -2838,6 +2838,9 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 	if (ft->hooknum == NF_INET_NUMHOOKS)
 		return chain_error(ctx, ft, "invalid hook %s", ft->hookstr);
 
+	if (!ft->dev_expr)
+		return chain_error(ctx, ft, "Unbound flowtable not allowed (must specify devices)");
+
 	return 0;
 }
 
@@ -2874,6 +2877,9 @@ static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule)
 
 static uint32_t str2hooknum(uint32_t family, const char *hook)
 {
+	if (!hook)
+		return NF_INET_NUMHOOKS;
+
 	switch (family) {
 	case NFPROTO_IPV4:
 	case NFPROTO_BRIDGE:

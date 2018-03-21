@@ -109,6 +109,7 @@ AM_CONDITIONAL([BUILD_XTABLES], [test "x$with_libxtables" == xyes])
 
 AC_CONFIG_FILES([					\
 		Makefile				\
+		libnftables.pc				\
 		src/Makefile				\
 		include/Makefile			\
 		include/nftables/Makefile		\

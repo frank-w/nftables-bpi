@@ -222,7 +222,7 @@ vi:ts=4 sw=4
 				The directories to be searched for include files can be specified using
 				the <option>-I/--includepath</option> option. You can override this behaviour
 				either by prepending ./ to your path to force inclusion of files located in the
-				current working directory (ie. relative path) or / for file location expressed
+				current working directory (i.e. relative path) or / for file location expressed
 				as an absolute path.
 			</para>
 			<para>
@@ -429,7 +429,7 @@ filter input iif $int_ifs accept
 		<refsect2>
 			<title>Bridge address family</title>
 			<para>
-				The bridge address family handles ethernet packets traversing bridge devices.
+				The bridge address family handles Ethernet packets traversing bridge devices.
 			</para>
 			<para>
 				The list of supported hooks is identical to IPv4/IPv6/Inet address families above.
@@ -591,7 +591,7 @@ filter input iif $int_ifs accept
 
 			The <literal>inet</literal> address family is a dummy family which is used to create
 			hybrid IPv4/IPv6 tables.  The <literal>meta</literal> expression <literal>nfproto</literal>
-			keyword can be used to test which family (ipv4 or ipv6) context the packet is being processed in.
+			keyword can be used to test which family (IPv4 or IPv6) context the packet is being processed in.
 
 			When no address family is specified, <literal>ip</literal> is used by default.
 
@@ -612,7 +612,7 @@ filter input iif $int_ifs accept
 				<tbody>
 					<row>
 						<entry>dormant</entry>
-						<entry>table is not evalauted any more (base chains are unregistered)</entry>
+						<entry>table is not evaluated any more (base chains are unregistered)</entry>
 					</row>
 				</tbody>
 			</tgroup>
@@ -974,10 +974,10 @@ table inet filter {
 		Anonymous sets are sets that have no specific name.  The set members are enclosed in curly braces,
 		with commas to separate elements when creating the rule the set is used in.
 		Once that rule is removed, the set is removed as well.
-		They cannot be updated, i.e. once an anoymous set is declared it cannot be changed anymore except by
+		They cannot be updated, i.e. once an anonymous set is declared it cannot be changed anymore except by
 		removing/altering the rule that uses the anonymous set.
 		<example>
-			<title>Using anyonymous sets to accept particular subnets and ports</title>
+			<title>Using anonymous sets to accept particular subnets and ports</title>
 			<programlisting>
         nft add rule filter input ip saddr { 10.0.0.0/8, 192.168.0.0/16 } tcp dport { 22, 443 } accept
 			</programlisting>
@@ -986,7 +986,7 @@ table inet filter {
 		in rules.  Unlike anonymous sets, elements can be added to or removed from a named set at any time.
 		Sets are referenced from rules using an <literal>@</literal> prefixed to the sets name.
 			<example>
-				<title>Using named sets to accept addressesand ports</title>
+				<title>Using named sets to accept addresses and ports</title>
 				<programlisting>
         nft add rule filter input ip saddr @allowed_hosts tcp dport @allowed_ports accept
 				</programlisting>
@@ -1139,7 +1139,7 @@ table inet filter {
 					</row>
 					<row>
 						<entry>size</entry>
-						<entry>maximun number of elements in the set, mandatory if set is added to from the packet path (ruleset).</entry>
+						<entry>maximum number of elements in the set, mandatory if set is added to from the packet path (ruleset).</entry>
 						<entry>unsigned integer (64 bit)</entry>
 					</row>
 					<row>
@@ -1285,7 +1285,7 @@ table inet filter {
 					</row>
 					<row>
 						<entry>size</entry>
-						<entry>maximun number of elements in the map</entry>
+						<entry>maximum number of elements in the map</entry>
 						<entry>unsigned integer (64 bit)</entry>
 					</row>
 					<row>
@@ -1464,7 +1464,7 @@ table inet filter {
 			<para>
 				Ct helper is used to define connection tracking helpers that can then be used in combination with the <literal>"ct helper set"</literal> statement.
 				type and protocol are mandatory, l3proto is derived from the table family by default, i.e. in the inet table the kernel will
-				try to load both the ipv4 and ipv6 helper backends, if they are supported by the kernel.
+				try to load both the IPv4 and IPv6 helper backends, if they are supported by the kernel.
 			</para>
 			<table frame="all">
 				<title>conntrack helper specifications</title>
@@ -1584,12 +1584,12 @@ table inet myhelpers {
 						<row>
 							<entry>quota</entry>
 							<entry>quota limit, used as the quota name</entry>
-							<entry>Two arguments, unsigned interger (64 bit) and string: bytes, kbytes, mbytes. "over" and "until" go before these arguments</entry>
+							<entry>Two arguments, unsigned integer (64 bit) and string: bytes, kbytes, mbytes. "over" and "until" go before these arguments</entry>
 						</row>
 						<row>
 							<entry>used</entry>
 							<entry>initial value of used quota</entry>
-							<entry>Two arguments, unsigned interger (64 bit) and string: bytes, kbytes, mbytes</entry>
+							<entry>Two arguments, unsigned integer (64 bit) and string: bytes, kbytes, mbytes</entry>
 						</row>
 					</tbody>
 				</tgroup>
@@ -1628,7 +1628,7 @@ table inet myhelpers {
 $ nft describe tcp flags
 payload expression, datatype tcp_flag (TCP flag) (basetype bitmask, integer), 8 bits
 
-pre-defined symbolic constants:
+predefined symbolic constants:
 fin                           	0x01
 syn                           	0x02
 rst                           	0x04
@@ -2794,7 +2794,7 @@ filter output icmpv6 type { echo-request, echo-reply }
 							</row>
 							<row>
 								<entry>protocol</entry>
-								<entry>Ethertype protocol value</entry>
+								<entry>EtherType protocol value</entry>
 								<entry>ether_type</entry>
 							</row>
 							<row>
@@ -3166,7 +3166,7 @@ inet filter output rt ip6 nexthop fd00::1
 			<para>
 				<cmdsynopsis>
 					<command>ether</command>
-					<arg opt="req"><replaceable>ethernet header field</replaceable></arg>
+					<arg opt="req"><replaceable>Ethernet header field</replaceable></arg>
 				</cmdsynopsis>
 			</para>
 			<para>
@@ -3974,7 +3974,7 @@ ip6 nexthdr ipv6-frag counter
 		</refsect2>
 
 		<refsect2>
-			<title>IPcomp header expression</title>
+			<title>IPComp header expression</title>
 			<para>
 				<cmdsynopsis>
 					<command>comp</command>
@@ -4047,7 +4047,7 @@ ip6 nexthdr ipv6-frag counter
 					<tbody>
 						<row>
 							<entry>ll</entry>
-							<entry>Link layer, for example the ethernet header</entry>
+							<entry>Link layer, for example the Ethernet header</entry>
 						</row>
 						<row>
 							<entry>nh</entry>
@@ -4080,7 +4080,7 @@ input meta iifname enp2s0 arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh
 			<title>Extension header expressions</title>
 			<para>
 				Extension header expressions refer to data from variable-sized protocol headers, such as IPv6 extension headers and
-				TCPs options.
+				TCP options.
 			</para>
 			<para>
 				nftables currently supports matching (finding) a given ipv6 extension header or TCP option.
@@ -4467,7 +4467,7 @@ ip6 filter input frag more-fragments 1 counter
 							</row>
 							<row>
 								<entry>bytes</entry>
-								<entry>bytecount seen, see description for <command>packets</command> keyword</entry>
+								<entry>byte count seen, see description for <command>packets</command> keyword</entry>
 								<entry>integer (64 bit)</entry>
 							</row>
 							<row>
@@ -5191,7 +5191,7 @@ ct event set new,related,destroy
 							<row>
 								<entry>address</entry>
 								<entry>Specifies that the source/destination address of the packet should be modified. You may specify a mapping to relate a list of tuples composed of arbitrary expression key with address value.</entry>
-								<entry>ipv4_addr, ipv6_addr, eg. abcd::1234, or you can use a mapping, eg. meta mark map { 10 : 192.168.1.2, 20 : 192.168.1.3 }</entry>
+								<entry>ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping, e.g. meta mark map { 10 : 192.168.1.2, 20 : 192.168.1.3 }</entry>
 							</row>
 							<row>
 								<entry>port</entry>
@@ -5275,7 +5275,7 @@ add rule nat prerouting tcp dport 22 redirect to :2222
 		<refsect2>
 			<title>Queue statement</title>
 			<para>
-				This statement passes the packet to userspace using the nfnetlink_queue handler. The packet is put into the queue identified by its 16-bit queue number. Userspace can inspect and modify the packet if desired. Userspace must then drop or reinject the packet into the kernel. See libnetfilter_queue documentation for details.
+				This statement passes the packet to userspace using the nfnetlink_queue handler. The packet is put into the queue identified by its 16-bit queue number. Userspace can inspect and modify the packet if desired. Userspace must then drop or re-inject the packet into the kernel. See libnetfilter_queue documentation for details.
 			</para>
 			<para>
                                 <cmdsynopsis>
@@ -5338,7 +5338,7 @@ add rule nat prerouting tcp dport 22 redirect to :2222
 						<tbody>
 							<row>
 								<entry>bypass</entry>
-								<entry>Let packets go through if userspace application cannot back off. Before using this flag, read libnetfilter_queue documentation for performance tuning recomendations.</entry>
+								<entry>Let packets go through if userspace application cannot back off. Before using this flag, read libnetfilter_queue documentation for performance tuning recommendations.</entry>
 							</row>
 							<row>
 								<entry>fanout</entry>
@@ -5386,7 +5386,7 @@ add rule nat prerouting tcp dport 22 redirect to :2222
 							<row>
 								<entry>address</entry>
 								<entry>Specifies that the copy of the packet should be sent to a new gateway.</entry>
-								<entry>ipv4_addr, ipv6_addr, eg. abcd::1234, or you can use a mapping, eg. ip saddr map { 192.168.1.2 : 10.1.1.1 }</entry>
+								<entry>ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping, e.g. ip saddr map { 192.168.1.2 : 10.1.1.1 }</entry>
 							</row>
 							<row>
 								<entry>device</entry>
@@ -5434,7 +5434,7 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 			<para>
 				The set statement is used to dynamically add or update elements in a set from the packet path.
 				The set <literal>setname</literal> must already exist in the given table.
-				Furhermore, any set that will be dynamically updated from the nftables ruleset must specify
+				Furthermore, any set that will be dynamically updated from the nftables ruleset must specify
 				both a maximum set size (to prevent memory exhaustion) and a timeout (so that number of entries in
 				set will not grow indefinitely).
 				The set statement can be used to e.g. create dynamic blacklists.
@@ -5465,7 +5465,7 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
     # drop packets coming from blacklisted ip addresses.
     nft add rule ip filter input ip saddr @blackhole counter drop
 
-    # add source ip addresses to the backlist if more than 10 tcp connection requests occured per second and ip address.
+    # add source ip addresses to the blacklist if more than 10 tcp connection requests occurred per second and ip address.
     # entries will timeout after one minute, after which they might be re-added if limit condition persists.
     nft add rule ip filter input tcp flags syn tcp dport ssh meter flood { ip saddr timeout 10s limit rate over 10/second} add @blackhole { ip saddr timeout 1m } drop
 
@@ -5543,7 +5543,7 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 		<para>
 			When an error is detected, nft shows the line(s) containing the error, the position
 			of the erroneous parts in the input stream and marks up the erroneous parts using
-			carrets (<literal>^</literal>). If the error results from the combination of two
+			carets (<literal>^</literal>). If the error results from the combination of two
 			expressions or statements, the part imposing the constraints which are violated is
 			marked using tildes (<literal>~</literal>).
 		</para>
@@ -5623,7 +5623,7 @@ Copyright &copy; 2013-2016 Pablo Neira Ayuso <email>pablo@netfilter.org</email>
 			published by the Free Software Foundation.
 		</para>
 		<para>
-			This documentation is licenced under the terms of the Creative
+			This documentation is licensed under the terms of the Creative
 			Commons Attribution-ShareAlike 4.0 license,
 			<ulink url="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</ulink>.
 		</para>

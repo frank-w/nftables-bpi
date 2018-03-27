@@ -243,6 +243,7 @@ static void netlink_gen_map(struct netlink_linearize_ctx *ctx,
 {
 	struct nftnl_expr *nle;
 	enum nft_registers sreg;
+	int regspace = 0;
 
 	assert(expr->mappings->ops->type == EXPR_SET_REF);
 
@@ -251,7 +252,14 @@ static void netlink_gen_map(struct netlink_linearize_ctx *ctx,
 	else
 		sreg = dreg;
 
+	/* suppress assert in netlink_gen_expr */
+	if (expr->map->ops->type == EXPR_CONCAT) {
+		regspace = netlink_register_space(expr->map->len);
+		ctx->reg_low += regspace;
+	}
+
 	netlink_gen_expr(ctx, expr->map, sreg);
+	ctx->reg_low -= regspace;
 
 	nle = alloc_nft_expr("lookup");
 	netlink_put_register(nle, NFTNL_EXPR_LOOKUP_SREG, sreg);

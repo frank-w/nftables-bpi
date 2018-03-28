@@ -467,15 +467,6 @@ static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
 	 * IPv6 for the bridge, inet and netdev families.
 	 */
 	switch (family) {
-	case NFPROTO_IPV4:
-	case NFPROTO_IPV6:
-		if (expr->payload.desc == &proto_icmp &&
-		    family != NFPROTO_IPV4)
-			return false;
-		if (expr->payload.desc == &proto_icmp6 &&
-		    family != NFPROTO_IPV6)
-			return false;
-		break;
 	case NFPROTO_BRIDGE:
 	case NFPROTO_NETDEV:
 	case NFPROTO_INET:

@@ -2,7 +2,7 @@
 
    Contributed to the GNU project by Niels Möller
 
-Copyright 1991-1997, 1999-2018 Free Software Foundation, Inc.
+Copyright 1991-1997, 1999-2016 Free Software Foundation, Inc.
 
 This file is part of the GNU MP Library.
 
@@ -70,12 +70,6 @@ see https://www.gnu.org/licenses/.  */
 #define GMP_MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #define GMP_CMP(a,b) (((a) > (b)) - ((a) < (b)))
-
-/* Return non-zero if xp,xsize and yp,ysize overlap.
-   If xp+xsize<=yp there's no overlap, or if yp+ysize<=xp there's no
-   overlap.  If both these are false, there's an overlap. */
-#define GMP_MPN_OVERLAP_P(xp, xsize, yp, ysize)				\
-  ((xp) + (xsize) > (yp) && (yp) + (ysize) > (xp))
 
 #define gmp_assert_nocarry(x) do { \
     mp_limb_t __cy = (x);	   \
@@ -582,8 +576,6 @@ mpn_mul (mp_ptr rp, mp_srcptr up, mp_size_t un, mp_srcptr vp, mp_size_t vn)
 {
   assert (un >= vn);
   assert (vn >= 1);
-  assert (!GMP_MPN_OVERLAP_P(rp, un + vn, up, un));
-  assert (!GMP_MPN_OVERLAP_P(rp, un + vn, vp, vn));
 
   /* We first multiply by the low order limb. This result can be
      stored, not added, to rp. We also avoid a loop for zeroing this
@@ -930,8 +922,7 @@ mpn_div_qr_1_preinv (mp_ptr qp, mp_srcptr np, mp_size_t nn,
 
   if (inv->shift > 0)
     {
-      /* Shift, reusing qp area if possible. In-place shift if qp == np. */
-      tp = qp ? qp : gmp_xalloc_limbs (nn);
+      tp = gmp_xalloc_limbs (nn);
       r = mpn_lshift (tp, np, nn, inv->shift);
       np = tp;
     }
@@ -948,7 +939,7 @@ mpn_div_qr_1_preinv (mp_ptr qp, mp_srcptr np, mp_size_t nn,
       if (qp)
 	qp[nn] = q;
     }
-  if ((inv->shift > 0) && (tp != qp))
+  if (inv->shift > 0)
     gmp_free (tp);
 
   return r >> inv->shift;
@@ -985,12 +976,13 @@ mpn_div_qr_1 (mp_ptr qp, mp_srcptr np, mp_size_t nn, mp_limb_t d)
 }
 
 static void
-mpn_div_qr_2_preinv (mp_ptr qp, mp_ptr np, mp_size_t nn,
+mpn_div_qr_2_preinv (mp_ptr qp, mp_ptr rp, mp_srcptr np, mp_size_t nn,
 		     const struct gmp_div_inverse *inv)
 {
   unsigned shift;
   mp_size_t i;
   mp_limb_t d1, d0, di, r1, r0;
+  mp_ptr tp;
 
   assert (nn >= 2);
   shift = inv->shift;
@@ -999,7 +991,11 @@ mpn_div_qr_2_preinv (mp_ptr qp, mp_ptr np, mp_size_t nn,
   di = inv->di;
 
   if (shift > 0)
-    r1 = mpn_lshift (np, np, nn, shift);
+    {
+      tp = gmp_xalloc_limbs (nn);
+      r1 = mpn_lshift (tp, np, nn, shift);
+      np = tp;
+    }
   else
     r1 = 0;
 
@@ -1022,11 +1018,26 @@ mpn_div_qr_2_preinv (mp_ptr qp, mp_ptr np, mp_size_t nn,
       assert ((r0 << (GMP_LIMB_BITS - shift)) == 0);
       r0 = (r0 >> shift) | (r1 << (GMP_LIMB_BITS - shift));
       r1 >>= shift;
+
+      gmp_free (tp);
     }
 
-  np[1] = r1;
-  np[0] = r0;
+  rp[1] = r1;
+  rp[0] = r0;
 }
+
+#if 0
+static void
+mpn_div_qr_2 (mp_ptr qp, mp_ptr rp, mp_srcptr np, mp_size_t nn,
+	      mp_limb_t d1, mp_limb_t d0)
+{
+  struct gmp_div_inverse inv;
+  assert (nn >= 2);
+
+  mpn_div_qr_2_invert (&inv, d1, d0);
+  mpn_div_qr_2_preinv (qp, rp, np, nn, &inv);
+}
+#endif
 
 static void
 mpn_div_qr_pi1 (mp_ptr qp,
@@ -1102,7 +1113,7 @@ mpn_div_qr_preinv (mp_ptr qp, mp_ptr np, mp_size_t nn,
   if (dn == 1)
     np[0] = mpn_div_qr_1_preinv (qp, np, nn, inv);
   else if (dn == 2)
-    mpn_div_qr_2_preinv (qp, np, nn, inv);
+    mpn_div_qr_2_preinv (qp, np, np, nn, inv);
   else
     {
       mp_limb_t nh;
@@ -1609,19 +1620,11 @@ mpz_limbs_finish (mpz_t x, mp_size_t xs)
   x->_mp_size = xs < 0 ? -xn : xn;
 }
 
-static mpz_srcptr
-mpz_roinit_normal_n (mpz_t x, mp_srcptr xp, mp_size_t xs)
-{
-  x->_mp_alloc = 0;
-  x->_mp_d = (mp_ptr) xp;
-  x->_mp_size = xs;
-  return x;
-}
-
 mpz_srcptr
 mpz_roinit_n (mpz_t x, mp_srcptr xp, mp_size_t xs)
 {
-  mpz_roinit_normal_n (x, xp, xs);
+  x->_mp_alloc = 0;
+  x->_mp_d = (mp_ptr) xp;
   mpz_limbs_finish (x, xs);
   return x;
 }
@@ -3093,7 +3096,7 @@ void
 mpz_ui_pow_ui (mpz_t r, unsigned long blimb, unsigned long e)
 {
   mpz_t b;
-  mpz_pow_ui (r, mpz_roinit_normal_n (b, &blimb, blimb != 0), e);
+  mpz_pow_ui (r, mpz_roinit_n (b, &blimb, 1), e);
 }
 
 void
@@ -3205,7 +3208,7 @@ void
 mpz_powm_ui (mpz_t r, const mpz_t b, unsigned long elimb, const mpz_t m)
 {
   mpz_t e;
-  mpz_powm (r, b, mpz_roinit_normal_n (e, &elimb, elimb != 0), m);
+  mpz_powm (r, b, mpz_roinit_n (e, &elimb, 1), m);
 }
 
 /* x=trunc(y^(1/z)), r=y-x^z */
@@ -3312,7 +3315,7 @@ mpn_perfect_square_p (mp_srcptr p, mp_size_t n)
 
   assert (n > 0);
   assert (p [n-1] != 0);
-  return mpz_root (NULL, mpz_roinit_normal_n (t, p, n), 2);
+  return mpz_root (NULL, mpz_roinit_n (t, p, n), 2);
 }
 
 mp_size_t
@@ -3326,7 +3329,7 @@ mpn_sqrtrem (mp_ptr sp, mp_ptr rp, mp_srcptr p, mp_size_t n)
 
   mpz_init (r);
   mpz_init (s);
-  mpz_rootrem (s, r, mpz_roinit_normal_n (u, p, n), 2);
+  mpz_rootrem (s, r, mpz_roinit_n (u, p, n), 2);
 
   assert (s->_mp_size == (n+1)/2);
   mpn_copyd (sp, s->_mp_d, s->_mp_size);
@@ -3341,24 +3344,11 @@ mpn_sqrtrem (mp_ptr sp, mp_ptr rp, mp_srcptr p, mp_size_t n)
 /* Combinatorics */
 
 void
-mpz_mfac_uiui (mpz_t x, unsigned long n, unsigned long m)
-{
-  mpz_set_ui (x, n + (n == 0));
-  if (m + 1 < 2) return;
-  while (n > m + 1)
-    mpz_mul_ui (x, x, n -= m);
-}
-
-void
-mpz_2fac_ui (mpz_t x, unsigned long n)
-{
-  mpz_mfac_uiui (x, n, 2);
-}
-
-void
 mpz_fac_ui (mpz_t x, unsigned long n)
 {
-  mpz_mfac_uiui (x, n, 1);
+  mpz_set_ui (x, n + (n == 0));
+  while (n > 2)
+    mpz_mul_ui (x, x, --n);
 }
 
 void
@@ -3374,7 +3364,7 @@ mpz_bin_uiui (mpz_t r, unsigned long n, unsigned long k)
   mpz_init (t);
   mpz_fac_ui (t, k);
 
-  for (; k > 0; --k)
+  for (; k > 0; k--)
       mpz_mul_ui (r, r, n--);
 
   mpz_divexact (r, r, t);
@@ -3859,10 +3849,10 @@ gmp_popcount_limb (mp_limb_t x)
   /* Do 16 bits at a time, to avoid limb-sized constants. */
   for (c = 0; x > 0; x >>= 16)
     {
-      unsigned w = x - ((x >> 1) & 0x5555);
+      unsigned w = ((x >> 1) & 0x5555) + (x & 0x5555);
       w = ((w >> 2) & 0x3333) + (w & 0x3333);
-      w =  (w >> 4) + w;
-      w = ((w >> 8) & 0x000f) + (w & 0x000f);
+      w = ((w >> 4) & 0x0f0f) + (w & 0x0f0f);
+      w = (w >> 8) + (w & 0x00ff);
       c += w;
     }
   return c;
@@ -4023,7 +4013,7 @@ mpz_sizeinbase (const mpz_t u, int base)
   size_t ndigits;
 
   assert (base >= 2);
-  assert (base <= 62);
+  assert (base <= 36);
 
   un = GMP_ABS (u->_mp_size);
   if (un == 0)
@@ -4073,22 +4063,19 @@ mpz_get_str (char *sp, int base, const mpz_t u)
   mp_size_t un;
   size_t i, sn;
 
-  digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  if (base > 1)
+  if (base >= 0)
     {
-      if (base <= 36)
-	digits = "0123456789abcdefghijklmnopqrstuvwxyz";
-      else if (base > 62)
-	return NULL;
+      digits = "0123456789abcdefghijklmnopqrstuvwxyz";
     }
-  else if (base >= -1)
-    base = 10;
   else
     {
       base = -base;
-      if (base > 36)
-	return NULL;
+      digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
+  if (base <= 1)
+    base = 10;
+  if (base > 36)
+    return NULL;
 
   sn = 1 + mpz_sizeinbase (u, base);
   if (!sp)
@@ -4136,14 +4123,14 @@ mpz_get_str (char *sp, int base, const mpz_t u)
 int
 mpz_set_str (mpz_t r, const char *sp, int base)
 {
-  unsigned bits, value_of_a;
+  unsigned bits;
   mp_size_t rn, alloc;
   mp_ptr rp;
   size_t dn;
   int sign;
   unsigned char *dp;
 
-  assert (base == 0 || (base >= 2 && base <= 62));
+  assert (base == 0 || (base >= 2 && base <= 36));
 
   while (isspace( (unsigned char) *sp))
     sp++;
@@ -4179,7 +4166,6 @@ mpz_set_str (mpz_t r, const char *sp, int base)
     }
   dp = (unsigned char *) gmp_xalloc (strlen (sp));
 
-  value_of_a = (base > 36) ? 36 : 10;
   for (dn = 0; *sp; sp++)
     {
       unsigned digit;
@@ -4189,7 +4175,7 @@ mpz_set_str (mpz_t r, const char *sp, int base)
       else if (*sp >= '0' && *sp <= '9')
 	digit = *sp - '0';
       else if (*sp >= 'a' && *sp <= 'z')
-	digit = *sp - 'a' + value_of_a;
+	digit = *sp - 'a' + 10;
       else if (*sp >= 'A' && *sp <= 'Z')
 	digit = *sp - 'A' + 10;
       else

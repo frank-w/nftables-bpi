@@ -650,7 +650,7 @@ ip test-ip4 input
   [ meta load pkttype => reg 1 ]
   [ cmp neq reg 1 0x00000002 ]
 
-# meta pkttype { broadcast, multicast} accept
+# pkttype { broadcast, multicast} accept
 __set%d test-ip4 3
 __set%d test-ip4 0
 	element 00000001  : 0 [end]	element 00000002  : 0 [end]

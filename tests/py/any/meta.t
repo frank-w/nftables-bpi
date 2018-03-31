@@ -66,14 +66,14 @@ meta iif != "lo" accept;ok;iif != "lo" accept
 
 meta iifname "dummy0";ok;iifname "dummy0"
 meta iifname != "dummy0";ok;iifname != "dummy0"
-meta iifname {"dummy0", "lo"};ok
-meta iifname != {"dummy0", "lo"};ok
+meta iifname {"dummy0", "lo"};ok;iifname {"dummy0", "lo"}
+meta iifname != {"dummy0", "lo"};ok;iifname != {"dummy0", "lo"}
 meta iifname "dummy*";ok;iifname "dummy*"
 meta iifname "dummy\*";ok;iifname "dummy\*"
 meta iifname '""';fail
 
-meta iiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok
-meta iiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok
+meta iiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok;iiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
+meta iiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok;iiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
 meta iiftype != ether;ok;iiftype != ether
 meta iiftype ether;ok;iiftype ether
 meta iiftype != ppp;ok;iiftype != ppp
@@ -81,18 +81,18 @@ meta iiftype ppp;ok;iiftype ppp
 
 meta oif "lo" accept;ok;oif "lo" accept
 meta oif != "lo" accept;ok;oif != "lo" accept
-meta oif {"lo"} accept;ok
-meta oif != {"lo"} accept;ok
+meta oif {"lo"} accept;ok;oif {"lo"} accept
+meta oif != {"lo"} accept;ok;oif != {"lo"} accept
 
 meta oifname "dummy0";ok;oifname "dummy0"
 meta oifname != "dummy0";ok;oifname != "dummy0"
-meta oifname { "dummy0", "lo"};ok
+meta oifname { "dummy0", "lo"};ok;oifname { "dummy0", "lo"}
 meta oifname "dummy*";ok;oifname "dummy*"
 meta oifname "dummy\*";ok;oifname "dummy\*"
 meta oifname '""';fail
 
-meta oiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok
-meta oiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok
+meta oiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok;oiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
+meta oiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok;oiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
 meta oiftype != ether;ok;oiftype != ether
 meta oiftype ether;ok;oiftype ether
 
@@ -106,7 +106,7 @@ meta skuid eq 3000 accept;ok;skuid 3000 accept
 meta skuid 3001-3005 accept;ok;skuid 3001-3005 accept
 meta skuid != 2001-2005 accept;ok;skuid != 2001-2005 accept
 meta skuid { 2001-2005} accept;ok;skuid { 2001-2005} accept
-meta skuid != { 2001-2005} accept;ok
+meta skuid != { 2001-2005} accept;ok;skuid != { 2001-2005} accept
 
 meta skgid {"bin", "root", "daemon"} accept;ok;skgid { 0, 1, 2} accept
 meta skgid != {"bin", "root", "daemon"} accept;ok;skgid != { 1, 0, 2} accept
@@ -159,36 +159,36 @@ meta pkttype != broadcast;ok;pkttype != broadcast
 meta pkttype != host;ok;pkttype != host
 meta pkttype != multicast;ok;pkttype != multicast
 meta pkttype broadcastttt;fail
-meta pkttype { broadcast, multicast} accept;ok
+pkttype { broadcast, multicast} accept;ok
 
 meta cpu 1;ok;cpu 1
 meta cpu != 1;ok;cpu != 1
 meta cpu 1-3;ok;cpu 1-3
 meta cpu != 1-2;ok;cpu != 1-2
 meta cpu { 2,3};ok;cpu { 2,3}
-meta cpu { 2-3, 5-7};ok
-meta cpu != { 2,3};ok; cpu != { 2,3}
+meta cpu { 2-3, 5-7};ok;cpu { 2-3, 5-7}
+meta cpu != { 2,3};ok;cpu != { 2,3}
 
 meta iifgroup 0;ok;iifgroup "default"
 meta iifgroup != 0;ok;iifgroup != "default"
 meta iifgroup "default";ok;iifgroup "default"
 meta iifgroup != "default";ok;iifgroup != "default"
 meta iifgroup {"default"};ok;iifgroup {"default"}
-meta iifgroup != {"default"};ok
-meta iifgroup { 11,33};ok
-meta iifgroup {11-33};ok
-meta iifgroup != { 11,33};ok
-meta iifgroup != {11-33};ok
+meta iifgroup != {"default"};ok;iifgroup != {"default"}
+meta iifgroup { 11,33};ok;iifgroup { 11,33}
+meta iifgroup {11-33};ok;iifgroup {11-33}
+meta iifgroup != { 11,33};ok;iifgroup != { 11,33}
+meta iifgroup != {11-33};ok;iifgroup != {11-33}
 meta oifgroup 0;ok;oifgroup "default"
 meta oifgroup != 0;ok;oifgroup != "default"
 meta oifgroup "default";ok;oifgroup "default"
 meta oifgroup != "default";ok;oifgroup != "default"
 meta oifgroup {"default"};ok;oifgroup {"default"}
 meta oifgroup != {"default"};ok;oifgroup != {"default"}
-meta oifgroup { 11,33};ok
-meta oifgroup {11-33};ok
-meta oifgroup != { 11,33};ok
-meta oifgroup != {11-33};ok
+meta oifgroup { 11,33};ok;oifgroup { 11,33}
+meta oifgroup {11-33};ok;oifgroup {11-33}
+meta oifgroup != { 11,33};ok;oifgroup != { 11,33}
+meta oifgroup != {11-33};ok;oifgroup != {11-33}
 
 meta cgroup 1048577;ok;cgroup 1048577
 meta cgroup != 1048577;ok;cgroup != 1048577
@@ -199,9 +199,9 @@ meta cgroup != 1048577-1048578;ok;cgroup != 1048577-1048578
 meta cgroup {1048577-1048578};ok;cgroup { 1048577-1048578}
 meta cgroup != { 1048577-1048578};ok;cgroup != { 1048577-1048578}
 
-meta iif . meta oif { "lo" . "lo" };ok
-meta iif . meta oif . meta mark { "lo" . "lo" . 0x0000000a };ok
-meta iif . meta oif vmap { "lo" . "lo" : drop };ok
+meta iif . meta oif { "lo" . "lo" };ok;iif . oif { "lo" . "lo" }
+meta iif . meta oif . meta mark { "lo" . "lo" . 0x0000000a };ok;iif . oif . mark { "lo" . "lo" . 0x0000000a }
+meta iif . meta oif vmap { "lo" . "lo" : drop };ok;iif . oif vmap { "lo" . "lo" : drop }
 
 meta random eq 1;ok;meta random 1
 meta random gt 1000000;ok;meta random > 1000000

@@ -2363,8 +2363,10 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 		case STMT_NAT:
 			if (stmt->nat.addr != NULL)
 				expr_postprocess(&rctx, &stmt->nat.addr);
-			if (stmt->nat.proto != NULL)
+			if (stmt->nat.proto != NULL) {
+				payload_dependency_reset(&rctx.pdctx);
 				expr_postprocess(&rctx, &stmt->nat.proto);
+			}
 			break;
 		case STMT_REJECT:
 			stmt_reject_postprocess(&rctx);

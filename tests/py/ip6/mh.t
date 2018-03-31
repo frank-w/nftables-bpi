@@ -6,7 +6,7 @@
 mh nexthdr 1;ok
 mh nexthdr != 1;ok
 mh nexthdr { udplite, ipcomp, udp, ah, sctp, esp, dccp, tcp, ipv6-icmp };ok;mh nexthdr { 58, 17, 108, 6, 51, 136, 50, 132, 33}
-mh nexthdr != { udplite, ipcomp, udp, ah, sctp, esp, dccp, tcp, ipv6-icmp };ok;mh nexthdr { 58, 17, 108, 6, 51, 136, 50, 132, 33}
+mh nexthdr != { udplite, ipcomp, udp, ah, sctp, esp, dccp, tcp, ipv6-icmp };ok;mh nexthdr != { 58, 17, 108, 6, 51, 136, 50, 132, 33}
 mh nexthdr icmp;ok;mh nexthdr 1
 mh nexthdr != icmp;ok;mh nexthdr != 1
 mh nexthdr 22;ok

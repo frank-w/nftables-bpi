@@ -471,6 +471,10 @@ def set_check_element(rule1, rule2):
     ret = -1
     pos1 = rule1.find("{")
     pos2 = rule2.find("{")
+
+    if (cmp(rule1[:pos1], rule2[:pos2]) != 0):
+        return ret;
+
     end1 = rule1.find("}")
     end2 = rule2.find("}")
 

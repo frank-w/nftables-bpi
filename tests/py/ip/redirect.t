@@ -44,8 +44,8 @@ ip saddr 10.1.1.1 redirect drop;fail
 # redirect with sets
 tcp dport { 1, 2, 3, 4, 5, 6, 7, 8, 101, 202, 303, 1001, 2002, 3003} redirect;ok
 ip daddr 10.0.0.0-10.2.3.4 udp dport 53 counter redirect;ok
-iifname eth0 ct state new,established tcp dport vmap {22 : drop, 222 : drop } redirect;ok
+iifname "eth0" ct state established,new tcp dport vmap {22 : drop, 222 : drop } redirect;ok
 
 # redirect with maps
-ip protocol 6 redirect to : tcp dport map { 22 : 8000, 80 : 8080};ok
+ip protocol 6 redirect to :tcp dport map { 22 : 8000, 80 : 8080};ok
 

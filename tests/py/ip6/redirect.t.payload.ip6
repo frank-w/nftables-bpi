@@ -175,7 +175,7 @@ ip6 test-ip6 output
   [ counter pkts 0 bytes 0 ]
   [ redir ]
 
-# iifname eth0 ct state new,established tcp dport vmap {22 : drop, 222 : drop } redirect
+# iifname "eth0" ct state established,new tcp dport vmap {22 : drop, 222 : drop } redirect
 __map%d test-ip6 b
 __map%d test-ip6 0
 	element 00001600  : 0 [end]	element 0000de00  : 0 [end]
@@ -191,7 +191,7 @@ ip6 test-ip6 output
   [ lookup reg 1 set __map%d dreg 0 ]
   [ redir ]
 
-# ip6 nexthdr 6 redirect to : tcp dport map { 22 : 8000, 80 : 8080}
+# ip6 nexthdr 6 redirect to :tcp dport map { 22 : 8000, 80 : 8080}
 __map%d test-ip6 b
 __map%d test-ip6 0
 	element 00001600  : 0000401f 0 [end]	element 00005000  : 0000901f 0 [end]

@@ -3231,11 +3231,6 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
-	if (ret < 0)
-		return ret;
-
 	switch (cmd->obj) {
 	case CMD_OBJ_RULESET:
 		cache_flush(&ctx->cache->list);
@@ -3248,6 +3243,11 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		/* Chains don't hold sets */
 		break;
 	case CMD_OBJ_SET:
+		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+				   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+		if (ret < 0)
+			return ret;
+
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
 			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
@@ -3258,6 +3258,11 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 					 cmd->handle.set);
 		return 0;
 	case CMD_OBJ_MAP:
+		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+				   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+		if (ret < 0)
+			return ret;
+
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
 			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
@@ -3268,6 +3273,11 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 					 cmd->handle.set);
 		return 0;
 	case CMD_OBJ_METER:
+		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+				   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+		if (ret < 0)
+			return ret;
+
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
 			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",

@@ -1510,45 +1510,45 @@ static void binop_transfer_handle_lhs(struct expr **expr)
 	}
 }
 
-static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
+static int __binop_transfer(struct eval_ctx *ctx,
+			    struct expr *left, struct expr **right)
 {
-	struct expr *left = (*expr)->left, *i, *next;
+	struct expr *i, *next;
 	int err;
 
-	if (left->ops->type != EXPR_BINOP)
-		return 0;
+	assert(left->ops->type == EXPR_BINOP);
 
-	switch ((*expr)->right->ops->type) {
+	switch ((*right)->ops->type) {
 	case EXPR_VALUE:
-		err = binop_can_transfer(ctx, left, (*expr)->right);
+		err = binop_can_transfer(ctx, left, *right);
 		if (err <= 0)
 			return err;
-		if (binop_transfer_one(ctx, left, &(*expr)->right) < 0)
+		if (binop_transfer_one(ctx, left, right) < 0)
 			return -1;
 		break;
 	case EXPR_RANGE:
-		err = binop_can_transfer(ctx, left, (*expr)->right);
+		err = binop_can_transfer(ctx, left, *right);
 		if (err <= 0)
 			return err;
-		if (binop_transfer_one(ctx, left, &(*expr)->right) < 0)
+		if (binop_transfer_one(ctx, left, right) < 0)
 			return -1;
 		break;
 	case EXPR_SET:
-		list_for_each_entry(i, &(*expr)->right->expressions, list) {
+		list_for_each_entry(i, &(*right)->expressions, list) {
 			err = binop_can_transfer(ctx, left, i);
 			if (err <= 0)
 				return err;
 		}
-		list_for_each_entry_safe(i, next, &(*expr)->right->expressions,
-					 list) {
+		list_for_each_entry_safe(i, next, &(*right)->expressions, list) {
 			list_del(&i->list);
-			if (binop_transfer_one(ctx, left, &i) < 0)
-				return -1;
+			err = binop_transfer_one(ctx, left, &i);
 			list_add_tail(&i->list, &next->list);
+			if (err < 0)
+				return err;
 		}
 		break;
 	case EXPR_SET_REF:
-		list_for_each_entry(i, &(*expr)->right->set->init->expressions, list) {
+		list_for_each_entry(i, &(*right)->set->init->expressions, list) {
 			switch (i->key->ops->type) {
 			case EXPR_VALUE:
 			case EXPR_RANGE:
@@ -1561,7 +1561,7 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 				break;
 			}
 		}
-		list_for_each_entry_safe(i, next, &(*expr)->right->set->init->expressions,
+		list_for_each_entry_safe(i, next, &(*right)->set->init->expressions,
 					 list) {
 			list_del(&i->list);
 			switch (i->key->ops->type) {
@@ -1580,6 +1580,21 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 	default:
 		return 0;
 	}
+
+	return 1;
+}
+
+static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
+{
+	struct expr *left = (*expr)->left;
+	int ret;
+
+	if (left->ops->type != EXPR_BINOP)
+		return 0;
+
+	ret = __binop_transfer(ctx, left, &(*expr)->right);
+	if (ret <= 0)
+		return ret;
 
 	binop_transfer_handle_lhs(&(*expr)->left);
 	return 0;

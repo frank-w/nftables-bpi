@@ -1552,35 +1552,7 @@ static int __binop_transfer(struct eval_ctx *ctx,
 		}
 		break;
 	case EXPR_SET_REF:
-		list_for_each_entry(i, &(*right)->set->init->expressions, list) {
-			switch (i->key->ops->type) {
-			case EXPR_VALUE:
-			case EXPR_RANGE:
-			case EXPR_SET_ELEM:
-				err = binop_can_transfer(ctx, left, i->key);
-				if (err <= 0)
-					return err;
-				break;
-			default:
-				break;
-			}
-		}
-		list_for_each_entry_safe(i, next, &(*right)->set->init->expressions,
-					 list) {
-			list_del(&i->list);
-			switch (i->key->ops->type) {
-			case EXPR_VALUE:
-			case EXPR_RANGE:
-			case EXPR_SET_ELEM:
-				if (binop_transfer_one(ctx, left, &i->key) < 0)
-					return -1;
-				break;
-			default:
-				break;
-			}
-			list_add_tail(&i->list, &next->list);
-		}
-		break;
+		return __binop_transfer(ctx, left, &(*right)->set->init);
 	default:
 		return 0;
 	}

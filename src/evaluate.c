@@ -1282,8 +1282,9 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 		if (binop_transfer(ctx, expr) < 0)
 			return -1;
 
-		map = *expr;
+		ctx->set->key->len = ctx->ectx.len;
 		ctx->set = NULL;
+		map = *expr;
 		map->mappings->set->flags |= map->mappings->set->init->set_flags;
 		break;
 	case EXPR_SYMBOL:

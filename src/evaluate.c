@@ -1421,6 +1421,8 @@ static int binop_can_transfer(struct eval_ctx *ctx,
 		if (err <= 0)
 			return err;
 		return binop_can_transfer(ctx, left, right->right);
+	case EXPR_MAPPING:
+		return binop_can_transfer(ctx, left, right->left);
 	default:
 		return 0;
 	}
@@ -1448,6 +1450,8 @@ static int binop_transfer_one(struct eval_ctx *ctx,
 	int err;
 
 	switch ((*right)->ops->type) {
+	case EXPR_MAPPING:
+		return binop_transfer_one(ctx, left, &(*right)->left);
 	case EXPR_VALUE:
 		break;
 	case EXPR_SET_ELEM:

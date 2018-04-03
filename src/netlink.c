@@ -371,7 +371,7 @@ static void netlink_gen_concat_data(const struct expr *expr,
 		list_for_each_entry(i, &expr->expressions, list) {
 			assert(i->ops->type == EXPR_VALUE);
 			mpz_export_data(data + offset, i->value, i->byteorder,
-					i->len / BITS_PER_BYTE);
+					div_round_up(i->len, BITS_PER_BYTE));
 			offset += netlink_padded_len(i->len) / BITS_PER_BYTE;
 		}
 

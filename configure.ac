@@ -99,7 +99,7 @@ AM_CONDITIONAL([BUILD_CLI], [test "x$with_cli" != xno])
 
 AC_ARG_WITH([xtables], [AS_HELP_STRING([--with-xtables],
             [Use libxtables for iptables interaction)])],
-	    [with_libxtables=yes], [with_libxtables=no])
+	    [with_libxtables=$withval], [with_libxtables=no])
 AS_IF([test "x$with_libxtables" != xno], [
 PKG_CHECK_MODULES([XTABLES], [xtables >= 1.6.1])
 AC_DEFINE([HAVE_LIBXTABLES], [1], [0])

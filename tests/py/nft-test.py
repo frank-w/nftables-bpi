@@ -159,7 +159,7 @@ def table_create(table, filename, lineno):
     '''
     # We check if table exists.
     if table_exist(table, filename, lineno):
-        reason = "Table " + table.name + " already exists"
+        reason = "Table %s already exists" % table
         print_error(reason, filename, lineno)
         return -1
 
@@ -170,7 +170,7 @@ def table_create(table, filename, lineno):
     ret = execute_cmd(cmd, filename, lineno)
 
     if ret != 0:
-        reason = "Cannot add table " + table.name
+        reason = "Cannot " + cmd
         print_error(reason, filename, lineno)
         table_list.remove(table)
         return -1
@@ -178,16 +178,16 @@ def table_create(table, filename, lineno):
     # We check if table was added correctly.
     if not table_exist(table, filename, lineno):
         table_list.remove(table)
-        reason = "I have just added the table " + table.name + \
-                 " but it does not exist. Giving up!"
+        reason = "I have just added the table %s " \
+                 "but it does not exist. Giving up!" % table
         print_error(reason, filename, lineno)
         return -1
 
     for table_chain in table.chains:
         chain = chain_get_by_name(table_chain)
         if chain is None:
-            reason = "The chain " + table_chain + " requested by table " + \
-                     table.name + " does not exist."
+            reason = "The chain %s requested by table %s " \
+                     "does not exist." % (table_chain, table)
             print_error(reason, filename, lineno)
         else:
             chain_create(chain, table, filename)
@@ -200,22 +200,20 @@ def table_delete(table, filename=None, lineno=None):
     Deletes a table.
     '''
     if not table_exist(table, filename, lineno):
-        reason = "Table " + table.name + \
-                 " does not exist but I added it before."
+        reason = "Table %s does not exist but I added it before." % table
         print_error(reason, filename, lineno)
         return -1
 
     cmd = "delete table %s" % table
     ret = execute_cmd(cmd, filename, lineno)
     if ret != 0:
-        reason = cmd + ": " + "I cannot delete table '" + table.name + \
-                 "'. Giving up! "
+        reason = "%s: I cannot delete table %s. Giving up!" % (cmd, table)
         print_error(reason, filename, lineno)
         return -1
 
     if table_exist(table, filename, lineno):
-        reason = "I have just deleted the table " + table.name + \
-                 " but the table still exists."
+        reason = "I have just deleted the table %s " \
+                 "but it still exists." % table
         print_error(reason, filename, lineno)
         return -1
 
@@ -237,8 +235,8 @@ def chain_create(chain, table, filename):
     Adds a chain
     '''
     if chain_exist(chain, table, filename):
-        reason = "This chain '" + chain.name + "' exists in " + table.name + \
-                 ". I cannot create two chains with same name."
+        reason = "This chain '%s' exists in %s. I cannot create " \
+                 "two chains with same name." % (chain, table)
         print_error(reason, filename, chain.lineno)
         return -1
 
@@ -246,13 +244,13 @@ def chain_create(chain, table, filename):
 
     ret = execute_cmd(cmd, filename, chain.lineno)
     if ret != 0:
-        reason = "I cannot create the chain '" + chain.name + "'"
+        reason = "I cannot create the chain '%s'" % chain
         print_error(reason, filename, chain.lineno)
         return -1
 
     if not chain_exist(chain, table, filename):
-        reason = "I have added the chain '" + chain.name + \
-                 "' but it does not exist in " + table.name
+        reason = "I have added the chain '%s' " \
+                 "but it does not exist in %s" % (chain, table)
         print_error(reason, filename, chain.lineno)
         return -1
 
@@ -264,28 +262,28 @@ def chain_delete(chain, table, filename=None, lineno=None):
     Flushes and deletes a chain.
     '''
     if not chain_exist(chain, table, filename):
-        reason = "The chain " + chain.name + " does not exists in " + \
-                 table.name + ". I cannot delete it."
+        reason = "The chain %s does not exist in %s. " \
+                 "I cannot delete it." % (chain, table)
         print_error(reason, filename, lineno)
         return -1
 
     cmd = "flush chain %s %s" % (table, chain)
     ret = execute_cmd(cmd, filename, lineno)
     if ret != 0:
-        reason = "I cannot flush this chain " + chain.name
+        reason = "I cannot flush this chain " + chain
         print_error(reason, filename, lineno)
         return -1
 
     cmd = "delete chain %s %s" % (table, chain)
     ret = execute_cmd(cmd, filename, lineno)
     if ret != 0:
-        reason = cmd + "I cannot delete this chain. DD"
+        reason = cmd + "I cannot delete this chain " + chain
         print_error(reason, filename, lineno)
         return -1
 
     if chain_exist(chain, table, filename):
-        reason = "The chain " + chain.name + " exists in " + table.name + \
-                 ". I cannot delete this chain"
+        reason = "The chain %s exists in %s. " \
+                 "I cannot delete this chain" % (chain, table)
         print_error(reason, filename, lineno)
         return -1
 
@@ -315,7 +313,7 @@ def set_add(s, test_result, filename, lineno):
         s.table = table.name
         s.family = table.family
         if _set_exist(s, filename, lineno):
-            reason = "Set " + s.name + " already exists in " + table.name
+            reason = "Set %s already exists in %s" % (s.name, table)
             print_error(reason, filename, lineno)
             return -1
 
@@ -328,13 +326,13 @@ def set_add(s, test_result, filename, lineno):
 
         if (ret == 0 and test_result == "fail") or \
                 (ret != 0 and test_result == "ok"):
-            reason = cmd + ": " + "I cannot add the set " + s.name
+            reason = "%s: I cannot add the set %s" % (cmd, s.name)
             print_error(reason, filename, lineno)
             return -1
 
         if not _set_exist(s, filename, lineno):
-            reason = "I have just added the set " + s.name + \
-                     " to the table " + table.name + " but it does not exist"
+            reason = "I have just added the set %s to " \
+                     "the table %s but it does not exist" % (s.name, table)
             print_error(reason, filename, lineno)
             return -1
 
@@ -354,8 +352,8 @@ def set_add_elements(set_element, set_name, state, filename, lineno):
         # Check if set exists.
         if (not set_exist(set_name, table, filename, lineno) or
                     set_name not in all_set) and state == "ok":
-            reason = "I cannot add an element to the set " + set_name + \
-                     " since it does not exist."
+            reason = "I cannot add an element to the set %s " \
+                     "since it does not exist." % set_name
             print_error(reason, filename, lineno)
             return -1
 
@@ -386,8 +384,8 @@ def set_delete_elements(set_element, set_name, table, filename=None,
         cmd = "delete element %s %s { %s }" % (table, set_name, element)
         ret = execute_cmd(cmd, filename, lineno)
         if ret != 0:
-            reason = "I cannot delete an element" + element + \
-                     " from the set '" + set_name
+            reason = "I cannot delete element %s " \
+                     "from the set %s" % (element, set_name)
             print_error(reason, filename, lineno)
             return -1
 
@@ -401,8 +399,8 @@ def set_delete(table, filename=None, lineno=None):
     for set_name in all_set.keys():
         # Check if exists the set
         if not set_exist(set_name, table, filename, lineno):
-            reason = "The set " + set_name + \
-                     " does not exist, I cannot delete it"
+            reason = "The set %s does not exist, " \
+                     "I cannot delete it" % set_name
             print_error(reason, filename, lineno)
             return -1
 
@@ -485,7 +483,7 @@ def obj_add(o, test_result, filename, lineno):
         o.family = table.family
         obj_handle = o.type + " " + o.name
         if _obj_exist(o, filename, lineno):
-            reason = "The " + obj_handle + " already exists in " + table.name
+            reason = "The %s already exists in %s" % (obj_handle, table)
             print_error(reason, filename, lineno)
             return -1
 
@@ -494,7 +492,7 @@ def obj_add(o, test_result, filename, lineno):
 
         if (ret == 0 and test_result == "fail") or \
                 (ret != 0 and test_result == "ok"):
-            reason = cmd + ": " + "I cannot add the " + obj_handle
+            reason = "%s: I cannot add the %s" % (cmd, obj_handle)
             print_error(reason, filename, lineno)
             return -1
 
@@ -503,16 +501,16 @@ def obj_add(o, test_result, filename, lineno):
         if exist:
             if test_result == "ok":
                  return 0
-            reason = "I added the " + obj_handle + \
-                     " to the table " + table.name + " but it should have failed"
+            reason = "I added the %s to the table %s " \
+                     "but it should have failed" % (obj_handle, table)
             print_error(reason, filename, lineno)
             return -1
 
         if test_result == "fail":
             return 0
 
-        reason = "I have just added the " + obj_handle + \
-                 " to the table " + table.name + " but it does not exist"
+        reason = "I have just added the %s to " \
+                 "the table %s but it does not exist" % (obj_handle, table)
         print_error(reason, filename, lineno)
         return -1
 
@@ -524,7 +522,7 @@ def obj_delete(table, filename=None, lineno=None):
         obj_handle = o.type + " " + o.name
         # Check if exists the obj
         if not obj_exist(o, table, filename, lineno):
-            reason = "The " + obj_handle + " does not exist, I cannot delete it"
+            reason = "The %s does not exist, I cannot delete it" % obj_handle
             print_error(reason, filename, lineno)
             return -1
 
@@ -1015,7 +1013,7 @@ def run_test_file(filename, force_all_family_option, specific_file):
         rule = line.split(';')  # rule[1] Ok or FAIL
         if len(rule) == 1 or len(rule) > 3 or rule[1].rstrip() \
                 not in {"ok", "fail"}:
-            reason = "Skipping malformed rule test. (" + line.rstrip('\n') + ")"
+            reason = "Skipping malformed rule test. (%s)" % line.rstrip('\n')
             print_warning(reason, filename, lineno)
             continue
 

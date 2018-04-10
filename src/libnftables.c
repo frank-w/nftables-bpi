@@ -280,13 +280,19 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	int rc = 0;
 	struct parser_state state;
 	LIST_HEAD(msgs);
+	size_t nlbuflen;
 	void *scanner;
 	FILE *fp;
+	char *nlbuf;
+
+	nlbuflen = max(buflen + 1, strlen(buf) + 2);
+	nlbuf = xzalloc(nlbuflen);
+	snprintf(nlbuf, nlbuflen, "%s\n", buf);
 
 	parser_init(nft->nf_sock, &nft->cache, &state,
 		    &msgs, nft->debug_mask, &nft->output);
 	scanner = scanner_init(&state);
-	scanner_push_buffer(scanner, &indesc_cmdline, buf);
+	scanner_push_buffer(scanner, &indesc_cmdline, nlbuf);
 
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
 		rc = -1;
@@ -296,6 +302,7 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	nft_ctx_set_output(nft, fp);
 	scanner_destroy(scanner);
 	iface_cache_release();
+	free(nlbuf);
 
 	return rc;
 }

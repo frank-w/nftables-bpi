@@ -264,14 +264,13 @@ int main(int argc, char * const *argv)
 		for (len = 0, i = optind; i < argc; i++)
 			len += strlen(argv[i]) + strlen(" ");
 
-		buf = xzalloc(len + 2);
+		buf = xzalloc(len);
 		for (i = optind; i < argc; i++) {
 			strcat(buf, argv[i]);
 			if (i + 1 < argc)
 				strcat(buf, " ");
 		}
-		strcat(buf, "\n");
-		rc = !!nft_run_cmd_from_buffer(nft, buf, len + 2);
+		rc = !!nft_run_cmd_from_buffer(nft, buf, len);
 	} else if (filename != NULL) {
 		rc = !!nft_run_cmd_from_filename(nft, filename);
 	} else if (interactive) {

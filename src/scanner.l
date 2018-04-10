@@ -47,7 +47,7 @@
 		errno = 0;							\
 		clearerr(yyin);							\
 	}									\
-	if (result > 1) {							\
+	if (result > 1 && !feof(yyin)) {					\
 		while (result > 1 && 						\
 		       (buf[result - 1] != '\n' &&  buf[result - 1] != ' '))	\
 			result--, n++;						\

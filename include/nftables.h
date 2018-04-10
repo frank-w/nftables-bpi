@@ -8,10 +8,11 @@
 #include <nftables/nftables.h>
 
 struct cookie {
+	FILE *fp;
+	FILE *orig_fp;
 	char *buf;
 	size_t buflen;
 	size_t pos;
-	FILE *orig_fp;
 };
 
 struct output_ctx {
@@ -20,10 +21,14 @@ struct output_ctx {
 	unsigned int ip2name;
 	unsigned int handle;
 	unsigned int echo;
-	FILE *output_fp;
-	FILE *error_fp;
-	struct cookie *output_cookie;
-	struct cookie *error_cookie;
+	union {
+		FILE *output_fp;
+		struct cookie output_cookie;
+	};
+	union {
+		FILE *error_fp;
+		struct cookie error_cookie;
+	};
 };
 
 struct nft_cache {

@@ -1078,8 +1078,8 @@ def run_test_file(filename, force_all_family_option, specific_file):
 def main():
     parser = argparse.ArgumentParser(description='Run nft tests', version='1.0')
 
-    parser.add_argument('filename', nargs='?', metavar='path/to/file.t',
-                        help='Run only this test')
+    parser.add_argument('filenames', nargs='*', metavar='path/to/file.t',
+                        help='Run only these tests')
 
     parser.add_argument('-d', '--debug', action='store_true', dest='debug',
                         help='enable debugging mode')
@@ -1129,9 +1129,10 @@ def main():
         return
 
     file_list = []
-    if args.filename:
-        file_list = [args.filename]
-        specific_file = True
+    if args.filenames:
+        file_list = args.filenames
+        if len(args.filenames) == 1:
+            specific_file = True
     else:
         for directory in TESTS_DIRECTORY:
             path = os.path.join(TESTS_PATH, directory)

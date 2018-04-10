@@ -421,7 +421,7 @@ inet test-inet input
   [ payload load 1b @ transport header + 13 => reg 1 ]
   [ cmp neq reg 1 0x00000080 ]
 
-# tcp 'flags & (syn|fin) == (syn|fin)'
+# tcp flags & (syn|fin) == (syn|fin)
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]

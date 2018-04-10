@@ -70,7 +70,7 @@ meta iifname {"dummy0", "lo"};ok;iifname {"dummy0", "lo"}
 meta iifname != {"dummy0", "lo"};ok;iifname != {"dummy0", "lo"}
 meta iifname "dummy*";ok;iifname "dummy*"
 meta iifname "dummy\*";ok;iifname "dummy\*"
-meta iifname '""';fail
+meta iifname "";fail
 
 meta iiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok;iiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
 meta iiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok;iiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
@@ -89,7 +89,7 @@ meta oifname != "dummy0";ok;oifname != "dummy0"
 meta oifname { "dummy0", "lo"};ok;oifname { "dummy0", "lo"}
 meta oifname "dummy*";ok;oifname "dummy*"
 meta oifname "dummy\*";ok;oifname "dummy\*"
-meta oifname '""';fail
+meta oifname "";fail
 
 meta oiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok;oiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
 meta oiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre};ok;oiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre}

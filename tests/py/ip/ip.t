@@ -113,10 +113,10 @@ ip daddr 192.168.0.1;ok
 ip daddr 192.168.0.1 drop;ok
 ip daddr 192.168.0.2;ok
 
-ip saddr \& 0xff == 1;ok;ip saddr & 0.0.0.255 == 0.0.0.1
-ip saddr \& 0.0.0.255 \< 0.0.0.127;ok;ip saddr & 0.0.0.255 < 0.0.0.127
+ip saddr & 0xff == 1;ok;ip saddr & 0.0.0.255 == 0.0.0.1
+ip saddr & 0.0.0.255 < 0.0.0.127;ok
 
-ip saddr \& 0xffff0000 == 0xffff0000;ok;ip saddr 255.255.0.0/16
+ip saddr & 0xffff0000 == 0xffff0000;ok;ip saddr 255.255.0.0/16
 
 ip version 4 ip hdrlength 5;ok
 ip hdrlength 0;ok

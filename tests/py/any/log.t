@@ -24,7 +24,7 @@ log prefix aaaaa-aaaaaa group 2 snaplen 33;ok;log prefix "aaaaa-aaaaaa" group 2 
 # The correct rule is log group 2 queue-threshold 2
 log group 2 queue-threshold 2;ok
 log group 2 snaplen 33;ok
-log group 2 prefix \"nft-test: \";ok;log prefix "nft-test: " group 2
+log group 2 prefix "nft-test: ";ok;log prefix "nft-test: " group 2
 
 log flags all;ok
 log level debug flags ip options flags skuid;ok

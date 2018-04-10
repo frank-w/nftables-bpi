@@ -343,31 +343,31 @@ ip test-ip4 output
   [ lookup reg 1 set __map%d dreg 1 ]
   [ ct set mark with reg 1 ]
 
-# ct original bytes \> 100000
+# ct original bytes > 100000
 ip test-ip4 output
   [ ct load bytes => reg 1 , dir original ]
   [ byteorder reg 1 = hton(reg 1, 8, 8) ]
   [ cmp gt reg 1 0x00000000 0xa0860100 ]
 
-# ct reply packets \< 100
+# ct reply packets < 100
 ip test-ip4 output
   [ ct load packets => reg 1 , dir reply ]
   [ byteorder reg 1 = hton(reg 1, 8, 8) ]
   [ cmp lt reg 1 0x00000000 0x64000000 ]
 
-# ct bytes \> 100000
+# ct bytes > 100000
 ip test-ip4 output
   [ ct load bytes => reg 1 ]
   [ byteorder reg 1 = hton(reg 1, 8, 8) ]
   [ cmp gt reg 1 0x00000000 0xa0860100 ]
 
-# ct avgpkt \> 200
+# ct avgpkt > 200
 ip test-ip4 output
   [ ct load avgpkt => reg 1 ]
   [ byteorder reg 1 = hton(reg 1, 8, 8) ]
   [ cmp gt reg 1 0x00000000 0xc8000000 ]
 
-# ct original avgpkt \< 500
+# ct original avgpkt < 500
 ip test-ip4 output
   [ ct load avgpkt => reg 1 , dir original ]
   [ byteorder reg 1 = hton(reg 1, 8, 8) ]
@@ -396,7 +396,7 @@ ip test-ip4 output
   [ immediate reg 1 0x00000001 ]
   [ ct set event with reg 1 ]
 
-# ct event set 'new | related | destroy | label'
+# ct event set new | related | destroy | label
 ip test-ip4 output
   [ immediate reg 1 0x00000407 ]
   [ ct set event with reg 1 ]

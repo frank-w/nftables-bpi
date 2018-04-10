@@ -19,8 +19,8 @@ ip saddr 192.168.1.3 quota name "qt3";fail
 quota name tcp dport map {443 : "qt1", 80 : "qt2", 22 : "qt1"};ok
 
 # ct helper
-%cthelp1 type ct helper { type \"ftp\" protocol tcp\; };ok
-%cthelp2 type ct helper { type \"ftp\" protocol tcp\; l3proto ip6\; };fail
+%cthelp1 type ct helper { type "ftp" protocol tcp; };ok
+%cthelp2 type ct helper { type "ftp" protocol tcp; l3proto ip6; };fail
 
 ct helper set "cthelp1";ok
 ct helper set tcp dport map {21 : "cthelp1", 2121 : "cthelp1" };ok

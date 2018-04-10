@@ -75,19 +75,19 @@ ct expiration != {33-55};ok;ct expiration != { 33s-55s}
 
 ct helper "ftp";ok
 ct helper "12345678901234567";fail
-ct helper '""';fail
+ct helper "";fail
 
 ct state . ct mark { new . 0x12345678};ok
 ct state . ct mark { new . 0x12345678, new . 0x34127856, established . 0x12785634};ok
 ct direction . ct mark { original . 0x12345678};ok
 ct state . ct mark vmap { new . 0x12345678 : drop};ok
 
-ct original bytes \> 100000;ok;ct original bytes > 100000
-ct reply packets \< 100;ok;ct reply packets < 100
-ct bytes \> 100000;ok;ct bytes > 100000
+ct original bytes > 100000;ok
+ct reply packets < 100;ok
+ct bytes > 100000;ok
 
-ct avgpkt \> 200;ok;ct avgpkt > 200
-ct original avgpkt \< 500;ok;ct original avgpkt < 500
+ct avgpkt > 200;ok
+ct original avgpkt < 500;ok
 
 # bogus direction
 ct both bytes gt 1;fail
@@ -107,7 +107,7 @@ ct mark original;fail
 
 ct event set new;ok
 ct event set new or related or destroy or foobar;fail
-ct event set 'new | related | destroy | label';ok;ct event set new,related,destroy,label
+ct event set new | related | destroy | label;ok;ct event set new,related,destroy,label
 ct event set new,related,destroy,label;ok
 ct event set new,destroy;ok
 ct event set 1;ok;ct event set new

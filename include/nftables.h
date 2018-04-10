@@ -14,6 +14,7 @@ struct output_ctx {
 	unsigned int handle;
 	unsigned int echo;
 	FILE *output_fp;
+	FILE *error_fp;
 };
 
 struct nft_cache {

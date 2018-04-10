@@ -169,6 +169,7 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 	init_list_head(&ctx->cache.list);
 	ctx->flags = flags;
 	ctx->output.output_fp = stdout;
+	ctx->output.error_fp = stderr;
 
 	if (flags == NFT_CTX_DEFAULT)
 		nft_ctx_netlink_init(ctx);
@@ -196,6 +197,18 @@ FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp)
 		return NULL;
 
 	ctx->output.output_fp = fp;
+
+	return old;
+}
+
+FILE *nft_ctx_set_error(struct nft_ctx *ctx, FILE *fp)
+{
+	FILE *old = ctx->output.error_fp;
+
+	if (!fp || ferror(fp))
+		return NULL;
+
+	ctx->output.error_fp = fp;
 
 	return old;
 }
@@ -282,7 +295,6 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	LIST_HEAD(msgs);
 	size_t nlbuflen;
 	void *scanner;
-	FILE *fp;
 	char *nlbuf;
 
 	nlbuflen = max(buflen + 1, strlen(buf) + 2);
@@ -297,9 +309,7 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
 		rc = -1;
 
-	fp = nft_ctx_set_output(nft, stderr);
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
-	nft_ctx_set_output(nft, fp);
 	scanner_destroy(scanner);
 	iface_cache_release();
 	free(nlbuf);

@@ -57,6 +57,8 @@ bool nft_ctx_output_get_echo(struct nft_ctx *ctx);
 void nft_ctx_output_set_echo(struct nft_ctx *ctx, bool val);
 
 FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp);
+FILE *nft_ctx_set_error(struct nft_ctx *ctx, FILE *fp);
+
 int nft_ctx_add_include_path(struct nft_ctx *ctx, const char *path);
 void nft_ctx_clear_include_paths(struct nft_ctx *ctx);
 

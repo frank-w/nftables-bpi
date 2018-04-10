@@ -124,7 +124,7 @@ void erec_print(struct output_ctx *octx, const struct error_record *erec,
 	unsigned int i, end;
 	int l;
 	off_t orig_offset = 0;
-	FILE *f = octx->output_fp;
+	FILE *f = octx->error_fp;
 
 	if (!f)
 		return;

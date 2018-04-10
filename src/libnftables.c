@@ -177,11 +177,148 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 	return ctx;
 }
 
+static void free_cookie(struct cookie *cookie)
+{
+	if (cookie) {
+		free(cookie->buf);
+		free(cookie);
+	}
+}
+
+static ssize_t cookie_write(void *cptr, const char *buf, size_t buflen)
+{
+	struct cookie *cookie = cptr;
+
+	if (!cookie->buflen) {
+		cookie->buflen = buflen + 1;
+		cookie->buf = xmalloc(cookie->buflen);
+	} else if (cookie->pos + buflen >= cookie->buflen) {
+		size_t newlen = cookie->buflen * 2;
+
+		while (newlen <= cookie->pos + buflen)
+			newlen *= 2;
+
+		cookie->buf = xrealloc(cookie->buf, newlen);
+		cookie->buflen = newlen;
+	}
+	memcpy(cookie->buf + cookie->pos, buf, buflen);
+	cookie->pos += buflen;
+	cookie->buf[cookie->pos] = '\0';
+
+	return buflen;
+}
+
+static int init_cookie(struct cookie **cpptr, FILE **fp)
+{
+	struct cookie *cookie;
+	cookie_io_functions_t cookie_fops = {
+		.write = cookie_write,
+	};
+	FILE *cookie_fp;
+
+	if (!cpptr || !fp)
+		return 1;
+
+	cookie = *cpptr;
+
+	if (cookie) { /* just rewind buffer */
+		if (cookie->buflen) {
+			cookie->pos = 0;
+			cookie->buf[0] = '\0';
+		}
+		return 0;
+	}
+
+	cookie = xzalloc(sizeof(*cookie));
+	cookie->orig_fp = *fp;
+
+	cookie_fp = fopencookie(cookie, "w", cookie_fops);
+	if (!cookie_fp) {
+		free(cookie);
+		return 1;
+	}
+
+	*cpptr = cookie;
+	*fp = cookie_fp;
+	return 0;
+}
+
+int nft_ctx_buffer_output(struct nft_ctx *ctx)
+{
+	struct output_ctx *octx = &ctx->output;
+
+	return init_cookie(&octx->output_cookie, &octx->output_fp);
+}
+
+int nft_ctx_unbuffer_output(struct nft_ctx *ctx)
+{
+	if (!ctx->output.output_cookie)
+		return 1;
+
+	ctx->output.output_fp = ctx->output.output_cookie->orig_fp;
+	free_cookie(ctx->output.output_cookie);
+	ctx->output.output_cookie = NULL;
+	return 0;
+}
+
+int nft_ctx_buffer_error(struct nft_ctx *ctx)
+{
+	struct output_ctx *octx = &ctx->output;
+
+	return init_cookie(&octx->error_cookie, &octx->error_fp);
+}
+
+int nft_ctx_unbuffer_error(struct nft_ctx *ctx)
+{
+	if (!ctx->output.error_cookie)
+		return 1;
+
+	ctx->output.error_fp = ctx->output.error_cookie->orig_fp;
+	free_cookie(ctx->output.error_cookie);
+	ctx->output.error_cookie = NULL;
+	return 0;
+}
+
+static const char *get_cookie_buffer(struct cookie *cookie, FILE *cookie_fp)
+{
+	if (!cookie)
+		return NULL;
+
+	fflush(cookie_fp);
+
+	/* This is a bit tricky: Rewind the buffer for future use and return
+	 * the old content at the same time.
+	 * Therefore just reset buffer position, don't change it's content. And
+	 * return an empty string if buffer position is zero. */
+
+	if (!cookie->buflen || !cookie->pos)
+		return "";
+
+	cookie->pos = 0;
+	return cookie->buf;
+}
+
+const char *nft_ctx_get_output_buffer(struct nft_ctx *ctx)
+{
+	struct output_ctx *octx = &ctx->output;
+
+	return get_cookie_buffer(octx->output_cookie, octx->output_fp);
+}
+
+const char *nft_ctx_get_error_buffer(struct nft_ctx *ctx)
+{
+	struct output_ctx *octx = &ctx->output;
+
+	return get_cookie_buffer(octx->error_cookie, octx->error_fp);
+}
+
 void nft_ctx_free(struct nft_ctx *ctx)
 {
 	if (ctx->nf_sock)
 		netlink_close_sock(ctx->nf_sock);
 
+	free_cookie(ctx->output.output_cookie);
+	free_cookie(ctx->output.error_cookie);
 	iface_cache_release();
 	cache_release(&ctx->cache);
 	nft_ctx_clear_include_paths(ctx);

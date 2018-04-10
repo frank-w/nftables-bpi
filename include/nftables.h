@@ -7,6 +7,13 @@
 #include <utils.h>
 #include <nftables/nftables.h>
 
+struct cookie {
+	char *buf;
+	size_t buflen;
+	size_t pos;
+	FILE *orig_fp;
+};
+
 struct output_ctx {
 	unsigned int numeric;
 	unsigned int stateless;
@@ -15,6 +22,8 @@ struct output_ctx {
 	unsigned int echo;
 	FILE *output_fp;
 	FILE *error_fp;
+	struct cookie *output_cookie;
+	struct cookie *error_cookie;
 };
 
 struct nft_cache {

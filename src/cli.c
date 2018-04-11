@@ -83,8 +83,6 @@ static void cli_complete(char *line)
 	const HIST_ENTRY *hist;
 	const char *c;
 	LIST_HEAD(msgs);
-	int len;
-	char *s;
 
 	if (line == NULL) {
 		printf("\n");
@@ -112,13 +110,7 @@ static void cli_complete(char *line)
 	if (hist == NULL || strcmp(hist->line, line))
 		add_history(line);
 
-	len = strlen(line);
-	s = xmalloc(len + 2);
-	snprintf(s, len + 2, "%s\n", line);
-	xfree(line);
-	line = s;
-
-	nft_run_cmd_from_buffer(cli_nft, line, len + 2);
+	nft_run_cmd_from_buffer(cli_nft, line, strlen(line) + 1);
 	xfree(line);
 }
 

@@ -114,10 +114,7 @@ struct input_descriptor {
 	struct location			location;
 	enum input_descriptor_types	type;
 	const char			*name;
-	union {
-		const char		*data;
-		FILE			*fp;
-	};
+	const char			*data;
 	unsigned int			lineno;
 	unsigned int			column;
 	off_t				token_offset;

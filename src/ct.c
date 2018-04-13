@@ -26,7 +26,6 @@
 #include <erec.h>
 #include <expression.h>
 #include <datatype.h>
-#include <gmputil.h>
 #include <ct.h>
 #include <gmputil.h>
 #include <utils.h>

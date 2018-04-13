@@ -7,3 +7,6 @@ meta l4proto icmp icmp type echo-request;ok;icmp type echo-request
 meta l4proto ipv6-icmp icmpv6 type nd-router-advert;ok;icmpv6 type nd-router-advert
 meta l4proto 58 icmpv6 type nd-router-advert;ok;icmpv6 type nd-router-advert
 icmpv6 type nd-router-advert;ok
+
+meta ibridgename "br0";fail
+meta obridgename "br0";fail

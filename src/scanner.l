@@ -486,7 +486,9 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "nftrace"		{ return NFTRACE; }
 "rtclassid"		{ return RTCLASSID; }
 "ibriport"		{ return IBRIPORT; }
+"ibridgename"		{ return IBRIDGENAME; }
 "obriport"		{ return OBRIPORT; }
+"obridgename"		{ return OBRIDGENAME; }
 "pkttype"		{ return PKTTYPE; }
 "cpu"			{ return CPU; }
 "iifgroup"		{ return IIFGROUP; }

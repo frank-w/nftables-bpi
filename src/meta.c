@@ -413,10 +413,10 @@ static const struct meta_template meta_templates[] = {
 						1    , BYTEORDER_HOST_ENDIAN),
 	[NFT_META_RTCLASSID]	= META_TEMPLATE("rtclassid", &realm_type,
 						4 * 8, BYTEORDER_HOST_ENDIAN),
-	[NFT_META_BRI_IIFNAME]	= META_TEMPLATE("ibriport",  &ifname_type,
+	[NFT_META_BRI_IIFNAME]	= META_TEMPLATE("ibridgename",  &ifname_type,
 						IFNAMSIZ * BITS_PER_BYTE,
 						BYTEORDER_HOST_ENDIAN),
-	[NFT_META_BRI_OIFNAME]	= META_TEMPLATE("obriport",  &ifname_type,
+	[NFT_META_BRI_OIFNAME]	= META_TEMPLATE("obridgename",  &ifname_type,
 						IFNAMSIZ * BITS_PER_BYTE,
 						BYTEORDER_HOST_ENDIAN),
 	[NFT_META_PKTTYPE]	= META_TEMPLATE("pkttype",   &pkttype_type,
@@ -451,6 +451,8 @@ static bool meta_key_is_qualified(enum nft_meta_keys key)
 	case NFT_META_PRIORITY:
 	case NFT_META_PRANDOM:
 	case NFT_META_SECPATH:
+	case NFT_META_BRI_IIFNAME:
+	case NFT_META_BRI_OIFNAME:
 		return true;
 	default:
 		return false;
@@ -649,6 +651,15 @@ struct error_record *meta_key_parse(const struct location *loc,
 			continue;
 
 		*value = i;
+		return NULL;
+	}
+
+	/* Backwards compat hack */
+	if (strcmp(str, "ibriport") == 0) {
+		*value = NFT_META_BRI_IIFNAME;
+		return NULL;
+	} else if (strcmp(str, "obriport") == 0) {
+		*value = NFT_META_BRI_OIFNAME;
 		return NULL;
 	}
 

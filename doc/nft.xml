@@ -2738,8 +2738,8 @@ filter output icmpv6 type { echo-request, echo-reply }
 						<arg>skgid</arg>
 						<arg>nftrace</arg>
 						<arg>rtclassid</arg>
-						<arg>ibriport</arg>
-						<arg>obriport</arg>
+						<arg>ibridgename</arg>
+						<arg>obridgename</arg>
 						<arg>pkttype</arg>
 						<arg>cpu</arg>
 						<arg>iifgroup</arg>
@@ -2853,12 +2853,12 @@ filter output icmpv6 type { echo-request, echo-reply }
 								<entry>realm</entry>
 							</row>
 							<row>
-								<entry>ibriport</entry>
+								<entry>ibridgename</entry>
 								<entry>Input bridge interface name</entry>
 								<entry>ifname</entry>
 							</row>
 							<row>
-								<entry>obriport</entry>
+								<entry>obridgename</entry>
 								<entry>Output bridge interface name</entry>
 								<entry>ifname</entry>
 							</row>

@@ -394,6 +394,8 @@ int nft_lex(void *, void *, void *);
 %token RTCLASSID		"rtclassid"
 %token IBRIPORT			"ibriport"
 %token OBRIPORT			"obriport"
+%token IBRIDGENAME		"ibridgename"
+%token OBRIDGENAME		"obridgename"
 %token PKTTYPE			"pkttype"
 %token CPU			"cpu"
 %token IIFGROUP			"iifgroup"

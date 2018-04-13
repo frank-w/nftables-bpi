@@ -15,7 +15,7 @@ rt nexthdr 33-45;ok
 rt nexthdr != 33-45;ok
 rt nexthdr { 33, 55, 67, 88};ok
 rt nexthdr != { 33, 55, 67, 88};ok
-rt nexthdr { 33-55};ok;rt nexthdr { 33-55}
+rt nexthdr { 33-55};ok
 rt nexthdr != { 33-55};ok
 
 rt hdrlength 22;ok

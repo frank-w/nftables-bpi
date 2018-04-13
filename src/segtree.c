@@ -359,20 +359,29 @@ static int set_overlap(struct list_head *msgs, const struct set *set,
 	struct elementary_interval *new_intervals[init->size];
 	struct elementary_interval *intervals[set->init->size];
 	unsigned int n, m, i, j;
+	int ret = 0;
 
 	n = expr_to_intervals(init, keylen, new_intervals);
 	m = expr_to_intervals(set->init, keylen, intervals);
 
 	for (i = 0; i < n; i++) {
 		for (j = 0; j < m; j++) {
-			if (interval_overlap(new_intervals[i], intervals[j]))
-				return expr_error(msgs,
-					new_intervals[i]->expr,
-					"interval overlaps with an existing one");
+			if (!interval_overlap(new_intervals[i], intervals[j]))
+				continue;
+
+			expr_error(msgs, new_intervals[i]->expr,
+				   "interval overlaps with an existing one");
+			ret = -1;
+			goto out;
 		}
 	}
+out:
+	for (i = 0; i < n; i++)
+		ei_destroy(new_intervals[i]);
+	for (i = 0; i < m; i++)
+		ei_destroy(intervals[i]);
 
-	return 0;
+	return ret;
 }
 
 static int set_to_segtree(struct list_head *msgs, struct set *set,
@@ -695,11 +704,14 @@ void get_set_decompose(struct table *table, struct set *set)
 static bool range_is_prefix(const mpz_t range)
 {
 	mpz_t tmp;
+	bool ret;
 
 	mpz_init_set(tmp, range);
 	mpz_add_ui(tmp, tmp, 1);
 	mpz_and(tmp, range, tmp);
-	return !mpz_cmp_ui(tmp, 0);
+	ret = !mpz_cmp_ui(tmp, 0);
+	mpz_clear(tmp);
+	return ret;
 }
 
 static struct expr *expr_value(struct expr *expr)
@@ -859,6 +871,9 @@ void interval_map_decompose(struct expr *set)
 
 		compound_expr_add(set, i);
 	}
+
+	mpz_clear(range);
+	mpz_clear(p);
 
 	xfree(ranges);
 	xfree(elements);

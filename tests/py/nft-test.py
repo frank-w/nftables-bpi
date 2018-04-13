@@ -737,8 +737,8 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                             if set_check_element(teoric_exit.rstrip(), rule_output.rstrip()) != 0:
                                 warning += 1
                                 print_differences_warning(filename, lineno,
-                                                          rule[0], rule_output,
-                                                          cmd)
+                                                          teoric_exit.rstrip(),
+                                                          rule_output, cmd)
                                 if not force_all_family_option:
                                     return [ret, warning, error, unit_tests]
                         else:

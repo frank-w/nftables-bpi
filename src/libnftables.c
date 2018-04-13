@@ -18,7 +18,7 @@
 #include <string.h>
 
 static int nft_netlink(struct nft_ctx *nft,
-		       struct parser_state *state, struct list_head *msgs,
+		       struct list_head *cmds, struct list_head *msgs,
 		       struct mnl_socket *nf_sock)
 {
 	uint32_t batch_seqnum, seqnum = 0;
@@ -29,13 +29,13 @@ static int nft_netlink(struct nft_ctx *nft,
 	LIST_HEAD(err_list);
 	int ret = 0;
 
-	if (list_empty(&state->cmds))
+	if (list_empty(cmds))
 		return 0;
 
 	batch = mnl_batch_init();
 
 	batch_seqnum = mnl_batch_begin(batch, mnl_seqnum_alloc(&seqnum));
-	list_for_each_entry(cmd, &state->cmds, list) {
+	list_for_each_entry(cmd, cmds, list) {
 		memset(&ctx, 0, sizeof(ctx));
 		ctx.msgs = msgs;
 		ctx.seqnum = cmd->seqnum = mnl_seqnum_alloc(&seqnum);
@@ -58,7 +58,7 @@ static int nft_netlink(struct nft_ctx *nft,
 	ret = netlink_batch_send(&ctx, &err_list);
 
 	list_for_each_entry_safe(err, tmp, &err_list, head) {
-		list_for_each_entry(cmd, &state->cmds, list) {
+		list_for_each_entry(cmd, cmds, list) {
 			if (err->seqnum == cmd->seqnum ||
 			    err->seqnum == batch_seqnum) {
 				netlink_io_error(&ctx, &cmd->location,
@@ -81,7 +81,7 @@ static int nft_run(struct nft_ctx *nft, struct mnl_socket *nf_sock,
 		   void *scanner, struct parser_state *state,
 		   struct list_head *msgs)
 {
-	struct cmd *cmd, *next;
+	struct cmd *cmd;
 	int ret;
 
 	ret = nft_parse(nft, scanner, state);
@@ -90,16 +90,11 @@ static int nft_run(struct nft_ctx *nft, struct mnl_socket *nf_sock,
 		goto err1;
 	}
 
-	list_for_each_entry(cmd, &state->cmds, list)
+	list_for_each_entry(cmd, state->cmds, list)
 		nft_cmd_expand(cmd);
 
-	ret = nft_netlink(nft, state, msgs, nf_sock);
+	ret = nft_netlink(nft, state->cmds, msgs, nf_sock);
 err1:
-	list_for_each_entry_safe(cmd, next, &state->cmds, list) {
-		list_del(&cmd->list);
-		cmd_free(cmd);
-	}
-
 	return ret;
 }
 
@@ -402,7 +397,9 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 {
 	int rc = 0;
 	struct parser_state state;
+	struct cmd *cmd, *next;
 	LIST_HEAD(msgs);
+	LIST_HEAD(cmds);
 	size_t nlbuflen;
 	void *scanner;
 	char *nlbuf;
@@ -412,13 +409,17 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	snprintf(nlbuf, nlbuflen, "%s\n", buf);
 
 	parser_init(nft->nf_sock, &nft->cache, &state,
-		    &msgs, nft->debug_mask, &nft->output);
+		    &msgs, &cmds, nft->debug_mask, &nft->output);
 	scanner = scanner_init(&state);
 	scanner_push_buffer(scanner, &indesc_cmdline, nlbuf);
 
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
 		rc = -1;
 
+	list_for_each_entry_safe(cmd, next, &cmds, list) {
+		list_del(&cmd->list);
+		cmd_free(cmd);
+	}
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	scanner_destroy(scanner);
 	iface_cache_release();
@@ -430,7 +431,9 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 {
 	struct parser_state state;
+	struct cmd *cmd, *next;
 	LIST_HEAD(msgs);
+	LIST_HEAD(cmds);
 	void *scanner;
 	int rc;
 
@@ -443,7 +446,7 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 		filename = "/dev/stdin";
 
 	parser_init(nft->nf_sock, &nft->cache, &state,
-		    &msgs, nft->debug_mask, &nft->output);
+		    &msgs, &cmds, nft->debug_mask, &nft->output);
 	scanner = scanner_init(&state);
 	if (scanner_read_file(scanner, filename, &internal_location) < 0) {
 		rc = -1;
@@ -453,6 +456,10 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
 		rc = -1;
 err:
+	list_for_each_entry_safe(cmd, next, &cmds, list) {
+		list_del(&cmd->list);
+		cmd_free(cmd);
+	}
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	scanner_destroy(scanner);
 	iface_cache_release();

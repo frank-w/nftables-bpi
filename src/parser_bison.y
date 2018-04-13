@@ -38,12 +38,13 @@
 
 void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 		 struct parser_state *state, struct list_head *msgs,
-		 unsigned int debug_mask, struct output_ctx *octx)
+		 struct list_head *cmds, unsigned int debug_mask,
+		 struct output_ctx *octx)
 {
 	memset(state, 0, sizeof(*state));
-	init_list_head(&state->cmds);
 	init_list_head(&state->top_scope.symbols);
 	state->msgs = msgs;
+	state->cmds = cmds;
 	state->scopes[0] = scope_init(&state->top_scope, NULL);
 	state->ectx.cache = cache;
 	state->ectx.msgs = msgs;
@@ -748,7 +749,7 @@ input			:	/* empty */
 						if (++state->nerrs == nft->parser_max_errors)
 							YYABORT;
 					} else
-						list_splice_tail(&list, &state->cmds);
+						list_splice_tail(&list, state->cmds);
 				}
 			}
 			;
@@ -834,7 +835,7 @@ line			:	common_block			{ $$ = NULL; }
 						if (++state->nerrs == nft->parser_max_errors)
 							YYABORT;
 					} else
-						list_splice_tail(&list, &state->cmds);
+						list_splice_tail(&list, state->cmds);
 				}
 				if (state->nerrs)
 					YYABORT;

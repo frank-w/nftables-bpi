@@ -25,7 +25,7 @@ struct parser_state {
 	struct scope			*scopes[SCOPE_NEST_MAX];
 	unsigned int			scope;
 
-	struct list_head		cmds;
+	struct list_head		*cmds;
 	struct eval_ctx			ectx;
 };
 
@@ -33,7 +33,8 @@ struct mnl_socket;
 
 extern void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
 			struct parser_state *state, struct list_head *msgs,
-			unsigned int debug_level, struct output_ctx *octx);
+			struct list_head *cmds, unsigned int debug_level,
+			struct output_ctx *octx);
 extern int nft_parse(struct nft_ctx *ctx, void *, struct parser_state *state);
 
 extern void *scanner_init(struct parser_state *state);

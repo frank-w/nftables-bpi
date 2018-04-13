@@ -408,8 +408,7 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	nlbuf = xzalloc(nlbuflen);
 	snprintf(nlbuf, nlbuflen, "%s\n", buf);
 
-	parser_init(nft->nf_sock, &nft->cache, &state,
-		    &msgs, &cmds, nft->debug_mask, &nft->output);
+	parser_init(nft, &state, &msgs, &cmds);
 	scanner = scanner_init(&state);
 	scanner_push_buffer(scanner, &indesc_cmdline, nlbuf);
 
@@ -445,8 +444,7 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (!strcmp(filename, "-"))
 		filename = "/dev/stdin";
 
-	parser_init(nft->nf_sock, &nft->cache, &state,
-		    &msgs, &cmds, nft->debug_mask, &nft->output);
+	parser_init(nft, &state, &msgs, &cmds);
 	scanner = scanner_init(&state);
 	if (scanner_read_file(scanner, filename, &internal_location) < 0) {
 		rc = -1;

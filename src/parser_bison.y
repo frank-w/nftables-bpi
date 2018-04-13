@@ -36,21 +36,19 @@
 
 #include "parser_bison.h"
 
-void parser_init(struct mnl_socket *nf_sock, struct nft_cache *cache,
-		 struct parser_state *state, struct list_head *msgs,
-		 struct list_head *cmds, unsigned int debug_mask,
-		 struct output_ctx *octx)
+void parser_init(struct nft_ctx *nft, struct parser_state *state,
+		 struct list_head *msgs, struct list_head *cmds)
 {
 	memset(state, 0, sizeof(*state));
 	init_list_head(&state->top_scope.symbols);
 	state->msgs = msgs;
 	state->cmds = cmds;
 	state->scopes[0] = scope_init(&state->top_scope, NULL);
-	state->ectx.cache = cache;
+	state->ectx.cache = &nft->cache;
 	state->ectx.msgs = msgs;
-	state->ectx.nf_sock = nf_sock;
-	state->ectx.debug_mask = debug_mask;
-	state->ectx.octx = octx;
+	state->ectx.nf_sock = nft->nf_sock;
+	state->ectx.debug_mask = nft->debug_mask;
+	state->ectx.octx = &nft->output;
 }
 
 static void yyerror(struct location *loc, struct nft_ctx *nft, void *scanner,

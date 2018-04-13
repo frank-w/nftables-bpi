@@ -1,6 +1,10 @@
-libnftables.la
-parser.c
-parser.h
+*.la
+*.lo
+*.o
+.deps/
+.libs/
+nft
+parser_bison.c
+parser_bison.h
 scanner.c
 scanner.h
-nft

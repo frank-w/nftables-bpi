@@ -857,21 +857,25 @@ void interval_map_decompose(struct expr *set)
 		expr_free(i);
 	}
 
-	/* Unclosed interval */
-	if (low != NULL) {
-		i = constant_expr_alloc(&low->location, low->dtype,
-					low->byteorder, expr_value(low)->len,
-					NULL);
-		mpz_init_bitmask(i->value, i->len);
+	if (!low) /* no unclosed interval at end */
+		goto out;
 
+	i = constant_expr_alloc(&low->location, low->dtype,
+				low->byteorder, expr_value(low)->len, NULL);
+	mpz_init_bitmask(i->value, i->len);
+
+	if (!mpz_cmp(i->value, expr_value(low)->value)) {
+		expr_free(i);
+		i = low;
+	} else {
 		i = range_expr_alloc(&low->location, expr_value(low), i);
 		i = set_elem_expr_alloc(&low->location, i);
 		if (low->ops->type == EXPR_MAPPING)
 			i = mapping_expr_alloc(&i->location, i, low->right);
-
-		compound_expr_add(set, i);
 	}
 
+	compound_expr_add(set, i);
+out:
 	mpz_clear(range);
 	mpz_clear(p);
 

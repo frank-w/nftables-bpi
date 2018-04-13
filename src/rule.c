@@ -812,6 +812,7 @@ void table_free(struct table *table)
 {
 	struct chain *chain, *next;
 	struct set *set, *nset;
+	struct obj *obj, *nobj;
 
 	if (--table->refcnt > 0)
 		return;
@@ -819,6 +820,8 @@ void table_free(struct table *table)
 		chain_free(chain);
 	list_for_each_entry_safe(set, nset, &table->sets, list)
 		set_free(set);
+	list_for_each_entry_safe(obj, nobj, &table->objs, list)
+		obj_free(obj);
 	handle_free(&table->handle);
 	scope_release(&table->scope);
 	xfree(table);

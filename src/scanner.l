@@ -507,6 +507,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "event"			{ return EVENT; }
 "expiration"		{ return EXPIRATION; }
 "helper"		{ return HELPER; }
+"helpers"		{ return HELPERS; }
 "label"			{ return LABEL; }
 "state"			{ return STATE; }
 "status"		{ return STATUS; }

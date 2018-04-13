@@ -433,7 +433,6 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	LIST_HEAD(msgs);
 	void *scanner;
 	int rc;
-	FILE *fp;
 
 	rc = cache_update(nft->nf_sock, &nft->cache, CMD_INVALID, &msgs,
 			  nft->debug_mask, &nft->output);
@@ -454,9 +453,7 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
 		rc = -1;
 err:
-	fp = nft_ctx_set_output(nft, stderr);
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
-	nft_ctx_set_output(nft, fp);
 	scanner_destroy(scanner);
 	iface_cache_release();
 

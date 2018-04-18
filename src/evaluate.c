@@ -2974,6 +2974,7 @@ static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 
 	ctx->table = table;
 	list_for_each_entry(set, &table->sets, list) {
+		expr_set_context(&ctx->ectx, NULL, 0);
 		handle_merge(&set->handle, &table->handle);
 		if (set_evaluate(ctx, set) < 0)
 			return -1;

@@ -51,7 +51,7 @@
 	((void *)&(val))
 #elif defined(__BIG_ENDIAN_BITFIELD)
 #define constant_data_ptr(val, len) \
-	((void *)&(val) + sizeof(val) - (len) / BITS_PER_BYTE)
+	((void *)&(val) + sizeof(val) - div_round_up(len, BITS_PER_BYTE))
 #else
 #error "byteorder undefined"
 #endif

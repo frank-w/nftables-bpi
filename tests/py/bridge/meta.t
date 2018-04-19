@@ -2,5 +2,5 @@
 
 *bridge;test-bridge;input
 
-meta obridgename "br0";ok;meta obridgename "br0"
-meta ibridgename "br0";ok;meta ibridgename "br0"
+meta obrname "br0";ok;meta obrname "br0"
+meta ibrname "br0";ok;meta ibrname "br0"

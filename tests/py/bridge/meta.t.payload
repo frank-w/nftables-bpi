@@ -1,9 +1,9 @@
-# meta obridgename "br0"
+# meta obrname "br0"
 bridge test-bridge input
   [ meta load bri_oifname => reg 1 ]
   [ cmp eq reg 1 0x00307262 0x00000000 0x00000000 0x00000000 ]
 
-# meta ibridgename "br0"
+# meta ibrname "br0"
 bridge test-bridge input
   [ meta load bri_iifname => reg 1 ]
   [ cmp eq reg 1 0x00307262 0x00000000 0x00000000 0x00000000 ]

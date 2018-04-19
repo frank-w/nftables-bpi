@@ -3472,6 +3472,8 @@ int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 		erec_destroy(erec);
 	}
 
+	memset(&ctx->ectx, 0, sizeof(ctx->ectx));
+
 	ctx->cmd = cmd;
 	switch (cmd->op) {
 	case CMD_ADD:

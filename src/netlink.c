@@ -465,10 +465,7 @@ int netlink_add_rule_batch(struct netlink_ctx *ctx,
 	err = mnl_nft_rule_batch_add(nlr, ctx->batch, flags | NLM_F_EXCL,
 				     ctx->seqnum);
 	nftnl_rule_free(nlr);
-	if (err < 0)
-		netlink_io_error(ctx, &rule->location,
-				 "Could not add rule to batch: %s",
-				 strerror(errno));
+
 	return err;
 }
 
@@ -494,9 +491,6 @@ int netlink_replace_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
 	err = mnl_nft_rule_batch_replace(nlr, ctx->batch, flags, ctx->seqnum);
 	nftnl_rule_free(nlr);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not replace rule to batch: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -510,9 +504,6 @@ int netlink_del_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
 	err = mnl_nft_rule_batch_del(nlr, ctx->batch, 0, ctx->seqnum);
 	nftnl_rule_free(nlr);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete rule to batch: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -626,9 +617,6 @@ int netlink_add_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
 	err = mnl_nft_chain_batch_add(nlc, ctx->batch, flags, ctx->seqnum);
 	nftnl_chain_free(nlc);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not add chain: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -646,9 +634,6 @@ int netlink_rename_chain_batch(struct netlink_ctx *ctx,
 	err = mnl_nft_chain_batch_add(nlc, ctx->batch, 0, ctx->seqnum);
 	nftnl_chain_free(nlc);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not rename chain: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -663,9 +648,6 @@ int netlink_delete_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
 	err = mnl_nft_chain_batch_del(nlc, ctx->batch, 0, ctx->seqnum);
 	nftnl_chain_free(nlc);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete chain: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -786,9 +768,6 @@ int netlink_add_table_batch(struct netlink_ctx *ctx, const struct handle *h,
 	err = mnl_nft_table_batch_add(nlt, ctx->batch, flags, ctx->seqnum);
 	nftnl_table_free(nlt);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not add table: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -802,9 +781,6 @@ int netlink_delete_table_batch(struct netlink_ctx *ctx, const struct handle *h,
 	err = mnl_nft_table_batch_del(nlt, ctx->batch, 0, ctx->seqnum);
 	nftnl_table_free(nlt);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete table: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -1079,9 +1055,6 @@ int netlink_add_set_batch(struct netlink_ctx *ctx,
 	netlink_dump_set(nls, ctx);
 
 	err = mnl_nft_set_batch_add(nls, ctx->batch, flags, ctx->seqnum);
-	if (err < 0)
-		netlink_io_error(ctx, &set->location, "Could not add set: %s",
-				 strerror(errno));
 	nftnl_set_free(nls);
 
 	return err;
@@ -1097,9 +1070,6 @@ int netlink_delete_set_batch(struct netlink_ctx *ctx, const struct handle *h,
 	err = mnl_nft_set_batch_del(nls, ctx->batch, 0, ctx->seqnum);
 	nftnl_set_free(nls);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete set: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -1158,10 +1128,7 @@ int netlink_add_setelems_batch(struct netlink_ctx *ctx, const struct handle *h,
 
 	err = mnl_nft_setelem_batch_add(nls, ctx->batch, flags, ctx->seqnum);
 	nftnl_set_free(nls);
-	if (err < 0)
-		netlink_io_error(ctx, &expr->location,
-				 "Could not add set elements: %s",
-				 strerror(errno));
+
 	return err;
 }
 
@@ -1178,10 +1145,7 @@ int netlink_delete_setelems_batch(struct netlink_ctx *ctx,
 
 	err = mnl_nft_setelem_batch_del(nls, ctx->batch, 0, ctx->seqnum);
 	nftnl_set_free(nls);
-	if (err < 0)
-		netlink_io_error(ctx, &expr->location,
-				 "Could not delete set elements: %s",
-				 strerror(errno));
+
 	return err;
 }
 
@@ -1196,10 +1160,7 @@ int netlink_flush_setelems(struct netlink_ctx *ctx, const struct handle *h,
 
 	err = mnl_nft_setelem_batch_flush(nls, ctx->batch, 0, ctx->seqnum);
 	nftnl_set_free(nls);
-	if (err < 0)
-		netlink_io_error(ctx, loc,
-				 "Could not flush set elements: %s",
-				 strerror(errno));
+
 	return err;
 }
 
@@ -1462,9 +1423,6 @@ int netlink_add_obj(struct netlink_ctx *ctx, const struct handle *h,
 	netlink_dump_obj(nlo, ctx);
 
 	err = mnl_nft_obj_batch_add(nlo, ctx->batch, flags, ctx->seqnum);
-	if (err < 0)
-		netlink_io_error(ctx, &obj->location, "Could not add %s: %s",
-				 obj_type_name(obj->type), strerror(errno));
 	nftnl_obj_free(nlo);
 
 	return err;
@@ -1480,9 +1438,6 @@ int netlink_delete_obj(struct netlink_ctx *ctx, const struct handle *h,
 	netlink_dump_obj(nlo, ctx);
 
 	err = mnl_nft_obj_batch_del(nlo, ctx->batch, 0, ctx->seqnum);
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete %s: %s",
-				 obj_type_name(type), strerror(errno));
 	nftnl_obj_free(nlo);
 
 	return err;
@@ -1593,9 +1548,6 @@ int netlink_add_flowtable(struct netlink_ctx *ctx, const struct handle *h,
 	netlink_dump_flowtable(flo, ctx);
 
 	err = mnl_nft_flowtable_batch_add(flo, ctx->batch, flags, ctx->seqnum);
-	if (err < 0)
-		netlink_io_error(ctx, &ft->location, "Could not add flowtable: %s",
-				 strerror(errno));
 	nftnl_flowtable_free(flo);
 
 	return err;
@@ -1611,9 +1563,6 @@ int netlink_delete_flowtable(struct netlink_ctx *ctx, const struct handle *h,
 	netlink_dump_flowtable(flo, ctx);
 
 	err = mnl_nft_flowtable_batch_del(flo, ctx->batch, 0, ctx->seqnum);
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not delete flowtable: %s",
-				 strerror(errno));
 	nftnl_flowtable_free(flo);
 
 	return err;
@@ -1752,9 +1701,6 @@ int netlink_flush_ruleset(struct netlink_ctx *ctx, const struct handle *h,
 	err = mnl_nft_table_batch_del(nlt, ctx->batch, 0, ctx->seqnum);
 	nftnl_table_free(nlt);
 
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not flush the ruleset: %s",
-				 strerror(errno));
 	return err;
 }
 

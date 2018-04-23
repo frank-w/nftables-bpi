@@ -453,10 +453,10 @@ struct expr *netlink_alloc_data(const struct location *loc,
 	}
 }
 
-int netlink_add_rule_batch(struct netlink_ctx *ctx,
-			   const struct handle *h,
-		           const struct rule *rule, uint32_t flags)
+int netlink_add_rule_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
+		           uint32_t flags)
 {
+	struct rule *rule = cmd->rule;
 	struct nftnl_rule *nlr;
 	int err;
 
@@ -469,10 +469,9 @@ int netlink_add_rule_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-int netlink_replace_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
-			       const struct rule *rule,
-			       const struct location *loc)
+int netlink_replace_rule_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
+	struct rule *rule = cmd->rule;
 	struct nftnl_rule *nlr;
 	int err, flags = 0;
 
@@ -494,13 +493,12 @@ int netlink_replace_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
 	return err;
 }
 
-int netlink_del_rule_batch(struct netlink_ctx *ctx, const struct handle *h,
-			   const struct location *loc)
+int netlink_del_rule_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
 	struct nftnl_rule *nlr;
 	int err;
 
-	nlr = alloc_nftnl_rule(h);
+	nlr = alloc_nftnl_rule(&cmd->handle);
 	err = mnl_nft_rule_batch_del(nlr, ctx->batch, 0, ctx->seqnum);
 	nftnl_rule_free(nlr);
 
@@ -571,10 +569,9 @@ static int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h,
 	return 0;
 }
 
-static int netlink_flush_rules(struct netlink_ctx *ctx, const struct handle *h,
-			       const struct location *loc)
+static int netlink_flush_rules(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
-	return netlink_del_rule_batch(ctx, h, loc);
+	return netlink_del_rule_batch(ctx, cmd);
 }
 
 void netlink_dump_chain(const struct nftnl_chain *nlc, struct netlink_ctx *ctx)
@@ -588,14 +585,14 @@ void netlink_dump_chain(const struct nftnl_chain *nlc, struct netlink_ctx *ctx)
 	fprintf(fp, "\n");
 }
 
-int netlink_add_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
-			    const struct location *loc,
-			    const struct chain *chain, uint32_t flags)
+int netlink_add_chain_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
+			    uint32_t flags)
 {
+	struct chain *chain = cmd->chain;
 	struct nftnl_chain *nlc;
 	int err;
 
-	nlc = alloc_nftnl_chain(h);
+	nlc = alloc_nftnl_chain(&cmd->handle);
 	if (chain != NULL) {
 		if (chain->flags & CHAIN_F_BASECHAIN) {
 			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_HOOKNUM,
@@ -620,11 +617,10 @@ int netlink_add_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
 	return err;
 }
 
-int netlink_rename_chain_batch(struct netlink_ctx *ctx,
-			       const struct handle *h,
-			       const struct location *loc,
-			       const char *name)
+int netlink_rename_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
+			       const struct cmd *cmd)
 {
+	const char *name = cmd->arg;
 	struct nftnl_chain *nlc;
 	int err;
 
@@ -637,13 +633,12 @@ int netlink_rename_chain_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-int netlink_delete_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
-			    const struct location *loc)
+int netlink_delete_chain_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
 	struct nftnl_chain *nlc;
 	int err;
 
-	nlc = alloc_nftnl_chain(h);
+	nlc = alloc_nftnl_chain(&cmd->handle);
 	netlink_dump_chain(nlc, ctx);
 	err = mnl_nft_chain_batch_del(nlc, ctx->batch, 0, ctx->seqnum);
 	nftnl_chain_free(nlc);
@@ -746,22 +741,20 @@ int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h,
 				strerror(ENOENT));
 }
 
-int netlink_flush_chain(struct netlink_ctx *ctx, const struct handle *h,
-			const struct location *loc)
+int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
-	return netlink_del_rule_batch(ctx, h, loc);
+	return netlink_del_rule_batch(ctx, cmd);
 }
 
-int netlink_add_table_batch(struct netlink_ctx *ctx, const struct handle *h,
-			    const struct location *loc,
-			    const struct table *table, uint32_t flags)
+int netlink_add_table_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
+			    uint32_t flags)
 {
 	struct nftnl_table *nlt;
 	int err;
 
-	nlt = alloc_nftnl_table(h);
-	if (table != NULL)
-		nftnl_table_set_u32(nlt, NFTNL_TABLE_FLAGS, table->flags);
+	nlt = alloc_nftnl_table(&cmd->handle);
+	if (cmd->table != NULL)
+		nftnl_table_set_u32(nlt, NFTNL_TABLE_FLAGS, cmd->table->flags);
 	else
 		nftnl_table_set_u32(nlt, NFTNL_TABLE_FLAGS, 0);
 
@@ -771,13 +764,12 @@ int netlink_add_table_batch(struct netlink_ctx *ctx, const struct handle *h,
 	return err;
 }
 
-int netlink_delete_table_batch(struct netlink_ctx *ctx, const struct handle *h,
-			    const struct location *loc)
+int netlink_delete_table_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
 	struct nftnl_table *nlt;
 	int err;
 
-	nlt = alloc_nftnl_table(h);
+	nlt = alloc_nftnl_table(&cmd->handle);
 	err = mnl_nft_table_batch_del(nlt, ctx->batch, 0, ctx->seqnum);
 	nftnl_table_free(nlt);
 
@@ -834,10 +826,9 @@ int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h,
 	return netlink_list_rules(ctx, h, loc);
 }
 
-int netlink_flush_table(struct netlink_ctx *ctx, const struct handle *h,
-			const struct location *loc)
+int netlink_flush_table(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
-	return netlink_flush_rules(ctx, h, loc);
+	return netlink_flush_rules(ctx, cmd);
 }
 
 static enum nft_data_types dtype_map_to_kernel(const struct datatype *dtype)
@@ -990,15 +981,15 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	return set;
 }
 
-int netlink_add_set_batch(struct netlink_ctx *ctx,
-			  const struct handle *h, struct set *set,
+int netlink_add_set_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
 			  uint32_t flags)
 {
 	struct nftnl_udata_buf *udbuf;
+	struct set *set = cmd->set;
 	struct nftnl_set *nls;
 	int err;
 
-	nls = alloc_nftnl_set(h);
+	nls = alloc_nftnl_set(&cmd->handle);
 	nftnl_set_set_u32(nls, NFTNL_SET_FLAGS, set->flags);
 	nftnl_set_set_u32(nls, NFTNL_SET_KEY_TYPE,
 			  dtype_map_to_kernel(set->key->dtype));
@@ -1060,13 +1051,12 @@ int netlink_add_set_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-int netlink_delete_set_batch(struct netlink_ctx *ctx, const struct handle *h,
-			  const struct location *loc)
+int netlink_delete_set_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
 	struct nftnl_set *nls;
 	int err;
 
-	nls = alloc_nftnl_set(h);
+	nls = alloc_nftnl_set(&cmd->handle);
 	err = mnl_nft_set_batch_del(nls, ctx->batch, 0, ctx->seqnum);
 	nftnl_set_free(nls);
 
@@ -1133,14 +1123,14 @@ int netlink_add_setelems_batch(struct netlink_ctx *ctx, const struct handle *h,
 }
 
 int netlink_delete_setelems_batch(struct netlink_ctx *ctx,
-			       const struct handle *h, const struct expr *expr)
+				  const struct cmd *cmd)
 {
 	struct nftnl_set *nls;
 	int err;
 
-	nls = alloc_nftnl_set(h);
-	if (expr)
-		alloc_setelem_cache(expr, nls);
+	nls = alloc_nftnl_set(&cmd->handle);
+	if (cmd->expr)
+		alloc_setelem_cache(cmd->expr, nls);
 	netlink_dump_set(nls, ctx);
 
 	err = mnl_nft_setelem_batch_del(nls, ctx->batch, 0, ctx->seqnum);
@@ -1149,13 +1139,12 @@ int netlink_delete_setelems_batch(struct netlink_ctx *ctx,
 	return err;
 }
 
-int netlink_flush_setelems(struct netlink_ctx *ctx, const struct handle *h,
-			   const struct location *loc)
+int netlink_flush_setelems(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
 	struct nftnl_set *nls;
 	int err;
 
-	nls = alloc_nftnl_set(h);
+	nls = alloc_nftnl_set(&cmd->handle);
 	netlink_dump_set(nls, ctx);
 
 	err = mnl_nft_setelem_batch_flush(nls, ctx->batch, 0, ctx->seqnum);
@@ -1413,13 +1402,13 @@ void netlink_dump_obj(struct nftnl_obj *nln, struct netlink_ctx *ctx)
 	fprintf(fp, "\n");
 }
 
-int netlink_add_obj(struct netlink_ctx *ctx, const struct handle *h,
-		    struct obj *obj, uint32_t flags)
+int netlink_add_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
+		    uint32_t flags)
 {
 	struct nftnl_obj *nlo;
 	int err;
 
-	nlo = alloc_nftnl_obj(h, obj);
+	nlo = alloc_nftnl_obj(&cmd->handle, cmd->object);
 	netlink_dump_obj(nlo, ctx);
 
 	err = mnl_nft_obj_batch_add(nlo, ctx->batch, flags, ctx->seqnum);
@@ -1428,13 +1417,13 @@ int netlink_add_obj(struct netlink_ctx *ctx, const struct handle *h,
 	return err;
 }
 
-int netlink_delete_obj(struct netlink_ctx *ctx, const struct handle *h,
-		       struct location *loc, uint32_t type)
+int netlink_delete_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
+		       uint32_t type)
 {
 	struct nftnl_obj *nlo;
 	int err;
 
-	nlo = __alloc_nftnl_obj(h, type);
+	nlo = __alloc_nftnl_obj(&cmd->handle, type);
 	netlink_dump_obj(nlo, ctx);
 
 	err = mnl_nft_obj_batch_del(nlo, ctx->batch, 0, ctx->seqnum);
@@ -1527,15 +1516,16 @@ static void netlink_dump_flowtable(struct nftnl_flowtable *flo,
 	fprintf(fp, "\n");
 }
 
-int netlink_add_flowtable(struct netlink_ctx *ctx, const struct handle *h,
-			  struct flowtable *ft, uint32_t flags)
+int netlink_add_flowtable(struct netlink_ctx *ctx, const struct cmd *cmd,
+			  uint32_t flags)
 {
+	struct flowtable *ft = cmd->flowtable;
 	struct nftnl_flowtable *flo;
 	const char *dev_array[8];
 	struct expr *expr;
 	int i = 0, err;
 
-	flo = alloc_nftnl_flowtable(h, ft);
+	flo = alloc_nftnl_flowtable(&cmd->handle, ft);
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM, ft->hooknum);
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, ft->priority);
 
@@ -1553,13 +1543,12 @@ int netlink_add_flowtable(struct netlink_ctx *ctx, const struct handle *h,
 	return err;
 }
 
-int netlink_delete_flowtable(struct netlink_ctx *ctx, const struct handle *h,
-			     struct location *loc)
+int netlink_delete_flowtable(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
 	struct nftnl_flowtable *flo;
 	int err;
 
-	flo = alloc_nftnl_flowtable(h, NULL);
+	flo = alloc_nftnl_flowtable(&cmd->handle, NULL);
 	netlink_dump_flowtable(flo, ctx);
 
 	err = mnl_nft_flowtable_batch_del(flo, ctx->batch, 0, ctx->seqnum);
@@ -1600,9 +1589,10 @@ int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h,
 	return err;
 }
 
-int netlink_reset_objs(struct netlink_ctx *ctx, const struct handle *h,
-		       const struct location *loc, uint32_t type, bool dump)
+int netlink_reset_objs(struct netlink_ctx *ctx, const struct cmd *cmd,
+		       uint32_t type, bool dump)
 {
+	const struct handle *h = &cmd->handle;
 	struct nftnl_obj_list *obj_cache;
 	int err;
 
@@ -1612,7 +1602,7 @@ int netlink_reset_objs(struct netlink_ctx *ctx, const struct handle *h,
 		if (errno == EINTR)
 			return -1;
 
-		return netlink_io_error(ctx, loc,
+		return netlink_io_error(ctx, &cmd->location,
 					"Could not receive stateful object from kernel: %s",
 					strerror(errno));
 	}
@@ -1691,13 +1681,12 @@ int netlink_batch_send(struct netlink_ctx *ctx, struct list_head *err_list)
 	return mnl_batch_talk(ctx, err_list);
 }
 
-int netlink_flush_ruleset(struct netlink_ctx *ctx, const struct handle *h,
-			  const struct location *loc)
+int netlink_flush_ruleset(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
 	struct nftnl_table *nlt;
 	int err;
 
-	nlt = alloc_nftnl_table(h);
+	nlt = alloc_nftnl_table(&cmd->handle);
 	err = mnl_nft_table_batch_del(nlt, ctx->batch, 0, ctx->seqnum);
 	nftnl_table_free(nlt);
 

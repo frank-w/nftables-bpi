@@ -1094,9 +1094,11 @@ static int __do_add_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	return 0;
 }
 
-static int do_add_setelems(struct netlink_ctx *ctx, const struct handle *h,
-			   struct expr *init, uint32_t flags)
+static int do_add_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
+			   uint32_t flags)
 {
+	struct handle *h = &cmd->handle;
+	struct expr *init = cmd->expr;
 	struct table *table;
 	struct set *set;
 
@@ -1111,16 +1113,18 @@ static int do_add_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	return __do_add_setelems(ctx, h, set, init, flags);
 }
 
-static int do_add_set(struct netlink_ctx *ctx, const struct handle *h,
-		      struct set *set, uint32_t flags)
+static int do_add_set(struct netlink_ctx *ctx, const struct cmd *cmd,
+		      uint32_t flags)
 {
+	struct set *set = cmd->set;
+
 	if (set->init != NULL) {
 		if (set->flags & NFT_SET_INTERVAL &&
 		    set_to_intervals(ctx->msgs, set, set->init, true,
 				     ctx->debug_mask, set->automerge) < 0)
 			return -1;
 	}
-	if (netlink_add_set_batch(ctx, h, set, flags) < 0)
+	if (netlink_add_set_batch(ctx, cmd, flags) < 0)
 		return -1;
 	if (set->init != NULL) {
 		return __do_add_setelems(ctx, &set->handle, set, set->init,
@@ -1146,28 +1150,22 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
-		return netlink_add_table_batch(ctx, &cmd->handle,
-					       &cmd->location, cmd->table,
-					       flags);
+		return netlink_add_table_batch(ctx, cmd, flags);
 	case CMD_OBJ_CHAIN:
-		return netlink_add_chain_batch(ctx, &cmd->handle,
-					       &cmd->location, cmd->chain,
-					       flags);
+		return netlink_add_chain_batch(ctx, cmd, flags);
 	case CMD_OBJ_RULE:
-		return netlink_add_rule_batch(ctx, &cmd->handle,
-					      cmd->rule, flags | NLM_F_APPEND);
+		return netlink_add_rule_batch(ctx, cmd, flags | NLM_F_APPEND);
 	case CMD_OBJ_SET:
-		return do_add_set(ctx, &cmd->handle, cmd->set, flags);
+		return do_add_set(ctx, cmd, flags);
 	case CMD_OBJ_SETELEM:
-		return do_add_setelems(ctx, &cmd->handle, cmd->expr, flags);
+		return do_add_setelems(ctx, cmd, flags);
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:
 	case CMD_OBJ_LIMIT:
-		return netlink_add_obj(ctx, &cmd->handle, cmd->object, flags);
+		return netlink_add_obj(ctx, cmd, flags);
 	case CMD_OBJ_FLOWTABLE:
-		return netlink_add_flowtable(ctx, &cmd->handle, cmd->flowtable,
-					     flags);
+		return netlink_add_flowtable(ctx, cmd, flags);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -1178,8 +1176,7 @@ static int do_command_replace(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_RULE:
-		return netlink_replace_rule_batch(ctx, &cmd->handle, cmd->rule,
-						  &cmd->location);
+		return netlink_replace_rule_batch(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -1203,17 +1200,17 @@ static int do_command_insert(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_RULE:
-		return netlink_add_rule_batch(ctx, &cmd->handle,
-					      cmd->rule, flags);
+		return netlink_add_rule_batch(ctx, cmd, flags);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
 	return 0;
 }
 
-static int do_delete_setelems(struct netlink_ctx *ctx, const struct handle *h,
-			      struct expr *expr)
+static int do_delete_setelems(struct netlink_ctx *ctx, struct cmd *cmd)
 {
+	struct handle *h = &cmd->handle;
+	struct expr *expr = cmd->expr;
 	struct table *table;
 	struct set *set;
 
@@ -1225,7 +1222,7 @@ static int do_delete_setelems(struct netlink_ctx *ctx, const struct handle *h,
 			     ctx->debug_mask, set->automerge) < 0)
 		return -1;
 
-	if (netlink_delete_setelems_batch(ctx, h, expr) < 0)
+	if (netlink_delete_setelems_batch(ctx, cmd) < 0)
 		return -1;
 
 	return 0;
@@ -1235,31 +1232,25 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
-		return netlink_delete_table_batch(ctx, &cmd->handle, &cmd->location);
+		return netlink_delete_table_batch(ctx, cmd);
 	case CMD_OBJ_CHAIN:
-		return netlink_delete_chain_batch(ctx, &cmd->handle, &cmd->location);
+		return netlink_delete_chain_batch(ctx, cmd);
 	case CMD_OBJ_RULE:
-		return netlink_del_rule_batch(ctx, &cmd->handle,
-					      &cmd->location);
+		return netlink_del_rule_batch(ctx, cmd);
 	case CMD_OBJ_SET:
-		return netlink_delete_set_batch(ctx, &cmd->handle, &cmd->location);
+		return netlink_delete_set_batch(ctx, cmd);
 	case CMD_OBJ_SETELEM:
-		return do_delete_setelems(ctx, &cmd->handle, cmd->expr);
+		return do_delete_setelems(ctx, cmd);
 	case CMD_OBJ_COUNTER:
-		return netlink_delete_obj(ctx, &cmd->handle, &cmd->location,
-					  NFT_OBJECT_COUNTER);
+		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_COUNTER);
 	case CMD_OBJ_QUOTA:
-		return netlink_delete_obj(ctx, &cmd->handle, &cmd->location,
-					  NFT_OBJECT_QUOTA);
+		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_QUOTA);
 	case CMD_OBJ_CT_HELPER:
-		return netlink_delete_obj(ctx, &cmd->handle, &cmd->location,
-					  NFT_OBJECT_CT_HELPER);
+		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_CT_HELPER);
 	case CMD_OBJ_LIMIT:
-		return netlink_delete_obj(ctx, &cmd->handle, &cmd->location,
-					  NFT_OBJECT_LIMIT);
+		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_LIMIT);
 	case CMD_OBJ_FLOWTABLE:
-		return netlink_delete_flowtable(ctx, &cmd->handle,
-						&cmd->location);
+		return netlink_delete_flowtable(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -1946,7 +1937,7 @@ static int do_command_reset(struct netlink_ctx *ctx, struct cmd *cmd)
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
 
-	ret = netlink_reset_objs(ctx, &cmd->handle, &cmd->location, type, dump);
+	ret = netlink_reset_objs(ctx, cmd, type, dump);
 	list_for_each_entry_safe(obj, next, &ctx->list, list) {
 		table = table_lookup(&obj->handle, ctx->cache);
 		list_move(&obj->list, &table->objs);
@@ -1961,16 +1952,15 @@ static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
-		return netlink_flush_table(ctx, &cmd->handle, &cmd->location);
+		return netlink_flush_table(ctx, cmd);
 	case CMD_OBJ_CHAIN:
-		return netlink_flush_chain(ctx, &cmd->handle, &cmd->location);
+		return netlink_flush_chain(ctx, cmd);
 	case CMD_OBJ_SET:
 	case CMD_OBJ_MAP:
 	case CMD_OBJ_METER:
-		return netlink_flush_setelems(ctx, &cmd->handle,
-					      &cmd->location);
+		return netlink_flush_setelems(ctx, cmd);
 	case CMD_OBJ_RULESET:
-		return netlink_flush_ruleset(ctx, &cmd->handle, &cmd->location);
+		return netlink_flush_ruleset(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -1986,8 +1976,7 @@ static int do_command_rename(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_CHAIN:
 		chain = chain_lookup(table, &cmd->handle);
 
-		return netlink_rename_chain_batch(ctx, &chain->handle, &cmd->location,
-					    cmd->arg);
+		return netlink_rename_chain_batch(ctx, &chain->handle, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

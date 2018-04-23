@@ -60,7 +60,7 @@ static int cache_init_tables(struct netlink_ctx *ctx, struct handle *h,
 {
 	int ret;
 
-	ret = netlink_list_tables(ctx, h, &internal_location);
+	ret = netlink_list_tables(ctx, h);
 	if (ret < 0)
 		return -1;
 
@@ -77,8 +77,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 	int ret;
 
 	list_for_each_entry(table, &ctx->cache->list, list) {
-		ret = netlink_list_sets(ctx, &table->handle,
-					&internal_location);
+		ret = netlink_list_sets(ctx, &table->handle);
 		list_splice_tail_init(&ctx->list, &table->sets);
 
 		if (ret < 0)
@@ -91,19 +90,18 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 				return -1;
 		}
 
-		ret = netlink_list_chains(ctx, &table->handle,
-					  &internal_location);
+		ret = netlink_list_chains(ctx, &table->handle);
 		if (ret < 0)
 			return -1;
 		list_splice_tail_init(&ctx->list, &table->chains);
 
-		ret = netlink_list_flowtables(ctx, &table->handle, &internal_location);
+		ret = netlink_list_flowtables(ctx, &table->handle);
 		if (ret < 0)
 			return -1;
 		list_splice_tail_init(&ctx->list, &table->flowtables);
 
 		if (cmd != CMD_RESET) {
-			ret = netlink_list_objs(ctx, &table->handle, &internal_location);
+			ret = netlink_list_objs(ctx, &table->handle);
 			if (ret < 0)
 				return -1;
 			list_splice_tail_init(&ctx->list, &table->objs);
@@ -115,8 +113,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 		if (cmd != CMD_LIST)
 			continue;
 
-		ret = netlink_list_table(ctx, &table->handle,
-					 &internal_location);
+		ret = netlink_list_table(ctx, &table->handle);
 		list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
 			chain = chain_lookup(table, &rule->handle);
 			list_move_tail(&rule->list, &chain->rules);
@@ -2030,8 +2027,7 @@ static int do_command_monitor(struct netlink_ctx *ctx, struct cmd *cmd)
 			 * we receive in the trace messages to the actual rule
 			 * struct to print that out.  Populate rule cache now.
 			 */
-			ret = netlink_list_table(ctx, &t->handle,
-						 &internal_location);
+			ret = netlink_list_table(ctx, &t->handle);
 
 			if (ret != 0)
 				/* Shouldn't happen and doesn't break things

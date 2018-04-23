@@ -129,8 +129,7 @@ extern int netlink_rename_chain_batch(struct netlink_ctx *ctx,
 				      const struct cmd *cmd);
 extern int netlink_delete_chain_batch(struct netlink_ctx *ctx,
 				      const struct cmd *cmd);
-extern int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h,
-			       const struct location *loc);
+extern int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h);
 extern int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd);
 extern struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 					       const struct nftnl_chain *nlc);
@@ -139,10 +138,8 @@ extern int netlink_add_table_batch(struct netlink_ctx *ctx,
 				   const struct cmd *cmd, uint32_t flags);
 extern int netlink_delete_table_batch(struct netlink_ctx *ctx,
 				      const struct cmd *cmd);
-extern int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h,
-			       const struct location *loc);
-extern int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h,
-			      const struct location *loc);
+extern int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h);
+extern int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h);
 extern int netlink_flush_table(struct netlink_ctx *ctx, const struct cmd *cmd);
 extern struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 					       const struct nftnl_table *nlt);
@@ -151,8 +148,7 @@ extern int netlink_add_set_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
 				 uint32_t flags);
 extern int netlink_delete_set_batch(struct netlink_ctx *ctx,
 				    const struct cmd *cmd);
-extern int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h,
-			     const struct location *loc);
+extern int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h);
 extern struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 					   const struct nftnl_set *nls);
 
@@ -174,8 +170,7 @@ extern int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 				       const struct set *set,
 				       struct nft_cache *cache);
 
-extern int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h,
-			     const struct location *loc);
+extern int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h);
 extern int netlink_reset_objs(struct netlink_ctx *ctx, const struct cmd *cmd,
 			      uint32_t type, bool dump);
 extern int netlink_add_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
@@ -186,8 +181,7 @@ extern struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 					   struct nftnl_obj *nlo);
 
 extern int netlink_list_flowtables(struct netlink_ctx *ctx,
-				   const struct handle *h,
-				   const struct location *loc);
+				   const struct handle *h);
 extern int netlink_add_flowtable(struct netlink_ctx *ctx,
 				 const struct cmd *cmd, uint32_t flags);
 extern int netlink_delete_flowtable(struct netlink_ctx *ctx,

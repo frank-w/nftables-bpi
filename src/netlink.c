@@ -550,8 +550,7 @@ static int list_rule_cb(struct nftnl_rule *nlr, void *arg)
 	return 0;
 }
 
-static int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h,
-			      const struct location *loc)
+static int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h)
 {
 	struct nftnl_rule_list *rule_cache;
 
@@ -707,8 +706,7 @@ static int list_chain_cb(struct nftnl_chain *nlc, void *arg)
 	return 0;
 }
 
-int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h,
-			const struct location *loc)
+int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h)
 {
 	struct nftnl_chain_list *chain_cache;
 
@@ -787,8 +785,7 @@ static int list_table_cb(struct nftnl_table *nlt, void *arg)
 	return 0;
 }
 
-int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h,
-			const struct location *loc)
+int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h)
 {
 	struct nftnl_table_list *table_cache;
 
@@ -806,10 +803,9 @@ int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h,
 	return 0;
 }
 
-int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h,
-		       const struct location *loc)
+int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h)
 {
-	return netlink_list_rules(ctx, h, loc);
+	return netlink_list_rules(ctx, h);
 }
 
 int netlink_flush_table(struct netlink_ctx *ctx, const struct cmd *cmd)
@@ -1061,8 +1057,7 @@ static int list_set_cb(struct nftnl_set *nls, void *arg)
 	return 0;
 }
 
-int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h,
-		      const struct location *loc)
+int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h)
 {
 	struct nftnl_set_list *set_cache;
 	int err;
@@ -1555,8 +1550,7 @@ static int list_obj_cb(struct nftnl_obj *nls, void *arg)
 	return 0;
 }
 
-int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h,
-		      const struct location *loc)
+int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h)
 {
 	struct nftnl_obj_list *obj_cache;
 	int err;
@@ -1643,8 +1637,7 @@ static int list_flowtable_cb(struct nftnl_flowtable *nls, void *arg)
 	return 0;
 }
 
-int netlink_list_flowtables(struct netlink_ctx *ctx, const struct handle *h,
-		      const struct location *loc)
+int netlink_list_flowtables(struct netlink_ctx *ctx, const struct handle *h)
 {
 	struct nftnl_flowtable_list *flowtable_cache;
 	int err;

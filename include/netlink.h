@@ -110,10 +110,6 @@ extern void netlink_linearize_rule(struct netlink_ctx *ctx,
 extern struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 					     struct nftnl_rule *r);
 
-extern int netlink_add_rule(struct netlink_ctx *ctx, const struct handle *h,
-			    const struct rule *rule, uint32_t flags);
-extern int netlink_delete_rule(struct netlink_ctx *ctx, const struct handle *h,
-			       const struct location *loc);
 extern int netlink_add_rule_batch(struct netlink_ctx *ctx,
 				  const struct cmd *cmd,
 				  uint32_t flags);

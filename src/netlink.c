@@ -711,7 +711,6 @@ int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h,
 			const struct location *loc)
 {
 	struct nftnl_chain_list *chain_cache;
-	struct chain *chain;
 
 	chain_cache = mnl_nft_chain_dump(ctx, h->family);
 	if (chain_cache == NULL) {
@@ -725,20 +724,7 @@ int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h,
 	nftnl_chain_list_foreach(chain_cache, list_chain_cb, ctx);
 	nftnl_chain_list_free(chain_cache);
 
-	/* Caller wants all existing chains */
-	if (h->chain == NULL)
-		return 0;
-
-	/* Check if this chain exists, otherwise return an error */
-	list_for_each_entry(chain, &ctx->list, list) {
-		if (strcmp(chain->handle.chain, h->chain) == 0)
-			return 0;
-	}
-
-	return netlink_io_error(ctx, NULL,
-				"Could not find chain `%s' in table `%s': %s",
-				h->chain, h->table,
-				strerror(ENOENT));
+	return 0;
 }
 
 int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd)

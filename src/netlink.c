@@ -1294,8 +1294,8 @@ static int list_setelem_cb(struct nftnl_set_elem *nlse, void *arg)
 	return netlink_delinearize_setelem(nlse, ctx->set, ctx->cache);
 }
 
-int netlink_get_setelems(struct netlink_ctx *ctx, const struct handle *h,
-			 const struct location *loc, struct set *set)
+int netlink_list_setelems(struct netlink_ctx *ctx, const struct handle *h,
+			  struct set *set)
 {
 	struct nftnl_set *nls;
 	int err;
@@ -1308,11 +1308,11 @@ int netlink_get_setelems(struct netlink_ctx *ctx, const struct handle *h,
 		if (errno == EINTR)
 			return -1;
 
-		goto out;
+		return 0;
 	}
 
 	ctx->set = set;
-	set->init = set_expr_alloc(loc, set);
+	set->init = set_expr_alloc(&internal_location, set);
 	nftnl_set_elem_foreach(nls, list_setelem_cb, ctx);
 
 	if (!(set->flags & NFT_SET_INTERVAL))
@@ -1323,11 +1323,8 @@ int netlink_get_setelems(struct netlink_ctx *ctx, const struct handle *h,
 
 	if (set->flags & NFT_SET_INTERVAL)
 		interval_map_decompose(set->init);
-out:
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not receive set elements: %s",
-				 strerror(errno));
-	return err;
+
+	return 0;
 }
 
 int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,

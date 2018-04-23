@@ -84,8 +84,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 			return -1;
 
 		list_for_each_entry(set, &table->sets, list) {
-			ret = netlink_get_setelems(ctx, &set->handle,
-						   &internal_location, set);
+			ret = netlink_list_setelems(ctx, &set->handle, set);
 			if (ret < 0)
 				return -1;
 		}

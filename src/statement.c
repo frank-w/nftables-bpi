@@ -313,6 +313,11 @@ const char *get_rate(uint64_t byte_rate, uint64_t *rate)
 {
 	int i;
 
+	if (!byte_rate) {
+		*rate = 0;
+		return data_unit[0];
+	}
+
 	for (i = 0; data_unit[i + 1] != NULL; i++) {
 		if (byte_rate % 1024)
 			break;

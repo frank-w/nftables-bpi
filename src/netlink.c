@@ -1332,7 +1332,6 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 			struct set *set, struct expr *init)
 {
 	struct nftnl_set *nls, *nls_out = NULL;
-	int err = 0;
 
 	nls = alloc_nftnl_set(h);
 	alloc_setelem_cache(init, nls);
@@ -1340,14 +1339,8 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 	netlink_dump_set(nls, ctx);
 
 	nls_out = mnl_nft_setelem_get_one(ctx, nls);
-	if (!nls_out) {
-		nftnl_set_free(nls);
-		if (errno == EINTR)
-			return -1;
-
-		err = -1;
-		goto out;
-	}
+	if (!nls_out)
+		return -1;
 
 	ctx->set = set;
 	set->init = set_expr_alloc(loc, set);
@@ -1362,8 +1355,8 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 
 	if (set->flags & NFT_SET_INTERVAL)
 		get_set_decompose(table, set);
-out:
-	return err;
+
+	return 0;
 }
 
 void netlink_dump_obj(struct nftnl_obj *nln, struct netlink_ctx *ctx)

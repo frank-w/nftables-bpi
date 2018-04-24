@@ -46,8 +46,12 @@ static int nft_netlink(struct nft_ctx *nft,
 		ctx.debug_mask = nft->debug_mask;
 		init_list_head(&ctx.list);
 		ret = do_command(&ctx, cmd);
-		if (ret < 0)
+		if (ret < 0) {
+			netlink_io_error(&ctx, &cmd->location,
+					 "Could not process rule: %s",
+					 strerror(errno));
 			goto out;
+		}
 	}
 	if (!nft->check)
 		mnl_batch_end(batch, mnl_seqnum_alloc(&seqnum));

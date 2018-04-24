@@ -1363,9 +1363,6 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 	if (set->flags & NFT_SET_INTERVAL)
 		get_set_decompose(table, set);
 out:
-	if (err < 0)
-		netlink_io_error(ctx, loc, "Could not receive set elements: %s",
-				 strerror(errno));
 	return err;
 }
 
@@ -1575,14 +1572,8 @@ int netlink_reset_objs(struct netlink_ctx *ctx, const struct cmd *cmd,
 
 	obj_cache = mnl_nft_obj_dump(ctx, h->family,
 				     h->table, h->obj, type, dump, true);
-	if (obj_cache == NULL) {
-		if (errno == EINTR)
-			return -1;
-
-		return netlink_io_error(ctx, &cmd->location,
-					"Could not receive stateful object from kernel: %s",
-					strerror(errno));
-	}
+	if (obj_cache == NULL)
+		return -1;
 
 	err = nftnl_obj_list_foreach(obj_cache, list_obj_cb, ctx);
 	nftnl_obj_list_free(obj_cache);
@@ -1673,18 +1664,7 @@ struct nftnl_ruleset *netlink_dump_ruleset(struct netlink_ctx *ctx,
 					 const struct handle *h,
 					 const struct location *loc)
 {
-	struct nftnl_ruleset *rs;
-
-	rs = mnl_nft_ruleset_dump(ctx, h->family);
-	if (rs == NULL) {
-		if (errno == EINTR)
-			return NULL;
-
-		netlink_io_error(ctx, loc, "Could not receive ruleset: %s",
-				 strerror(errno));
-	}
-
-	return rs;
+	return mnl_nft_ruleset_dump(ctx, h->family);
 }
 
 static void trace_print_hdr(const struct nftnl_trace *nlt,
@@ -2213,11 +2193,8 @@ static int netlink_markup_flush(const struct nftnl_parse_ctx *ctx)
 
 int netlink_markup_parse_cb(const struct nftnl_parse_ctx *ctx)
 {
-	struct ruleset_parse *rp;
 	uint32_t type;
 	int ret = -1;
-
-	rp = nftnl_ruleset_ctx_get(ctx, NFTNL_RULESET_CTX_DATA);
 
 	type = nftnl_ruleset_ctx_get_u32(ctx, NFTNL_RULESET_CTX_TYPE);
 	switch (type) {
@@ -2245,9 +2222,6 @@ int netlink_markup_parse_cb(const struct nftnl_parse_ctx *ctx)
 	}
 
 	nftnl_ruleset_ctx_free(ctx);
-	if (ret < 0)
-		netlink_io_error(rp->nl_ctx, &rp->cmd->location,
-				 "Could not import: %s", strerror(errno));
 
-	return 0;
+	return ret;
 }

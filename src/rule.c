@@ -33,6 +33,7 @@ void handle_free(struct handle *h)
 	xfree(h->table);
 	xfree(h->chain);
 	xfree(h->set);
+	xfree(h->flowtable);
 }
 
 void handle_merge(struct handle *dst, const struct handle *src)

@@ -478,7 +478,7 @@ int netlink_replace_rule_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
 	if (ctx->octx->echo) {
 		err = cache_update(ctx->nf_sock, ctx->cache,
 				   CMD_INVALID, ctx->msgs,
-				   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->debug_mask, ctx->octx);
 		if (err < 0)
 			return err;
 

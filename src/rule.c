@@ -143,7 +143,7 @@ static int cache_init(struct netlink_ctx *ctx, enum cmd_ops cmd)
 }
 
 int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
-		 enum cmd_ops cmd, struct list_head *msgs, bool debug,
+		 enum cmd_ops cmd, struct list_head *msgs, unsigned int debug_mask,
 		 struct output_ctx *octx)
 {
 	uint16_t genid;
@@ -153,7 +153,7 @@ int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
 		.nf_sock	= nf_sock,
 		.cache		= cache,
 		.msgs		= msgs,
-		.debug_mask	= debug ? NFT_DEBUG_NETLINK : 0,
+		.debug_mask	= debug_mask,
 		.octx		= octx,
 	};
 

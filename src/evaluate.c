@@ -184,7 +184,7 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 		break;
 	case SYMBOL_SET:
 		ret = cache_update(ctx->nf_sock, ctx->cache, ctx->cmd->op,
-				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -2995,14 +2995,14 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3013,7 +3013,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 		return rule_evaluate(ctx, cmd->rule);
 	case CMD_OBJ_CHAIN:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3022,7 +3022,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 		return table_evaluate(ctx, cmd->table);
 	case CMD_OBJ_FLOWTABLE:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3045,7 +3045,7 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3072,7 +3072,7 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 	int ret;
 
 	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+			   ctx->debug_mask, ctx->octx);
 	if (ret < 0)
 		return ret;
 
@@ -3118,7 +3118,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	int ret;
 
 	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+			   ctx->debug_mask, ctx->octx);
 	if (ret < 0)
 		return ret;
 
@@ -3206,7 +3206,7 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 	int ret;
 
 	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+			   ctx->debug_mask, ctx->octx);
 	if (ret < 0)
 		return ret;
 
@@ -3245,7 +3245,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		break;
 	case CMD_OBJ_SET:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-				   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3260,7 +3260,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		return 0;
 	case CMD_OBJ_MAP:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-				   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3275,7 +3275,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		return 0;
 	case CMD_OBJ_METER:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-				   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3302,7 +3302,7 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+				   ctx->msgs, ctx->debug_mask, ctx->octx);
 		if (ret < 0)
 			return ret;
 
@@ -3400,7 +3400,7 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 	int ret;
 
 	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+			   ctx->debug_mask, ctx->octx);
 	if (ret < 0)
 		return ret;
 
@@ -3425,7 +3425,7 @@ static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 		return cmd_error(ctx, "this output type is not supported");
 
 	return cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			    ctx->debug_mask & NFT_DEBUG_NETLINK, ctx->octx);
+			    ctx->debug_mask, ctx->octx);
 }
 
 static int cmd_evaluate_import(struct eval_ctx *ctx, struct cmd *cmd)

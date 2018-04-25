@@ -1637,7 +1637,8 @@ static void flowtable_print_declaration(const struct flowtable *flowtable,
 	nft_print(octx, " %s {%s", flowtable->handle.flowtable, opts->nl);
 
 	nft_print(octx, "%s%shook %s priority %d%s",
-		  opts->tab, opts->tab, "ingress",
+		  opts->tab, opts->tab,
+		  hooknum2str(NFPROTO_NETDEV, flowtable->hooknum),
 		  flowtable->priority, opts->stmt_separator);
 
 	nft_print(octx, "%s%sdevices = { ", opts->tab, opts->tab);

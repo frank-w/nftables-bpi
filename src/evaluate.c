@@ -2956,6 +2956,7 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 
 static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 {
+	struct flowtable *ft;
 	struct chain *chain;
 	struct set *set;
 
@@ -2984,6 +2985,12 @@ static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 		if (chain_evaluate(ctx, chain) < 0)
 			return -1;
 	}
+	list_for_each_entry(ft, &table->flowtables, list) {
+		handle_merge(&ft->handle, &table->handle);
+		if (flowtable_evaluate(ctx, ft) < 0)
+			return -1;
+	}
+
 	ctx->table = NULL;
 	return 0;
 }

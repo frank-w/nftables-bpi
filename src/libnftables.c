@@ -6,7 +6,7 @@
  * published by the Free Software Foundation.
  *
  */
-#include <nftables/nftables.h>
+#include <nftables/libnftables.h>
 #include <erec.h>
 #include <mnl.h>
 #include <parser.h>

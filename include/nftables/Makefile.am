@@ -1,1 +1,1 @@
-noinst_HEADERS = nftables.h
+pkginclude_HEADERS = libnftables.h

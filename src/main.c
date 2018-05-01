@@ -18,7 +18,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
-#include <nftables/nftables.h>
+#include <nftables/libnftables.h>
 #include <utils.h>
 #include <cli.h>
 

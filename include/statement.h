@@ -178,6 +178,7 @@ struct meter_stmt {
 	struct expr		*key;
 	struct stmt		*stmt;
 	const char		*name;
+	uint32_t		size;
 };
 
 extern struct stmt *meter_stmt_alloc(const struct location *loc);

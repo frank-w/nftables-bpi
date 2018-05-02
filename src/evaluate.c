@@ -1995,6 +1995,7 @@ static int stmt_evaluate_meter(struct eval_ctx *ctx, struct stmt *stmt)
 
 	setref = implicit_set_declaration(ctx, stmt->meter.name, key, set);
 
+	setref->set->desc.size = stmt->meter.size;
 	stmt->meter.set = setref;
 
 	if (stmt_evaluate(ctx, stmt->meter.stmt) < 0)

@@ -1201,6 +1201,7 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 		stmt->meter.set  = set_ref_expr_alloc(loc, set);
 		stmt->meter.key  = expr;
 		stmt->meter.stmt = dstmt;
+		stmt->meter.size = set->desc.size;
 	} else if (expr_data != NULL) {
 		stmt = map_stmt_alloc(loc);
 		stmt->map.set	= set_ref_expr_alloc(loc, set);

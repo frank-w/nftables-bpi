@@ -2761,8 +2761,18 @@ meter_stmt_alloc	:	METER	identifier		'{' meter_key_expr stmt '}'
 			{
 				$$ = meter_stmt_alloc(&@$);
 				$$->meter.name = $2;
+				$$->meter.size = 0xffff;
 				$$->meter.key  = $4;
 				$$->meter.stmt = $5;
+				$$->location  = @$;
+			}
+			|	METER	identifier	SIZE	NUM	'{' meter_key_expr stmt '}'
+			{
+				$$ = meter_stmt_alloc(&@$);
+				$$->meter.name = $2;
+				$$->meter.size = $4;
+				$$->meter.key  = $6;
+				$$->meter.stmt = $7;
 				$$->location  = @$;
 			}
 			;

@@ -114,7 +114,7 @@ static void meter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 		expr_print(stmt->meter.set, octx);
 		nft_print(octx, " ");
 	}
-	nft_print(octx, "{ ");
+	nft_print(octx, "size %u { ", stmt->meter.size);
 	expr_print(stmt->meter.key, octx);
 	nft_print(octx, " ");
 

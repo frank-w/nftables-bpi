@@ -71,7 +71,7 @@ hoplimit
 http
 https
 htype
-ibriport
+ibrname
 icmp
 ICMPv
 icmpv
@@ -139,7 +139,7 @@ nh
 nNscae
 noop
 num
-obriport
+obrname
 oif
 oifgroup
 oifname

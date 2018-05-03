@@ -125,8 +125,8 @@ struct nftnl_table *alloc_nftnl_table(const struct handle *h)
 		memory_allocation_error();
 
 	nftnl_table_set_u32(nlt, NFTNL_TABLE_FAMILY, h->family);
-	if (h->table != NULL)
-		nftnl_table_set(nlt, NFTNL_TABLE_NAME, h->table);
+	if (h->table.name != NULL)
+		nftnl_table_set(nlt, NFTNL_TABLE_NAME, h->table.name);
 	if (h->handle.id)
 		nftnl_table_set_u64(nlt, NFTNL_TABLE_HANDLE, h->handle.id);
 
@@ -142,7 +142,7 @@ struct nftnl_chain *alloc_nftnl_chain(const struct handle *h)
 		memory_allocation_error();
 
 	nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FAMILY, h->family);
-	nftnl_chain_set_str(nlc, NFTNL_CHAIN_TABLE, h->table);
+	nftnl_chain_set_str(nlc, NFTNL_CHAIN_TABLE, h->table.name);
 	if (h->handle.id)
 		nftnl_chain_set_u64(nlc, NFTNL_CHAIN_HANDLE, h->handle.id);
 	if (h->chain != NULL)
@@ -160,7 +160,7 @@ struct nftnl_rule *alloc_nftnl_rule(const struct handle *h)
 		memory_allocation_error();
 
 	nftnl_rule_set_u32(nlr, NFTNL_RULE_FAMILY, h->family);
-	nftnl_rule_set_str(nlr, NFTNL_RULE_TABLE, h->table);
+	nftnl_rule_set_str(nlr, NFTNL_RULE_TABLE, h->table.name);
 	if (h->chain != NULL)
 		nftnl_rule_set_str(nlr, NFTNL_RULE_CHAIN, h->chain);
 	if (h->handle.id)
@@ -191,7 +191,7 @@ struct nftnl_set *alloc_nftnl_set(const struct handle *h)
 		memory_allocation_error();
 
 	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
-	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table);
+	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
 	if (h->set != NULL)
 		nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set);
 	if (h->set_id)
@@ -292,7 +292,7 @@ __alloc_nftnl_obj(const struct handle *h, uint32_t type)
 		memory_allocation_error();
 
 	nftnl_obj_set_u32(nlo, NFTNL_OBJ_FAMILY, h->family);
-	nftnl_obj_set_str(nlo, NFTNL_OBJ_TABLE, h->table);
+	nftnl_obj_set_str(nlo, NFTNL_OBJ_TABLE, h->table.name);
 	if (h->obj != NULL)
 		nftnl_obj_set_str(nlo, NFTNL_OBJ_NAME, h->obj);
 
@@ -539,7 +539,7 @@ static int list_rule_cb(struct nftnl_rule *nlr, void *arg)
 	chain  = nftnl_rule_get_str(nlr, NFTNL_RULE_CHAIN);
 
 	if (h->family != family ||
-	    strcmp(table, h->table) != 0 ||
+	    strcmp(table, h->table.name) != 0 ||
 	    (h->chain && strcmp(chain, h->chain) != 0))
 		return 0;
 
@@ -653,7 +653,7 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 	chain = chain_alloc(nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME));
 	chain->handle.family =
 		nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY);
-	chain->handle.table  =
+	chain->handle.table.name  =
 		xstrdup(nftnl_chain_get_str(nlc, NFTNL_CHAIN_TABLE));
 	chain->handle.handle.id =
 		nftnl_chain_get_u64(nlc, NFTNL_CHAIN_HANDLE);
@@ -695,7 +695,7 @@ static int list_chain_cb(struct nftnl_chain *nlc, void *arg)
 	name   = nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME);
 	family = nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY);
 
-	if (h->family != family || strcmp(table, h->table) != 0)
+	if (h->family != family || strcmp(table, h->table.name) != 0)
 		return 0;
 	if (h->chain && strcmp(name, h->chain) != 0)
 		return 0;
@@ -767,7 +767,7 @@ struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 
 	table = table_alloc();
 	table->handle.family = nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY);
-	table->handle.table  = xstrdup(nftnl_table_get_str(nlt, NFTNL_TABLE_NAME));
+	table->handle.table.name = xstrdup(nftnl_table_get_str(nlt, NFTNL_TABLE_NAME));
 	table->flags	     = nftnl_table_get_u32(nlt, NFTNL_TABLE_FLAGS);
 	table->handle.handle.id = nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE);
 
@@ -925,7 +925,7 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 
 	set = set_alloc(&netlink_location);
 	set->handle.family = nftnl_set_get_u32(nls, NFTNL_SET_FAMILY);
-	set->handle.table  = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_TABLE));
+	set->handle.table.name = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_TABLE));
 	set->handle.set    = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_NAME));
 	set->automerge	   = automerge;
 
@@ -1062,7 +1062,7 @@ int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h)
 	struct nftnl_set_list *set_cache;
 	int err;
 
-	set_cache = mnl_nft_set_dump(ctx, h->family, h->table);
+	set_cache = mnl_nft_set_dump(ctx, h->family, h->table.name);
 	if (set_cache == NULL) {
 		if (errno == EINTR)
 			return -1;
@@ -1408,7 +1408,7 @@ struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 
 	obj = obj_alloc(&netlink_location);
 	obj->handle.family = nftnl_obj_get_u32(nlo, NFTNL_OBJ_FAMILY);
-	obj->handle.table =
+	obj->handle.table.name =
 		xstrdup(nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE));
 	obj->handle.obj =
 		xstrdup(nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME));
@@ -1465,7 +1465,7 @@ static struct nftnl_flowtable *alloc_nftnl_flowtable(const struct handle *h,
 		memory_allocation_error();
 
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FAMILY, h->family);
-	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_TABLE, h->table);
+	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_TABLE, h->table.name);
 	if (h->flowtable != NULL)
 		nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_NAME, h->flowtable);
 
@@ -1543,7 +1543,7 @@ int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h)
 	int err;
 
 	obj_cache = mnl_nft_obj_dump(ctx, h->family,
-				     h->table, NULL, 0, true, false);
+				     h->table.name, NULL, 0, true, false);
 	if (obj_cache == NULL) {
 		if (errno == EINTR)
 			return -1;
@@ -1564,7 +1564,7 @@ int netlink_reset_objs(struct netlink_ctx *ctx, const struct cmd *cmd,
 	int err;
 
 	obj_cache = mnl_nft_obj_dump(ctx, h->family,
-				     h->table, h->obj, type, dump, true);
+				     h->table.name, h->obj, type, dump, true);
 	if (obj_cache == NULL)
 		return -1;
 
@@ -1584,7 +1584,7 @@ netlink_delinearize_flowtable(struct netlink_ctx *ctx,
 	flowtable = flowtable_alloc(&netlink_location);
 	flowtable->handle.family =
 		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_FAMILY);
-	flowtable->handle.table =
+	flowtable->handle.table.name =
 		xstrdup(nftnl_flowtable_get_str(nlo, NFTNL_FLOWTABLE_TABLE));
 	flowtable->handle.flowtable =
 		xstrdup(nftnl_flowtable_get_str(nlo, NFTNL_FLOWTABLE_NAME));
@@ -1623,7 +1623,7 @@ int netlink_list_flowtables(struct netlink_ctx *ctx, const struct handle *h)
 	struct nftnl_flowtable_list *flowtable_cache;
 	int err;
 
-	flowtable_cache = mnl_nft_flowtable_dump(ctx, h->family, h->table);
+	flowtable_cache = mnl_nft_flowtable_dump(ctx, h->family, h->table.name);
 	if (flowtable_cache == NULL) {
 		if (errno == EINTR)
 			return -1;
@@ -1719,10 +1719,10 @@ static void trace_print_rule(const struct nftnl_trace *nlt,
 	struct handle h;
 
 	h.family = nftnl_trace_get_u32(nlt, NFTNL_TRACE_FAMILY);
-	h.table  = nftnl_trace_get_str(nlt, NFTNL_TRACE_TABLE);
+	h.table.name  = nftnl_trace_get_str(nlt, NFTNL_TRACE_TABLE);
 	h.chain  = nftnl_trace_get_str(nlt, NFTNL_TRACE_CHAIN);
 
-	if (!h.table)
+	if (!h.table.name)
 		return;
 
 	table = table_lookup(&h, cache);

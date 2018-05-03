@@ -27,6 +27,11 @@ struct position_spec {
 	uint64_t		id;
 };
 
+struct table_spec {
+	struct location		location;
+	const char		*name;
+};
+
 /**
  * struct handle - handle for tables, chains, rules and sets
  *
@@ -42,7 +47,7 @@ struct position_spec {
  */
 struct handle {
 	uint32_t		family;
-	const char		*table;
+	struct table_spec	table;
 	const char		*chain;
 	const char		*set;
 	const char		*obj;

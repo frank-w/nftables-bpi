@@ -1844,7 +1844,8 @@ table_spec		:	family_spec	identifier
 			{
 				memset(&$$, 0, sizeof($$));
 				$$.family	= $1;
-				$$.table	= $2;
+				$$.table.location = @2;
+				$$.table.name	= $2;
 			}
 			;
 

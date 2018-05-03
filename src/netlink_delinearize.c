@@ -2445,7 +2445,7 @@ struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 
 	memset(&h, 0, sizeof(h));
 	h.family = nftnl_rule_get_u32(nlr, NFTNL_RULE_FAMILY);
-	h.table  = xstrdup(nftnl_rule_get_str(nlr, NFTNL_RULE_TABLE));
+	h.table.name  = xstrdup(nftnl_rule_get_str(nlr, NFTNL_RULE_TABLE));
 	h.chain  = xstrdup(nftnl_rule_get_str(nlr, NFTNL_RULE_CHAIN));
 	h.handle.id = nftnl_rule_get_u64(nlr, NFTNL_RULE_HANDLE);
 

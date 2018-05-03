@@ -576,7 +576,7 @@ static void netlink_events_cache_deltable(struct netlink_mon_handler *monh,
 
 	nlt      = netlink_table_alloc(nlh);
 	h.family = nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY);
-	h.table  = nftnl_table_get_str(nlt, NFTNL_TABLE_NAME);
+	h.table.name  = nftnl_table_get_str(nlt, NFTNL_TABLE_NAME);
 
 	t = table_lookup(&h, monh->cache);
 	if (t == NULL)
@@ -722,7 +722,7 @@ static void netlink_events_cache_delobj(struct netlink_mon_handler *monh,
 
 	nlo      = netlink_obj_alloc(nlh);
 	h.family = nftnl_obj_get_u32(nlo, NFTNL_OBJ_FAMILY);
-	h.table  = nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE);
+	h.table.name  = nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE);
 
 	name     = nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME);
 	type	 = nftnl_obj_get_u32(nlo, NFTNL_OBJ_TYPE);

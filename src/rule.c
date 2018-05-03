@@ -30,7 +30,7 @@
 
 void handle_free(struct handle *h)
 {
-	xfree(h->table);
+	xfree(h->table.name);
 	xfree(h->chain);
 	xfree(h->set);
 	xfree(h->flowtable);
@@ -40,8 +40,8 @@ void handle_merge(struct handle *dst, const struct handle *src)
 {
 	if (dst->family == 0)
 		dst->family = src->family;
-	if (dst->table == NULL && src->table != NULL)
-		dst->table = xstrdup(src->table);
+	if (dst->table.name == NULL && src->table.name != NULL)
+		dst->table.name = xstrdup(src->table.name);
 	if (dst->chain == NULL && src->chain != NULL)
 		dst->chain = xstrdup(src->chain);
 	if (dst->set == NULL && src->set != NULL)
@@ -270,7 +270,7 @@ struct set *set_lookup_global(uint32_t family, const char *table,
 	struct table *t;
 
 	h.family = family;
-	h.table = table;
+	h.table.name = table;
 
 	t = table_lookup(&h, cache);
 	if (t == NULL)
@@ -418,7 +418,7 @@ void set_print_plain(const struct set *s, struct output_ctx *octx)
 	struct print_fmt_options opts = {
 		.tab		= "",
 		.nl		= " ",
-		.table		= s->handle.table,
+		.table		= s->handle.table.name,
 		.family		= family2str(s->handle.family),
 		.stmt_separator	= "; ",
 	};
@@ -777,7 +777,7 @@ static void chain_print(const struct chain *chain, struct output_ctx *octx)
 void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 {
 	nft_print(octx, "chain %s %s %s", family2str(chain->handle.family),
-		  chain->handle.table, chain->handle.chain);
+		  chain->handle.table.name, chain->handle.chain);
 
 	if (chain->flags & CHAIN_F_BASECHAIN) {
 		nft_print(octx, " { type %s hook %s priority %d; policy %s; }",
@@ -842,7 +842,7 @@ struct table *table_lookup(const struct handle *h,
 
 	list_for_each_entry(table, &cache->list, list) {
 		if (table->handle.family == h->family &&
-		    !strcmp(table->handle.table, h->table))
+		    !strcmp(table->handle.table.name, h->table.name))
 			return table;
 	}
 	return NULL;
@@ -884,7 +884,7 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 	const char *delim = "";
 	const char *family = family2str(table->handle.family);
 
-	nft_print(octx, "table %s %s {", family, table->handle.table);
+	nft_print(octx, "table %s %s {", family, table->handle.table.name);
 	if (octx->handle > 0)
 		nft_print(octx, " # handle %" PRIu64, table->handle.handle.id);
 	nft_print(octx, "\n");
@@ -1318,7 +1318,7 @@ static int do_list_sets(struct netlink_ctx *ctx, struct cmd *cmd)
 
 		nft_print(ctx->octx, "table %s %s {\n",
 			  family2str(table->handle.family),
-			  table->handle.table);
+			  table->handle.table.name);
 
 		list_for_each_entry(set, &table->sets, list) {
 			if (cmd->obj == CMD_OBJ_SETS &&
@@ -1543,7 +1543,7 @@ void obj_print_plain(const struct obj *obj, struct output_ctx *octx)
 	struct print_fmt_options opts = {
 		.tab		= "",
 		.nl		= " ",
-		.table		= obj->handle.table,
+		.table		= obj->handle.table.name,
 		.family		= family2str(obj->handle.family),
 	};
 
@@ -1567,10 +1567,10 @@ static int do_list_obj(struct netlink_ctx *ctx, struct cmd *cmd, uint32_t type)
 
 		nft_print(ctx->octx, "table %s %s {\n",
 			  family2str(table->handle.family),
-			  table->handle.table);
+			  table->handle.table.name);
 
-		if (cmd->handle.table != NULL &&
-		    strcmp(cmd->handle.table, table->handle.table)) {
+		if (cmd->handle.table.name != NULL &&
+		    strcmp(cmd->handle.table.name, table->handle.table.name)) {
 			nft_print(ctx->octx, "}\n");
 			continue;
 		}
@@ -1686,7 +1686,7 @@ static int do_list_flowtables(struct netlink_ctx *ctx, struct cmd *cmd)
 
 		nft_print(ctx->octx, "table %s %s {\n",
 			  family2str(table->handle.family),
-			  table->handle.table);
+			  table->handle.table.name);
 
 		list_for_each_entry(flowtable, &table->flowtables, list) {
 			flowtable_print_declaration(flowtable, &opts, ctx->octx);
@@ -1709,13 +1709,13 @@ static int do_list_ruleset(struct netlink_ctx *ctx, struct cmd *cmd)
 			continue;
 
 		cmd->handle.family = table->handle.family;
-		cmd->handle.table = table->handle.table;
+		cmd->handle.table.name = table->handle.table.name;
 
 		if (do_list_table(ctx, cmd, table) < 0)
 			return -1;
 	}
 
-	cmd->handle.table = NULL;
+	cmd->handle.table.name = NULL;
 
 	return 0;
 }
@@ -1731,7 +1731,7 @@ static int do_list_tables(struct netlink_ctx *ctx, struct cmd *cmd)
 
 		nft_print(ctx->octx, "table %s %s\n",
 			  family2str(table->handle.family),
-			  table->handle.table);
+			  table->handle.table.name);
 	}
 
 	return 0;
@@ -1742,7 +1742,7 @@ static void table_print_declaration(struct table *table,
 {
 	nft_print(octx, "table %s %s {\n",
 		  family2str(table->handle.family),
-		  table->handle.table);
+		  table->handle.table.name);
 }
 
 static int do_list_chain(struct netlink_ctx *ctx, struct cmd *cmd,
@@ -1813,12 +1813,12 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table = NULL;
 
-	if (cmd->handle.table != NULL)
+	if (cmd->handle.table.name != NULL)
 		table = table_lookup(&cmd->handle, ctx->cache);
 
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
-		if (!cmd->handle.table)
+		if (!cmd->handle.table.name)
 			return do_list_tables(ctx, cmd);
 		return do_list_table(ctx, cmd, table);
 	case CMD_OBJ_CHAIN:
@@ -1897,7 +1897,7 @@ static int do_command_get(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table = NULL;
 
-	if (cmd->handle.table != NULL)
+	if (cmd->handle.table.name != NULL)
 		table = table_lookup(&cmd->handle, ctx->cache);
 
 	switch (cmd->obj) {

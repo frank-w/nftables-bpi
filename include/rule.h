@@ -37,6 +37,11 @@ struct chain_spec {
 	const char		*name;
 };
 
+struct set_spec {
+	struct location		location;
+	const char		*name;
+};
+
 /**
  * struct handle - handle for tables, chains, rules and sets
  *
@@ -54,7 +59,7 @@ struct handle {
 	uint32_t		family;
 	struct table_spec	table;
 	struct chain_spec	chain;
-	const char		*set;
+	struct set_spec		set;
 	const char		*obj;
 	const char		*flowtable;
 	struct handle_spec	handle;

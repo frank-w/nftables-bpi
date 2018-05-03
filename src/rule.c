@@ -32,7 +32,7 @@ void handle_free(struct handle *h)
 {
 	xfree(h->table.name);
 	xfree(h->chain.name);
-	xfree(h->set);
+	xfree(h->set.name);
 	xfree(h->flowtable);
 }
 
@@ -44,8 +44,8 @@ void handle_merge(struct handle *dst, const struct handle *src)
 		dst->table.name = xstrdup(src->table.name);
 	if (dst->chain.name == NULL && src->chain.name != NULL)
 		dst->chain.name = xstrdup(src->chain.name);
-	if (dst->set == NULL && src->set != NULL)
-		dst->set = xstrdup(src->set);
+	if (dst->set.name == NULL && src->set.name != NULL)
+		dst->set.name = xstrdup(src->set.name);
 	if (dst->flowtable == NULL && src->flowtable != NULL)
 		dst->flowtable = xstrdup(src->flowtable);
 	if (dst->obj == NULL && src->obj != NULL)
@@ -257,7 +257,7 @@ struct set *set_lookup(const struct table *table, const char *name)
 	struct set *set;
 
 	list_for_each_entry(set, &table->sets, list) {
-		if (!strcmp(set->handle.set, name))
+		if (!strcmp(set->handle.set.name, name))
 			return set;
 	}
 	return NULL;
@@ -322,7 +322,7 @@ static void set_print_declaration(const struct set *set,
 	if (opts->table != NULL)
 		nft_print(octx, " %s", opts->table);
 
-	nft_print(octx, " %s {", set->handle.set);
+	nft_print(octx, " %s {", set->handle.set.name);
 
 	if (octx->handle > 0)
 		nft_print(octx, " # handle %" PRIu64, set->handle.handle.id);
@@ -1100,7 +1100,7 @@ static int do_add_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 	struct set *set;
 
 	table = table_lookup(h, ctx->cache);
-	set = set_lookup(table, h->set);
+	set = set_lookup(table, h->set.name);
 
 	if (set->flags & NFT_SET_INTERVAL &&
 	    set_to_intervals(ctx->msgs, set, init, true,
@@ -1212,7 +1212,7 @@ static int do_delete_setelems(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 
 	table = table_lookup(h, ctx->cache);
-	set = set_lookup(table, h->set);
+	set = set_lookup(table, h->set.name);
 
 	if (set->flags & NFT_SET_INTERVAL &&
 	    set_to_intervals(ctx->msgs, set, expr, false,
@@ -1800,7 +1800,7 @@ static int do_list_set(struct netlink_ctx *ctx, struct cmd *cmd,
 {
 	struct set *set;
 
-	set = set_lookup(table, cmd->handle.set);
+	set = set_lookup(table, cmd->handle.set.name);
 	if (set == NULL)
 		return -1;
 
@@ -1867,7 +1867,7 @@ static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 	struct expr *init;
 	int err;
 
-	set = set_lookup(table, cmd->handle.set);
+	set = set_lookup(table, cmd->handle.set.name);
 
 	/* Create a list of elements based of what we got from command line. */
 	if (set->flags & NFT_SET_INTERVAL)

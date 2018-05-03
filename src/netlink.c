@@ -192,8 +192,8 @@ struct nftnl_set *alloc_nftnl_set(const struct handle *h)
 
 	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
 	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
-	if (h->set != NULL)
-		nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set);
+	if (h->set.name != NULL)
+		nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
 	if (h->set_id)
 		nftnl_set_set_u32(nls, NFTNL_SET_ID, h->set_id);
 	if (h->handle.id)
@@ -926,7 +926,7 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	set = set_alloc(&netlink_location);
 	set->handle.family = nftnl_set_get_u32(nls, NFTNL_SET_FAMILY);
 	set->handle.table.name = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_TABLE));
-	set->handle.set    = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_NAME));
+	set->handle.set.name = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_NAME));
 	set->automerge	   = automerge;
 
 	set->key     = constant_expr_alloc(&netlink_location,

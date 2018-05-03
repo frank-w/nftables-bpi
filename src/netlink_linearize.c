@@ -265,7 +265,7 @@ static void netlink_gen_map(struct netlink_linearize_ctx *ctx,
 	netlink_put_register(nle, NFTNL_EXPR_LOOKUP_SREG, sreg);
 	netlink_put_register(nle, NFTNL_EXPR_LOOKUP_DREG, dreg);
 	nftnl_expr_set_str(nle, NFTNL_EXPR_LOOKUP_SET,
-			   expr->mappings->set->handle.set);
+			   expr->mappings->set->handle.set.name);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_LOOKUP_SET_ID,
 			   expr->mappings->set->handle.set_id);
 
@@ -291,7 +291,7 @@ static void netlink_gen_lookup(struct netlink_linearize_ctx *ctx,
 	nle = alloc_nft_expr("lookup");
 	netlink_put_register(nle, NFTNL_EXPR_LOOKUP_SREG, sreg);
 	nftnl_expr_set_str(nle, NFTNL_EXPR_LOOKUP_SET,
-			   expr->right->set->handle.set);
+			   expr->right->set->handle.set.name);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_LOOKUP_SET_ID,
 			   expr->right->set->handle.set_id);
 	if (expr->op == OP_NEQ)
@@ -716,7 +716,7 @@ static void netlink_gen_objref_stmt(struct netlink_linearize_ctx *ctx,
 
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_OBJREF_SET_SREG, sreg_key);
 		nftnl_expr_set_str(nle, NFTNL_EXPR_OBJREF_SET_NAME,
-				   expr->mappings->set->handle.set);
+				   expr->mappings->set->handle.set.name);
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_OBJREF_SET_ID,
 				   expr->mappings->set->handle.set_id);
 		break;
@@ -1172,7 +1172,7 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 		nftnl_expr_set_u64(nle, NFTNL_EXPR_DYNSET_TIMEOUT,
 				   stmt->set.key->timeout);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_OP, stmt->set.op);
-	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set);
+	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set.name);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, set->handle.set_id);
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
@@ -1228,7 +1228,7 @@ static void netlink_gen_meter_stmt(struct netlink_linearize_ctx *ctx,
 		nftnl_expr_set_u64(nle, NFTNL_EXPR_DYNSET_TIMEOUT,
 				   stmt->meter.key->timeout);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_OP, op);
-	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set);
+	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set.name);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, set->handle.set_id);
 	nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
 		       netlink_gen_stmt_stateful(ctx, stmt->meter.stmt), 0);

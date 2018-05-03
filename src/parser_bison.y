@@ -1885,7 +1885,8 @@ chain_identifier	:	identifier
 set_spec		:	table_spec	identifier
 			{
 				$$		= $1;
-				$$.set		= $2;
+				$$.set.name	= $2;
+				$$.set.location	= @2;
 			}
 			;
 
@@ -1900,7 +1901,8 @@ setid_spec 		: 	table_spec 	HANDLE NUM
 set_identifier		:	identifier
 			{
 				memset(&$$, 0, sizeof($$));
-				$$.set		= $1;
+				$$.set.name	= $1;
+				$$.set.location	= @1;
 			}
 			;
 

@@ -686,7 +686,7 @@ void get_set_decompose(struct table *table, struct set *set)
 		} else {
 			if (left) {
 				left = get_set_interval_end(table,
-							    set->handle.set,
+							    set->handle.set.name,
 							    left);
 				compound_expr_add(new_init, left);
 			}
@@ -694,7 +694,7 @@ void get_set_decompose(struct table *table, struct set *set)
 		}
 	}
 	if (left) {
-		left = get_set_interval_end(table, set->handle.set, left);
+		left = get_set_interval_end(table, set->handle.set.name, left);
 		compound_expr_add(new_init, left);
 	}
 

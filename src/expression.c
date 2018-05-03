@@ -978,11 +978,11 @@ static void set_ref_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	if (expr->set->flags & NFT_SET_ANONYMOUS) {
 		if (expr->set->flags & NFT_SET_EVAL)
-			nft_print(octx, "%s", expr->set->handle.set);
+			nft_print(octx, "%s", expr->set->handle.set.name);
 		else
 			expr_print(expr->set->init, octx);
 	} else {
-		nft_print(octx, "@%s", expr->set->handle.set);
+		nft_print(octx, "@%s", expr->set->handle.set.name);
 	}
 }
 

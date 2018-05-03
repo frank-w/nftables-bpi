@@ -21,6 +21,7 @@
 #include <netinet/icmp6.h>
 #include <net/ethernet.h>
 #include <net/if.h>
+#include <errno.h>
 
 #include <expression.h>
 #include <statement.h>
@@ -42,8 +43,8 @@ static const char * const byteorder_names[] = {
 	__stmt_binary_error(ctx, &(s1)->location, NULL, fmt, ## args)
 #define monitor_error(ctx, s1, fmt, args...) \
 	__stmt_binary_error(ctx, &(s1)->location, NULL, fmt, ## args)
-#define cmd_error(ctx, fmt, args...) \
-	__stmt_binary_error(ctx, &(ctx->cmd)->location, NULL, fmt, ## args)
+#define cmd_error(ctx, loc, fmt, args...) \
+	__stmt_binary_error(ctx, loc, NULL, fmt, ## args)
 
 static int __fmtstring(3, 4) set_error(struct eval_ctx *ctx,
 				       const struct set *set,
@@ -190,8 +191,9 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 
 		table = table_lookup_global(ctx);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 ctx->cmd->handle.table.name);
+			return cmd_error(ctx, &ctx->cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 
 		set = set_lookup(table, (*expr)->identifier);
 		if (set == NULL)
@@ -2747,13 +2749,15 @@ static int setelem_evaluate(struct eval_ctx *ctx, struct expr **expr)
 
 	table = table_lookup_global(ctx);
 	if (table == NULL)
-		return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-				 ctx->cmd->handle.table.name);
+		return cmd_error(ctx, &ctx->cmd->handle.table.location,
+				 "Could not process rule: %s",
+				 strerror(ENOENT));
 
 	set = set_lookup(table, ctx->cmd->handle.set.name);
 	if (set == NULL)
-		return cmd_error(ctx, "Could not process rule: Set '%s' does not exist",
-				 ctx->cmd->handle.set.name);
+		return cmd_error(ctx, &ctx->cmd->handle.set.location,
+				 "Could not process rule: %s",
+				 strerror(ENOENT));
 
 	ctx->set = set;
 	expr_set_context(&ctx->ectx, set->key->dtype, set->key->len);
@@ -2770,8 +2774,9 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 
 	table = table_lookup_global(ctx);
 	if (table == NULL)
-		return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-				 ctx->cmd->handle.table.name);
+		return cmd_error(ctx, &ctx->cmd->handle.table.location,
+				 "Could not process rule: %s",
+				 strerror(ENOENT));
 
 	if (!(set->flags & NFT_SET_INTERVAL) && set->automerge)
 		return set_error(ctx, set, "auto-merge only works with interval sets");
@@ -2832,8 +2837,9 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 
 	table = table_lookup_global(ctx);
 	if (table == NULL)
-		return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-				 ctx->cmd->handle.table.name);
+		return cmd_error(ctx, &ctx->cmd->handle.table.location,
+				 "Could not process rule: %s",
+				 strerror(ENOENT));
 
 	ft->hooknum = str2hooknum(NFPROTO_NETDEV, ft->hookstr);
 	if (ft->hooknum == NF_INET_NUMHOOKS)
@@ -2924,8 +2930,9 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 
 	table = table_lookup_global(ctx);
 	if (table == NULL)
-		return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-				 ctx->cmd->handle.table.name);
+		return cmd_error(ctx, &ctx->cmd->handle.table.location,
+				 "Could not process rule: %s",
+				 strerror(ENOENT));
 
 	if (chain == NULL) {
 		if (chain_lookup(table, &ctx->cmd->handle) == NULL) {
@@ -3088,12 +3095,14 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SETELEM:
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &ctx->cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || set->flags & (NFT_SET_MAP | NFT_SET_EVAL))
-			return cmd_error(ctx, "Could not process rule: Set '%s' does not exist",
-					 cmd->handle.set.name);
+			return cmd_error(ctx, &ctx->cmd->handle.set.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 
 		return setelem_evaluate(ctx, &cmd->expr);
 	default:
@@ -3111,11 +3120,13 @@ static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 
 	table = table_lookup(&cmd->handle, ctx->cache);
 	if (table == NULL)
-		return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-				 cmd->handle.table.name);
+		return cmd_error(ctx, &cmd->handle.table.location,
+				 "Could not process rule: %s",
+				 strerror(ENOENT));
 	if (obj_lookup(table, cmd->handle.obj.name, obj_type) == NULL)
-		return cmd_error(ctx, "Could not process rule: Object '%s' does not exist",
-					 cmd->handle.obj.name);
+		return cmd_error(ctx, &cmd->handle.obj.location,
+				 "Could not process rule: %s",
+				 strerror(ENOENT));
 	return 0;
 }
 
@@ -3137,47 +3148,56 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_SET:
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || set->flags & (NFT_SET_MAP | NFT_SET_EVAL))
-			return cmd_error(ctx, "Could not process rule: Set '%s' does not exist",
-					 cmd->handle.set.name);
+			return cmd_error(ctx, &cmd->handle.set.location,
+					  "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_METER:
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || !(set->flags & NFT_SET_EVAL))
-			return cmd_error(ctx, "Could not process rule: Meter '%s' does not exist",
-					 cmd->handle.set.name);
+			return cmd_error(ctx, &cmd->handle.set.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_MAP:
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || !(set->flags & NFT_SET_MAP))
-			return cmd_error(ctx, "Could not process rule: Map '%s' does not exist",
-					 cmd->handle.set.name);
+			return cmd_error(ctx, &cmd->handle.set.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_CHAIN:
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		if (chain_lookup(table, &cmd->handle) == NULL)
-			return cmd_error(ctx, "Could not process rule: Chain '%s' does not exist",
-					 cmd->handle.chain.name);
+			return cmd_error(ctx, &cmd->handle.chain.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_QUOTA:
 		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_QUOTA);
@@ -3196,8 +3216,9 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		if (cmd->handle.table.name == NULL)
 			return 0;
 		if (table_lookup(&cmd->handle, ctx->cache) == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_CHAINS:
 	case CMD_OBJ_RULESET:
@@ -3226,8 +3247,9 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 		if (cmd->handle.table.name == NULL)
 			return 0;
 		if (table_lookup(&cmd->handle, ctx->cache) == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
@@ -3259,12 +3281,14 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || set->flags & (NFT_SET_MAP | NFT_SET_EVAL))
-			return cmd_error(ctx, "Could not process rule: Set '%s' does not exist",
-					 cmd->handle.set.name);
+			return cmd_error(ctx, &cmd->handle.set.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_MAP:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
@@ -3274,12 +3298,14 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &ctx->cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || !(set->flags & NFT_SET_MAP))
-			return cmd_error(ctx, "Could not process rule: Map '%s' does not exist",
-					 cmd->handle.set.name);
+			return cmd_error(ctx, &ctx->cmd->handle.set.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_METER:
 		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
@@ -3289,12 +3315,14 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 cmd->handle.table.name);
+			return cmd_error(ctx, &ctx->cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || !(set->flags & NFT_SET_EVAL))
-			return cmd_error(ctx, "Could not process rule: Meter '%s' does not exist",
-					 cmd->handle.set.name);
+			return cmd_error(ctx, &ctx->cmd->handle.set.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		return 0;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
@@ -3316,11 +3344,13 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&ctx->cmd->handle, ctx->cache);
 		if (table == NULL)
-			return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
-					 ctx->cmd->handle.table.name);
+			return cmd_error(ctx, &ctx->cmd->handle.table.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		if (chain_lookup(table, &ctx->cmd->handle) == NULL)
-			return cmd_error(ctx, "Could not process rule: Chain '%s' does not exist",
-					 ctx->cmd->handle.chain.name);
+			return cmd_error(ctx, &ctx->cmd->handle.chain.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
 		break;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
@@ -3430,7 +3460,8 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	if (cmd->markup->format == __NFT_OUTPUT_NOTSUPP)
-		return cmd_error(ctx, "this output type is not supported");
+		return cmd_error(ctx, &cmd->location,
+				 "this output type is not supported");
 
 	return cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
 			    ctx->debug_mask, ctx->octx);
@@ -3439,7 +3470,8 @@ static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 static int cmd_evaluate_import(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	if (cmd->markup->format == __NFT_OUTPUT_NOTSUPP)
-		return cmd_error(ctx, "this output type not supported");
+		return cmd_error(ctx, &cmd->location,
+				 "this output type not supported");
 
 	return 0;
 }

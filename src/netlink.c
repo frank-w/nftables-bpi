@@ -145,8 +145,8 @@ struct nftnl_chain *alloc_nftnl_chain(const struct handle *h)
 	nftnl_chain_set_str(nlc, NFTNL_CHAIN_TABLE, h->table.name);
 	if (h->handle.id)
 		nftnl_chain_set_u64(nlc, NFTNL_CHAIN_HANDLE, h->handle.id);
-	if (h->chain != NULL)
-		nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME, h->chain);
+	if (h->chain.name != NULL)
+		nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME, h->chain.name);
 
 	return nlc;
 }
@@ -161,8 +161,8 @@ struct nftnl_rule *alloc_nftnl_rule(const struct handle *h)
 
 	nftnl_rule_set_u32(nlr, NFTNL_RULE_FAMILY, h->family);
 	nftnl_rule_set_str(nlr, NFTNL_RULE_TABLE, h->table.name);
-	if (h->chain != NULL)
-		nftnl_rule_set_str(nlr, NFTNL_RULE_CHAIN, h->chain);
+	if (h->chain.name != NULL)
+		nftnl_rule_set_str(nlr, NFTNL_RULE_CHAIN, h->chain.name);
 	if (h->handle.id)
 		nftnl_rule_set_u64(nlr, NFTNL_RULE_HANDLE, h->handle.id);
 	if (h->position.id)
@@ -540,7 +540,7 @@ static int list_rule_cb(struct nftnl_rule *nlr, void *arg)
 
 	if (h->family != family ||
 	    strcmp(table, h->table.name) != 0 ||
-	    (h->chain && strcmp(chain, h->chain) != 0))
+	    (h->chain.name && strcmp(chain, h->chain.name) != 0))
 		return 0;
 
 	netlink_dump_rule(nlr, ctx);
@@ -697,7 +697,7 @@ static int list_chain_cb(struct nftnl_chain *nlc, void *arg)
 
 	if (h->family != family || strcmp(table, h->table.name) != 0)
 		return 0;
-	if (h->chain && strcmp(name, h->chain) != 0)
+	if (h->chain.name && strcmp(name, h->chain.name) != 0)
 		return 0;
 
 	chain = netlink_delinearize_chain(ctx, nlc);
@@ -1720,7 +1720,7 @@ static void trace_print_rule(const struct nftnl_trace *nlt,
 
 	h.family = nftnl_trace_get_u32(nlt, NFTNL_TRACE_FAMILY);
 	h.table.name  = nftnl_trace_get_str(nlt, NFTNL_TRACE_TABLE);
-	h.chain  = nftnl_trace_get_str(nlt, NFTNL_TRACE_CHAIN);
+	h.chain.name  = nftnl_trace_get_str(nlt, NFTNL_TRACE_CHAIN);
 
 	if (!h.table.name)
 		return;

@@ -3177,7 +3177,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 					 cmd->handle.table.name);
 		if (chain_lookup(table, &cmd->handle) == NULL)
 			return cmd_error(ctx, "Could not process rule: Chain '%s' does not exist",
-					 cmd->handle.chain);
+					 cmd->handle.chain.name);
 		return 0;
 	case CMD_OBJ_QUOTA:
 		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_QUOTA);
@@ -3320,7 +3320,7 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 					 ctx->cmd->handle.table.name);
 		if (chain_lookup(table, &ctx->cmd->handle) == NULL)
 			return cmd_error(ctx, "Could not process rule: Chain '%s' does not exist",
-					 ctx->cmd->handle.chain);
+					 ctx->cmd->handle.chain.name);
 		break;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);

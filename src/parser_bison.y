@@ -1861,7 +1861,8 @@ tableid_spec 		: 	family_spec 	HANDLE NUM
 chain_spec		:	table_spec	identifier
 			{
 				$$		= $1;
-				$$.chain	= $2;
+				$$.chain.name	= $2;
+				$$.chain.location = @2;
 			}
 			;
 
@@ -1876,7 +1877,8 @@ chainid_spec 		: 	table_spec 	HANDLE NUM
 chain_identifier	:	identifier
 			{
 				memset(&$$, 0, sizeof($$));
-				$$.chain	= $1;
+				$$.chain.name		= $1;
+				$$.chain.location	= @1;
 			}
 			;
 

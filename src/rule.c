@@ -31,7 +31,7 @@
 void handle_free(struct handle *h)
 {
 	xfree(h->table.name);
-	xfree(h->chain);
+	xfree(h->chain.name);
 	xfree(h->set);
 	xfree(h->flowtable);
 }
@@ -42,8 +42,8 @@ void handle_merge(struct handle *dst, const struct handle *src)
 		dst->family = src->family;
 	if (dst->table.name == NULL && src->table.name != NULL)
 		dst->table.name = xstrdup(src->table.name);
-	if (dst->chain == NULL && src->chain != NULL)
-		dst->chain = xstrdup(src->chain);
+	if (dst->chain.name == NULL && src->chain.name != NULL)
+		dst->chain.name = xstrdup(src->chain.name);
 	if (dst->set == NULL && src->set != NULL)
 		dst->set = xstrdup(src->set);
 	if (dst->flowtable == NULL && src->flowtable != NULL)
@@ -620,7 +620,7 @@ struct chain *chain_alloc(const char *name)
 	init_list_head(&chain->rules);
 	init_list_head(&chain->scope.symbols);
 	if (name != NULL)
-		chain->handle.chain = xstrdup(name);
+		chain->handle.chain.name = xstrdup(name);
 
 	chain->policy = -1;
 	return chain;
@@ -658,7 +658,7 @@ struct chain *chain_lookup(const struct table *table, const struct handle *h)
 	struct chain *chain;
 
 	list_for_each_entry(chain, &table->chains, list) {
-		if (!strcmp(chain->handle.chain, h->chain))
+		if (!strcmp(chain->handle.chain.name, h->chain.name))
 			return chain;
 	}
 	return NULL;
@@ -746,7 +746,7 @@ static const char *chain_policy2str(uint32_t policy)
 static void chain_print_declaration(const struct chain *chain,
 				    struct output_ctx *octx)
 {
-	nft_print(octx, "\tchain %s {", chain->handle.chain);
+	nft_print(octx, "\tchain %s {", chain->handle.chain.name);
 	if (octx->handle > 0)
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
 	nft_print(octx, "\n");
@@ -777,7 +777,7 @@ static void chain_print(const struct chain *chain, struct output_ctx *octx)
 void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 {
 	nft_print(octx, "chain %s %s %s", family2str(chain->handle.family),
-		  chain->handle.table.name, chain->handle.chain);
+		  chain->handle.table.name, chain->handle.chain.name);
 
 	if (chain->flags & CHAIN_F_BASECHAIN) {
 		nft_print(octx, " { type %s hook %s priority %d; policy %s; }",
@@ -1754,7 +1754,7 @@ static int do_list_chain(struct netlink_ctx *ctx, struct cmd *cmd,
 
 	list_for_each_entry(chain, &table->chains, list) {
 		if (chain->handle.family != cmd->handle.family ||
-		    strcmp(cmd->handle.chain, chain->handle.chain) != 0)
+		    strcmp(cmd->handle.chain.name, chain->handle.chain.name) != 0)
 			continue;
 
 		chain_print(chain, ctx->octx);

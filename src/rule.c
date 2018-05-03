@@ -48,8 +48,8 @@ void handle_merge(struct handle *dst, const struct handle *src)
 		dst->set.name = xstrdup(src->set.name);
 	if (dst->flowtable == NULL && src->flowtable != NULL)
 		dst->flowtable = xstrdup(src->flowtable);
-	if (dst->obj == NULL && src->obj != NULL)
-		dst->obj = xstrdup(src->obj);
+	if (dst->obj.name == NULL && src->obj.name != NULL)
+		dst->obj.name = xstrdup(src->obj.name);
 	if (dst->handle.id == 0)
 		dst->handle = src->handle;
 	if (dst->position.id == 0)
@@ -1377,7 +1377,7 @@ struct obj *obj_lookup(const struct table *table, const char *name,
 	struct obj *obj;
 
 	list_for_each_entry(obj, &table->objs, list) {
-		if (!strcmp(obj->handle.obj, name) &&
+		if (!strcmp(obj->handle.obj.name, name) &&
 		    obj->type == type)
 			return obj;
 	}
@@ -1400,7 +1400,7 @@ static void obj_print_data(const struct obj *obj,
 {
 	switch (obj->type) {
 	case NFT_OBJECT_COUNTER:
-		nft_print(octx, " %s {", obj->handle.obj);
+		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (octx->handle > 0)
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
@@ -1415,7 +1415,7 @@ static void obj_print_data(const struct obj *obj,
 		const char *data_unit;
 		uint64_t bytes;
 
-		nft_print(octx, " %s {", obj->handle.obj);
+		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (octx->handle > 0)
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
@@ -1431,7 +1431,7 @@ static void obj_print_data(const struct obj *obj,
 		}
 		break;
 	case NFT_OBJECT_CT_HELPER:
-		nft_print(octx, "ct helper %s {", obj->handle.obj);
+		nft_print(octx, "ct helper %s {", obj->handle.obj.name);
 		if (octx->handle > 0)
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
 		nft_print(octx, "%s", opts->nl);
@@ -1446,7 +1446,7 @@ static void obj_print_data(const struct obj *obj,
 		const char *data_unit;
 		uint64_t rate;
 
-		nft_print(octx, " %s {", obj->handle.obj);
+		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (octx->handle > 0)
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
@@ -1577,8 +1577,8 @@ static int do_list_obj(struct netlink_ctx *ctx, struct cmd *cmd, uint32_t type)
 
 		list_for_each_entry(obj, &table->objs, list) {
 			if (obj->type != type ||
-			    (cmd->handle.obj != NULL &&
-			     strcmp(cmd->handle.obj, obj->handle.obj)))
+			    (cmd->handle.obj.name != NULL &&
+			     strcmp(cmd->handle.obj.name, obj->handle.obj.name)))
 				continue;
 
 			obj_print_declaration(obj, &opts, ctx->octx);

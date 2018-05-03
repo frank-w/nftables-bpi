@@ -42,6 +42,11 @@ struct set_spec {
 	const char		*name;
 };
 
+struct obj_spec {
+	struct location		location;
+	const char		*name;
+};
+
 /**
  * struct handle - handle for tables, chains, rules and sets
  *
@@ -60,7 +65,7 @@ struct handle {
 	struct table_spec	table;
 	struct chain_spec	chain;
 	struct set_spec		set;
-	const char		*obj;
+	struct obj_spec		obj;
 	const char		*flowtable;
 	struct handle_spec	handle;
 	struct position_spec	position;

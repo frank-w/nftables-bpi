@@ -293,8 +293,8 @@ __alloc_nftnl_obj(const struct handle *h, uint32_t type)
 
 	nftnl_obj_set_u32(nlo, NFTNL_OBJ_FAMILY, h->family);
 	nftnl_obj_set_str(nlo, NFTNL_OBJ_TABLE, h->table.name);
-	if (h->obj != NULL)
-		nftnl_obj_set_str(nlo, NFTNL_OBJ_NAME, h->obj);
+	if (h->obj.name != NULL)
+		nftnl_obj_set_str(nlo, NFTNL_OBJ_NAME, h->obj.name);
 
 	nftnl_obj_set_u32(nlo, NFTNL_OBJ_TYPE, type);
 	if (h->handle.id)
@@ -1410,7 +1410,7 @@ struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 	obj->handle.family = nftnl_obj_get_u32(nlo, NFTNL_OBJ_FAMILY);
 	obj->handle.table.name =
 		xstrdup(nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE));
-	obj->handle.obj =
+	obj->handle.obj.name =
 		xstrdup(nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME));
 	obj->handle.handle.id =
 		nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
@@ -1564,7 +1564,7 @@ int netlink_reset_objs(struct netlink_ctx *ctx, const struct cmd *cmd,
 	int err;
 
 	obj_cache = mnl_nft_obj_dump(ctx, h->family,
-				     h->table.name, h->obj, type, dump, true);
+				     h->table.name, h->obj.name, type, dump, true);
 	if (obj_cache == NULL)
 		return -1;
 

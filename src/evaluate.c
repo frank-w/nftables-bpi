@@ -3113,9 +3113,9 @@ static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 	if (table == NULL)
 		return cmd_error(ctx, "Could not process rule: Table '%s' does not exist",
 				 cmd->handle.table.name);
-	if (obj_lookup(table, cmd->handle.obj, obj_type) == NULL)
+	if (obj_lookup(table, cmd->handle.obj.name, obj_type) == NULL)
 		return cmd_error(ctx, "Could not process rule: Object '%s' does not exist",
-					 cmd->handle.obj);
+					 cmd->handle.obj.name);
 	return 0;
 }
 

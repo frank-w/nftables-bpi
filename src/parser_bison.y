@@ -1924,7 +1924,8 @@ flowtable_identifier	:	identifier
 obj_spec		:	table_spec	identifier
 			{
 				$$		= $1;
-				$$.obj		= $2;
+				$$.obj.name	= $2;
+				$$.obj.location	= @2;
 			}
 			;
 
@@ -1939,7 +1940,8 @@ objid_spec		:	table_spec	HANDLE NUM
 obj_identifier		:	identifier
 			{
 				memset(&$$, 0, sizeof($$));
-				$$.obj		= $1;
+				$$.obj.name		= $1;
+				$$.obj.location		= @1;
 			}
 			;
 

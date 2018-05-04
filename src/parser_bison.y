@@ -181,7 +181,6 @@ int nft_lex(void *, void *, void *);
 %token DASH			"-"
 %token AT			"@"
 %token VMAP			"vmap"
-%token LOOKUP			"lookup"
 
 %token INCLUDE			"include"
 %token DEFINE			"define"

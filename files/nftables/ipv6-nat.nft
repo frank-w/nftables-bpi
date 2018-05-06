@@ -1,4 +1,4 @@
-#!/usr/sbin/nft -f
+#!@sbindir@nft -f
 
 table ip6 nat {
 	chain prerouting	{ type nat hook prerouting priority -100; }

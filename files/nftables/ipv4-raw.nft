@@ -1,4 +1,4 @@
-#!/usr/sbin/nft -f
+#!@sbindir@nft -f
 
 table raw {
 	chain prerouting	{ type filter hook prerouting priority -300; }

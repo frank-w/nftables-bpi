@@ -1,10 +1,14 @@
-#!/usr/sbin/nft -f
+#!@sbindir@nft -f
 
 # Here is an example of different families, hooks and priorities in the
 # nftables framework, all mixed together.
-# This script is mean to be loaded with `nft -f <file>`
+#
+# more examples are located in files/examples in nftables source.
 # For up-to-date information please visit https://wiki.nftables.org
+#
+# This script is mean to be loaded with `nft -f <file>`
 
+# clear all prior state
 flush ruleset
 
 # native dual stack IPv4 & IPv6 family

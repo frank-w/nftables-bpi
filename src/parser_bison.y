@@ -3452,6 +3452,7 @@ meta_expr		:	META	meta_key
 
 				$$ = meta_expr_alloc(&@$, key);
 			}
+			;
 
 meta_key		:	meta_key_qualified
 			|	meta_key_unqualified

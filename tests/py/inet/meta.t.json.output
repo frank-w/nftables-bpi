@@ -1,0 +1,35 @@
+# meta nfproto ipv4 ip saddr 1.2.3.4
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip"
+                }
+            },
+            "right": "1.2.3.4"
+        }
+    }
+]
+
+# meta nfproto ipv6 meta l4proto tcp
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv6"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": 6
+        }
+    }
+]
+

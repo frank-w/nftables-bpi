@@ -1,0 +1,59 @@
+# ip protocol tcp tcp dport ssh accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "protocol",
+                    "name": "ip"
+                }
+            },
+            "right": "tcp"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": "ssh"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# ip protocol ne tcp udp dport ssh accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "protocol",
+                    "name": "ip"
+                }
+            },
+            "op": "!=",
+            "right": "tcp"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": "ssh"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+

@@ -1,0 +1,877 @@
+# arp htype 1
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "right": 1
+        }
+    }
+]
+
+# arp htype != 1
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": 1
+        }
+    }
+]
+
+# arp htype 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# arp htype != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# arp htype 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# arp htype != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# arp htype { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# arp htype != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# arp htype { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp htype != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp ptype 0x0800
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ptype",
+                    "name": "arp"
+                }
+            },
+            "right": "0x0800"
+        }
+    }
+]
+
+# arp hlen 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# arp hlen != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# arp hlen 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# arp hlen != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# arp hlen { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# arp hlen != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# arp hlen { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp hlen != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp plen 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# arp plen != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# arp plen 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# arp plen != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# arp plen { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# arp plen != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# arp plen { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp plen != {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp operation {nak, inreply, inrequest, rreply, rrequest, reply, request}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "set": [
+                    "nak",
+                    "inreply",
+                    "inrequest",
+                    "rreply",
+                    "rrequest",
+                    "reply",
+                    "request"
+                ]
+            }
+        }
+    }
+]
+
+# arp operation != {nak, inreply, inrequest, rreply, rrequest, reply, request}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "nak",
+                    "inreply",
+                    "inrequest",
+                    "rreply",
+                    "rrequest",
+                    "reply",
+                    "request"
+                ]
+            }
+        }
+    }
+]
+
+# arp operation request
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": "request"
+        }
+    }
+]
+
+# arp operation reply
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": "reply"
+        }
+    }
+]
+
+# arp operation rrequest
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": "rrequest"
+        }
+    }
+]
+
+# arp operation rreply
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": "rreply"
+        }
+    }
+]
+
+# arp operation inrequest
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": "inrequest"
+        }
+    }
+]
+
+# arp operation inreply
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": "inreply"
+        }
+    }
+]
+
+# arp operation nak
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": "nak"
+        }
+    }
+]
+
+# arp operation reply
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": "reply"
+        }
+    }
+]
+
+# arp operation != request
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": "request"
+        }
+    }
+]
+
+# arp operation != reply
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": "reply"
+        }
+    }
+]
+
+# arp operation != rrequest
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": "rrequest"
+        }
+    }
+]
+
+# arp operation != rreply
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": "rreply"
+        }
+    }
+]
+
+# arp operation != inrequest
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": "inrequest"
+        }
+    }
+]
+
+# arp operation != inreply
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": "inreply"
+        }
+    }
+]
+
+# arp operation != nak
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": "nak"
+        }
+    }
+]
+
+# arp operation != reply
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": "reply"
+        }
+    }
+]
+
+# meta iifname "invalid" arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "invalid"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ptype",
+                    "name": "arp"
+                }
+            },
+            "right": "0x0800"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "right": 6
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "right": 4
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "base": "nh",
+                    "len": 32,
+                    "name": "raw",
+                    "offset": 192
+                }
+            },
+            "right": "0xc0a88f10"
+        }
+    },
+    {
+        "mangle": {
+            "left": {
+                "payload": {
+                    "base": "nh",
+                    "len": 48,
+                    "name": "raw",
+                    "offset": 144
+                }
+            },
+            "right": "0x112233445566"
+        }
+    }
+]
+

@@ -1,0 +1,41 @@
+# ip saddr . ip daddr . ether saddr { 1.1.1.1 . 2.2.2.2 . ca:fe:ca:fe:ca:fe }
+[
+    {
+        "match": {
+            "left": {
+                "concat": [
+                    {
+                        "payload": {
+                            "field": "saddr",
+                            "name": "ip"
+                        }
+                    },
+                    {
+                        "payload": {
+                            "field": "daddr",
+                            "name": "ip"
+                        }
+                    },
+                    {
+                        "payload": {
+                            "field": "saddr",
+                            "name": "ether"
+                        }
+                    }
+                ]
+            },
+            "right": {
+                "set": [
+                    {
+                        "concat": [
+                            "1.1.1.1",
+                            "2.2.2.2",
+                            "ca:fe:ca:fe:ca:fe"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]
+

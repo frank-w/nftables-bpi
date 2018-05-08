@@ -1,0 +1,340 @@
+# dccp sport 21-35
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "range": [ 21, 35 ]
+            }
+        }
+    }
+]
+
+# dccp sport != 21-35
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 21, 35 ]
+            }
+        }
+    }
+]
+
+# dccp sport {23, 24, 25}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "set": [
+                    23,
+                    24,
+                    25
+                ]
+            }
+        }
+    }
+]
+
+# dccp sport != {23, 24, 25}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    23,
+                    24,
+                    25
+                ]
+            }
+        }
+    }
+]
+
+# dccp sport { 20-50 }
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
+            }
+        }
+    }
+]
+
+# dccp sport ftp-data - re-mail-ck
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "range": [ "ftp-data", "re-mail-ck" ]
+            }
+        }
+    }
+]
+
+# dccp sport 20-50
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "range": [ 20, 50 ]
+            }
+        }
+    }
+]
+
+# dccp sport { 20-50}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
+            }
+        }
+    }
+]
+
+# dccp sport != { 20-50}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
+            }
+        }
+    }
+]
+
+# dccp dport {23, 24, 25}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "set": [
+                    23,
+                    24,
+                    25
+                ]
+            }
+        }
+    }
+]
+
+# dccp dport != {23, 24, 25}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    23,
+                    24,
+                    25
+                ]
+            }
+        }
+    }
+]
+
+# dccp dport { 20-50}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
+            }
+        }
+    }
+]
+
+# dccp dport != { 20-50}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
+            }
+        }
+    }
+]
+
+# dccp type {request, response, data, ack, dataack, closereq, close, reset, sync, syncack}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "set": [
+                    "request",
+                    "response",
+                    "data",
+                    "ack",
+                    "dataack",
+                    "closereq",
+                    "close",
+                    "reset",
+                    "sync",
+                    "syncack"
+                ]
+            }
+        }
+    }
+]
+
+# dccp type != {request, response, data, ack, dataack, closereq, close, reset, sync, syncack}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "request",
+                    "response",
+                    "data",
+                    "ack",
+                    "dataack",
+                    "closereq",
+                    "close",
+                    "reset",
+                    "sync",
+                    "syncack"
+                ]
+            }
+        }
+    }
+]
+
+# dccp type request
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "dccp"
+                }
+            },
+            "right": "request"
+        }
+    }
+]
+
+# dccp type != request
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": "request"
+        }
+    }
+]
+

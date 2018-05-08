@@ -1,0 +1,577 @@
+# meta protocol { ip, arp, ip6, vlan }
+[
+    {
+        "match": {
+            "left": {
+                "meta": "protocol"
+            },
+            "right": {
+                "set": [
+                    "ip",
+                    "arp",
+                    "vlan",
+                    "ip6"
+                ]
+            }
+        }
+    }
+]
+
+# meta protocol != {ip, arp, ip6, vlan}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "protocol"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "ip",
+                    "arp",
+                    "vlan",
+                    "ip6"
+                ]
+            }
+        }
+    }
+]
+
+# meta priority 0x87654321
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "8765:4321"
+        }
+    }
+]
+
+# meta priority 2271560481
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "8765:4321"
+        }
+    }
+]
+
+# meta priority {bcad:dada, bcad:dadc, aaaa:bbbb}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": {
+                "set": [
+                    "aaaa:bbbb",
+                    "bcad:dada",
+                    "bcad:dadc"
+                ]
+            }
+        }
+    }
+]
+
+# meta mark 0x4
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 4
+        }
+    }
+]
+
+# meta mark 0x32
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 50
+        }
+    }
+]
+
+# meta mark and 0x03 == 0x01
+[
+    {
+        "match": {
+            "left": {
+                "&": [
+                    {
+                        "meta": "mark"
+                    },
+                    3
+                ]
+            },
+            "op": "==",
+            "right": 1
+        }
+    }
+]
+
+# meta mark and 0x03 != 0x01
+[
+    {
+        "match": {
+            "left": {
+                "&": [
+                    {
+                        "meta": "mark"
+                    },
+                    3
+                ]
+            },
+            "op": "!=",
+            "right": 1
+        }
+    }
+]
+
+# meta mark 0x10
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 16
+        }
+    }
+]
+
+# meta mark != 0x10
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "op": "!=",
+            "right": 16
+        }
+    }
+]
+
+# meta mark or 0x03 == 0x01
+[
+    {
+        "match": {
+            "left": {
+                "|": [
+                    {
+                        "meta": "mark"
+                    },
+                    3
+                ]
+            },
+            "op": "==",
+            "right": 1
+        }
+    }
+]
+
+# meta mark or 0x03 != 0x01
+[
+    {
+        "match": {
+            "left": {
+                "|": [
+                    {
+                        "meta": "mark"
+                    },
+                    3
+                ]
+            },
+            "op": "!=",
+            "right": 1
+        }
+    }
+]
+
+# meta mark xor 0x03 == 0x01
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 2
+        }
+    }
+]
+
+# meta mark xor 0x03 != 0x01
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "op": "!=",
+            "right": 2
+        }
+    }
+]
+
+# meta iifname {"dummy0", "lo"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": {
+                "set": [
+                    "lo",
+                    "dummy0"
+                ]
+            }
+        }
+    }
+]
+
+# meta iifname != {"dummy0", "lo"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "lo",
+                    "dummy0"
+                ]
+            }
+        }
+    }
+]
+
+# meta oifname { "dummy0", "lo"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifname"
+            },
+            "right": {
+                "set": [
+                    "lo",
+                    "dummy0"
+                ]
+            }
+        }
+    }
+]
+
+# meta skuid {"bin", "root", "daemon"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "right": {
+                "set": [ 0, 1, 2 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid != {"bin", "root", "daemon"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "op": "!=",
+            "right": {
+                "set": [ 0, 1, 2 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid "root"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "right": 0
+        }
+    }
+]
+
+# meta skuid != "root"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "op": "!=",
+            "right": 0
+        }
+    }
+]
+
+# meta skgid {"bin", "root", "daemon"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "right": {
+                "set": [ 0, 1, 2 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid != {"bin", "root", "daemon"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "op": "!=",
+            "right": {
+                "set": [ 0, 1, 2 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid "root"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "right": 0
+        }
+    }
+]
+
+# meta skgid != "root"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "op": "!=",
+            "right": 0
+        }
+    }
+]
+
+# meta mark set 0xffffffc8 xor 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 4294967262
+        }
+    }
+]
+
+# meta mark set 0x16 and 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 22
+        }
+    }
+]
+
+# meta mark set 0xffffffe9 or 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 4294967295
+        }
+    }
+]
+
+# meta mark set 0xffffffde and 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 22
+        }
+    }
+]
+
+# meta mark set 0xf045ffde or 0x10
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 4031119326
+        }
+    }
+]
+
+# meta mark set 0xffffffde or 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 4294967262
+        }
+    }
+]
+
+# meta mark set 0x32 or 0xfffff
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 1048575
+        }
+    }
+]
+
+# meta mark set 0xfffe xor 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 65512
+        }
+    }
+]
+
+# meta iifgroup 0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "right": "default"
+        }
+    }
+]
+
+# meta iifgroup != 0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "op": "!=",
+            "right": "default"
+        }
+    }
+]
+
+# meta oifgroup 0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "right": "default"
+        }
+    }
+]
+
+# meta oifgroup != 0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "op": "!=",
+            "right": "default"
+        }
+    }
+]
+
+# meta iif . meta oif . meta mark { "lo" . "lo" . 0x0000000a }
+[
+    {
+        "match": {
+            "left": {
+                "concat": [
+                    {
+                        "meta": "iif"
+                    },
+                    {
+                        "meta": "oif"
+                    },
+                    {
+                        "meta": "mark"
+                    }
+                ]
+            },
+            "right": {
+                "set": [
+                    {
+                        "concat": [
+                            "lo",
+                            "lo",
+                            10
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]
+

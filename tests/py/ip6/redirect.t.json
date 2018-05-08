@@ -1,0 +1,576 @@
+# redirect
+[
+    {
+        "redirect": null
+    }
+]
+
+# udp dport 954 redirect
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 954
+        }
+    },
+    {
+        "redirect": null
+    }
+]
+
+# ip6 saddr fe00::cafe counter redirect
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": "fe00::cafe"
+        }
+    },
+    {
+        "counter": null
+    },
+    {
+        "redirect": null
+    }
+]
+
+# udp dport 53 redirect random
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": "random"
+        }
+    }
+]
+
+# udp dport 53 redirect random,persistent
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "random",
+                "persistent"
+            ]
+        }
+    }
+]
+
+# udp dport 53 redirect random,persistent,fully-random
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "random",
+                "persistent",
+                "fully-random"
+            ]
+        }
+    }
+]
+
+# udp dport 53 redirect random,fully-random
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "random",
+                "fully-random"
+            ]
+        }
+    }
+]
+
+# udp dport 53 redirect random,fully-random,persistent
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "random",
+                "fully-random",
+                "persistent"
+            ]
+        }
+    }
+]
+
+# udp dport 53 redirect persistent
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": "persistent"
+        }
+    }
+]
+
+# udp dport 53 redirect persistent,random
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "persistent",
+                "random"
+            ]
+        }
+    }
+]
+
+# udp dport 53 redirect persistent,random,fully-random
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "persistent",
+                "random",
+                "fully-random"
+            ]
+        }
+    }
+]
+
+# udp dport 53 redirect persistent,fully-random
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "persistent",
+                "fully-random"
+            ]
+        }
+    }
+]
+
+# udp dport 53 redirect persistent,fully-random,random
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "persistent",
+                "fully-random",
+                "random"
+            ]
+        }
+    }
+]
+
+# udp dport 1234 redirect to :1234
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 1234
+        }
+    },
+    {
+        "redirect": {
+            "port": 1234
+        }
+    }
+]
+
+# ip6 daddr fe00::cafe udp dport 9998 redirect to :6515
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "daddr",
+                    "name": "ip6"
+                }
+            },
+            "right": "fe00::cafe"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 9998
+        }
+    },
+    {
+        "redirect": {
+            "port": 6515
+        }
+    }
+]
+
+# ip6 nexthdr tcp redirect to :100-200
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "nexthdr",
+                    "name": "ip6"
+                }
+            },
+            "right": "tcp"
+        }
+    },
+    {
+        "redirect": {
+            "port": {
+                "range": [ 100, 200 ]
+            }
+        }
+    }
+]
+
+# tcp dport 39128 redirect to :993
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 39128
+        }
+    },
+    {
+        "redirect": {
+            "port": 993
+        }
+    }
+]
+
+# tcp dport 9128 redirect to :993 random
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 9128
+        }
+    },
+    {
+        "redirect": {
+            "flags": "random",
+            "port": 993
+        }
+    }
+]
+
+# tcp dport 9128 redirect to :993 fully-random,persistent
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 9128
+        }
+    },
+    {
+        "redirect": {
+            "flags": [
+                "fully-random",
+                "persistent"
+            ],
+            "port": 993
+        }
+    }
+]
+
+# tcp dport { 1, 2, 3, 4, 5, 6, 7, 8, 101, 202, 303, 1001, 2002, 3003} redirect
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    101,
+                    202,
+                    303,
+                    1001,
+                    2002,
+                    3003
+                ]
+            }
+        }
+    },
+    {
+        "redirect": null
+    }
+]
+
+# ip6 daddr fe00::1-fe00::200 udp dport 53 counter redirect
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "daddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "range": [ "fe00::1", "fe00::200" ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    },
+    {
+        "counter": null
+    },
+    {
+        "redirect": null
+    }
+]
+
+# iifname "eth0" ct state established,new tcp dport vmap {22 : drop, 222 : drop } redirect
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "state"
+                }
+            },
+            "right": [
+                "established",
+                "new"
+            ]
+        }
+    },
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        22,
+                        {
+                            "drop": null
+                        }
+                    ],
+                    [
+                        222,
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    },
+    {
+        "redirect": null
+    }
+]
+
+# ip6 nexthdr 6 redirect to :tcp dport map { 22 : 8000, 80 : 8080}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "nexthdr",
+                    "name": "ip6"
+                }
+            },
+            "right": 6
+        }
+    },
+    {
+        "redirect": {
+            "port": {
+                "map": {
+                    "left": {
+                        "payload": {
+                            "field": "dport",
+                            "name": "tcp"
+                        }
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                22,
+                                8000
+                            ],
+                            [
+                                80,
+                                8080
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
+

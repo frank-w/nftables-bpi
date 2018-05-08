@@ -1,0 +1,99 @@
+# icmpv6 type nd-router-advert
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "nd-router-advert"
+        }
+    }
+]
+
+# meta l4proto ipv6-icmp icmpv6 type nd-router-advert
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": "ipv6-icmp"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "nd-router-advert"
+        }
+    }
+]
+
+# meta l4proto icmp icmp type echo-request
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": "icmp"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+
+# meta l4proto 1 icmp type echo-request
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+
+# icmp type echo-request
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+

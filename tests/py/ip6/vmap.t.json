@@ -1,0 +1,1037 @@
+# ip6 saddr vmap { abcd::3 : accept }
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "abcd::3",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234:1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { ::1234:1234:1234:1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "::1234:1234:1234:1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234::1234:1234:1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234::1234:1234:1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234::1234:1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234::1234:1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234::1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234::1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234::1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234::1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234:1234::1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234::1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234:1234:1234::1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234:1234::1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234:1234:1234:1234:: : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234:1234:1234::",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { ::1234:1234:1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "::1234:1234:1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234::1234:1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234::1234:1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234::1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234::1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234::1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234::1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234::1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234::1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234:1234::1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234::1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234:1234:1234:: : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234:1234::",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { ::1234:1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "::1234:1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234::1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234::1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234::1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234::1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234::1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234::1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234::1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234::1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234:1234::  : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234::",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { ::1234:1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "::1234:1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234::1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234::1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234::1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234::1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234::1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234::1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:1234:: : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234::",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { ::1234:1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "::1234:1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234::1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234::1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234::1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234::1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:1234:: : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234::",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { ::1234:1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "::1234:1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234::1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234::1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:1234:: : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234::",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { ::1234 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "::1234",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { 1234:: : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234::",
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap { ::/64 : accept}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        {
+                            "prefix": {
+                                "addr": "::",
+                                "len": 64
+                            }
+                        },
+                        {
+                            "accept": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap {1234:1234:1234:1234:1234:1234:aaaa:: : accept, ::aaaa : drop}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234:1234:aaaa::",
+                        {
+                            "accept": null
+                        }
+                    ],
+                    [
+                        "::aaaa",
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap {1234:1234:1234:1234:1234:1234:aaaa:::accept, ::bbbb : drop}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234:1234:aaaa::",
+                        {
+                            "accept": null
+                        }
+                    ],
+                    [
+                        "::bbbb",
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap {1234:1234:1234:1234:1234:1234:aaaa:::accept,::cccc : drop}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234:1234:aaaa::",
+                        {
+                            "accept": null
+                        }
+                    ],
+                    [
+                        "::cccc",
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# ip6 saddr vmap {1234:1234:1234:1234:1234:1234:aaaa:::accept,::dddd: drop}
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "1234:1234:1234:1234:1234:1234:aaaa::",
+                        {
+                            "accept": null
+                        }
+                    ],
+                    [
+                        "::dddd",
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+

@@ -1,0 +1,213 @@
+# ct original ip saddr 192.168.0.1
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "original",
+                    "family": "ip",
+                    "key": "saddr"
+                }
+            },
+            "right": "192.168.0.1"
+        }
+    }
+]
+
+# ct reply ip saddr 192.168.0.1
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "reply",
+                    "family": "ip",
+                    "key": "saddr"
+                }
+            },
+            "right": "192.168.0.1"
+        }
+    }
+]
+
+# ct original ip daddr 192.168.0.1
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "original",
+                    "family": "ip",
+                    "key": "daddr"
+                }
+            },
+            "right": "192.168.0.1"
+        }
+    }
+]
+
+# ct reply ip daddr 192.168.0.1
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "reply",
+                    "family": "ip",
+                    "key": "daddr"
+                }
+            },
+            "right": "192.168.0.1"
+        }
+    }
+]
+
+# ct original ip saddr 192.168.1.0/24
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "original",
+                    "family": "ip",
+                    "key": "saddr"
+                }
+            },
+            "right": {
+                "prefix": {
+                    "addr": "192.168.1.0",
+                    "len": 24
+                }
+            }
+        }
+    }
+]
+
+# ct reply ip saddr 192.168.1.0/24
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "reply",
+                    "family": "ip",
+                    "key": "saddr"
+                }
+            },
+            "right": {
+                "prefix": {
+                    "addr": "192.168.1.0",
+                    "len": 24
+                }
+            }
+        }
+    }
+]
+
+# ct original ip daddr 192.168.1.0/24
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "original",
+                    "family": "ip",
+                    "key": "daddr"
+                }
+            },
+            "right": {
+                "prefix": {
+                    "addr": "192.168.1.0",
+                    "len": 24
+                }
+            }
+        }
+    }
+]
+
+# ct reply ip daddr 192.168.1.0/24
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "reply",
+                    "family": "ip",
+                    "key": "daddr"
+                }
+            },
+            "right": {
+                "prefix": {
+                    "addr": "192.168.1.0",
+                    "len": 24
+                }
+            }
+        }
+    }
+]
+
+# ct l3proto ipv4
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "l3proto"
+                }
+            },
+            "right": "ipv4"
+        }
+    }
+]
+
+# ct protocol 6 ct original proto-dst 22
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "protocol"
+                }
+            },
+            "right": 6
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "original",
+                    "key": "proto-dst"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# ct original protocol 17 ct reply proto-src 53
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "original",
+                    "key": "protocol"
+                }
+            },
+            "right": 17
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "reply",
+                    "key": "proto-src"
+                }
+            },
+            "right": 53
+        }
+    }
+]
+

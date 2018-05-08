@@ -1,0 +1,148 @@
+# arp ptype 0x0800
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ptype",
+                    "name": "arp"
+                }
+            },
+            "right": "ip"
+        }
+    }
+]
+
+# arp operation {nak, inreply, inrequest, rreply, rrequest, reply, request}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "right": {
+                "set": [
+                    "request",
+                    "reply",
+                    "rrequest",
+                    "rreply",
+                    "inrequest",
+                    "inreply",
+                    "nak"
+                ]
+            }
+        }
+    }
+]
+
+# arp operation != {nak, inreply, inrequest, rreply, rrequest, reply, request}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "name": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "request",
+                    "reply",
+                    "rrequest",
+                    "rreply",
+                    "inrequest",
+                    "inreply",
+                    "nak"
+                ]
+            }
+        }
+    }
+]
+
+# meta iifname "invalid" arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "invalid"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "name": "arp"
+                }
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ptype",
+                    "name": "arp"
+                }
+            },
+            "right": "ip"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "name": "arp"
+                }
+            },
+            "right": 6
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "name": "arp"
+                }
+            },
+            "right": 4
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "base": "nh",
+                    "len": 32,
+                    "name": "raw",
+                    "offset": 192
+                }
+            },
+            "right": 3232272144
+        }
+    },
+    {
+        "mangle": {
+            "left": {
+                "payload": {
+                    "base": "nh",
+                    "len": 48,
+                    "name": "raw",
+                    "offset": 144
+                }
+            },
+            "right": 18838586676582
+        }
+    }
+]
+

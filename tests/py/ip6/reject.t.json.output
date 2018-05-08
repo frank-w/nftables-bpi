@@ -1,0 +1,24 @@
+# reject with icmpv6 type port-unreachable
+[
+    {
+        "reject": null
+    }
+]
+
+# mark 0x80000000 reject with tcp reset
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 2147483648
+        }
+    },
+    {
+        "reject": {
+            "type": "tcp reset"
+        }
+    }
+]
+

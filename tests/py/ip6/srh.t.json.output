@@ -1,0 +1,21 @@
+# srh tag { 0, 4-127, 0xffff }
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "tag",
+                    "name": "srh"
+                }
+            },
+            "right": {
+                "set": [
+                    0,
+                    { "range": [ 4, 127 ] },
+                    65535
+                ]
+            }
+        }
+    }
+]
+

@@ -1,0 +1,23 @@
+# meta nfproto ipv4 rt nexthop 192.168.0.1
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv4"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "rt": {
+                    "family": "ip",
+                    "key": "nexthop"
+                }
+            },
+            "right": "192.168.0.1"
+        }
+    }
+]
+

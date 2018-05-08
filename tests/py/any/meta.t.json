@@ -1,0 +1,2418 @@
+# meta length 1000
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "right": 1000
+        }
+    }
+]
+
+# meta length 22
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "right": 22
+        }
+    }
+]
+
+# meta length != 233
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# meta length 33-45
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# meta length != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# meta length { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# meta length { 33-55, 67-88}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] },
+                    { "range": [ 67, 88 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta length { 33-55, 56-88, 100-120}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 88 ] },
+                    { "range": [ 100, 120 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta length != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# meta length { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta length != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "length"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta protocol { ip, arp, ip6, vlan }
+[
+    {
+        "match": {
+            "left": {
+                "meta": "protocol"
+            },
+            "right": {
+                "set": [
+                    "ip",
+                    "arp",
+                    "ip6",
+                    "vlan"
+                ]
+            }
+        }
+    }
+]
+
+# meta protocol != {ip, arp, ip6, vlan}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "protocol"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "ip",
+                    "arp",
+                    "ip6",
+                    "vlan"
+                ]
+            }
+        }
+    }
+]
+
+# meta protocol ip
+[
+    {
+        "match": {
+            "left": {
+                "meta": "protocol"
+            },
+            "right": "ip"
+        }
+    }
+]
+
+# meta protocol != ip
+[
+    {
+        "match": {
+            "left": {
+                "meta": "protocol"
+            },
+            "op": "!=",
+            "right": "ip"
+        }
+    }
+]
+
+# meta l4proto 22
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": 22
+        }
+    }
+]
+
+# meta l4proto != 233
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# meta l4proto 33-45
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# meta l4proto != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# meta l4proto { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# meta l4proto != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# meta l4proto { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta l4proto != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta priority root
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "root"
+        }
+    }
+]
+
+# meta priority none
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "none"
+        }
+    }
+]
+
+# meta priority 0x87654321
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "0x87654321"
+        }
+    }
+]
+
+# meta priority 2271560481
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": 2271560481
+        }
+    }
+]
+
+# meta priority 1:1234
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "1:1234"
+        }
+    }
+]
+
+# meta priority bcad:dadc
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "bcad:dadc"
+        }
+    }
+]
+
+# meta priority aabb:0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "aabb:0"
+        }
+    }
+]
+
+# meta priority != bcad:dadc
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "op": "!=",
+            "right": "bcad:dadc"
+        }
+    }
+]
+
+# meta priority != aabb:0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "op": "!=",
+            "right": "aabb:0"
+        }
+    }
+]
+
+# meta priority bcad:dada-bcad:dadc
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": {
+                "range": [ "bcad:dada", "bcad:dadc" ]
+            }
+        }
+    }
+]
+
+# meta priority != bcad:dada-bcad:dadc
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "op": "!=",
+            "right": {
+                "range": [ "bcad:dada", "bcad:dadc" ]
+            }
+        }
+    }
+]
+
+# meta priority {bcad:dada, bcad:dadc, aaaa:bbbb}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": {
+                "set": [
+                    "bcad:dada",
+                    "bcad:dadc",
+                    "aaaa:bbbb"
+                ]
+            }
+        }
+    }
+]
+
+# meta priority set cafe:beef
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "priority"
+            },
+            "right": "cafe:beef"
+        }
+    }
+]
+
+# meta priority != {bcad:dada, bcad:dadc, aaaa:bbbb}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "priority"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "aaaa:bbbb",
+                    "bcad:dada",
+                    "bcad:dadc"
+                ]
+            }
+        }
+    }
+]
+
+# meta mark 0x4
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": "0x4"
+        }
+    }
+]
+
+# meta mark 0x32
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": "0x32"
+        }
+    }
+]
+
+# meta mark and 0x03 == 0x01
+[
+    {
+        "match": {
+            "left": {
+                "&": [
+                    {
+                        "meta": "mark"
+                    },
+                    "0x03"
+                ]
+            },
+            "op": "==",
+            "right": "0x01"
+        }
+    }
+]
+
+# meta mark and 0x03 != 0x01
+[
+    {
+        "match": {
+            "left": {
+                "&": [
+                    {
+                        "meta": "mark"
+                    },
+                    "0x03"
+                ]
+            },
+            "op": "!=",
+            "right": "0x01"
+        }
+    }
+]
+
+# meta mark 0x10
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": "0x10"
+        }
+    }
+]
+
+# meta mark != 0x10
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "op": "!=",
+            "right": "0x10"
+        }
+    }
+]
+
+# meta mark or 0x03 == 0x01
+[
+    {
+        "match": {
+            "left": {
+                "|": [
+                    {
+                        "meta": "mark"
+                    },
+                    "0x03"
+                ]
+            },
+            "op": "==",
+            "right": "0x01"
+        }
+    }
+]
+
+# meta mark or 0x03 != 0x01
+[
+    {
+        "match": {
+            "left": {
+                "|": [
+                    {
+                        "meta": "mark"
+                    },
+                    "0x03"
+                ]
+            },
+            "op": "!=",
+            "right": "0x01"
+        }
+    }
+]
+
+# meta mark xor 0x03 == 0x01
+[
+    {
+        "match": {
+            "left": {
+                "^": [
+		    {
+                        "meta": "mark"
+                    },
+		    "0x03"
+                ]
+            },
+            "right": "0x01"
+        }
+    }
+]
+
+# meta mark xor 0x03 != 0x01
+[
+    {
+        "match": {
+            "left": {
+                "^": [
+                    {
+                        "meta": "mark"
+                    },
+                    "0x03"
+                ]
+            },
+            "op": "!=",
+            "right": "0x01"
+        }
+    }
+]
+
+# meta iif "lo" accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iif"
+            },
+            "right": "lo"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta iif != "lo" accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iif"
+            },
+            "op": "!=",
+            "right": "lo"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta iifname "dummy0"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "dummy0"
+        }
+    }
+]
+
+# meta iifname != "dummy0"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "op": "!=",
+            "right": "dummy0"
+        }
+    }
+]
+
+# meta iifname {"dummy0", "lo"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": {
+                "set": [
+                    "dummy0",
+                    "lo"
+                ]
+            }
+        }
+    }
+]
+
+# meta iifname != {"dummy0", "lo"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "dummy0",
+                    "lo"
+                ]
+            }
+        }
+    }
+]
+
+# meta iifname "dummy*"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "dummy*"
+        }
+    }
+]
+
+# meta iifname "dummy\*"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "dummy\\*"
+        }
+    }
+]
+
+# meta iiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iiftype"
+            },
+            "right": {
+                "set": [
+                    "ether",
+                    "ppp",
+                    "ipip",
+                    "ipip6",
+                    "loopback",
+                    "sit",
+                    "ipgre"
+                ]
+            }
+        }
+    }
+]
+
+# meta iiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iiftype"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "ether",
+                    "ppp",
+                    "ipip",
+                    "ipip6",
+                    "loopback",
+                    "sit",
+                    "ipgre"
+                ]
+            }
+        }
+    }
+]
+
+# meta iiftype != ether
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iiftype"
+            },
+            "op": "!=",
+            "right": "ether"
+        }
+    }
+]
+
+# meta iiftype ether
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iiftype"
+            },
+            "right": "ether"
+        }
+    }
+]
+
+# meta iiftype != ppp
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iiftype"
+            },
+            "op": "!=",
+            "right": "ppp"
+        }
+    }
+]
+
+# meta iiftype ppp
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iiftype"
+            },
+            "right": "ppp"
+        }
+    }
+]
+
+# meta oif "lo" accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oif"
+            },
+            "right": "lo"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta oif != "lo" accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oif"
+            },
+            "op": "!=",
+            "right": "lo"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta oif {"lo"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oif"
+            },
+            "right": {
+                "set": [
+                    "lo"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta oif != {"lo"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oif"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "lo"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta oifname "dummy0"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifname"
+            },
+            "right": "dummy0"
+        }
+    }
+]
+
+# meta oifname != "dummy0"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifname"
+            },
+            "op": "!=",
+            "right": "dummy0"
+        }
+    }
+]
+
+# meta oifname { "dummy0", "lo"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifname"
+            },
+            "right": {
+                "set": [
+                    "dummy0",
+                    "lo"
+                ]
+            }
+        }
+    }
+]
+
+# meta oifname "dummy*"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifname"
+            },
+            "right": "dummy*"
+        }
+    }
+]
+
+# meta oifname "dummy\*"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifname"
+            },
+            "right": "dummy\\*"
+        }
+    }
+]
+
+# meta oiftype {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oiftype"
+            },
+            "right": {
+                "set": [
+                    "ether",
+                    "ppp",
+                    "ipip",
+                    "ipip6",
+                    "loopback",
+                    "sit",
+                    "ipgre"
+                ]
+            }
+        }
+    }
+]
+
+# meta oiftype != {ether, ppp, ipip, ipip6, loopback, sit, ipgre}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oiftype"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "ether",
+                    "ppp",
+                    "ipip",
+                    "ipip6",
+                    "loopback",
+                    "sit",
+                    "ipgre"
+                ]
+            }
+        }
+    }
+]
+
+# meta oiftype != ether
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oiftype"
+            },
+            "op": "!=",
+            "right": "ether"
+        }
+    }
+]
+
+# meta oiftype ether
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oiftype"
+            },
+            "right": "ether"
+        }
+    }
+]
+
+# meta skuid {"bin", "root", "daemon"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "right": {
+                "set": [
+                    "bin",
+                    "root",
+                    "daemon"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid != {"bin", "root", "daemon"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "bin",
+                    "root",
+                    "daemon"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid "root"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "right": "root"
+        }
+    }
+]
+
+# meta skuid != "root"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "op": "!=",
+            "right": "root"
+        }
+    }
+]
+
+# meta skuid lt 3000 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "op": "<",
+            "right": 3000
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid gt 3000 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "op": ">",
+            "right": 3000
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid eq 3000 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "right": 3000
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid 3001-3005 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "right": {
+                "range": [ 3001, 3005 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid != 2001-2005 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 2001, 2005 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid { 2001-2005} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 2001, 2005 ] }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid != { 2001-2005} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 2001, 2005 ] }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid {"bin", "root", "daemon"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "right": {
+                "set": [
+                    "bin",
+                    "root",
+                    "daemon"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid != {"bin", "root", "daemon"} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "bin",
+                    "root",
+                    "daemon"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid "root"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "right": "root"
+        }
+    }
+]
+
+# meta skgid != "root"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "op": "!=",
+            "right": "root"
+        }
+    }
+]
+
+# meta skgid lt 3000 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "op": "<",
+            "right": 3000
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid gt 3000 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "op": ">",
+            "right": 3000
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid eq 3000 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "right": 3000
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid 2001-2005 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "right": {
+                "range": [ 2001, 2005 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid != 2001-2005 accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 2001, 2005 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid { 2001-2005} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 2001, 2005 ] }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skgid != { 2001-2005} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 2001, 2005 ] }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta mark set 0xffffffc8 xor 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": { "^": [ "0xffffffc8", "0x16" ] }
+        }
+    }
+]
+
+# meta mark set 0x16 and 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": { "&": [ "0x16", "0x16" ] }
+        }
+    }
+]
+
+# meta mark set 0xffffffe9 or 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": { "|": [ "0xffffffe9", "0x16" ] }
+        }
+    }
+]
+
+# meta mark set 0xffffffde and 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": { "&": [ "0xffffffde", "0x16" ] }
+        }
+    }
+]
+
+# meta mark set 0xf045ffde or 0x10
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": { "|": [ "0xf045ffde", "0x10" ] }
+        }
+    }
+]
+
+# meta mark set 0xffffffde or 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": { "|": [ "0xffffffde", "0x16" ] }
+        }
+    }
+]
+
+# meta mark set 0x32 or 0xfffff
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": { "|": [ "0x32", "0xfffff" ] }
+        }
+    }
+]
+
+# meta mark set 0xfffe xor 0x16
+[
+    {
+        "mangle": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": { "^": [ "0xfffe", "0x16" ] }
+        }
+    }
+]
+
+# meta iif "lo"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iif"
+            },
+            "right": "lo"
+        }
+    }
+]
+
+# meta oif "lo"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oif"
+            },
+            "right": "lo"
+        }
+    }
+]
+
+# meta oifname "dummy2" accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifname"
+            },
+            "right": "dummy2"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta skuid 3000
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skuid"
+            },
+            "right": 3000
+        }
+    }
+]
+
+# meta skgid 3000
+[
+    {
+        "match": {
+            "left": {
+                "meta": "skgid"
+            },
+            "right": 3000
+        }
+    }
+]
+
+# meta rtclassid "cosmos"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "rtclassid"
+            },
+            "right": "cosmos"
+        }
+    }
+]
+
+# meta pkttype broadcast
+[
+    {
+        "match": {
+            "left": {
+                "meta": "pkttype"
+            },
+            "right": "broadcast"
+        }
+    }
+]
+
+# meta pkttype host
+[
+    {
+        "match": {
+            "left": {
+                "meta": "pkttype"
+            },
+            "right": "host"
+        }
+    }
+]
+
+# meta pkttype multicast
+[
+    {
+        "match": {
+            "left": {
+                "meta": "pkttype"
+            },
+            "right": "multicast"
+        }
+    }
+]
+
+# meta pkttype != broadcast
+[
+    {
+        "match": {
+            "left": {
+                "meta": "pkttype"
+            },
+            "op": "!=",
+            "right": "broadcast"
+        }
+    }
+]
+
+# meta pkttype != host
+[
+    {
+        "match": {
+            "left": {
+                "meta": "pkttype"
+            },
+            "op": "!=",
+            "right": "host"
+        }
+    }
+]
+
+# meta pkttype != multicast
+[
+    {
+        "match": {
+            "left": {
+                "meta": "pkttype"
+            },
+            "op": "!=",
+            "right": "multicast"
+        }
+    }
+]
+
+# pkttype { broadcast, multicast} accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": "pkttype"
+            },
+            "right": {
+                "set": [
+                    "broadcast",
+                    "multicast"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta cpu 1
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cpu"
+            },
+            "right": 1
+        }
+    }
+]
+
+# meta cpu != 1
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cpu"
+            },
+            "op": "!=",
+            "right": 1
+        }
+    }
+]
+
+# meta cpu 1-3
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cpu"
+            },
+            "right": {
+                "range": [ 1, 3 ]
+            }
+        }
+    }
+]
+
+# meta cpu != 1-2
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cpu"
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 1, 2 ]
+            }
+        }
+    }
+]
+
+# meta cpu { 2,3}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cpu"
+            },
+            "right": {
+                "set": [
+                    2,
+                    3
+                ]
+            }
+        }
+    }
+]
+
+# meta cpu { 2-3, 5-7}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cpu"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 2, 3 ] },
+                    { "range": [ 5, 7 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta cpu != { 2,3}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cpu"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    2,
+                    3
+                ]
+            }
+        }
+    }
+]
+
+# meta iifgroup 0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "right": 0
+        }
+    }
+]
+
+# meta iifgroup != 0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "op": "!=",
+            "right": 0
+        }
+    }
+]
+
+# meta iifgroup "default"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "right": "default"
+        }
+    }
+]
+
+# meta iifgroup != "default"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "op": "!=",
+            "right": "default"
+        }
+    }
+]
+
+# meta iifgroup {"default"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "right": {
+                "set": [
+                    "default"
+                ]
+            }
+        }
+    }
+]
+
+# meta iifgroup != {"default"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "default"
+                ]
+            }
+        }
+    }
+]
+
+# meta iifgroup { 11,33}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "right": {
+                "set": [
+                    11,
+                    33
+                ]
+            }
+        }
+    }
+]
+
+# meta iifgroup {11-33}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 11, 33 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta iifgroup != { 11,33}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    11,
+                    33
+                ]
+            }
+        }
+    }
+]
+
+# meta iifgroup != {11-33}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifgroup"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 11, 33 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta oifgroup 0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "right": 0
+        }
+    }
+]
+
+# meta oifgroup != 0
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "op": "!=",
+            "right": 0
+        }
+    }
+]
+
+# meta oifgroup "default"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "right": "default"
+        }
+    }
+]
+
+# meta oifgroup != "default"
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "op": "!=",
+            "right": "default"
+        }
+    }
+]
+
+# meta oifgroup {"default"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "right": {
+                "set": [
+                    "default"
+                ]
+            }
+        }
+    }
+]
+
+# meta oifgroup != {"default"}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "default"
+                ]
+            }
+        }
+    }
+]
+
+# meta oifgroup { 11,33}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "right": {
+                "set": [
+                    11,
+                    33
+                ]
+            }
+        }
+    }
+]
+
+# meta oifgroup {11-33}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "right": {
+                "set": [
+                    { "range": [ 11, 33 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta oifgroup != { 11,33}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    11,
+                    33
+                ]
+            }
+        }
+    }
+]
+
+# meta oifgroup != {11-33}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "oifgroup"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 11, 33 ] }
+                ]
+            }
+        }
+    }
+]
+
+# meta cgroup 1048577
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cgroup"
+            },
+            "right": 1048577
+        }
+    }
+]
+
+# meta cgroup != 1048577
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cgroup"
+            },
+            "op": "!=",
+            "right": 1048577
+        }
+    }
+]
+
+# meta cgroup { 1048577, 1048578 }
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cgroup"
+            },
+            "right": {
+                "set": [
+                    1048577,
+                    1048578
+                ]
+            }
+        }
+    }
+]
+
+# meta cgroup != { 1048577, 1048578}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cgroup"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    1048577,
+                    1048578
+                ]
+            }
+        }
+    }
+]
+
+# meta cgroup 1048577-1048578
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cgroup"
+            },
+            "right": {
+                "range": [ 1048577, 1048578 ]
+            }
+        }
+    }
+]
+
+# meta cgroup != 1048577-1048578
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cgroup"
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 1048577, 1048578 ]
+            }
+        }
+    }
+]
+
+# meta cgroup {1048577-1048578}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cgroup"
+            },
+            "right": {
+                "set": [
+                    {
+                        "range": [ 1048577, 1048578 ]
+                    }
+                ]
+            }
+        }
+    }
+]
+
+# meta cgroup != { 1048577-1048578}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "cgroup"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    {
+                        "range": [ 1048577, 1048578 ]
+                    }
+                ]
+            }
+        }
+    }
+]
+
+# meta iif . meta oif { "lo" . "lo" }
+[
+    {
+        "match": {
+            "left": {
+                "concat": [
+                    {
+                        "meta": "iif"
+                    },
+                    {
+                        "meta": "oif"
+                    }
+                ]
+            },
+            "right": {
+                "set": [
+                    {
+                        "concat": [
+                            "lo",
+                            "lo"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]
+
+# meta iif . meta oif . meta mark { "lo" . "lo" . 0x0000000a }
+[
+    {
+        "match": {
+            "left": {
+                "concat": [
+                    {
+                        "meta": "iif"
+                    },
+                    {
+                        "meta": "oif"
+                    },
+                    {
+                        "meta": "mark"
+                    }
+                ]
+            },
+            "right": {
+                "set": [
+                    {
+                        "concat": [
+                            "lo",
+                            "lo",
+                            "0x0000000a"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]
+
+# meta iif . meta oif vmap { "lo" . "lo" : drop }
+[
+    {
+        "map": {
+            "left": {
+                "concat": [
+                    {
+                        "meta": "iif"
+                    },
+                    {
+                        "meta": "oif"
+                    }
+                ]
+            },
+            "right": {
+                "set": [
+                    [
+                        {
+                            "concat": [
+                                "lo",
+                                "lo"
+                            ]
+                        },
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# meta random eq 1
+[
+    {
+        "match": {
+            "left": {
+                "meta": "random"
+            },
+            "right": 1
+        }
+    }
+]
+
+# meta random gt 1000000
+[
+    {
+        "match": {
+            "left": {
+                "meta": "random"
+            },
+            "op": ">",
+            "right": 1000000
+        }
+    }
+]
+

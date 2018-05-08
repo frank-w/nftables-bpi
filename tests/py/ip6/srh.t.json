@@ -1,0 +1,183 @@
+# srh last-entry 0
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "last-entry",
+                    "name": "srh"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# srh last-entry 127
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "last-entry",
+                    "name": "srh"
+                }
+            },
+            "right": 127
+        }
+    }
+]
+
+# srh last-entry { 0, 4-127, 255 }
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "last-entry",
+                    "name": "srh"
+                }
+            },
+            "right": {
+                "set": [
+                    0,
+                    { "range": [ 4, 127 ] },
+                    255
+                ]
+            }
+        }
+    }
+]
+
+# srh flags 0
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "flags",
+                    "name": "srh"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# srh flags 127
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "flags",
+                    "name": "srh"
+                }
+            },
+            "right": 127
+        }
+    }
+]
+
+# srh flags { 0, 4-127, 255 }
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "flags",
+                    "name": "srh"
+                }
+            },
+            "right": {
+                "set": [
+                    0,
+                    { "range": [ 4, 127 ] },
+                    255
+                ]
+            }
+        }
+    }
+]
+
+# srh tag 0
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "tag",
+                    "name": "srh"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# srh tag 127
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "tag",
+                    "name": "srh"
+                }
+            },
+            "right": 127
+        }
+    }
+]
+
+# srh tag { 0, 4-127, 0xffff }
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "tag",
+                    "name": "srh"
+                }
+            },
+            "right": {
+                "set": [
+                    0,
+                    { "range": [ 4, 127 ] },
+                    "0xffff"
+                ]
+            }
+        }
+    }
+]
+
+# srh sid[1] dead::beef
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "sid[1]",
+                    "name": "srh"
+                }
+            },
+            "right": "dead::beef"
+        }
+    }
+]
+
+# srh sid[2] dead::beef
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "sid[2]",
+                    "name": "srh"
+                }
+            },
+            "right": "dead::beef"
+        }
+    }
+]
+

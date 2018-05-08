@@ -1,0 +1,39 @@
+# fib daddr . iif type vmap { blackhole : drop, prohibit : drop, unicast : accept }
+[
+    {
+        "map": {
+            "left": {
+                "fib": {
+                    "flags": [
+                        "daddr",
+                        "iif"
+                    ],
+                    "result": "type"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        "unicast",
+                        {
+                            "accept": null
+                        }
+                    ],
+                    [
+                        "blackhole",
+                        {
+                            "drop": null
+                        }
+                    ],
+                    [
+                        "prohibit",
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+

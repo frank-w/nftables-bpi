@@ -1,0 +1,255 @@
+# iifname "eth0" tcp dport 80-90 dnat to 192.168.3.2
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "range": [ 80, 90 ]
+            }
+        }
+    },
+    {
+        "dnat": {
+            "addr": "192.168.3.2"
+        }
+    }
+]
+
+# iifname "eth0" tcp dport != 80-90 dnat to 192.168.3.2
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 80, 90 ]
+            }
+        }
+    },
+    {
+        "dnat": {
+            "addr": "192.168.3.2"
+        }
+    }
+]
+
+# iifname "eth0" tcp dport {80, 90, 23} dnat to 192.168.3.2
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    23,
+                    80,
+                    90
+                ]
+            }
+        }
+    },
+    {
+        "dnat": {
+            "addr": "192.168.3.2"
+        }
+    }
+]
+
+# iifname "eth0" tcp dport != {80, 90, 23} dnat to 192.168.3.2
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    23,
+                    80,
+                    90
+                ]
+            }
+        }
+    },
+    {
+        "dnat": {
+            "addr": "192.168.3.2"
+        }
+    }
+]
+
+# iifname "eth0" tcp dport != 23-34 dnat to 192.168.3.2
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 23, 34 ]
+            }
+        }
+    },
+    {
+        "dnat": {
+            "addr": "192.168.3.2"
+        }
+    }
+]
+
+# iifname "eth0" tcp dport 81 dnat to 192.168.3.2:8080
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 81
+        }
+    },
+    {
+        "dnat": {
+            "addr": "192.168.3.2",
+            "port": 8080
+        }
+    }
+]
+
+# dnat to ct mark map { 0x00000014 : 1.2.3.4}
+[
+    {
+        "dnat": {
+            "addr": {
+                "map": {
+                    "left": {
+                        "ct": {
+                            "key": "mark"
+                        }
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                "0x00000014",
+                                "1.2.3.4"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
+
+# dnat to ct mark . ip daddr map { 0x00000014 . 1.1.1.1 : 1.2.3.4}
+[
+    {
+        "dnat": {
+            "addr": {
+                "map": {
+                    "left": {
+                        "concat": [
+                            {
+                                "ct": {
+                                    "key": "mark"
+                                }
+                            },
+                            {
+                                "payload": {
+                                    "field": "daddr",
+                                    "name": "ip"
+                                }
+                            }
+                        ]
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                {
+                                    "concat": [
+                                        "0x00000014",
+                                        "1.1.1.1"
+                                    ]
+                                },
+                                "1.2.3.4"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
+

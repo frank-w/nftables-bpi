@@ -1,0 +1,60 @@
+# meter acct_out { meta iif . ip6 saddr timeout 600s counter }
+[
+    {
+        "meter": {
+            "key": {
+                "elem": {
+                    "elem_timeout": 600,
+                    "val": {
+                        "concat": [
+                            {
+                                "meta": "iif"
+                            },
+                            {
+                                "payload": {
+                                    "field": "saddr",
+                                    "name": "ip6"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "name": "acct_out",
+            "stmt": {
+                "counter": null
+            }
+        }
+    }
+]
+
+# meter acct_out { ip6 saddr . meta iif timeout 600s counter }
+[
+    {
+        "meter": {
+            "key": {
+                "elem": {
+                    "elem_timeout": 600,
+                    "val": {
+                        "concat": [
+                            {
+                                "payload": {
+                                    "field": "saddr",
+                                    "name": "ip6"
+                                }
+                            },
+                            {
+                                "meta": "iif"
+                            }
+                        ]
+                    }
+                }
+            },
+            "name": "acct_out",
+            "stmt": {
+                "counter": null
+            }
+        }
+    }
+]
+

@@ -1,0 +1,65 @@
+# dnat to ct mark map { 0x00000014 : 1.2.3.4}
+[
+    {
+        "dnat": {
+            "addr": {
+                "map": {
+                    "left": {
+                        "ct": {
+                            "key": "mark"
+                        }
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                20,
+                                "1.2.3.4"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
+
+# dnat to ct mark . ip daddr map { 0x00000014 . 1.1.1.1 : 1.2.3.4}
+[
+    {
+        "dnat": {
+            "addr": {
+                "map": {
+                    "left": {
+                        "concat": [
+                            {
+                                "ct": {
+                                    "key": "mark"
+                                }
+                            },
+                            {
+                                "payload": {
+                                    "field": "daddr",
+                                    "name": "ip"
+                                }
+                            }
+                        ]
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                {
+                                    "concat": [
+                                        20,
+                                        "1.1.1.1"
+                                    ]
+                                },
+                                "1.2.3.4"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
+

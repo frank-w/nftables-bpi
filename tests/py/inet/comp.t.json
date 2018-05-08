@@ -1,0 +1,316 @@
+# comp nexthdr != esp
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "nexthdr",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": "esp"
+        }
+    }
+]
+
+# comp flags 0x0
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "comp"
+                }
+            },
+            "right": "0x0"
+        }
+    }
+]
+
+# comp flags != 0x23
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": "0x23"
+        }
+    }
+]
+
+# comp flags 0x33-0x45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "comp"
+                }
+            },
+            "right": {
+                "range": [ "0x33", "0x45" ]
+            }
+        }
+    }
+]
+
+# comp flags != 0x33-0x45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ "0x33", "0x45" ]
+            }
+        }
+    }
+]
+
+# comp flags {0x33, 0x55, 0x67, 0x88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "comp"
+                }
+            },
+            "right": {
+                "set": [
+                    "0x33",
+                    "0x55",
+                    "0x67",
+                    "0x88"
+                ]
+            }
+        }
+    }
+]
+
+# comp flags != {0x33, 0x55, 0x67, 0x88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "0x33",
+                    "0x55",
+                    "0x67",
+                    "0x88"
+                ]
+            }
+        }
+    }
+]
+
+# comp flags { 0x33-0x55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "comp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ "0x33", "0x55" ] }
+                ]
+            }
+        }
+    }
+]
+
+# comp flags != { 0x33-0x55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ "0x33", "0x55" ] }
+                ]
+            }
+        }
+    }
+]
+
+# comp cpi 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "name": "comp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# comp cpi != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# comp cpi 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "name": "comp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# comp cpi != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# comp cpi {33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "name": "comp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# comp cpi != {33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# comp cpi { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "name": "comp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# comp cpi != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "name": "comp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+

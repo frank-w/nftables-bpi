@@ -1,0 +1,1552 @@
+# tcp dport 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp dport != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# tcp dport 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp dport != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp dport { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp dport != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp dport { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp dport != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp dport {telnet, http, https} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    "telnet",
+                    "http",
+                    "https"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# tcp dport vmap { 22 : accept, 23 : drop }
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        22,
+                        {
+                            "accept": null
+                        }
+                    ],
+                    [
+                        23,
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# tcp dport vmap { 25:accept, 28:drop }
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        25,
+                        {
+                            "accept": null
+                        }
+                    ],
+                    [
+                        28,
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# tcp dport { 22, 53, 80, 110 }
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    22,
+                    53,
+                    80,
+                    110
+                ]
+            }
+        }
+    }
+]
+
+# tcp dport != { 22, 53, 80, 110 }
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    22,
+                    53,
+                    80,
+                    110
+                ]
+            }
+        }
+    }
+]
+
+# tcp sport 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp sport != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# tcp sport 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp sport != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp sport { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp sport != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp sport { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp sport != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp sport vmap { 25:accept, 28:drop }
+[
+    {
+        "map": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    [
+                        25,
+                        {
+                            "accept": null
+                        }
+                    ],
+                    [
+                        28,
+                        {
+                            "drop": null
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+]
+
+# tcp sport 8080 drop
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": 8080
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# tcp sport 1024 tcp dport 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": 1024
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp sport 1024 tcp dport 22 tcp sequence 0
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": 1024
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# tcp sequence 0 tcp sport 1024 tcp dport 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "right": 0
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": 1024
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp sequence 0 tcp sport { 1024, 1022} tcp dport 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "right": 0
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    1024,
+                    1022
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp sequence 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp sequence != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# tcp sequence 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp sequence != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp sequence { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp sequence != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp sequence { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp sequence != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp ackseq 42949672 drop
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "right": 42949672
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# tcp ackseq 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp ackseq != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# tcp ackseq 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp ackseq != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp ackseq { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp ackseq != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp ackseq { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp ackseq != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp flags { fin, syn, rst, psh, ack, urg, ecn, cwr} drop
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    "fin",
+                    "syn",
+                    "rst",
+                    "psh",
+                    "ack",
+                    "urg",
+                    "ecn",
+                    "cwr"
+                ]
+            }
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# tcp flags != { fin, urg, ecn, cwr} drop
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "fin",
+                    "urg",
+                    "ecn",
+                    "cwr"
+                ]
+            }
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# tcp flags cwr
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "tcp"
+                }
+            },
+            "right": "cwr"
+        }
+    }
+]
+
+# tcp flags != cwr
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": "cwr"
+        }
+    }
+]
+
+# tcp flags & (syn|fin) == (syn|fin)
+[
+    {
+        "match": {
+            "left": {
+                "&": [
+                    {
+                        "payload": {
+                            "field": "flags",
+                            "name": "tcp"
+                        }
+                    },
+                    {
+                        "|": [
+                            "syn",
+                            "fin"
+                        ]
+                    }
+                ]
+            },
+            "op": "==",
+            "right": {
+                "|": [
+                    "syn",
+                    "fin"
+                ]
+            }
+        }
+    }
+]
+
+# tcp window 22222
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "right": 22222
+        }
+    }
+]
+
+# tcp window 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp window != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# tcp window 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp window != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp window { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp window != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp window { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp window != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp checksum 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp checksum != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# tcp checksum 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp checksum != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp checksum { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp checksum != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp checksum { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp checksum != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp urgptr 1234 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "right": 1234
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# tcp urgptr 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# tcp urgptr != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# tcp urgptr 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp urgptr != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# tcp urgptr { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp urgptr != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# tcp urgptr { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp urgptr != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp doff 8
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "doff",
+                    "name": "tcp"
+                }
+            },
+            "right": 8
+        }
+    }
+]
+

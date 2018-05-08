@@ -1,0 +1,84 @@
+# reject
+[
+    {
+        "reject": null
+    }
+]
+
+# reject with icmpv6 type no-route
+[
+    {
+        "reject": {
+            "expr": "no-route",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type admin-prohibited
+[
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type addr-unreachable
+[
+    {
+        "reject": {
+            "expr": "addr-unreachable",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type port-unreachable
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type policy-fail
+[
+    {
+        "reject": {
+            "expr": "policy-fail",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type reject-route
+[
+    {
+        "reject": {
+            "expr": "reject-route",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# mark 0x80000000 reject with tcp reset
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": "0x80000000"
+        }
+    },
+    {
+        "reject": {
+            "type": "tcp reset"
+        }
+    }
+]
+

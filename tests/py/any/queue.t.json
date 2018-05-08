@@ -1,0 +1,86 @@
+# queue
+[
+    {
+        "queue": null
+    }
+]
+
+# queue num 2
+[
+    {
+        "queue": {
+            "num": 2
+        }
+    }
+]
+
+# queue num 65535
+[
+    {
+        "queue": {
+            "num": 65535
+        }
+    }
+]
+
+# queue num 2-3
+[
+    {
+        "queue": {
+            "num": {
+                "range": [ 2, 3 ]
+            }
+        }
+    }
+]
+
+# queue num 1-65535
+[
+    {
+        "queue": {
+            "num": {
+                "range": [ 1, 65535 ]
+            }
+        }
+    }
+]
+
+# queue num 4-5 fanout bypass
+[
+    {
+        "queue": {
+            "flags": [
+                "bypass",
+                "fanout"
+            ],
+            "num": {
+                "range": [ 4, 5 ]
+            }
+        }
+    }
+]
+
+# queue num 4-5 fanout
+[
+    {
+        "queue": {
+            "flags": "fanout",
+            "num": {
+                "range": [ 4, 5 ]
+            }
+        }
+    }
+]
+
+# queue num 4-5 bypass
+[
+    {
+        "queue": {
+            "flags": "bypass",
+            "num": {
+                "range": [ 4, 5 ]
+            }
+        }
+    }
+]
+

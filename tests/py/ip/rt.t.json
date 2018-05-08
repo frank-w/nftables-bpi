@@ -1,0 +1,15 @@
+# rt nexthop 192.168.0.1
+[
+    {
+        "match": {
+            "left": {
+                "rt": {
+                    "family": "ip",
+                    "key": "nexthop"
+                }
+            },
+            "right": "192.168.0.1"
+        }
+    }
+]
+

@@ -1,0 +1,198 @@
+# meta nfproto ipv4
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv4"
+        }
+    }
+]
+
+# meta nfproto ipv6
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv6"
+        }
+    }
+]
+
+# meta nfproto {ipv4, ipv6}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": {
+                "set": [
+                    "ipv4",
+                    "ipv6"
+                ]
+            }
+        }
+    }
+]
+
+# meta nfproto != {ipv4, ipv6}
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "ipv4",
+                    "ipv6"
+                ]
+            }
+        }
+    }
+]
+
+# meta nfproto ipv6 tcp dport 22
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv6"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# meta nfproto ipv4 tcp dport 22
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv4"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# meta nfproto ipv4 ip saddr 1.2.3.4
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv4"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip"
+                }
+            },
+            "right": "1.2.3.4"
+        }
+    }
+]
+
+# meta nfproto ipv6 meta l4proto tcp
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv6"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "meta": "l4proto"
+            },
+            "right": "tcp"
+        }
+    }
+]
+
+# meta nfproto ipv4 counter ip saddr 1.2.3.4
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv4"
+        }
+    },
+    {
+        "counter": null
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip"
+                }
+            },
+            "right": "1.2.3.4"
+        }
+    }
+]
+
+# meta secpath exists
+[
+    {
+        "match": {
+            "left": {
+                "meta": "secpath"
+            },
+            "right": true
+        }
+    }
+]
+
+# meta secpath missing
+[
+    {
+        "match": {
+            "left": {
+                "meta": "secpath"
+            },
+            "right": false
+        }
+    }
+]
+

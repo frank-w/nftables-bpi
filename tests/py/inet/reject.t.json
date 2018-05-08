@@ -1,0 +1,240 @@
+# reject with icmp type host-unreachable
+[
+    {
+        "reject": {
+            "expr": "host-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type net-unreachable
+[
+    {
+        "reject": {
+            "expr": "net-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type prot-unreachable
+[
+    {
+        "reject": {
+            "expr": "prot-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type port-unreachable
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type net-prohibited
+[
+    {
+        "reject": {
+            "expr": "net-prohibited",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type host-prohibited
+[
+    {
+        "reject": {
+            "expr": "host-prohibited",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type admin-prohibited
+[
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmpv6 type no-route
+[
+    {
+        "reject": {
+            "expr": "no-route",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type admin-prohibited
+[
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type addr-unreachable
+[
+    {
+        "reject": {
+            "expr": "addr-unreachable",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type port-unreachable
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# mark 12345 reject with tcp reset
+[
+    {
+        "match": {
+            "left": {
+                "meta": "mark"
+            },
+            "right": 12345
+        }
+    },
+    {
+        "reject": {
+            "type": "tcp reset"
+        }
+    }
+]
+
+# reject
+[
+    {
+        "reject": null
+    }
+]
+
+# meta nfproto ipv4 reject
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv4"
+        }
+    },
+    {
+        "reject": null
+    }
+]
+
+# meta nfproto ipv6 reject
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv6"
+        }
+    },
+    {
+        "reject": null
+    }
+]
+
+# reject with icmpx type host-unreachable
+[
+    {
+        "reject": {
+            "expr": "host-unreachable",
+            "type": "icmpx"
+        }
+    }
+]
+
+# reject with icmpx type no-route
+[
+    {
+        "reject": {
+            "expr": "no-route",
+            "type": "icmpx"
+        }
+    }
+]
+
+# reject with icmpx type admin-prohibited
+[
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpx"
+        }
+    }
+]
+
+# reject with icmpx type port-unreachable
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpx"
+        }
+    }
+]
+
+# meta nfproto ipv4 reject with icmp type host-unreachable
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv4"
+        }
+    },
+    {
+        "reject": {
+            "expr": "host-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# meta nfproto ipv6 reject with icmpv6 type no-route
+[
+    {
+        "match": {
+            "left": {
+                "meta": "nfproto"
+            },
+            "right": "ipv6"
+        }
+    },
+    {
+        "reject": {
+            "expr": "no-route",
+            "type": "icmpv6"
+        }
+    }
+]
+

@@ -1,0 +1,468 @@
+# vlan id 4094
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    }
+]
+
+# vlan id 0
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# vlan id 4094 vlan cfi 0
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cfi",
+                    "name": "vlan"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# vlan id 4094 vlan cfi != 1
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cfi",
+                    "name": "vlan"
+                }
+            },
+            "op": "!=",
+            "right": 1
+        }
+    }
+]
+
+# vlan id 4094 vlan cfi 1
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cfi",
+                    "name": "vlan"
+                }
+            },
+            "right": 1
+        }
+    }
+]
+
+# vlan id 4094 vlan cfi 1 vlan pcp 7
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cfi",
+                    "name": "vlan"
+                }
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "pcp",
+                    "name": "vlan"
+                }
+            },
+            "right": 7
+        }
+    }
+]
+
+# vlan id 4094 vlan cfi 1 vlan pcp 3
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cfi",
+                    "name": "vlan"
+                }
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "pcp",
+                    "name": "vlan"
+                }
+            },
+            "right": 3
+        }
+    }
+]
+
+# ether type vlan vlan id 4094
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    }
+]
+
+# ether type vlan vlan id 0
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# ether type vlan vlan id 4094 vlan cfi 0
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cfi",
+                    "name": "vlan"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# ether type vlan vlan id 4094 vlan cfi 1
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cfi",
+                    "name": "vlan"
+                }
+            },
+            "right": 1
+        }
+    }
+]
+
+# vlan id 4094 tcp dport 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 4094
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# vlan id 1 ip saddr 10.0.0.1
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip"
+                }
+            },
+            "right": "10.0.0.1"
+        }
+    }
+]
+
+# vlan id 1 ip saddr 10.0.0.0/23
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip"
+                }
+            },
+            "right": {
+                "prefix": {
+                    "addr": "10.0.0.0",
+                    "len": 23
+                }
+            }
+        }
+    }
+]
+
+# vlan id 1 ip saddr 10.0.0.0/23 udp dport 53
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip"
+                }
+            },
+            "right": {
+                "prefix": {
+                    "addr": "10.0.0.0",
+                    "len": 23
+                }
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    }
+]
+
+# ether type vlan vlan id 1 ip saddr 10.0.0.0/23 udp dport 53
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip"
+                }
+            },
+            "right": {
+                "prefix": {
+                    "addr": "10.0.0.0",
+                    "len": 23
+                }
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "udp"
+                }
+            },
+            "right": 53
+        }
+    }
+]
+
+# vlan id { 1, 2, 4, 100, 4095 } vlan pcp 1-3
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "vlan"
+                }
+            },
+            "right": {
+                "set": [
+                    1,
+                    2,
+                    4,
+                    100,
+                    4095
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "pcp",
+                    "name": "vlan"
+                }
+            },
+            "right": {
+                "range": [ 1, 3 ]
+            }
+        }
+    }
+]
+

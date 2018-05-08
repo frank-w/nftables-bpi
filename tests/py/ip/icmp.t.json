@@ -1,0 +1,1382 @@
+# icmp type echo-reply accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "echo-reply"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type destination-unreachable accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "destination-unreachable"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type source-quench accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "source-quench"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type redirect accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "redirect"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type echo-request accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "echo-request"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type time-exceeded accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "time-exceeded"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type parameter-problem accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "parameter-problem"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type timestamp-request accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "timestamp-request"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type timestamp-reply accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "timestamp-reply"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type info-request accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "info-request"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type info-reply accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "info-reply"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type address-mask-request accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "address-mask-request"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type address-mask-reply accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "address-mask-reply"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type router-advertisement accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "router-advertisement"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type router-solicitation accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "router-solicitation"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type {echo-reply, destination-unreachable, source-quench, redirect, echo-request, time-exceeded, parameter-problem, timestamp-request, timestamp-reply, info-request, info-reply, address-mask-request, address-mask-reply, router-advertisement, router-solicitation} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "destination-unreachable",
+                    "source-quench",
+                    "redirect",
+                    "echo-request",
+                    "time-exceeded",
+                    "parameter-problem",
+                    "timestamp-request",
+                    "timestamp-reply",
+                    "info-request",
+                    "info-reply",
+                    "address-mask-request",
+                    "address-mask-reply",
+                    "router-advertisement",
+                    "router-solicitation"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp type != {echo-reply, destination-unreachable, source-quench}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "destination-unreachable",
+                    "source-quench"
+                ]
+            }
+        }
+    }
+]
+
+# icmp code 111 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmp"
+                }
+            },
+            "right": 111
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp code != 111 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": 111
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp code 33-55
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "range": [ 33, 55 ]
+            }
+        }
+    }
+]
+
+# icmp code != 33-55
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 55 ]
+            }
+        }
+    }
+]
+
+# icmp code { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp code != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp code { 2, 4, 54, 33, 56}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    2,
+                    4,
+                    33,
+                    54,
+                    56
+                ]
+            }
+        }
+    }
+]
+
+# icmp code != { 2, 4, 54, 33, 56}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    2,
+                    4,
+                    33,
+                    54,
+                    56
+                ]
+            }
+        }
+    }
+]
+
+# icmp checksum 12343 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "right": 12343
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum != 12343 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": 12343
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum 11-343 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "range": [ 11, 343 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum != 11-343 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 11, 343 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum { 11-343} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 11, 343 ] }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum != { 11-343} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 11, 343 ] }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum { 1111, 222, 343} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    1111,
+                    222,
+                    343
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum != { 1111, 222, 343} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    1111,
+                    222,
+                    343
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp id 1245 log
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "right": 1245
+        }
+    },
+    {
+        "log": null
+    }
+]
+
+# icmp id 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# icmp id != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# icmp id 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp id != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp id { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp id != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp id { 22, 34, 333}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    22,
+                    34,
+                    333
+                ]
+            }
+        }
+    }
+]
+
+# icmp id != { 22, 34, 333}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    22,
+                    34,
+                    333
+                ]
+            }
+        }
+    }
+]
+
+# icmp sequence 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# icmp sequence != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# icmp sequence 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp sequence != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp sequence { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmp sequence != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmp sequence { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp sequence != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp mtu 33
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "right": 33
+        }
+    }
+]
+
+# icmp mtu 22-33
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "range": [ 22, 33 ]
+            }
+        }
+    }
+]
+
+# icmp mtu { 22-33}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 22, 33 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp mtu != { 22-33}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 22, 33 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp mtu 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# icmp mtu != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# icmp mtu 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp mtu != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp mtu { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmp mtu != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmp mtu { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp mtu != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp gateway 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# icmp gateway != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# icmp gateway 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp gateway != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp gateway { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmp gateway != { 33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmp gateway { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp gateway != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp gateway != 34
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": 34
+        }
+    }
+]
+
+# icmp gateway != { 333, 334}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    333,
+                    334
+                ]
+            }
+        }
+    }
+]
+

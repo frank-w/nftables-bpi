@@ -1,0 +1,14 @@
+# rt classid "cosmos"
+[
+    {
+        "match": {
+            "left": {
+                "rt": {
+                    "key": "classid"
+                }
+            },
+            "right": "cosmos"
+        }
+    }
+]
+

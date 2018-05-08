@@ -1,0 +1,85 @@
+# icmp type {echo-reply, destination-unreachable, source-quench, redirect, echo-request, time-exceeded, parameter-problem, timestamp-request, timestamp-reply, info-request, info-reply, address-mask-request, address-mask-reply, router-advertisement, router-solicitation} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "destination-unreachable",
+                    "source-quench",
+                    "redirect",
+                    "echo-request",
+                    "router-advertisement",
+                    "router-solicitation",
+                    "time-exceeded",
+                    "parameter-problem",
+                    "timestamp-request",
+                    "timestamp-reply",
+                    "info-request",
+                    "info-reply",
+                    "address-mask-request",
+                    "address-mask-reply"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum { 1111, 222, 343} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "right": {
+                "set": [
+                    222,
+                    343,
+                    1111
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum != { 1111, 222, 343} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    222,
+                    343,
+                    1111
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+

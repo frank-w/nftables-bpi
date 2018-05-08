@@ -1,0 +1,1257 @@
+# icmpv6 type destination-unreachable accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "destination-unreachable"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type packet-too-big accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "packet-too-big"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type time-exceeded accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "time-exceeded"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type echo-request accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "echo-request"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type echo-reply accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "echo-reply"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type mld-listener-query accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "mld-listener-query"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type mld-listener-report accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "mld-listener-report"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type mld-listener-done accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "mld-listener-done"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type mld-listener-reduction accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "mld-listener-reduction"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type nd-router-solicit accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "nd-router-solicit"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type nd-router-advert accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "nd-router-advert"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type nd-neighbor-solicit accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "nd-neighbor-solicit"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type nd-neighbor-advert accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "nd-neighbor-advert"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type nd-redirect accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "nd-redirect"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type parameter-problem accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "parameter-problem"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type router-renumbering accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "router-renumbering"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type ind-neighbor-solicit accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "ind-neighbor-solicit"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type ind-neighbor-advert accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "ind-neighbor-advert"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type mld2-listener-report accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "mld2-listener-report"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type {destination-unreachable, time-exceeded, nd-router-solicit} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    "destination-unreachable",
+                    "time-exceeded",
+                    "nd-router-solicit"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type {router-renumbering, mld-listener-done, time-exceeded, nd-router-solicit} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    "router-renumbering",
+                    "mld-listener-done",
+                    "time-exceeded",
+                    "nd-router-solicit"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type {mld-listener-query, time-exceeded, nd-router-advert} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    "mld-listener-query",
+                    "time-exceeded",
+                    "nd-router-advert"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 type != {mld-listener-query, time-exceeded, nd-router-advert} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    "mld-listener-query",
+                    "time-exceeded",
+                    "nd-router-advert"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 code 4
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmpv6"
+                }
+            },
+            "right": 4
+        }
+    }
+]
+
+# icmpv6 code 3-66
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "range": [ 3, 66 ]
+            }
+        }
+    }
+]
+
+# icmpv6 code {5, 6, 7} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    5,
+                    6,
+                    7
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 code != {5, 6, 7} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    5,
+                    6,
+                    7
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 code { 3-66}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 3, 66 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 code != { 3-66}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 3, 66 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 checksum 2222 log
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmpv6"
+                }
+            },
+            "right": 2222
+        }
+    },
+    {
+        "log": null
+    }
+]
+
+# icmpv6 checksum != 2222 log
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": 2222
+        }
+    },
+    {
+        "log": null
+    }
+]
+
+# icmpv6 checksum 222-226
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "range": [ 222, 226 ]
+            }
+        }
+    }
+]
+
+# icmpv6 checksum != 2222 log
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": 2222
+        }
+    },
+    {
+        "log": null
+    }
+]
+
+# icmpv6 checksum { 222, 226}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    222,
+                    226
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 checksum != { 222, 226}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    222,
+                    226
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 checksum { 222-226}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 222, 226 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 checksum != { 222-226}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 222, 226 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 mtu 22
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmpv6"
+                }
+            },
+            "right": 22
+        }
+    }
+]
+
+# icmpv6 mtu != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# icmpv6 mtu 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmpv6 mtu != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmpv6 mtu {33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 mtu != {33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 mtu {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 mtu != {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 id 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmpv6 id != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmpv6 id {33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 id != {33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 id {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 id != {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 sequence 2
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmpv6"
+                }
+            },
+            "right": 2
+        }
+    }
+]
+
+# icmpv6 sequence {3, 4, 5, 6, 7} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    3,
+                    4,
+                    5,
+                    6,
+                    7
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmpv6 sequence {2, 4}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    2,
+                    4
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 sequence != {2, 4}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    2,
+                    4
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 sequence 2-4
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "range": [ 2, 4 ]
+            }
+        }
+    }
+]
+
+# icmpv6 sequence != 2-4
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 2, 4 ]
+            }
+        }
+    }
+]
+
+# icmpv6 sequence { 2-4}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 2, 4 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 sequence != { 2-4}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 2, 4 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 max-delay 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "max-delay",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmpv6 max-delay != 33-45
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "max-delay",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmpv6 max-delay {33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "max-delay",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 max-delay != {33, 55, 67, 88}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "max-delay",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    33,
+                    55,
+                    67,
+                    88
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 max-delay {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "max-delay",
+                    "name": "icmpv6"
+                }
+            },
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 max-delay != {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "max-delay",
+                    "name": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+

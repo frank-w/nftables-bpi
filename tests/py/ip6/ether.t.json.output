@@ -1,0 +1,40 @@
+# tcp dport 22 iiftype ether ip6 daddr 1::2 ether saddr 00:0f:54:0c:11:4 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": 22
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "daddr",
+                    "name": "ip6"
+                }
+            },
+            "right": "1::2"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ether"
+                }
+            },
+            "right": "00:0f:54:0c:11:04"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+

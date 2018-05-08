@@ -1,0 +1,25 @@
+# ct original protocol 17 ct reply proto-src 53
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "protocol"
+                }
+            },
+            "right": 17
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "reply",
+                    "key": "proto-src"
+                }
+            },
+            "right": 53
+        }
+    }
+]
+

@@ -1,0 +1,17 @@
+# dccp sport ftp-data - re-mail-ck
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "name": "dccp"
+                }
+            },
+            "right": {
+                "range": [ 20, 50 ]
+            }
+        }
+    }
+]
+

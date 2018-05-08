@@ -1,0 +1,82 @@
+# ct mark set numgen inc mod 2
+[
+    {
+        "mangle": {
+            "left": {
+                "ct": {
+                    "key": "mark"
+                }
+            },
+            "right": {
+                "numgen": {
+                    "mod": 2,
+                    "mode": "inc",
+                    "offset": 0
+                }
+            }
+        }
+    }
+]
+
+# dnat to numgen inc mod 2 map { 0 : 192.168.10.100, 1 : 192.168.20.200 }
+[
+    {
+        "dnat": {
+            "addr": {
+                "map": {
+                    "left": {
+                        "numgen": {
+                            "mod": 2,
+                            "mode": "inc",
+                            "offset": 0
+                        }
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                0,
+                                "192.168.10.100"
+                            ],
+                            [
+                                1,
+                                "192.168.20.200"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
+
+# dnat to numgen inc mod 10 map { 0-5 : 192.168.10.100, 6-9 : 192.168.20.200}
+[
+    {
+        "dnat": {
+            "addr": {
+                "map": {
+                    "left": {
+                        "numgen": {
+                            "mod": 10,
+                            "mode": "inc",
+                            "offset": 0
+                        }
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                { "range": [ 0, 5 ] },
+                                "192.168.10.100"
+                            ],
+                            [
+                                { "range": [ 6, 9 ] },
+                                "192.168.20.200"
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
+

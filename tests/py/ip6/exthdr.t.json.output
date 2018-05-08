@@ -1,0 +1,56 @@
+# exthdr hbh == exists
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "name": "hbh"
+                }
+            },
+            "right": true
+        }
+    }
+]
+
+# exthdr hbh == missing
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "name": "hbh"
+                }
+            },
+            "right": false
+        }
+    }
+]
+
+# exthdr hbh 1
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "name": "hbh"
+                }
+            },
+            "right": true
+        }
+    }
+]
+
+# exthdr hbh 0
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "name": "hbh"
+                }
+            },
+            "right": false
+        }
+    }
+]
+

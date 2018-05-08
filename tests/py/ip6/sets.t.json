@@ -1,0 +1,91 @@
+# ip6 saddr @set2 drop
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "right": "@set2"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# ip6 saddr != @set2 drop
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip6"
+                }
+            },
+            "op": "!=",
+            "right": "@set2"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# ip6 saddr . ip6 daddr @set5 drop
+[
+    {
+        "match": {
+            "left": {
+                "concat": [
+                    {
+                        "payload": {
+                            "field": "saddr",
+                            "name": "ip6"
+                        }
+                    },
+                    {
+                        "payload": {
+                            "field": "daddr",
+                            "name": "ip6"
+                        }
+                    }
+                ]
+            },
+            "right": "@set5"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# add @set5 { ip6 saddr . ip6 daddr }
+[
+    {
+        "set": {
+            "elem": {
+                "concat": [
+                    {
+                        "payload": {
+                            "field": "saddr",
+                            "name": "ip6"
+                        }
+                    },
+                    {
+                        "payload": {
+                            "field": "daddr",
+                            "name": "ip6"
+                        }
+                    }
+                ]
+            },
+            "op": "add",
+            "set": "@set5"
+        }
+    }
+]
+

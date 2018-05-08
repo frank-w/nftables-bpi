@@ -1,0 +1,69 @@
+# iifname "eth0" tcp dport {80, 90, 23} snat to 192.168.3.2
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "right": {
+                "set": [
+                    23,
+                    80,
+                    90
+                ]
+            }
+        }
+    },
+    {
+        "snat": {
+            "addr": "192.168.3.2"
+        }
+    }
+]
+
+# iifname "eth0" tcp dport != {80, 90, 23} snat to 192.168.3.2
+[
+    {
+        "match": {
+            "left": {
+                "meta": "iifname"
+            },
+            "right": "eth0"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "name": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    23,
+                    80,
+                    90
+                ]
+            }
+        }
+    },
+    {
+        "snat": {
+            "addr": "192.168.3.2"
+        }
+    }
+]
+

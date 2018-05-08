@@ -47,6 +47,13 @@ class Nftables:
         self.nft_ctx_output_set_handle = lib.nft_ctx_output_set_handle
         self.nft_ctx_output_set_handle.argtypes = [c_void_p, c_bool]
 
+        self.nft_ctx_output_get_echo = lib.nft_ctx_output_get_echo
+        self.nft_ctx_output_get_echo.restype = c_bool
+        self.nft_ctx_output_get_echo.argtypes = [c_void_p]
+
+        self.nft_ctx_output_set_echo = lib.nft_ctx_output_set_echo
+        self.nft_ctx_output_set_echo.argtypes = [c_void_p, c_bool]
+
         self.nft_ctx_output_get_numeric = lib.nft_ctx_output_get_numeric
         self.nft_ctx_output_get_numeric.restype = c_int
         self.nft_ctx_output_get_numeric.argtypes = [c_void_p]
@@ -112,6 +119,24 @@ class Nftables:
         """
         old = self.get_handle_output()
         self.nft_ctx_output_set_handle(self.__ctx, val)
+        return old
+
+    def get_echo_output(self):
+        """Get the current state of echo output.
+
+        Returns a boolean indicating whether echo output is active or not.
+        """
+        return self.nft_ctx_output_get_echo(self.__ctx)
+
+    def set_echo_output(self, val):
+        """Enable or disable echo output.
+
+        Accepts a boolean turning echo output on or off.
+
+        Returns the previous value.
+        """
+        old = self.get_echo_output()
+        self.nft_ctx_output_set_echo(self.__ctx, val)
         return old
 
     def get_numeric_output(self):

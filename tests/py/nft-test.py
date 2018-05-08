@@ -122,8 +122,41 @@ def print_warning(reason, filename=None, lineno=None):
     print_msg(reason, filename, lineno, Colors.YELLOW, "WARNING:")
 
 
+def color_differences(rule, other, color):
+    rlen = len(rule)
+    olen = len(other)
+
+    # find equal part at start
+    for i in range(rlen):
+        if i >= olen or rule[i] != other[i]:
+            break
+    start_idx = i
+
+    # find equal part at end
+    found = False
+    for i in range(-1, start_idx -rlen - 1, -1):
+        if i < start_idx -olen:
+            break
+        if rule[i] != other[i]:
+            found = True
+            break
+    end_idx = i
+    if found:
+        end_idx += 1
+
+    out = ""
+    if start_idx > 0:
+        out += rule[:start_idx]
+    out += color + rule[start_idx:end_idx] + Colors.ENDC
+    if end_idx < 0:
+        out += rule[end_idx:]
+
+    return out
+
 def print_differences_warning(filename, lineno, rule1, rule2, cmd):
-    reason = "'" + rule1 + "' mismatches '" + rule2 + "'"
+    colored_rule1 = color_differences(rule1, rule2, Colors.YELLOW)
+    colored_rule2 = color_differences(rule2, rule1, Colors.YELLOW)
+    reason = "'" + colored_rule1 + "' mismatches '" + colored_rule2 + "'"
     print filename + ": " + Colors.YELLOW + "WARNING: " + Colors.ENDC + \
           "line: " + str(lineno + 1) + ": '" + cmd + "': " + reason
 

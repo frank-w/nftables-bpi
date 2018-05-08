@@ -233,6 +233,18 @@ const char *log_level(uint32_t level)
 	return syslog_level[level];
 }
 
+int log_level_parse(const char *level)
+{
+	int i;
+
+	for (i = 0; i <= LOG_DEBUG; i++) {
+		if (syslog_level[i] &&
+		    !strcmp(level, syslog_level[i]))
+			return i;
+	}
+	return -1;
+}
+
 static void log_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	nft_print(octx, "log");
@@ -499,7 +511,7 @@ static void print_nf_nat_flags(uint32_t flags, struct output_ctx *octx)
 		nft_print(octx, "%spersistent", delim);
 }
 
-static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
+const char *nat_etype2str(enum nft_nat_etypes type)
 {
 	static const char * const nat_types[] = {
 		[NFT_NAT_SNAT]	= "snat",
@@ -508,7 +520,12 @@ static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 		[NFT_NAT_REDIR]	= "redirect",
 	};
 
-	nft_print(octx, "%s", nat_types[stmt->nat.type]);
+	return nat_types[type];
+}
+
+static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
+{
+	nft_print(octx, "%s", nat_etype2str(stmt->nat.type));
 	if (stmt->nat.addr || stmt->nat.proto)
 		nft_print(octx, " to");
 

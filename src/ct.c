@@ -64,6 +64,18 @@ static const struct symbol_table ct_dir_tbl = {
 	}
 };
 
+const char *ct_dir2str(int dir)
+{
+	const struct symbolic_constant *s;
+
+	for (s = ct_dir_tbl.symbols; s->identifier != NULL; s++) {
+		if (dir == (int)s->value)
+			return s->identifier;
+	}
+
+	return NULL;
+}
+
 const struct datatype ct_dir_type = {
 	.type		= TYPE_CT_DIR,
 	.name		= "ct_dir",
@@ -133,20 +145,30 @@ static struct symbol_table *ct_label_tbl;
 
 #define CT_LABEL_BIT_SIZE 128
 
+const char *ct_label2str(unsigned long value)
+{
+	const struct symbolic_constant *s;
+
+	for (s = ct_label_tbl->symbols; s->identifier; s++) {
+		if (value == s->value)
+			return s->identifier;
+	}
+
+	return NULL;
+}
+
 static void ct_label_type_print(const struct expr *expr,
 				 struct output_ctx *octx)
 {
 	unsigned long bit = mpz_scan1(expr->value, 0);
-	const struct symbolic_constant *s;
+	const char *labelstr = ct_label2str(bit);
 
-	for (s = ct_label_tbl->symbols; s->identifier != NULL; s++) {
-		if (bit != s->value)
-			continue;
-		nft_print(octx, "\"%s\"", s->identifier);
+	if (labelstr) {
+		nft_print(octx, "\"%s\"", labelstr);
 		return;
 	}
 	/* can happen when connlabel.conf is altered after rules were added */
-	nft_print(octx, "%ld", (long)mpz_scan1(expr->value, 0));
+	nft_print(octx, "%lu", bit);
 }
 
 static struct error_record *ct_label_type_parse(const struct expr *sym,
@@ -273,19 +295,15 @@ const struct ct_template ct_templates[__NFT_CT_MAX] = {
 static void ct_print(enum nft_ct_keys key, int8_t dir, uint8_t nfproto,
 		     struct output_ctx *octx)
 {
-	const struct symbolic_constant *s;
+	const char *dirstr = ct_dir2str(dir);
 	const struct proto_desc *desc;
 
 	nft_print(octx, "ct ");
 	if (dir < 0)
 		goto done;
 
-	for (s = ct_dir_tbl.symbols; s->identifier != NULL; s++) {
-		if (dir == (int)s->value) {
-			nft_print(octx, "%s ", s->identifier);
-			break;
-		}
-	}
+	if (dirstr)
+		nft_print(octx, "%s ", dirstr);
 
 	switch (key) {
 	case NFT_CT_SRC:

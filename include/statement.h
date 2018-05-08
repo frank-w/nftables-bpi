@@ -77,6 +77,7 @@ struct log_stmt {
 };
 
 extern const char *log_level(uint32_t level);
+extern int log_level_parse(const char *level);
 extern struct stmt *log_stmt_alloc(const struct location *loc);
 
 
@@ -106,6 +107,8 @@ enum nft_nat_etypes {
 	NFT_NAT_MASQ,
 	NFT_NAT_REDIR,
 };
+
+extern const char *nat_etype2str(enum nft_nat_etypes type);
 
 struct nat_stmt {
 	enum nft_nat_etypes	type;

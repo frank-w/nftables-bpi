@@ -558,7 +558,7 @@ static void binop_arg_print(const struct expr *op, const struct expr *arg,
 		nft_print(octx, ")");
 }
 
-static bool must_print_eq_op(const struct expr *expr)
+bool must_print_eq_op(const struct expr *expr)
 {
 	return expr->left->ops->type == EXPR_BINOP;
 }

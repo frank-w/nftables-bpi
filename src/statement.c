@@ -178,7 +178,7 @@ static const char *objref_type[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_LIMIT]	= "limit",
 };
 
-static const char *objref_type_name(uint32_t type)
+const char *objref_type_name(uint32_t type)
 {
 	if (type > NFT_OBJECT_MAX)
 		return "unknown";
@@ -225,7 +225,7 @@ static const char *syslog_level[LOG_DEBUG + 1] = {
 	[LOG_DEBUG]	= "debug",
 };
 
-static const char *log_level(uint32_t level)
+const char *log_level(uint32_t level)
 {
 	if (level > LOG_DEBUG)
 		return "unknown";

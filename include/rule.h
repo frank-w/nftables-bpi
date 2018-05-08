@@ -204,6 +204,7 @@ extern struct chain *chain_lookup(const struct table *table,
 
 extern const char *family2str(unsigned int family);
 extern const char *hooknum2str(unsigned int family, unsigned int hooknum);
+extern const char *chain_policy2str(uint32_t policy);
 extern void chain_print_plain(const struct chain *chain,
 			      struct output_ctx *octx);
 
@@ -284,6 +285,7 @@ extern void set_add_hash(struct set *set, struct table *table);
 extern struct set *set_lookup(const struct table *table, const char *name);
 extern struct set *set_lookup_global(uint32_t family, const char *table,
 				     const char *name, struct nft_cache *cache);
+extern const char *set_policy2str(uint32_t policy);
 extern void set_print(const struct set *set, struct output_ctx *octx);
 extern void set_print_plain(const struct set *s, struct output_ctx *octx);
 

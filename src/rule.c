@@ -295,7 +295,7 @@ struct print_fmt_options {
 	const char	*stmt_separator;
 };
 
-static const char *set_policy2str(uint32_t policy)
+const char *set_policy2str(uint32_t policy)
 {
 	switch (policy) {
 	case NFT_SET_POL_PERFORMANCE:
@@ -740,7 +740,7 @@ const char *hooknum2str(unsigned int family, unsigned int hooknum)
 	return "unknown";
 }
 
-static const char *chain_policy2str(uint32_t policy)
+const char *chain_policy2str(uint32_t policy)
 {
 	switch (policy) {
 	case NF_DROP:

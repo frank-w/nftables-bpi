@@ -21,6 +21,7 @@ struct objref_stmt {
 	struct expr		*expr;
 };
 
+const char *objref_type_name(uint32_t type);
 struct stmt *objref_stmt_alloc(const struct location *loc);
 
 struct counter_stmt {
@@ -75,6 +76,7 @@ struct log_stmt {
 	uint32_t		flags;
 };
 
+extern const char *log_level(uint32_t level);
 extern struct stmt *log_stmt_alloc(const struct location *loc);
 
 

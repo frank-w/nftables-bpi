@@ -366,6 +366,8 @@ extern struct expr *unary_expr_alloc(const struct location *loc,
 extern struct expr *binop_expr_alloc(const struct location *loc, enum ops op,
 				     struct expr *left, struct expr *right);
 
+extern bool must_print_eq_op(const struct expr *expr);
+
 extern struct expr *relational_expr_alloc(const struct location *loc, enum ops op,
 					  struct expr *left, struct expr *right);
 

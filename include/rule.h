@@ -115,6 +115,9 @@ struct symbol *symbol_get(const struct scope *scope, const char *identifier);
 enum table_flags {
 	TABLE_F_DORMANT		= (1 << 0),
 };
+#define TABLE_FLAGS_MAX 1
+
+extern const char *table_flags_name[TABLE_FLAGS_MAX];
 
 /**
  * struct table - nftables table

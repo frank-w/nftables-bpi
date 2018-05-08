@@ -163,6 +163,8 @@ struct set_stmt {
 	enum nft_dynset_ops	op;
 };
 
+extern const char * const set_stmt_op_names[];
+
 extern struct stmt *set_stmt_alloc(const struct location *loc);
 
 struct map_stmt {

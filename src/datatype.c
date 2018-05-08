@@ -721,7 +721,8 @@ void rt_symbol_table_free(struct symbol_table *tbl)
 	xfree(tbl);
 }
 
-static struct symbol_table *mark_tbl;
+struct symbol_table *mark_tbl = NULL;
+
 void mark_table_init(void)
 {
 	mark_tbl = rt_symbol_table_init("/etc/iproute2/rt_marks");

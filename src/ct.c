@@ -220,7 +220,7 @@ void ct_label_table_exit(void)
 #define NF_CT_HELPER_NAME_LEN	16
 #endif
 
-static const struct ct_template ct_templates[] = {
+const struct ct_template ct_templates[__NFT_CT_MAX] = {
 	[NFT_CT_STATE]		= CT_TEMPLATE("state",	    &ct_state_type,
 					      BYTEORDER_HOST_ENDIAN,
 					      4 * BITS_PER_BYTE),

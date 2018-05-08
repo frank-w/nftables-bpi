@@ -856,8 +856,6 @@ struct table *table_lookup(const struct handle *h,
 	return NULL;
 }
 
-#define TABLE_FLAGS_MAX 1
-
 const char *table_flags_name[TABLE_FLAGS_MAX] = {
 	"dormant",
 };

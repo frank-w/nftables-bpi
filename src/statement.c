@@ -567,7 +567,7 @@ struct stmt *nat_stmt_alloc(const struct location *loc,
 	return stmt;
 }
 
-static const char * const set_stmt_op_names[] = {
+const char * const set_stmt_op_names[] = {
 	[NFT_DYNSET_OP_ADD]	= "add",
 	[NFT_DYNSET_OP_UPDATE]	= "update",
 };

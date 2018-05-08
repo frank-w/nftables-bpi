@@ -29,6 +29,7 @@ enum tcpopt_hdr_types {
 	TCPOPTHDR_TIMESTAMP,
 	TCPOPTHDR_ECHO,
 	TCPOPTHDR_ECHO_REPLY,
+	__TCPOPTHDR_MAX
 };
 
 enum tcpopt_hdr_fields {
@@ -42,4 +43,7 @@ enum tcpopt_hdr_fields {
 	TCPOPTHDR_FIELD_TSVAL,
 	TCPOPTHDR_FIELD_TSECR,
 };
+
+extern const struct exthdr_desc *tcpopthdr_protocols[__TCPOPTHDR_MAX];
+
 #endif /* NFTABLES_TCPOPT_H */

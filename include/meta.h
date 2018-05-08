@@ -16,6 +16,8 @@ struct meta_template {
 	unsigned int		len;
 };
 
+extern const struct meta_template meta_templates[];
+
 #define META_TEMPLATE(__token, __dtype, __len, __byteorder) {	\
 	.token		= (__token),				\
 	.dtype		= (__dtype),				\
@@ -39,5 +41,7 @@ extern const struct datatype uid_type;
 extern const struct datatype devgroup_type;
 extern const struct datatype pkttype_type;
 extern const struct datatype ifname_type;
+
+extern struct symbol_table *devgroup_tbl;
 
 #endif /* NFTABLES_META_H */

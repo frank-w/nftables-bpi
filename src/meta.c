@@ -334,7 +334,8 @@ const struct datatype pkttype_type = {
 	.sym_tbl	= &pkttype_type_tbl,
 };
 
-static struct symbol_table *devgroup_tbl;
+struct symbol_table *devgroup_tbl = NULL;
+
 void devgroup_table_init(void)
 {
 	devgroup_tbl = rt_symbol_table_init("/etc/iproute2/group");
@@ -378,7 +379,7 @@ const struct datatype ifname_type = {
 	.basetype	= &string_type,
 };
 
-static const struct meta_template meta_templates[] = {
+const struct meta_template meta_templates[] = {
 	[NFT_META_LEN]		= META_TEMPLATE("length",    &integer_type,
 						4 * 8, BYTEORDER_HOST_ENDIAN),
 	[NFT_META_PROTOCOL]	= META_TEMPLATE("protocol",  &ethertype_type,

@@ -18,6 +18,8 @@ struct rt_template {
 	bool			invalid;
 };
 
+extern const struct rt_template rt_templates[];
+
 #define RT_TEMPLATE(__token, __dtype, __len, __byteorder, __invalid) {	\
 	.token		= (__token),					\
 	.dtype		= (__dtype),					\

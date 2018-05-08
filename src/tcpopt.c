@@ -136,7 +136,7 @@ static unsigned int calc_offset_reverse(const struct exthdr_desc *desc,
 	}
 }
 
-static const struct exthdr_desc *tcpopthdr_protocols[] = {
+const struct exthdr_desc *tcpopthdr_protocols[__TCPOPTHDR_MAX] = {
 	[TCPOPTHDR_EOL]			= &tcpopt_eol,
 	[TCPOPTHDR_NOOP]		= &tcpopt_nop,
 	[TCPOPTHDR_MAXSEG]		= &tcptopt_maxseg,

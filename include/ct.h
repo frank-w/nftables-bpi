@@ -16,6 +16,8 @@ struct ct_template {
 	unsigned int		len;
 };
 
+extern const struct ct_template ct_templates[__NFT_CT_MAX];
+
 #define CT_TEMPLATE(__token, __dtype, __byteorder, __len) {	\
 	.token		= (__token),				\
 	.dtype		= (__dtype),				\

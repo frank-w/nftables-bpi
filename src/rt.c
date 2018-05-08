@@ -57,7 +57,7 @@ const struct datatype realm_type = {
 	.flags		= DTYPE_F_PREFIX,
 };
 
-static const struct rt_template rt_templates[] = {
+const struct rt_template rt_templates[] = {
 	[NFT_RT_CLASSID]	= RT_TEMPLATE("classid",
 					      &realm_type,
 					      4 * BITS_PER_BYTE,

@@ -24,6 +24,7 @@
 #include <utils.h>
 #include <list.h>
 #include <xt.h>
+#include <json.h>
 
 #include <netinet/in.h>
 #include <linux/netfilter/nf_nat.h>
@@ -79,6 +80,7 @@ static const struct stmt_ops expr_stmt_ops = {
 	.type		= STMT_EXPRESSION,
 	.name		= "expression",
 	.print		= expr_stmt_print,
+	.json		= expr_stmt_json,
 	.destroy	= expr_stmt_destroy,
 };
 
@@ -95,6 +97,7 @@ static const struct stmt_ops verdict_stmt_ops = {
 	.type		= STMT_VERDICT,
 	.name		= "verdict",
 	.print		= expr_stmt_print,
+	.json		= verdict_stmt_json,
 	.destroy	= expr_stmt_destroy,
 };
 
@@ -137,6 +140,7 @@ static const struct stmt_ops meter_stmt_ops = {
 	.type		= STMT_METER,
 	.name		= "meter",
 	.print		= meter_stmt_print,
+	.json		= meter_stmt_json,
 	.destroy	= meter_stmt_destroy,
 };
 
@@ -160,6 +164,7 @@ static const struct stmt_ops counter_stmt_ops = {
 	.type		= STMT_COUNTER,
 	.name		= "counter",
 	.print		= counter_stmt_print,
+	.json		= counter_stmt_json,
 };
 
 struct stmt *counter_stmt_alloc(const struct location *loc)
@@ -204,6 +209,7 @@ static const struct stmt_ops objref_stmt_ops = {
 	.type		= STMT_OBJREF,
 	.name		= "objref",
 	.print		= objref_stmt_print,
+	.json		= objref_stmt_json,
 };
 
 struct stmt *objref_stmt_alloc(const struct location *loc)
@@ -293,6 +299,7 @@ static const struct stmt_ops log_stmt_ops = {
 	.type		= STMT_LOG,
 	.name		= "log",
 	.print		= log_stmt_print,
+	.json		= log_stmt_json,
 	.destroy	= log_stmt_destroy,
 };
 
@@ -376,6 +383,7 @@ static const struct stmt_ops limit_stmt_ops = {
 	.type		= STMT_LIMIT,
 	.name		= "limit",
 	.print		= limit_stmt_print,
+	.json		= limit_stmt_json,
 };
 
 struct stmt *limit_stmt_alloc(const struct location *loc)
@@ -409,6 +417,7 @@ static const struct stmt_ops queue_stmt_ops = {
 	.type		= STMT_QUEUE,
 	.name		= "queue",
 	.print		= queue_stmt_print,
+	.json		= queue_stmt_json,
 };
 
 struct stmt *queue_stmt_alloc(const struct location *loc)
@@ -436,6 +445,7 @@ static const struct stmt_ops quota_stmt_ops = {
 	.type		= STMT_QUOTA,
 	.name		= "quota",
 	.print		= quota_stmt_print,
+	.json		= quota_stmt_json,
 };
 
 struct stmt *quota_stmt_alloc(const struct location *loc)
@@ -483,6 +493,7 @@ static const struct stmt_ops reject_stmt_ops = {
 	.type		= STMT_REJECT,
 	.name		= "reject",
 	.print		= reject_stmt_print,
+	.json		= reject_stmt_json,
 };
 
 struct stmt *reject_stmt_alloc(const struct location *loc)
@@ -572,6 +583,7 @@ static const struct stmt_ops nat_stmt_ops = {
 	.type		= STMT_NAT,
 	.name		= "nat",
 	.print		= nat_stmt_print,
+	.json		= nat_stmt_json,
 	.destroy	= nat_stmt_destroy,
 };
 
@@ -608,6 +620,7 @@ static const struct stmt_ops set_stmt_ops = {
 	.type		= STMT_SET,
 	.name		= "set",
 	.print		= set_stmt_print,
+	.json		= set_stmt_json,
 	.destroy	= set_stmt_destroy,
 };
 
@@ -669,6 +682,7 @@ static const struct stmt_ops dup_stmt_ops = {
 	.type		= STMT_DUP,
 	.name		= "dup",
 	.print		= dup_stmt_print,
+	.json		= dup_stmt_json,
 	.destroy	= dup_stmt_destroy,
 };
 
@@ -692,6 +706,7 @@ static const struct stmt_ops fwd_stmt_ops = {
 	.type		= STMT_FWD,
 	.name		= "fwd",
 	.print		= fwd_stmt_print,
+	.json		= fwd_stmt_json,
 	.destroy	= fwd_stmt_destroy,
 };
 

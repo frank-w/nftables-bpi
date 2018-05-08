@@ -3,6 +3,7 @@
 
 #include <list.h>
 #include <expression.h>
+#include <json.h>
 
 extern struct stmt *expr_stmt_alloc(const struct location *loc,
 				    struct expr *expr);
@@ -288,6 +289,8 @@ struct stmt_ops {
 	const char		*name;
 	void			(*destroy)(struct stmt *stmt);
 	void			(*print)(const struct stmt *stmt,
+					 struct output_ctx *octx);
+	json_t			*(*json)(const struct stmt *stmt,
 					 struct output_ctx *octx);
 };
 

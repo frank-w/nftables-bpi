@@ -225,6 +225,7 @@ static const struct datatype ct_label_type = {
 	.size		= CT_LABEL_BIT_SIZE,
 	.basetype	= &bitmask_type,
 	.print		= ct_label_type_print,
+	.json		= ct_label_type_json,
 	.parse		= ct_label_type_parse,
 };
 
@@ -360,6 +361,7 @@ static const struct expr_ops ct_expr_ops = {
 	.type		= EXPR_CT,
 	.name		= "ct",
 	.print		= ct_expr_print,
+	.json		= ct_expr_json,
 	.cmp		= ct_expr_cmp,
 	.clone		= ct_expr_clone,
 	.pctx_update	= ct_expr_pctx_update,
@@ -442,6 +444,7 @@ static const struct stmt_ops ct_stmt_ops = {
 	.type		= STMT_CT,
 	.name		= "ct",
 	.print		= ct_stmt_print,
+	.json		= ct_stmt_json,
 };
 
 struct stmt *ct_stmt_alloc(const struct location *loc, enum nft_ct_keys key,
@@ -467,6 +470,7 @@ static const struct stmt_ops notrack_stmt_ops = {
 	.type		= STMT_NOTRACK,
 	.name		= "notrack",
 	.print		= notrack_stmt_print,
+	.json		= notrack_stmt_json,
 };
 
 struct stmt *notrack_stmt_alloc(const struct location *loc)

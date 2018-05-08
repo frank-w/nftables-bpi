@@ -60,6 +60,7 @@ static const struct expr_ops hash_expr_ops = {
 	.type		= EXPR_HASH,
 	.name		= "hash",
 	.print		= hash_expr_print,
+	.json		= hash_expr_json,
 	.cmp		= hash_expr_cmp,
 	.clone		= hash_expr_clone,
 };

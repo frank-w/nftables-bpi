@@ -25,6 +25,7 @@
 #include <gmputil.h>
 #include <erec.h>
 #include <netlink.h>
+#include <json.h>
 
 #include <netinet/ip_icmp.h>
 
@@ -357,6 +358,7 @@ const struct datatype integer_type = {
 	.name		= "integer",
 	.desc		= "integer",
 	.print		= integer_type_print,
+	.json		= integer_type_json,
 	.parse		= integer_type_parse,
 };
 
@@ -386,6 +388,7 @@ const struct datatype string_type = {
 	.desc		= "string",
 	.byteorder	= BYTEORDER_HOST_ENDIAN,
 	.print		= string_type_print,
+	.json		= string_type_json,
 	.parse		= string_type_parse,
 };
 
@@ -603,6 +606,7 @@ const struct datatype inet_protocol_type = {
 	.size		= BITS_PER_BYTE,
 	.basetype	= &integer_type,
 	.print		= inet_protocol_type_print,
+	.json		= inet_protocol_type_json,
 	.parse		= inet_protocol_type_parse,
 };
 
@@ -658,6 +662,7 @@ const struct datatype inet_service_type = {
 	.size		= 2 * BITS_PER_BYTE,
 	.basetype	= &integer_type,
 	.print		= inet_service_type_print,
+	.json		= inet_service_type_json,
 	.parse		= inet_service_type_parse,
 	.sym_tbl	= &inet_service_tbl,
 };
@@ -753,6 +758,7 @@ const struct datatype mark_type = {
 	.basetype	= &integer_type,
 	.basefmt	= "0x%.8Zx",
 	.print		= mark_type_print,
+	.json		= mark_type_json,
 	.parse		= mark_type_parse,
 	.flags		= DTYPE_F_PREFIX,
 };
@@ -987,6 +993,7 @@ const struct datatype time_type = {
 	.size		= 8 * BITS_PER_BYTE,
 	.basetype	= &integer_type,
 	.print		= time_type_print,
+	.json		= time_type_json,
 	.parse		= time_type_parse,
 };
 
@@ -1163,4 +1170,5 @@ const struct datatype boolean_type = {
 	.size		= 1,
 	.basetype	= &integer_type,
 	.sym_tbl	= &boolean_tbl,
+	.json		= boolean_type_json,
 };

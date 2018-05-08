@@ -21,6 +21,7 @@ struct output_ctx {
 	unsigned int ip2name;
 	unsigned int handle;
 	unsigned int echo;
+	unsigned int json;
 	union {
 		FILE *output_fp;
 		struct cookie output_cookie;

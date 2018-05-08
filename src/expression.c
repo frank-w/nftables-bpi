@@ -23,6 +23,7 @@
 #include <utils.h>
 #include <list.h>
 #include <erec.h>
+#include <json.h>
 
 struct expr *expr_alloc(const struct location *loc, const struct expr_ops *ops,
 			const struct datatype *dtype, enum byteorder byteorder,
@@ -195,6 +196,7 @@ static const struct expr_ops verdict_expr_ops = {
 	.type		= EXPR_VERDICT,
 	.name		= "verdict",
 	.print		= verdict_expr_print,
+	.json		= verdict_expr_json,
 	.cmp		= verdict_expr_cmp,
 	.clone		= verdict_expr_clone,
 	.destroy	= verdict_expr_destroy,
@@ -319,6 +321,7 @@ static const struct expr_ops constant_expr_ops = {
 	.type		= EXPR_VALUE,
 	.name		= "value",
 	.print		= constant_expr_print,
+	.json		= constant_expr_json,
 	.cmp		= constant_expr_cmp,
 	.clone		= constant_expr_clone,
 	.destroy	= constant_expr_destroy,
@@ -464,6 +467,7 @@ static const struct expr_ops prefix_expr_ops = {
 	.type		= EXPR_PREFIX,
 	.name		= "prefix",
 	.print		= prefix_expr_print,
+	.json		= prefix_expr_json,
 	.set_type	= prefix_expr_set_type,
 	.clone		= prefix_expr_clone,
 	.destroy	= prefix_expr_destroy,
@@ -517,6 +521,7 @@ static const struct expr_ops unary_expr_ops = {
 	.type		= EXPR_UNARY,
 	.name		= "unary",
 	.print		= unary_expr_print,
+	.json		= unary_expr_json,
 	.clone		= unary_expr_clone,
 	.destroy	= unary_expr_destroy,
 };
@@ -592,6 +597,7 @@ static const struct expr_ops binop_expr_ops = {
 	.type		= EXPR_BINOP,
 	.name		= "binop",
 	.print		= binop_expr_print,
+	.json		= binop_expr_json,
 	.clone		= binop_expr_clone,
 	.destroy	= binop_expr_destroy,
 };
@@ -613,6 +619,7 @@ static const struct expr_ops relational_expr_ops = {
 	.type		= EXPR_RELATIONAL,
 	.name		= "relational",
 	.print		= binop_expr_print,
+	.json		= relational_expr_json,
 	.destroy	= binop_expr_destroy,
 };
 
@@ -679,6 +686,7 @@ static const struct expr_ops range_expr_ops = {
 	.type		= EXPR_RANGE,
 	.name		= "range",
 	.print		= range_expr_print,
+	.json		= range_expr_json,
 	.clone		= range_expr_clone,
 	.destroy	= range_expr_destroy,
 	.set_type	= range_expr_set_type,
@@ -763,6 +771,7 @@ static const struct expr_ops concat_expr_ops = {
 	.type		= EXPR_CONCAT,
 	.name		= "concat",
 	.print		= concat_expr_print,
+	.json		= concat_expr_json,
 	.clone		= compound_expr_clone,
 	.destroy	= concat_expr_destroy,
 };
@@ -781,6 +790,7 @@ static const struct expr_ops list_expr_ops = {
 	.type		= EXPR_LIST,
 	.name		= "list",
 	.print		= list_expr_print,
+	.json		= list_expr_json,
 	.clone		= compound_expr_clone,
 	.destroy	= compound_expr_destroy,
 };
@@ -867,6 +877,7 @@ static const struct expr_ops set_expr_ops = {
 	.type		= EXPR_SET,
 	.name		= "set",
 	.print		= set_expr_print,
+	.json		= set_expr_json,
 	.set_type	= set_expr_set_type,
 	.clone		= compound_expr_clone,
 	.destroy	= compound_expr_destroy,
@@ -915,6 +926,7 @@ static const struct expr_ops mapping_expr_ops = {
 	.type		= EXPR_MAPPING,
 	.name		= "mapping",
 	.print		= mapping_expr_print,
+	.json		= mapping_expr_json,
 	.set_type	= mapping_expr_set_type,
 	.clone		= mapping_expr_clone,
 	.destroy	= mapping_expr_destroy,
@@ -959,6 +971,7 @@ static const struct expr_ops map_expr_ops = {
 	.type		= EXPR_MAP,
 	.name		= "map",
 	.print		= map_expr_print,
+	.json		= map_expr_json,
 	.clone		= map_expr_clone,
 	.destroy	= map_expr_destroy,
 };
@@ -1000,6 +1013,7 @@ static const struct expr_ops set_ref_expr_ops = {
 	.type		= EXPR_SET_REF,
 	.name		= "set reference",
 	.print		= set_ref_expr_print,
+	.json		= set_ref_expr_json,
 	.clone		= set_ref_expr_clone,
 	.destroy	= set_ref_expr_destroy,
 };
@@ -1055,6 +1069,7 @@ static const struct expr_ops set_elem_expr_ops = {
 	.name		= "set element",
 	.clone		= set_elem_expr_clone,
 	.print		= set_elem_expr_print,
+	.json		= set_elem_expr_json,
 	.destroy	= set_elem_expr_destroy,
 };
 

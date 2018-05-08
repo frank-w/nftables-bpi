@@ -373,6 +373,22 @@ void nft_ctx_output_set_echo(struct nft_ctx *ctx, bool val)
 	ctx->output.echo = val;
 }
 
+bool nft_ctx_output_get_json(struct nft_ctx *ctx)
+{
+#ifdef HAVE_LIBJANSSON
+	return ctx->output.json;
+#else
+	return false;
+#endif
+}
+
+void nft_ctx_output_set_json(struct nft_ctx *ctx, bool val)
+{
+#ifdef HAVE_LIBJANSSON
+	ctx->output.json = val;
+#endif
+}
+
 static const struct input_descriptor indesc_cmdline = {
 	.type	= INDESC_BUFFER,
 	.name	= "<cmdline>",

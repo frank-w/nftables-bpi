@@ -25,6 +25,7 @@
 #include <payload.h>
 #include <gmputil.h>
 #include <utils.h>
+#include <json.h>
 
 bool payload_is_known(const struct expr *expr)
 {
@@ -107,6 +108,7 @@ static const struct expr_ops payload_expr_ops = {
 	.type		= EXPR_PAYLOAD,
 	.name		= "payload",
 	.print		= payload_expr_print,
+	.json		= payload_expr_json,
 	.cmp		= payload_expr_cmp,
 	.clone		= payload_expr_clone,
 	.pctx_update	= payload_expr_pctx_update,
@@ -191,6 +193,7 @@ static const struct stmt_ops payload_stmt_ops = {
 	.type		= STMT_PAYLOAD,
 	.name		= "payload",
 	.print		= payload_stmt_print,
+	.json		= payload_stmt_json,
 };
 
 struct stmt *payload_stmt_alloc(const struct location *loc,

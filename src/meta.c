@@ -35,6 +35,7 @@
 #include <utils.h>
 #include <erec.h>
 #include <iface.h>
+#include <json.h>
 
 static struct symbol_table *realm_tbl;
 void realm_table_meta_init(void)
@@ -251,6 +252,7 @@ const struct datatype uid_type = {
 	.size		= sizeof(uid_t) * BITS_PER_BYTE,
 	.basetype	= &integer_type,
 	.print		= uid_type_print,
+	.json		= uid_type_json,
 	.parse		= uid_type_parse,
 };
 
@@ -303,6 +305,7 @@ const struct datatype gid_type = {
 	.size		= sizeof(gid_t) * BITS_PER_BYTE,
 	.basetype	= &integer_type,
 	.print		= gid_type_print,
+	.json		= gid_type_json,
 	.parse		= gid_type_parse,
 };
 
@@ -366,6 +369,7 @@ const struct datatype devgroup_type = {
 	.size		= 4 * BITS_PER_BYTE,
 	.basetype	= &integer_type,
 	.print		= devgroup_type_print,
+	.json		= devgroup_type_json,
 	.parse		= devgroup_type_parse,
 	.flags		= DTYPE_F_PREFIX,
 };
@@ -550,6 +554,7 @@ static const struct expr_ops meta_expr_ops = {
 	.type		= EXPR_META,
 	.name		= "meta",
 	.print		= meta_expr_print,
+	.json		= meta_expr_json,
 	.cmp		= meta_expr_cmp,
 	.clone		= meta_expr_clone,
 	.pctx_update	= meta_expr_pctx_update,
@@ -603,6 +608,7 @@ static const struct stmt_ops meta_stmt_ops = {
 	.type		= STMT_META,
 	.name		= "meta",
 	.print		= meta_stmt_print,
+	.json		= meta_stmt_json,
 };
 
 struct stmt *meta_stmt_alloc(const struct location *loc, enum nft_meta_keys key,

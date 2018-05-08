@@ -107,6 +107,17 @@ AC_DEFINE([HAVE_LIBXTABLES], [1], [0])
 AC_SUBST(with_libxtables)
 AM_CONDITIONAL([BUILD_XTABLES], [test "x$with_libxtables" == xyes])
 
+AC_ARG_WITH([json], [AS_HELP_STRING([--with-json],
+            [Enable JSON output support)])],
+	    [], [with_json=no])
+AS_IF([test "x$with_json" != xno], [
+AC_CHECK_LIB([jansson], [json_object], ,
+	AC_MSG_ERROR([No suitable version of libjansson found]))
+AC_DEFINE([HAVE_LIBJANSSON], [1], [Define if you have libjansson])
+])
+AC_SUBST(with_json)
+AM_CONDITIONAL([BUILD_JSON], [test "x$with_json" != xno])
+
 AC_CONFIG_FILES([					\
 		Makefile				\
 		libnftables.pc				\
@@ -132,4 +143,5 @@ nft configuration:
   use mini-gmp:			${with_mini_gmp}
   enable man page:              ${enable_man_doc}
   enable pdf documentation:	${enable_pdf_doc}
-  libxtables support:		${with_libxtables}"
+  libxtables support:		${with_libxtables}
+  json output support:          ${with_json}"

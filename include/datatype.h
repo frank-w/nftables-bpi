@@ -1,6 +1,8 @@
 #ifndef NFTABLES_DATATYPE_H
 #define NFTABLES_DATATYPE_H
 
+#include <json.h>
+
 /**
  * enum datatypes
  *
@@ -148,6 +150,8 @@ struct datatype {
 	const struct datatype		*basetype;
 	const char			*basefmt;
 	void				(*print)(const struct expr *expr,
+						 struct output_ctx *octx);
+	json_t				*(*json)(const struct expr *expr,
 						 struct output_ctx *octx);
 	struct error_record		*(*parse)(const struct expr *sym,
 						  struct expr **res);

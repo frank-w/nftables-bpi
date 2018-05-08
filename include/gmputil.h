@@ -13,6 +13,7 @@ extern int mpz_vfprintf(FILE *fp, const char *format, va_list args);
 #define gmp_vfprintf mpz_vfprintf
 #endif
 
+#include <inttypes.h>
 #include <asm/byteorder.h>
 
 enum mpz_word_order {

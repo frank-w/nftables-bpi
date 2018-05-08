@@ -21,6 +21,7 @@
 #include <utils.h>
 #include <netdb.h>
 #include <netlink.h>
+#include <json.h>
 
 #include <libnftnl/common.h>
 #include <libnftnl/ruleset.h>
@@ -1818,6 +1819,9 @@ static int do_list_set(struct netlink_ctx *ctx, struct cmd *cmd,
 static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table = NULL;
+
+	if (ctx->octx->json)
+		return do_command_list_json(ctx, cmd);
 
 	if (cmd->handle.table.name != NULL)
 		table = table_lookup(&cmd->handle, ctx->cache);

@@ -70,6 +70,7 @@ const struct expr_ops exthdr_expr_ops = {
 	.type		= EXPR_EXTHDR,
 	.name		= "exthdr",
 	.print		= exthdr_expr_print,
+	.json		= exthdr_expr_json,
 	.cmp		= exthdr_expr_cmp,
 	.clone		= exthdr_expr_clone,
 };
@@ -107,6 +108,7 @@ static const struct stmt_ops exthdr_stmt_ops = {
 	.type		= STMT_EXTHDR,
 	.name		= "exthdr",
 	.print		= exthdr_stmt_print,
+	.json		= exthdr_stmt_json,
 };
 
 struct stmt *exthdr_stmt_alloc(const struct location *loc,

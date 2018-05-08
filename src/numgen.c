@@ -55,6 +55,7 @@ static const struct expr_ops numgen_expr_ops = {
 	.type		= EXPR_NUMGEN,
 	.name		= "numgen",
 	.print		= numgen_expr_print,
+	.json		= numgen_expr_json,
 	.cmp		= numgen_expr_cmp,
 	.clone		= numgen_expr_clone,
 };

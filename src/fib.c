@@ -105,6 +105,7 @@ static const struct expr_ops fib_expr_ops = {
 	.type		= EXPR_FIB,
 	.name		= "fib",
 	.print		= fib_expr_print,
+	.json		= fib_expr_json,
 	.cmp		= fib_expr_cmp,
 	.clone		= fib_expr_clone,
 };

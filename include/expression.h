@@ -9,6 +9,7 @@
 #include <datatype.h>
 #include <utils.h>
 #include <list.h>
+#include <json.h>
 
 /**
  * enum expr_types
@@ -153,6 +154,8 @@ struct expr_ops {
 					    const struct datatype *dtype,
 					    enum byteorder byteorder);
 	void			(*print)(const struct expr *expr,
+					 struct output_ctx *octx);
+	json_t			*(*json)(const struct expr *expr,
 					 struct output_ctx *octx);
 	bool			(*cmp)(const struct expr *e1,
 				       const struct expr *e2);

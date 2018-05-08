@@ -648,23 +648,25 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
         print_error(reason, filename, lineno)
         return [-1, warning, error, unit_tests]
 
-    payload_expected = []
+    if rule[1].strip() == "ok":
+        try:
+            payload_log = open("%s.payload" % filename_path)
+            payload_expected = payload_find_expected(payload_log, rule[0])
+        except:
+            payload_expected = None
 
     for table in table_list:
-        try:
-            payload_log = open("%s.payload.%s" % (filename_path, table.family))
-        except IOError:
-            payload_log = open("%s.payload" % filename_path)
-
         if rule[1].strip() == "ok":
+            table_payload_expected = None
             try:
-                payload_expected.index(rule[0])
-            except ValueError:
-                payload_expected = payload_find_expected(payload_log, rule[0])
-
+                payload_log = open("%s.payload.%s" % (filename_path, table.family))
+                table_payload_expected = payload_find_expected(payload_log, rule[0])
+            except:
                 if not payload_expected:
                     print_error("did not find payload information for "
                                 "rule '%s'" % rule[0], payload_log.name, 1)
+            if not table_payload_expected:
+                table_payload_expected = payload_expected
 
         for table_chain in table.chains:
             chain = chain_get_by_name(table_chain)
@@ -697,7 +699,7 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                 continue
 
             # Check for matching payload
-            if state == "ok" and not payload_check(payload_expected,
+            if state == "ok" and not payload_check(table_payload_expected,
                                                    payload_log, cmd):
                 error += 1
                 gotf = open("%s.payload.got" % filename_path, 'a')

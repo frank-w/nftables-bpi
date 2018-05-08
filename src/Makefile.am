@@ -89,7 +89,7 @@ nft_SOURCES += cli.c
 endif
 
 if BUILD_JSON
-libnftables_la_SOURCES += json.c
+libnftables_la_SOURCES += json.c parser_json.c
 libnftables_la_LIBADD += ${JANSSON_LIBS}
 endif
 

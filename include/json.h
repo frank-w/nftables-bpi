@@ -1,6 +1,8 @@
 #ifndef NFTABLES_JSON_H
 #define NFTABLES_JSON_H
 
+#include <errno.h>
+
 struct chain;
 struct cmd;
 struct expr;
@@ -73,6 +75,11 @@ json_t *queue_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 json_t *verdict_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 
 int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd);
+
+int nft_parse_json_buffer(struct nft_ctx *nft, char *buf, size_t buflen,
+			  struct list_head *msgs, struct list_head *cmds);
+int nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
+			    struct list_head *msgs, struct list_head *cmds);
 
 #else /* ! HAVE_LIBJANSSON */
 
@@ -154,6 +161,19 @@ static inline json_t *symbolic_constant_json(const struct symbol_table *tbl,
 static inline int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	return -1;
+}
+
+static inline int
+nft_parse_json_buffer(struct nft_ctx *nft, char *buf, size_t buflen,
+		      struct list_head *msgs, struct list_head *cmds)
+{
+	return -EINVAL;
+}
+static inline int
+nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
+			struct list_head *msgs, struct list_head *cmds)
+{
+	return -EINVAL;
 }
 
 #endif /* HAVE_LIBJANSSON */

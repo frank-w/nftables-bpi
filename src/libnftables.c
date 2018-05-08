@@ -452,13 +452,16 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 	LIST_HEAD(cmds);
 	size_t nlbuflen;
 	char *nlbuf;
-	int rc;
+	int rc = -EINVAL;
 
 	nlbuflen = max(buflen + 1, strlen(buf) + 2);
 	nlbuf = xzalloc(nlbuflen);
 	snprintf(nlbuf, nlbuflen, "%s\n", buf);
 
-	rc = nft_parse_bison_buffer(nft, nlbuf, nlbuflen, &msgs, &cmds);
+	if (nft->output.json)
+		rc = nft_parse_json_buffer(nft, nlbuf, nlbuflen, &msgs, &cmds);
+	if (rc == -EINVAL)
+		rc = nft_parse_bison_buffer(nft, nlbuf, nlbuflen, &msgs, &cmds);
 	if (rc)
 		goto err;
 
@@ -491,7 +494,11 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (!strcmp(filename, "-"))
 		filename = "/dev/stdin";
 
-	rc = nft_parse_bison_filename(nft, filename, &msgs, &cmds);
+	rc = -EINVAL;
+	if (nft->output.json)
+		rc = nft_parse_json_filename(nft, filename, &msgs, &cmds);
+	if (rc == -EINVAL)
+		rc = nft_parse_bison_filename(nft, filename, &msgs, &cmds);
 	if (rc)
 		goto err;
 

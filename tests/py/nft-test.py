@@ -693,69 +693,73 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                 ret = 0
                 continue
 
-            if ret == 0:
-                # Check for matching payload
-                if state == "ok" and not payload_check(payload_expected,
-                                                       payload_log, cmd):
-                    error += 1
-                    gotf = open("%s.payload.got" % filename_path, 'a')
-                    payload_log.seek(0, 0)
-                    gotf.write("# %s\n" % rule[0])
-                    while True:
-                        line = payload_log.readline()
-                        if line == "":
-                            break
-                        gotf.write(line)
-                    gotf.close()
-                    print_warning("Wrote payload for rule %s" % rule[0],
-                                  gotf.name, 1)
+            if ret != 0:
+                continue
 
-                # Check output of nft
-                numeric_old = nftables.set_numeric_output("all")
-                stateless_old = nftables.set_stateless_output(True)
-                list_cmd = 'list table %s' % table
-                rc, pre_output, err = nftables.cmd(list_cmd)
-                nftables.set_numeric_output(numeric_old)
-                nftables.set_stateless_output(stateless_old)
+            # Check for matching payload
+            if state == "ok" and not payload_check(payload_expected,
+                                                   payload_log, cmd):
+                error += 1
+                gotf = open("%s.payload.got" % filename_path, 'a')
+                payload_log.seek(0, 0)
+                gotf.write("# %s\n" % rule[0])
+                while True:
+                    line = payload_log.readline()
+                    if line == "":
+                        break
+                    gotf.write(line)
+                gotf.close()
+                print_warning("Wrote payload for rule %s" % rule[0],
+                              gotf.name, 1)
 
-                output = pre_output.split(";")
-                if len(output) < 2:
-                    reason = cmd + ": Listing is broken."
-                    print_error(reason, filename, lineno)
-                    ret = -1
-                    error += 1
+            # Check output of nft
+            numeric_old = nftables.set_numeric_output("all")
+            stateless_old = nftables.set_stateless_output(True)
+            list_cmd = 'list table %s' % table
+            rc, pre_output, err = nftables.cmd(list_cmd)
+            nftables.set_numeric_output(numeric_old)
+            nftables.set_stateless_output(stateless_old)
+
+            output = pre_output.split(";")
+            if len(output) < 2:
+                reason = cmd + ": Listing is broken."
+                print_error(reason, filename, lineno)
+                ret = -1
+                error += 1
+                if not force_all_family_option:
+                    return [ret, warning, error, unit_tests]
+                continue
+
+            rule_output = output_clean(pre_output, chain)
+            if len(rule) == 3:
+                teoric_exit = rule[2]
+            else:
+                teoric_exit = rule[0]
+
+            if rule_output.rstrip() != teoric_exit.rstrip():
+                if rule[0].find("{") != -1:  # anonymous sets
+                    if set_check_element(teoric_exit.rstrip(),
+                                         rule_output.rstrip()) != 0:
+                        warning += 1
+                        print_differences_warning(filename, lineno,
+                                                  teoric_exit.rstrip(),
+                                                  rule_output, cmd)
+                        if not force_all_family_option:
+                            return [ret, warning, error, unit_tests]
+                else:
+                    if len(rule_output) <= 0:
+                        error += 1
+                        print_differences_error(filename, lineno, cmd)
+                        if not force_all_family_option:
+                            return [ret, warning, error, unit_tests]
+
+                    warning += 1
+                    print_differences_warning(filename, lineno,
+                                              teoric_exit.rstrip(),
+                                              rule_output, cmd)
+
                     if not force_all_family_option:
                         return [ret, warning, error, unit_tests]
-                else:
-                    rule_output = output_clean(pre_output, chain)
-                    if len(rule) == 3:
-                        teoric_exit = rule[2]
-                    else:
-                        teoric_exit = rule[0]
-
-                    if rule_output.rstrip() != teoric_exit.rstrip():
-                        if rule[0].find("{") != -1:  # anonymous sets
-                            if set_check_element(teoric_exit.rstrip(), rule_output.rstrip()) != 0:
-                                warning += 1
-                                print_differences_warning(filename, lineno,
-                                                          teoric_exit.rstrip(),
-                                                          rule_output, cmd)
-                                if not force_all_family_option:
-                                    return [ret, warning, error, unit_tests]
-                        else:
-                            if len(rule_output) <= 0:
-                                error += 1
-                                print_differences_error(filename, lineno, cmd)
-                                if not force_all_family_option:
-                                    return [ret, warning, error, unit_tests]
-
-                            warning += 1
-                            print_differences_warning(filename, lineno,
-                                                      teoric_exit.rstrip(),
-                                                      rule_output, cmd)
-
-                            if not force_all_family_option:
-                                return [ret, warning, error, unit_tests]
 
     return [ret, warning, error, unit_tests]
 

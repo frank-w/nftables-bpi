@@ -204,9 +204,10 @@ void netlink_parse_match(struct netlink_parse_ctx *ctx,
 	name = nftnl_expr_get_str(nle, NFTNL_EXPR_MT_NAME);
 
 	mt = xtables_find_match(name, XTF_TRY_LOAD, NULL);
-	if (!mt)
-		BUG("XT match %s not found\n", name);
-
+	if (!mt) {
+		fprintf(stderr, "XT match %s not found\n", name);
+		return;
+	}
 	mtinfo = nftnl_expr_get(nle, NFTNL_EXPR_MT_INFO, &mt_len);
 
 	m = xzalloc(sizeof(struct xt_entry_match) + mt_len);
@@ -240,9 +241,10 @@ void netlink_parse_target(struct netlink_parse_ctx *ctx,
 
 	name = nftnl_expr_get_str(nle, NFTNL_EXPR_TG_NAME);
 	tg = xtables_find_target(name, XTF_TRY_LOAD);
-	if (!tg)
-		BUG("XT target %s not found\n", name);
-
+	if (!tg) {
+		fprintf(stderr, "XT target %s not found\n", name);
+		return;
+	}
 	tginfo = nftnl_expr_get(nle, NFTNL_EXPR_TG_INFO, &tg_len);
 
 	size = XT_ALIGN(sizeof(struct xt_entry_target)) + tg_len;

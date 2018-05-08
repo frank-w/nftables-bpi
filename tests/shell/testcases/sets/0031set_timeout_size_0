@@ -1,7 +1,12 @@
 #!/bin/bash
 
 RULESET="add table x
-add set x y { type ipv4_addr; size 128; timeout 30s; }"
+add set x y { type ipv4_addr; size 128; timeout 30s; }
+add chain x test
+add rule x test set update ip saddr timeout 1d2h3m4s5ms @y
+add rule x test set update ip daddr timeout 321ms @y"
 
 set -e
 $NFT -f - <<< $RULESET
+$NFT list chain x test | grep -q 'update @y { ip saddr timeout 1d2h3m4s5ms }'
+$NFT list chain x test | grep -q 'update @y { ip daddr timeout 321ms }'

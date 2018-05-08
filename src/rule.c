@@ -379,12 +379,12 @@ static void set_print_declaration(const struct set *set,
 
 	if (set->timeout) {
 		nft_print(octx, "%s%stimeout ", opts->tab, opts->tab);
-		time_print(set->timeout / 1000, octx);
+		time_print(set->timeout, octx);
 		nft_print(octx, "%s", opts->stmt_separator);
 	}
 	if (set->gc_int) {
 		nft_print(octx, "%s%sgc-interval ", opts->tab, opts->tab);
-		time_print(set->gc_int / 1000, octx);
+		time_print(set->gc_int, octx);
 		nft_print(octx, "%s", opts->stmt_separator);
 	}
 }

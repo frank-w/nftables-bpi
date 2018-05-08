@@ -118,7 +118,7 @@ asteriskstring	({string}\*|{string}\\\*)
 comment		#.*$
 slash		\/
 
-timestring	([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?
+timestring	([0-9]+d)?([0-9]+h)?([0-9]+m)?([0-9]+s)?([0-9]+ms)?
 
 hex4		([[:xdigit:]]{1,4})
 v680		(({hex4}:){7}{hex4})

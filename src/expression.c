@@ -1020,11 +1020,11 @@ static void set_elem_expr_print(const struct expr *expr,
 	expr_print(expr->key, octx);
 	if (expr->timeout) {
 		nft_print(octx, " timeout ");
-		time_print(expr->timeout / 1000, octx);
+		time_print(expr->timeout, octx);
 	}
 	if (!octx->stateless && expr->expiration) {
 		nft_print(octx, " expires ");
-		time_print(expr->expiration / 1000, octx);
+		time_print(expr->expiration, octx);
 	}
 	if (expr->comment)
 		nft_print(octx, " comment \"%s\"", expr->comment);

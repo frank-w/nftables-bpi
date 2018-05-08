@@ -824,18 +824,21 @@ const struct datatype icmpx_code_type = {
 	.sym_tbl	= &icmpx_code_tbl,
 };
 
-void time_print(uint64_t seconds, struct output_ctx *octx)
+void time_print(uint64_t ms, struct output_ctx *octx)
 {
-	uint64_t days, hours, minutes;
+	uint64_t days, hours, minutes, seconds;
 
-	days = seconds / 86400;
-	seconds %= 86400;
+	days = ms / 86400000;
+	ms %= 86400000;
 
-	hours = seconds / 3600;
-	seconds %= 3600;
+	hours = ms / 3600000;
+	ms %= 3600000;
 
-	minutes = seconds / 60;
-	seconds %= 60;
+	minutes = ms / 60000;
+	ms %= 60000;
+
+	seconds = ms / 1000;
+	ms %= 1000;
 
 	if (days > 0)
 		nft_print(octx, "%" PRIu64 "d", days);
@@ -845,6 +848,8 @@ void time_print(uint64_t seconds, struct output_ctx *octx)
 		nft_print(octx, "%" PRIu64 "m", minutes);
 	if (seconds > 0)
 		nft_print(octx, "%" PRIu64 "s", seconds);
+	if (ms > 0)
+		nft_print(octx, "%" PRIu64 "ms", ms);
 }
 
 enum {
@@ -852,6 +857,7 @@ enum {
 	HOUR	= (1 << 1),
 	MIN 	= (1 << 2),
 	SECS	= (1 << 3),
+	MSECS	= (1 << 4),
 };
 
 static uint32_t str2int(const char *str)
@@ -869,7 +875,7 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 	int i, len;
 	unsigned int k = 0;
 	const char *c;
-	uint64_t d = 0, h = 0, m = 0, s = 0;
+	uint64_t d = 0, h = 0, m = 0, s = 0, ms = 0;
 	uint32_t mask = 0;
 
 	c = str;
@@ -895,6 +901,18 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 			mask |= HOUR;
 			break;
 		case 'm':
+			if (strcmp(c, "ms") == 0) {
+				if (mask & MSECS)
+					return error(loc,
+						     "Millisecond has been specified twice");
+				ms = str2int(c - k);
+				c++;
+				i++;
+				k = 0;
+				mask |= MSECS;
+				break;
+			}
+
 			if (mask & MIN)
 				return error(loc,
 					     "Minute has been specified twice");
@@ -924,18 +942,21 @@ struct error_record *time_parse(const struct location *loc, const char *str,
 
 	/* default to seconds if no unit was specified */
 	if (!mask)
-		s = atoi(str);
+		ms = atoi(str) * MSEC_PER_SEC;
 	else
-		s = 24*60*60*d+60*60*h+60*m+s;
+		ms = 24*60*60*MSEC_PER_SEC * d +
+			60*60*MSEC_PER_SEC * h +
+			   60*MSEC_PER_SEC * m +
+			      MSEC_PER_SEC * s + ms;
 
-	*res = s;
+	*res = ms;
 	return NULL;
 }
 
 
 static void time_type_print(const struct expr *expr, struct output_ctx *octx)
 {
-	time_print(mpz_get_uint64(expr->value) / MSEC_PER_SEC, octx);
+	time_print(mpz_get_uint64(expr->value), octx);
 }
 
 static struct error_record *time_type_parse(const struct expr *sym,
@@ -948,7 +969,6 @@ static struct error_record *time_type_parse(const struct expr *sym,
 	if (erec != NULL)
 		return erec;
 
-	s *= MSEC_PER_SEC;
 	if (s > UINT32_MAX)
 		return error(&sym->location, "value too large");
 

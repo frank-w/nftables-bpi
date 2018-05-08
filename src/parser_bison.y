@@ -1496,12 +1496,12 @@ set_block		:	/* empty */	{ $$ = $<set>-1; }
 			}
 			|	set_block	TIMEOUT		time_spec	stmt_separator
 			{
-				$1->timeout = $3 * 1000;
+				$1->timeout = $3;
 				$$ = $1;
 			}
 			|	set_block	GC_INTERVAL	time_spec	stmt_separator
 			{
-				$1->gc_int = $3 * 1000;
+				$1->gc_int = $3;
 				$$ = $1;
 			}
 			|	set_block	ELEMENTS	'='		set_block_expr
@@ -1544,7 +1544,7 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 			|	map_block	stmt_separator
 			|	map_block	TIMEOUT		time_spec	stmt_separator
 			{
-				$1->timeout = $3 * 1000;
+				$1->timeout = $3;
 				$$ = $1;
 			}
 			|	map_block	TYPE
@@ -3052,7 +3052,7 @@ set_elem_options	:	set_elem_option
 
 set_elem_option		:	TIMEOUT			time_spec
 			{
-				$<expr>0->timeout = $2 * 1000;
+				$<expr>0->timeout = $2;
 			}
 			|	comment_spec
 			{

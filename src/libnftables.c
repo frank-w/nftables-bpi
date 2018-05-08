@@ -81,27 +81,6 @@ out:
 	return ret;
 }
 
-static int nft_run(struct nft_ctx *nft, struct mnl_socket *nf_sock,
-		   void *scanner, struct parser_state *state,
-		   struct list_head *msgs)
-{
-	struct cmd *cmd;
-	int ret;
-
-	ret = nft_parse(nft, scanner, state);
-	if (ret != 0 || state->nerrs > 0) {
-		ret = -1;
-		goto err1;
-	}
-
-	list_for_each_entry(cmd, state->cmds, list)
-		nft_cmd_expand(cmd);
-
-	ret = nft_netlink(nft, state->cmds, msgs, nf_sock);
-err1:
-	return ret;
-}
-
 static void nft_init(void)
 {
 	mark_table_init();
@@ -162,6 +141,7 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 
 	nft_init();
 	ctx = xzalloc(sizeof(struct nft_ctx));
+	ctx->state = xzalloc(sizeof(struct parser_state));
 
 	nft_ctx_add_include_path(ctx, DEFAULT_INCLUDE_PATH);
 	ctx->parser_max_errors	= 10;
@@ -294,6 +274,7 @@ void nft_ctx_free(struct nft_ctx *ctx)
 	iface_cache_release();
 	cache_release(&ctx->cache);
 	nft_ctx_clear_include_paths(ctx);
+	xfree(ctx->state);
 	xfree(ctx);
 	nft_exit();
 }
@@ -397,34 +378,82 @@ static const struct input_descriptor indesc_cmdline = {
 	.name	= "<cmdline>",
 };
 
+static int nft_parse_bison_buffer(struct nft_ctx *nft, char *buf, size_t buflen,
+				  struct list_head *msgs, struct list_head *cmds)
+{
+	struct cmd *cmd;
+	void *scanner;
+	int ret;
+
+	parser_init(nft, nft->state, msgs, cmds);
+	scanner = scanner_init(nft->state);
+	scanner_push_buffer(scanner, &indesc_cmdline, buf);
+
+	ret = nft_parse(nft, scanner, nft->state);
+	if (ret != 0 || nft->state->nerrs > 0) {
+		ret = -1;
+		goto err;
+	}
+	list_for_each_entry(cmd, cmds, list)
+		nft_cmd_expand(cmd);
+
+err:
+	scanner_destroy(scanner);
+	return ret;
+}
+
+static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
+				    struct list_head *msgs, struct list_head *cmds)
+{
+	struct cmd *cmd;
+	void *scanner;
+	int ret;
+
+	parser_init(nft, nft->state, msgs, cmds);
+	scanner = scanner_init(nft->state);
+	if (scanner_read_file(scanner, filename, &internal_location) < 0) {
+		ret = -1;
+		goto err;
+	}
+
+	ret = nft_parse(nft, scanner, nft->state);
+	if (ret != 0 || nft->state->nerrs > 0) {
+		ret = -1;
+		goto err;
+	}
+	list_for_each_entry(cmd, cmds, list)
+		nft_cmd_expand(cmd);
+
+err:
+	scanner_destroy(scanner);
+	return ret;
+}
+
 int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 {
-	int rc = 0;
-	struct parser_state state;
 	struct cmd *cmd, *next;
 	LIST_HEAD(msgs);
 	LIST_HEAD(cmds);
 	size_t nlbuflen;
-	void *scanner;
 	char *nlbuf;
+	int rc;
 
 	nlbuflen = max(buflen + 1, strlen(buf) + 2);
 	nlbuf = xzalloc(nlbuflen);
 	snprintf(nlbuf, nlbuflen, "%s\n", buf);
 
-	parser_init(nft, &state, &msgs, &cmds);
-	scanner = scanner_init(&state);
-	scanner_push_buffer(scanner, &indesc_cmdline, nlbuf);
+	rc = nft_parse_bison_buffer(nft, nlbuf, nlbuflen, &msgs, &cmds);
+	if (rc)
+		goto err;
 
-	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
+	if (nft_netlink(nft, &cmds, &msgs, nft->nf_sock) != 0)
 		rc = -1;
-
+err:
 	list_for_each_entry_safe(cmd, next, &cmds, list) {
 		list_del(&cmd->list);
 		cmd_free(cmd);
 	}
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
-	scanner_destroy(scanner);
 	iface_cache_release();
 	free(nlbuf);
 
@@ -433,11 +462,9 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
 
 int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 {
-	struct parser_state state;
 	struct cmd *cmd, *next;
 	LIST_HEAD(msgs);
 	LIST_HEAD(cmds);
-	void *scanner;
 	int rc;
 
 	rc = cache_update(nft->nf_sock, &nft->cache, CMD_INVALID, &msgs,
@@ -448,14 +475,11 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (!strcmp(filename, "-"))
 		filename = "/dev/stdin";
 
-	parser_init(nft, &state, &msgs, &cmds);
-	scanner = scanner_init(&state);
-	if (scanner_read_file(scanner, filename, &internal_location) < 0) {
-		rc = -1;
+	rc = nft_parse_bison_filename(nft, filename, &msgs, &cmds);
+	if (rc)
 		goto err;
-	}
 
-	if (nft_run(nft, nft->nf_sock, scanner, &state, &msgs) != 0)
+	if (nft_netlink(nft, &cmds, &msgs, nft->nf_sock) != 0)
 		rc = -1;
 err:
 	list_for_each_entry_safe(cmd, next, &cmds, list) {
@@ -463,7 +487,6 @@ err:
 		cmd_free(cmd);
 	}
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
-	scanner_destroy(scanner);
 	iface_cache_release();
 
 	return rc;

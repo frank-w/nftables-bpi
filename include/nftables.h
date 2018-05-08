@@ -38,6 +38,7 @@ struct nft_cache {
 };
 
 struct mnl_socket;
+struct parser_state;
 
 struct nft_ctx {
 	struct mnl_socket	*nf_sock;
@@ -49,6 +50,7 @@ struct nft_ctx {
 	bool			check;
 	struct nft_cache	cache;
 	uint32_t		flags;
+	struct parser_state	*state;
 };
 
 enum nftables_exit_codes {

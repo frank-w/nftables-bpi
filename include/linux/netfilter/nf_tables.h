@@ -941,7 +941,9 @@ enum nft_ct_keys {
 	NFT_CT_AVGPKT,
 	NFT_CT_ZONE,
 	NFT_CT_EVENTMASK,
+	__NFT_CT_MAX
 };
+#define NFT_CT_MAX		(__NFT_CT_MAX - 1)
 
 /**
  * enum nft_ct_attributes - nf_tables ct expression netlink attributes

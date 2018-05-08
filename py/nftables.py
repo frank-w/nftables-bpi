@@ -68,6 +68,13 @@ class Nftables:
         self.nft_ctx_output_set_stateless = lib.nft_ctx_output_set_stateless
         self.nft_ctx_output_set_stateless.argtypes = [c_void_p, c_bool]
 
+        self.nft_ctx_output_get_json = lib.nft_ctx_output_get_json
+        self.nft_ctx_output_get_json.restype = c_bool
+        self.nft_ctx_output_get_json.argtypes = [c_void_p]
+
+        self.nft_ctx_output_set_json = lib.nft_ctx_output_set_json
+        self.nft_ctx_output_set_json.argtypes = [c_void_p, c_bool]
+
         self.nft_ctx_output_get_debug = lib.nft_ctx_output_get_debug
         self.nft_ctx_output_get_debug.restype = c_int
         self.nft_ctx_output_get_debug.argtypes = [c_void_p]
@@ -169,7 +176,7 @@ class Nftables:
         return self.nft_ctx_output_get_stateless(self.__ctx)
 
     def set_stateless_output(self, val):
-        """Enable or Disable stateless output.
+        """Enable or disable stateless output.
 
         Accepts a boolean turning stateless output either on or off.
 
@@ -177,6 +184,24 @@ class Nftables:
         """
         old = self.get_stateless_output()
         self.nft_ctx_output_set_stateless(self.__ctx, val)
+        return old
+
+    def get_json_output(self):
+        """Get the current state of JSON output.
+
+        Returns a boolean indicating whether JSON output is active or not.
+        """
+        return self.nft_ctx_output_get_json(self.__ctx)
+
+    def set_json_output(self, val):
+        """Enable or disable JSON output.
+
+        Accepts a boolean turning JSON output either on or off.
+
+        Returns the previous value.
+        """
+        old = self.get_json_output()
+        self.nft_ctx_output_set_json(self.__ctx, val)
         return old
 
     def get_debug(self):
@@ -246,4 +271,22 @@ class Nftables:
         output = self.nft_ctx_get_output_buffer(self.__ctx)
         error = self.nft_ctx_get_error_buffer(self.__ctx)
 
+        return (rc, output, error)
+
+    def json_cmd(self, json_root):
+        """Run an nftables command in JSON syntax via libnftables.
+
+        Accepts a hash object as input.
+
+        Returns a tuple (rc, output, error):
+        rc     -- reutrn code as returned by nft_run_cmd_from_buffer() function
+        output -- a hash object containing library standard output
+        error  -- a string containing output written to stderr
+        """
+        json_out_old = self.set_json_output(True)
+        rc, output, error = self.cmd(json.dumps(json_root))
+        if not json_out_old:
+            self.set_json_output(json_out_old)
+        if len(output):
+            output = json.loads(output)
         return (rc, output, error)

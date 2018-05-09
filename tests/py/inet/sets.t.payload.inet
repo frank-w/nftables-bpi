@@ -1,0 +1,17 @@
+# ip saddr @set1 drop
+inet test-inet input 
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x00000002 ]
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ lookup reg 1 set set1 ]
+  [ immediate reg 0 drop ]
+
+# ip6 daddr != @set2 accept
+inet test-inet input 
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x0000000a ]
+  [ payload load 16b @ network header + 24 => reg 1 ]
+  [ lookup reg 1 set set2 0x1 ]
+  [ immediate reg 0 accept ]
+
+

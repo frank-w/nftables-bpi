@@ -77,11 +77,12 @@ class Table:
 class Set:
     """Class that represents a set"""
 
-    def __init__(self, family, table, name, type, flags):
+    def __init__(self, family, table, name, type, timeout, flags):
         self.family = family
         self.table = table
         self.name = name
         self.type = type
+        self.timeout = timeout
         self.flags = flags
 
     def __eq__(self, other):
@@ -321,7 +322,7 @@ def set_add(s, test_result, filename, lineno):
         if flags != "":
             flags = "flags %s; " % flags
 
-        cmd = "add set %s %s { type %s; %s}" % (table, s.name, s.type, flags)
+        cmd = "add set %s %s { type %s;%s %s}" % (table, s.name, s.type, s.timeout, flags)
         ret = execute_cmd(cmd, filename, lineno)
 
         if (ret == 0 and test_result == "fail") or \
@@ -850,22 +851,28 @@ def chain_process(chain_line, lineno):
 
 def set_process(set_line, filename, lineno):
     test_result = set_line[1]
+    timeout=""
 
     tokens = set_line[0].split(" ")
     set_name = tokens[0]
     set_type = tokens[2]
+    set_flags = ""
 
     i = 3
     while len(tokens) > i and tokens[i] == ".":
         set_type += " . " + tokens[i+1]
         i += 2
 
+    if len(tokens) == i+2 and tokens[i] == "timeout":
+        timeout = "timeout " + tokens[i+1] + ";"
+        i += 2
+
     if len(tokens) == i+2 and tokens[i] == "flags":
         set_flags = tokens[i+1]
-    else:
-        set_flags = ""
+    elif len(tokens) != i:
+        print_error(set_name + " bad flag: " + tokens[i], filename, lineno)
 
-    s = Set("", "", set_name, set_type, set_flags)
+    s = Set("", "", set_name, set_type, timeout, set_flags)
 
     ret = set_add(s, test_result, filename, lineno)
     if ret == 0:
@@ -876,9 +883,11 @@ def set_process(set_line, filename, lineno):
 
 def set_element_process(element_line, filename, lineno):
     rule_state = element_line[1]
-    set_name = element_line[0].split(" ")[0]
-    set_element = element_line[0].split(" ")
-    set_element.remove(set_name)
+    element_line = element_line[0]
+    space = element_line.find(" ")
+    set_name = element_line[:space]
+    set_element = element_line[space:].split(",")
+
     return set_add_elements(set_element, set_name, rule_state, filename, lineno)
 
 

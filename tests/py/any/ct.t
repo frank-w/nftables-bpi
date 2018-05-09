@@ -63,8 +63,11 @@ ct zone set {123, 127};fail
 ct label set {123, 127};fail
 ct event set {new, related, destroy, label};fail
 
-ct expiration 30;ok;ct expiration 30s
-ct expiration 22;ok;ct expiration 22s
+ct expiration 30s;ok
+ct expiration 30000ms;ok;ct expiration 30s
+ct expiration 1m-1h;ok
+ct expiration 1d-1h;fail
+ct expiration > 4d23h59m59s;ok
 ct expiration != 233;ok;ct expiration != 3m53s
 ct expiration 33-45;ok;ct expiration 33s-45s
 ct expiration != 33-45;ok;ct expiration != 33s-45s

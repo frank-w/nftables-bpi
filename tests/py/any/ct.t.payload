@@ -226,15 +226,28 @@ ip test-ip4 output
   [ immediate reg 1 0x00000011 ]
   [ ct set mark with reg 1 ]
 
-# ct expiration 30
+# ct expiration 30s
 ip test-ip4 output
   [ ct load expiration => reg 1 ]
   [ cmp eq reg 1 0x00007530 ]
 
-# ct expiration 22
+# ct expiration 30000ms
 ip test-ip4 output
   [ ct load expiration => reg 1 ]
-  [ cmp eq reg 1 0x000055f0 ]
+  [ cmp eq reg 1 0x00007530 ]
+
+# ct expiration 1m-1h
+ip test-ip4 output
+  [ ct load expiration => reg 1 ]
+  [ byteorder reg 1 = hton(reg 1, 4, 4) ]
+  [ cmp gte reg 1 0x60ea0000 ]
+  [ cmp lte reg 1 0x80ee3600 ]
+
+# ct expiration > 4d23h59m59s
+ip test-ip4 output
+  [ ct load expiration => reg 1 ]
+  [ byteorder reg 1 = hton(reg 1, 4, 4) ]
+  [ cmp gt reg 1 0x18c8bf19 ]
 
 # ct expiration != 233
 ip test-ip4 output

@@ -875,13 +875,19 @@ add table inet mytable
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>
 				<replaceable>chain</replaceable>
-				<arg choice="opt">
-					<group choice="req">
-						<arg>handle</arg>
-						<arg>position</arg>
-					</group>
-					<replaceable>handle</replaceable>
-				</arg>
+				<group choice="opt">
+					<arg>
+						<group choice="req">
+							<arg>handle</arg>
+							<arg>position</arg>
+						</group>
+						<replaceable>handle</replaceable>
+					</arg>
+					<arg>
+						<literal>index</literal>
+						<replaceable>index</replaceable>
+					</arg>
+				</group>
 				<replaceable>statement</replaceable>...
 			</cmdsynopsis>
 			<cmdsynopsis>
@@ -908,6 +914,17 @@ add table inet mytable
 			is used.
 			Rules are constructed from two kinds of components according to a set
 			of grammatical rules: expressions and statements.
+		</para>
+		<para>
+			The <literal>add</literal> and <literal>insert</literal> commands support an optional
+			location specifier, which is either a <replaceable>handle</replaceable> of an existing
+			rule or an absolute <replaceable>index</replaceable> (starting at zero).  Internally,
+			rule locations are always identified by <replaceable>handle</replaceable> and the
+			translation from <replaceable>index</replaceable> happens in userspace. This has two
+			potential implications in case a concurrent ruleset change happens after the translation
+			was done: The effective rule index might change if a rule was inserted or deleted before
+			the referred one.  If the referred rule was deleted, the command is rejected by the
+			kernel just as if an invalid <replaceable>handle</replaceable> was given.
 		</para>
 
 		<variablelist>

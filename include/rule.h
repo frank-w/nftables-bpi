@@ -69,6 +69,7 @@ struct handle {
 	const char		*flowtable;
 	struct handle_spec	handle;
 	struct position_spec	position;
+	struct position_spec	index;
 	uint32_t		set_id;
 };
 

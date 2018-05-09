@@ -285,6 +285,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "monitor"		{ return MONITOR; }
 
 "position"		{ return POSITION; }
+"index"			{ return INDEX; }
 "comment"		{ return COMMENT; }
 
 "constant"		{ return CONSTANT; }

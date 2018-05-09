@@ -2851,6 +2851,47 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 	return 0;
 }
 
+/* Convert rule's handle.index into handle.position. */
+static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
+{
+	struct table *table;
+	struct chain *chain;
+	uint64_t index = 0;
+	struct rule *r;
+	int ret;
+
+	/* update cache with CMD_LIST so that rules are fetched, too */
+	ret = cache_update(ctx->nf_sock, ctx->cache, CMD_LIST,
+			ctx->msgs, ctx->debug_mask, ctx->octx);
+	if (ret < 0)
+		return ret;
+
+	table = table_lookup(&rule->handle, ctx->cache);
+	if (!table)
+		return cmd_error(ctx, &rule->handle.table.location,
+				"Could not process rule: %s",
+				strerror(ENOENT));
+
+	chain = chain_lookup(table, &rule->handle);
+	if (!chain)
+		return cmd_error(ctx, &rule->handle.chain.location,
+				"Could not process rule: %s",
+				strerror(ENOENT));
+
+	list_for_each_entry(r, &chain->rules, list) {
+		if (++index < rule->handle.index.id)
+			continue;
+		rule->handle.position.id = r->handle.handle.id;
+		rule->handle.position.location = rule->handle.index.location;
+		break;
+	}
+	if (!rule->handle.position.id)
+		return cmd_error(ctx, &rule->handle.index.location,
+				"Could not process rule: %s",
+				strerror(EINVAL));
+	return 0;
+}
+
 static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule)
 {
 	struct stmt *stmt, *tstmt = NULL;
@@ -2878,6 +2919,10 @@ static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule)
 		erec_queue(erec, ctx->msgs);
 		return -1;
 	}
+
+	if (rule->handle.index.id &&
+	    rule_translate_index(ctx, rule))
+		return -1;
 
 	return 0;
 }

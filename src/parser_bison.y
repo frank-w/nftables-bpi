@@ -485,6 +485,7 @@ int nft_lex(void *, void *, void *);
 %token SEED			"seed"
 
 %token POSITION			"position"
+%token INDEX			"index"
 %token COMMENT			"comment"
 
 %token XML			"xml"
@@ -512,8 +513,8 @@ int nft_lex(void *, void *, void *);
 %type <cmd>			base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd get_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 %destructor { cmd_free($$); }	base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd get_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 
-%type <handle>			table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
-%destructor { handle_free(&$$); } table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec
+%type <handle>			table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec index_spec
+%destructor { handle_free(&$$); } table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec index_spec
 %type <handle>			set_spec setid_spec set_identifier flowtable_identifier obj_spec objid_spec obj_identifier
 %destructor { handle_free(&$$); } set_spec setid_spec set_identifier obj_spec objid_spec obj_identifier
 %type <val>			family_spec family_spec_explicit chain_policy prio_spec
@@ -1961,6 +1962,14 @@ position_spec		:	POSITION	NUM
 			}
 			;
 
+index_spec		:	INDEX		NUM
+			{
+				memset(&$$, 0, sizeof($$));
+				$$.index.location	= @$;
+				$$.index.id		= $2 + 1;
+			}
+			;
+
 rule_position		:	chain_spec
 			{
 				$$ = $1;
@@ -1975,6 +1984,11 @@ rule_position		:	chain_spec
 				$2.position.location = $2.handle.location;
 				$2.position.id = $2.handle.id;
 				$2.handle.id = 0;
+				handle_merge(&$1, &$2);
+				$$ = $1;
+			}
+			|	chain_spec	index_spec
+			{
 				handle_merge(&$1, &$2);
 				$$ = $1;
 			}

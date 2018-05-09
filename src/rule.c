@@ -60,6 +60,8 @@ void handle_merge(struct handle *dst, const struct handle *src)
 		dst->handle = src->handle;
 	if (dst->position.id == 0)
 		dst->position = src->position;
+	if (dst->index.id == 0)
+		dst->index = src->index;
 }
 
 static int cache_init_tables(struct netlink_ctx *ctx, struct handle *h,

@@ -1,7 +1,0 @@
-table ip t {
-	chain c {
-		accept
-		drop
-		accept
-	}
-}

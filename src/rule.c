@@ -40,12 +40,18 @@ void handle_merge(struct handle *dst, const struct handle *src)
 {
 	if (dst->family == 0)
 		dst->family = src->family;
-	if (dst->table.name == NULL && src->table.name != NULL)
+	if (dst->table.name == NULL && src->table.name != NULL) {
 		dst->table.name = xstrdup(src->table.name);
-	if (dst->chain.name == NULL && src->chain.name != NULL)
+		dst->table.location = src->table.location;
+	}
+	if (dst->chain.name == NULL && src->chain.name != NULL) {
 		dst->chain.name = xstrdup(src->chain.name);
-	if (dst->set.name == NULL && src->set.name != NULL)
+		dst->chain.location = src->chain.location;
+	}
+	if (dst->set.name == NULL && src->set.name != NULL) {
 		dst->set.name = xstrdup(src->set.name);
+		dst->set.location = src->set.location;
+	}
 	if (dst->flowtable == NULL && src->flowtable != NULL)
 		dst->flowtable = xstrdup(src->flowtable);
 	if (dst->obj.name == NULL && src->obj.name != NULL)

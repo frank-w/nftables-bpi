@@ -875,7 +875,13 @@ add table inet mytable
 				<arg choice="opt"><replaceable>family</replaceable></arg>
 				<replaceable>table</replaceable>
 				<replaceable>chain</replaceable>
-				<arg choice="opt">position <replaceable>handle</replaceable></arg>
+				<arg choice="opt">
+					<group choice="req">
+						<arg>handle</arg>
+						<arg>position</arg>
+					</group>
+					<replaceable>handle</replaceable>
+				</arg>
 				<replaceable>statement</replaceable>...
 			</cmdsynopsis>
 			<cmdsynopsis>
@@ -910,8 +916,10 @@ add table inet mytable
 				<listitem>
 					<para>
 						Add a new rule described by the list of statements. The rule is appended to the
-						given chain unless a position is specified, in which case the rule is appended to
-						the rule given by the handle.
+						given chain unless a <literal>handle</literal> is specified, in which case the
+						rule is appended to the rule given by the <replaceable>handle</replaceable>.
+						The alternative name <literal>position</literal> is deprecated and should not be
+						used anymore.
 					</para>
 				</listitem>
 			</varlistentry>
@@ -920,7 +928,8 @@ add table inet mytable
 				<listitem>
 					<para>
 						Similar to the <command>add</command> command, but the rule is prepended to the
-						beginning of the chain or before the rule with the given handle.
+						beginning of the chain or before the rule with the given
+						<replaceable>handle</replaceable>.
 					</para>
 				</listitem>
 			</varlistentry>

@@ -1970,6 +1970,14 @@ rule_position		:	chain_spec
 				handle_merge(&$1, &$2);
 				$$ = $1;
 			}
+			|	chain_spec	handle_spec
+			{
+				$2.position.location = $2.handle.location;
+				$2.position.id = $2.handle.id;
+				$2.handle.id = 0;
+				handle_merge(&$1, &$2);
+				$$ = $1;
+			}
 			;
 
 ruleid_spec		:	chain_spec	handle_spec

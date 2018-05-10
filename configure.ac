@@ -1,4 +1,4 @@
-AC_INIT([nftables], [0.8.4], [netfilter-devel@vger.kernel.org])
+AC_INIT([nftables], [0.8.5], [netfilter-devel@vger.kernel.org])
 AC_DEFINE([RELEASE_NAME], ["Joe Btfsplk"], [Release name])
 
 AC_CONFIG_AUX_DIR([build-aux])

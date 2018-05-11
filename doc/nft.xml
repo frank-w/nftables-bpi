@@ -918,7 +918,7 @@ add table inet mytable
 		<para>
 			The <literal>add</literal> and <literal>insert</literal> commands support an optional
 			location specifier, which is either a <replaceable>handle</replaceable> of an existing
-			rule or an absolute <replaceable>index</replaceable> (starting at zero).  Internally,
+			rule or an <replaceable>index</replaceable> (starting at zero).  Internally,
 			rule locations are always identified by <replaceable>handle</replaceable> and the
 			translation from <replaceable>index</replaceable> happens in userspace. This has two
 			potential implications in case a concurrent ruleset change happens after the translation

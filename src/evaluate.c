@@ -2888,7 +2888,7 @@ static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
 	if (!rule->handle.position.id)
 		return cmd_error(ctx, &rule->handle.index.location,
 				"Could not process rule: %s",
-				strerror(EINVAL));
+				strerror(ENOENT));
 	return 0;
 }
 

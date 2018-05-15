@@ -4873,6 +4873,10 @@ ip6 filter output log flags all
 				The common default reject value is
 				<command>port-unreachable</command>.
 			</para>
+			<para>
+				Note that in bridge family, reject statement is only allowed in base chains which
+				hook into <literal>input</literal> or <literal>prerouting</literal>.
+			</para>
 		</refsect2>
 		<refsect2>
 			<title>Counter statement</title>

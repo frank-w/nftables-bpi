@@ -52,6 +52,7 @@ struct nft_ctx {
 	struct nft_cache	cache;
 	uint32_t		flags;
 	struct parser_state	*state;
+	void			*scanner;
 };
 
 enum nftables_exit_codes {

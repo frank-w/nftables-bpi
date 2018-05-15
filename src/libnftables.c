@@ -398,24 +398,20 @@ static int nft_parse_bison_buffer(struct nft_ctx *nft, char *buf, size_t buflen,
 				  struct list_head *msgs, struct list_head *cmds)
 {
 	struct cmd *cmd;
-	void *scanner;
 	int ret;
 
 	parser_init(nft, nft->state, msgs, cmds);
-	scanner = scanner_init(nft->state);
-	scanner_push_buffer(scanner, &indesc_cmdline, buf);
+	nft->scanner = scanner_init(nft->state);
+	scanner_push_buffer(nft->scanner, &indesc_cmdline, buf);
 
-	ret = nft_parse(nft, scanner, nft->state);
-	if (ret != 0 || nft->state->nerrs > 0) {
-		ret = -1;
-		goto err;
-	}
+	ret = nft_parse(nft, nft->scanner, nft->state);
+	if (ret != 0 || nft->state->nerrs > 0)
+		return -1;
+
 	list_for_each_entry(cmd, cmds, list)
 		nft_cmd_expand(cmd);
 
-err:
-	scanner_destroy(scanner);
-	return ret;
+	return 0;
 }
 
 static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
@@ -427,22 +423,17 @@ static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 
 	parser_init(nft, nft->state, msgs, cmds);
 	scanner = scanner_init(nft->state);
-	if (scanner_read_file(scanner, filename, &internal_location) < 0) {
-		ret = -1;
-		goto err;
-	}
+	if (scanner_read_file(scanner, filename, &internal_location) < 0)
+		return -1;
 
 	ret = nft_parse(nft, scanner, nft->state);
-	if (ret != 0 || nft->state->nerrs > 0) {
-		ret = -1;
-		goto err;
-	}
+	if (ret != 0 || nft->state->nerrs > 0)
+		return -1;
+
 	list_for_each_entry(cmd, cmds, list)
 		nft_cmd_expand(cmd);
 
-err:
-	scanner_destroy(scanner);
-	return ret;
+	return 0;
 }
 
 int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
@@ -474,6 +465,10 @@ err:
 	}
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	iface_cache_release();
+	if (nft->scanner) {
+		scanner_destroy(nft->scanner);
+		nft->scanner = NULL;
+	}
 	free(nlbuf);
 
 	return rc;
@@ -511,6 +506,10 @@ err:
 	}
 	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	iface_cache_release();
+	if (nft->scanner) {
+		scanner_destroy(nft->scanner);
+		nft->scanner = NULL;
+	}
 
 	return rc;
 }

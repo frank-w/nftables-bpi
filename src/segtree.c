@@ -829,6 +829,9 @@ void interval_map_decompose(struct expr *set)
 
 			tmp = range_expr_alloc(&low->location, expr_value(low), tmp);
 			tmp = set_elem_expr_alloc(&low->location, tmp);
+			if (low->comment)
+				tmp->comment = xstrdup(low->comment);
+
 			if (low->ops->type == EXPR_MAPPING)
 				tmp = mapping_expr_alloc(&tmp->location, tmp, low->right);
 
@@ -843,6 +846,9 @@ void interval_map_decompose(struct expr *set)
 			prefix->len = expr_value(i)->len;
 
 			prefix = set_elem_expr_alloc(&low->location, prefix);
+			if (low->comment)
+				prefix->comment = xstrdup(low->comment);
+
 			if (low->ops->type == EXPR_MAPPING)
 				prefix = mapping_expr_alloc(&low->location, prefix,
 							    low->right);

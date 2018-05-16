@@ -542,6 +542,8 @@ static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 	if (ei->expr != NULL) {
 		if (ei->expr->comment)
 			expr->comment = xstrdup(ei->expr->comment);
+		if (ei->expr->timeout)
+			expr->timeout = ei->expr->timeout;
 		if (ei->expr->ops->type == EXPR_MAPPING)
 			expr = mapping_expr_alloc(&ei->expr->location, expr,
 						  expr_get(ei->expr->right));
@@ -831,6 +833,10 @@ void interval_map_decompose(struct expr *set)
 			tmp = set_elem_expr_alloc(&low->location, tmp);
 			if (low->comment)
 				tmp->comment = xstrdup(low->comment);
+			if (low->timeout)
+				tmp->timeout = low->timeout;
+			if (low->expiration)
+				tmp->expiration = low->expiration;
 
 			if (low->ops->type == EXPR_MAPPING)
 				tmp = mapping_expr_alloc(&tmp->location, tmp, low->right);
@@ -848,6 +854,10 @@ void interval_map_decompose(struct expr *set)
 			prefix = set_elem_expr_alloc(&low->location, prefix);
 			if (low->comment)
 				prefix->comment = xstrdup(low->comment);
+			if (low->timeout)
+				prefix->timeout = low->timeout;
+			if (low->expiration)
+				prefix->expiration = low->expiration;
 
 			if (low->ops->type == EXPR_MAPPING)
 				prefix = mapping_expr_alloc(&low->location, prefix,

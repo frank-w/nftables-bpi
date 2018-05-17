@@ -132,6 +132,8 @@ E) Meaning of messages:
 * A warning message means the rule input and output of nft mismatches.
 * An error message means the nft-tool shows an error when we add it or
   the listing is broken after the rule is added.
+* An info message means something that is not necessarily related to any test
+  case and does not indicate faulty behaviour.
 
 F) Acknowledgements
 

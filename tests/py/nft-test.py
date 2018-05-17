@@ -124,6 +124,8 @@ def print_error(reason, filename=None, lineno=None):
 def print_warning(reason, filename=None, lineno=None):
     print_msg(reason, "WARNING:", filename, lineno, Colors.YELLOW)
 
+def print_info(reason, filename=None, lineno=None):
+    print_msg(reason, "INFO:", filename, lineno, Colors.GREEN)
 
 def color_differences(rule, other, color):
     rlen = len(rule)
@@ -1350,8 +1352,9 @@ def main():
     global log_file
     try:
         log_file = open(LOGFILE, 'w')
+        print_info("Log will be available at %s" % LOGFILE)
     except IOError:
-        print "Cannot open log file %s" % LOGFILE
+        print_error("Cannot open log file %s" % LOGFILE)
         return
 
     file_list = []

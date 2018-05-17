@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 #
 # (C) 2014 by Ana Rey Botello <anarey@gmail.com>
 #

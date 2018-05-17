@@ -104,7 +104,30 @@ Line 8 adds two elements into the 'set1' set: "192.168.3.8" and
 
 Line 9 uses the "#" symbol that means that this line is commented out.
 
-D) The test folders
+D) What is a payload file?
+
+A payload file contains info about the netlink message exchanged to achieve the
+transaction.
+
+The output can be generated in two ways. Let's see an example via socket
+matching.
+
+   # generate an empty payload file
+   $ touch inet/socket.t.payload
+
+   $ ./nft-test.py inet/socket.t # this will generate inet/socket.t.payload.got
+
+   $ mv inet/socket.t.payload.got inet/socket.t.payload
+
+The other way is using nft --debug=netlink. This has a drawback over the former
+option, as rules has to be run one by one and also a comment has to be added
+before every rule in the payload file.
+
+   $  nft --debug=netlink add rule ip sockip4 sockchain socket exists
+   ip sockip4 sockchain
+     [ match name socket rev 3 ]
+
+E) The test folders
 
 The test files are divided in several directories: ip, ip6, inet, arp,
 bridge and any.
@@ -127,7 +150,7 @@ bridge and any.
  * "any" folder: Here are the test files are executed in ip, ip6, inet,
    arp and bridge tables.
 
-E) Meaning of messages:
+F) Meaning of messages:
 
 * A warning message means the rule input and output of nft mismatches.
 * An error message means the nft-tool shows an error when we add it or
@@ -135,7 +158,7 @@ E) Meaning of messages:
 * An info message means something that is not necessarily related to any test
   case and does not indicate faulty behaviour.
 
-F) Acknowledgements
+G) Acknowledgements
 
 Thanks to the Outreach Program for Women (OPW) for sponsoring this test
 infrastructure and my mentor Pablo Neira.

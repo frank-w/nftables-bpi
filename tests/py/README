@@ -77,7 +77,7 @@ Here, an example of a test file:
    ?set1 192.168.3.8 192.168.3.9;ok            # line 8
    # This is a commented-line.                 # line 9
 
-Line 1 defines a table. The name of the table is 'test-ip' and the
+Line 1 defines a table. The name of the table is 'test-ipv4' and the
 family is ip. Lines 2 and 3 defines more tables for different families
 so the rules in this test file are also tested there.
 
@@ -97,7 +97,7 @@ Line 6 is a marked line. This means that this rule is tested if
 '-e' is passed as argument to nft-test.py.
 
 Line 7 adds a new set. The name of this set is "set1" and the type
-of this set is "ipv4_add".
+of this set is "ipv4_addr".
 
 Line 8 adds two elements into the 'set1' set: "192.168.3.8" and
 "192.168.3.9". A whitespace separates the elements of the set.

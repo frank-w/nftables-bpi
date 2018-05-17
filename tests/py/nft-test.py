@@ -161,15 +161,13 @@ def color_differences(rule, other, color):
 def print_differences_warning(filename, lineno, rule1, rule2, cmd):
     colored_rule1 = color_differences(rule1, rule2, Colors.YELLOW)
     colored_rule2 = color_differences(rule2, rule1, Colors.YELLOW)
-    reason = "'" + colored_rule1 + "' mismatches '" + colored_rule2 + "'"
-    print filename + ": " + Colors.YELLOW + "WARNING: " + Colors.ENDC + \
-          "line: " + str(lineno + 1) + ": '" + cmd + "': " + reason
+    reason = "'%s': '%s' mismatches '%s'" % (cmd, colored_rule1, colored_rule2)
+    print_warning(reason, filename, lineno)
 
 
 def print_differences_error(filename, lineno, cmd):
-    reason = "Listing is broken."
-    print filename + ": " + Colors.RED + "ERROR: " + Colors.ENDC + "line: " + \
-          str(lineno + 1) + ": '" + cmd + "': " + reason
+    reason = "'%s': Listing is broken." % cmd
+    print_error(reason, filename, lineno)
 
 
 def table_exist(table, filename, lineno):

@@ -64,11 +64,11 @@ A test file contains a set of rules that are added in the system.
 
 Here, an example of a test file:
 
-   *ip;test-ipv4                               # line 1
-   *ip6;test-ipv6                              # line 2
-   *inet;test-inet                             # line 3
+   :input;type filter hook input priority 0    # line 1
 
-   :input;type filter hook input priority 0    # line 4
+   *ip;test-ipv4;input                         # line 2
+   *ip6;test-ipv6;input                        # line 3
+   *inet;test-inet;input                       # line 4
 
    ah hdrlength != 11-23;ok;ah hdrlength < 11 ah hdrlength > 23   # line 5
    - tcp dport != {22-25}                                         # line 6
@@ -77,12 +77,12 @@ Here, an example of a test file:
    ?set1 192.168.3.8 192.168.3.9;ok            # line 8
    # This is a commented-line.                 # line 9
 
-Line 1 defines a table. The name of the table is 'test-ipv4' and the
-family is ip. Lines 2 and 3 defines more tables for different families
-so the rules in this test file are also tested there.
+Line 1 defines a chain. The name of this chain is "input". The type is "filter",
+the hook is "input" and the priority is 0.
 
-Line 4 defines the chain. The name of this chain is "input". The type is
-"filter", the hook is "input" and the priority is 0.
+Line 2 defines a table. The name of the table is 'test-ipv4', the family is ip
+and the chain to be added to it is 'input'. Lines 3 and 4 defines more tables for
+different families so the rules in this test file are also tested there.
 
 Line 5 defines the rule, the ";" character is used as separator of several
 parts:

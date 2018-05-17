@@ -104,23 +104,25 @@ class Obj:
         return self.__dict__ == other.__dict__
 
 
-def print_msg(reason, filename=None, lineno=None, color=None, errstr=None):
+def print_msg(reason, errstr, filename=None, lineno=None, color=None):
     '''
     Prints a message with nice colors, indicating file and line number.
     '''
     if filename and lineno:
-        print filename + ": " + color + "ERROR:" + Colors.ENDC + \
-              " line %d: %s" % (lineno + 1, reason)
+        sys.stderr.write(filename + ": " + color + errstr + Colors.ENDC + \
+              " line %d: %s" % (lineno + 1, reason))
     else:
-        print color + "ERROR:" + Colors.ENDC + " %s" % reason
+        sys.stderr.write(color + errstr + Colors.ENDC + " %s" % reason)
+    sys.stderr.write("\n")
+    sys.stderr.flush() # So that the message stay in the right place.
 
 
 def print_error(reason, filename=None, lineno=None):
-    print_msg(reason, filename, lineno, Colors.RED, "ERROR:")
+    print_msg(reason, "ERROR:", filename, lineno, Colors.RED)
 
 
 def print_warning(reason, filename=None, lineno=None):
-    print_msg(reason, filename, lineno, Colors.YELLOW, "WARNING:")
+    print_msg(reason, "WARNING:", filename, lineno, Colors.YELLOW)
 
 
 def color_differences(rule, other, color):

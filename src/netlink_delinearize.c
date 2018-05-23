@@ -1399,7 +1399,7 @@ static int netlink_parse_expr(const struct nftnl_expr *nle,
 	}
 
 	netlink_error(ctx, &loc, "unknown expression type '%s'", type);
-	return -1;
+	return 0;
 }
 
 static int netlink_parse_rule_expr(struct nftnl_expr *nle, void *arg)

@@ -540,13 +540,19 @@ static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 	expr = set_elem_expr_alloc(&internal_location, expr);
 
 	if (ei->expr != NULL) {
-		if (ei->expr->comment)
-			expr->comment = xstrdup(ei->expr->comment);
-		if (ei->expr->timeout)
-			expr->timeout = ei->expr->timeout;
-		if (ei->expr->ops->type == EXPR_MAPPING)
+		if (ei->expr->ops->type == EXPR_MAPPING) {
+			if (ei->expr->left->comment)
+				expr->comment = xstrdup(ei->expr->left->comment);
+			if (ei->expr->left->timeout)
+				expr->timeout = ei->expr->left->timeout;
 			expr = mapping_expr_alloc(&ei->expr->location, expr,
 						  expr_get(ei->expr->right));
+		} else {
+			if (ei->expr->comment)
+				expr->comment = xstrdup(ei->expr->comment);
+			if (ei->expr->timeout)
+				expr->timeout = ei->expr->timeout;
+		}
 	}
 
 	if (ei->flags & EI_F_INTERVAL_END)
@@ -831,15 +837,25 @@ void interval_map_decompose(struct expr *set)
 
 			tmp = range_expr_alloc(&low->location, expr_value(low), tmp);
 			tmp = set_elem_expr_alloc(&low->location, tmp);
-			if (low->comment)
-				tmp->comment = xstrdup(low->comment);
-			if (low->timeout)
-				tmp->timeout = low->timeout;
-			if (low->expiration)
-				tmp->expiration = low->expiration;
 
-			if (low->ops->type == EXPR_MAPPING)
-				tmp = mapping_expr_alloc(&tmp->location, tmp, low->right);
+			if (low->ops->type == EXPR_MAPPING) {
+				if (low->left->comment)
+					tmp->comment = xstrdup(low->left->comment);
+				if (low->left->timeout)
+					tmp->timeout = low->left->timeout;
+				if (low->left->expiration)
+					tmp->expiration = low->left->expiration;
+
+				tmp = mapping_expr_alloc(&tmp->location, tmp,
+							 low->right);
+			} else {
+				if (low->comment)
+					tmp->comment = xstrdup(low->comment);
+				if (low->timeout)
+					tmp->timeout = low->timeout;
+				if (low->expiration)
+					tmp->expiration = low->expiration;
+			}
 
 			compound_expr_add(set, tmp);
 		} else {
@@ -852,16 +868,25 @@ void interval_map_decompose(struct expr *set)
 			prefix->len = expr_value(i)->len;
 
 			prefix = set_elem_expr_alloc(&low->location, prefix);
-			if (low->comment)
-				prefix->comment = xstrdup(low->comment);
-			if (low->timeout)
-				prefix->timeout = low->timeout;
-			if (low->expiration)
-				prefix->expiration = low->expiration;
 
-			if (low->ops->type == EXPR_MAPPING)
+			if (low->ops->type == EXPR_MAPPING) {
+				if (low->left->comment)
+					prefix->comment = xstrdup(low->left->comment);
+				if (low->left->timeout)
+					prefix->timeout = low->left->timeout;
+				if (low->left->expiration)
+					prefix->expiration = low->left->expiration;
+
 				prefix = mapping_expr_alloc(&low->location, prefix,
 							    low->right);
+			} else {
+				if (low->comment)
+					prefix->comment = xstrdup(low->comment);
+				if (low->timeout)
+					prefix->timeout = low->timeout;
+				if (low->left->expiration)
+					prefix->expiration = low->expiration;
+			}
 
 			compound_expr_add(set, prefix);
 		}

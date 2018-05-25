@@ -1733,7 +1733,7 @@ static void relational_binop_postprocess(struct rule_pp_ctx *ctx, struct expr *e
 
 		expr->left  = expr_get(binop->left);
 		expr->right = binop_tree_to_list(NULL, binop->right);
-		expr->op    = OP_EQ;
+		expr->op    = OP_IMPLICIT;
 
 		expr_free(binop);
 	} else if (binop->left->dtype->flags & DTYPE_F_PREFIX &&

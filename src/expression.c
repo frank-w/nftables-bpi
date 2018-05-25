@@ -565,6 +565,11 @@ static void binop_arg_print(const struct expr *op, const struct expr *arg,
 
 bool must_print_eq_op(const struct expr *expr)
 {
+	if (expr->right->dtype->basetype != NULL &&
+	    expr->right->dtype->basetype->type == TYPE_BITMASK &&
+	    expr->right->ops->type == EXPR_VALUE)
+		return true;
+
 	return expr->left->ops->type == EXPR_BINOP;
 }
 

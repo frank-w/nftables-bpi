@@ -2770,14 +2770,18 @@ static struct cmd *json_parse_cmd_replace(struct json_ctx *ctx,
 			    "chain", &h.chain.name,
 			    "expr", &tmp))
 		return NULL;
+	json_unpack(root, "{s:I}", "handle", &h.handle.id);
+	json_unpack(root, "{s:I}", "index", &h.index.id);
 
-	if (op == CMD_REPLACE &&
-	    json_unpack_err(ctx, root, "{s:I}", "handle", &h.handle.id))
+	if (op == CMD_REPLACE && !h.handle.id) {
+		json_error(ctx, "Handle is required when replacing a rule.");
 		return NULL;
+	}
 
-	if (op == CMD_INSERT &&
-	    json_unpack_err(ctx, root, "{s:i}", "pos", &h.position.id))
-		return NULL;
+	if ((op == CMD_INSERT || op == CMD_ADD) && h.handle.id) {
+		h.position.id = h.handle.id;
+		h.handle.id = 0;
+	}
 
 	h.family = parse_family(family);
 	if (h.family < 0) {

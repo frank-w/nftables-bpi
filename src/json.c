@@ -89,14 +89,12 @@ static json_t *set_print_json(struct output_ctx *octx, const struct set *set)
 		type = "set";
 	}
 
-	root = json_pack("{s:s, s:s, s:s, s:o}",
+	root = json_pack("{s:s, s:s, s:s, s:o, s:I}",
 			"family", family2str(set->handle.family),
 			"name", set->handle.set.name,
 			"table", set->handle.table.name,
-			"type", set_dtype_json(set->key));
-	if (octx->handle)
-		json_object_set_new(root, "handle",
-				    json_integer(set->handle.handle.id));
+			"type", set_dtype_json(set->key),
+			"handle", set->handle.handle.id);
 	if (datatype_ext)
 		json_object_set_new(root, "map", json_string(datatype_ext));
 
@@ -181,10 +179,7 @@ static json_t *rule_print_json(struct output_ctx *octx,
 			 "family", family2str(rule->handle.family),
 			 "table", rule->handle.table.name,
 			 "chain", rule->handle.chain.name,
-			 "position", rule->handle.position.id);
-	if (octx->handle)
-		json_object_set_new(root, "handle",
-				    json_integer(rule->handle.handle.id));
+			 "handle", rule->handle.handle.id);
 	if (rule->comment)
 		json_object_set_new(root, "comment",
 				    json_string(rule->comment));
@@ -208,13 +203,11 @@ static json_t *chain_print_json(const struct output_ctx *octx,
 {
 	json_t *root, *tmp;
 
-	root = json_pack("{s:s, s:s, s:s}",
+	root = json_pack("{s:s, s:s, s:s, s:I}",
 			 "family", family2str(chain->handle.family),
 			 "table", chain->handle.table.name,
-			 "name", chain->handle.chain.name);
-	if (octx->handle)
-		json_object_set_new(root, "handle",
-				    json_integer(chain->handle.handle.id));
+			 "name", chain->handle.chain.name,
+			 "handle", chain->handle.handle.id);
 
 	if (chain->flags & CHAIN_F_BASECHAIN) {
 		tmp = json_pack("{s:s, s:s, s:i, s:s}",
@@ -248,13 +241,11 @@ static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 	const char *unit;
 	uint64_t rate;
 
-	root = json_pack("{s:s, s:s, s:s}",
+	root = json_pack("{s:s, s:s, s:s, s:I}",
 			"family", family2str(obj->handle.family),
 			"name", obj->handle.obj.name,
-			"table", obj->handle.table.name);
-	if (octx->handle)
-		json_object_set_new(root, "handle",
-				    json_integer(obj->handle.handle.id));
+			"table", obj->handle.table.name,
+			"handle", obj->handle.handle.id);
 
 	switch (obj->type) {
 	case NFT_OBJECT_COUNTER:
@@ -374,12 +365,10 @@ static json_t *table_print_json(const struct output_ctx *octx,
 {
 	json_t *root, *tmp;
 
-	root = json_pack("{s:s, s:s}",
+	root = json_pack("{s:s, s:s, s:I}",
 			 "family", family2str(table->handle.family),
-			 "name", table->handle.table.name);
-	if (octx->handle)
-		json_object_set_new(root, "handle",
-				    json_integer(table->handle.handle.id));
+			 "name", table->handle.table.name,
+			 "handle", table->handle.handle.id);
 
 	tmp = table_flags_json(table);
 	if (tmp)

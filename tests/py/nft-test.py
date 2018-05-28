@@ -855,10 +855,7 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                 json_output = json.loads(json_output)
                 for item in json_output["nftables"]:
                     if "rule" in item:
-                        if "handle" in item["rule"]:
-                            del(item["rule"]["handle"])
-                        if "position" in item["rule"]:
-                            del(item["rule"]["position"])
+                        del(item["rule"]["handle"])
                         json_output = item["rule"]
                         break
                 json_input = json.dumps(json_output["expr"], sort_keys = True)
@@ -917,10 +914,7 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
             json_output = json.loads(json_output)
             for item in json_output["nftables"]:
                 if "rule" in item:
-                    if "handle" in item["rule"]:
-                        del(item["rule"]["handle"])
-                    if "position" in item["rule"]:
-                        del(item["rule"]["position"])
+                    del(item["rule"]["handle"])
                     json_output = item["rule"]
                     break
             json_output = json.dumps(json_output["expr"], sort_keys = True)

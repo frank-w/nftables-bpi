@@ -1,0 +1,37 @@
+# ip saddr @set1 drop
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr",
+                    "name": "ip"
+                }
+            },
+            "right": "@set1"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# ip6 daddr != @set2 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "daddr",
+                    "name": "ip6"
+                }
+            },
+            "op": "!=",
+            "right": "@set2"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+

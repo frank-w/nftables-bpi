@@ -279,8 +279,7 @@ static struct expr *json_parse_constant(struct json_ctx *ctx, const char *name)
 }
 
 /* this is a combination of symbol_expr, integer_expr, boolean_expr ... */
-static struct expr *json_parse_immediate_expr(struct json_ctx *ctx,
-					      const char *type, json_t *root)
+static struct expr *json_parse_immediate(struct json_ctx *ctx, json_t *root)
 {
 	enum symbol_types symtype = SYMBOL_VALUE;
 	const char *str;
@@ -293,12 +292,12 @@ static struct expr *json_parse_immediate_expr(struct json_ctx *ctx,
 		if (str[0] == '@') {
 			symtype = SYMBOL_SET;
 			str++;
-		}
-		if (is_RHS(ctx) && is_keyword(str))
+		} else if (is_keyword(str)) {
 			return symbol_expr_alloc(int_loc,
 						 SYMBOL_VALUE, NULL, str);
-		if (is_RHS(ctx) && is_constant(str))
+		} else if (is_constant(str)) {
 			return json_parse_constant(ctx, str);
+		}
 		break;
 	case JSON_INTEGER:
 		snprintf(buf, sizeof(buf),
@@ -307,16 +306,12 @@ static struct expr *json_parse_immediate_expr(struct json_ctx *ctx,
 		break;
 	case JSON_TRUE:
 	case JSON_FALSE:
-		if (is_RHS(ctx)) {
-			buf[0] = json_is_true(root);
-			return constant_expr_alloc(int_loc, &boolean_type,
-						   BYTEORDER_HOST_ENDIAN,
-						   1, buf);
-		}
-		/* fall through */
+		buf[0] = json_is_true(root);
+		return constant_expr_alloc(int_loc, &boolean_type,
+					   BYTEORDER_HOST_ENDIAN, 1, buf);
 	default:
-		json_error(ctx, "Invalid immediate value type '%d'.",
-			   json_typeof(root));
+		json_error(ctx, "Unexpected JSON type %s for immediate value.",
+			   json_typename(root));
 		return NULL;
 	}
 
@@ -1033,12 +1028,11 @@ static struct expr *json_parse_set_expr(struct json_ctx *ctx,
 	json_t *value;
 	size_t index;
 
-	switch (json_typeof(root)) {
-	case JSON_OBJECT:
-	case JSON_ARRAY:
-		break;
-	default:
-		expr = json_parse_immediate_expr(ctx, type, root);
+	if (!json_is_array(root)) {
+		expr = json_parse_immediate(ctx, root);
+		if (!expr)
+			return NULL;
+
 		if (expr->ops->type == EXPR_SYMBOL &&
 		    expr->symtype == SYMBOL_SET)
 			return expr;
@@ -1074,7 +1068,7 @@ static struct expr *json_parse_set_expr(struct json_ctx *ctx,
 			}
 			expr2 = mapping_expr_alloc(int_loc, expr, expr2);
 			expr = expr2;
-		} else if (json_is_object(value)) {
+		} else {
 			expr = json_parse_rhs_expr(ctx, value);
 
 			if (!expr) {
@@ -1085,9 +1079,6 @@ static struct expr *json_parse_set_expr(struct json_ctx *ctx,
 
 			if (expr->ops->type != EXPR_SET_ELEM)
 				expr = set_elem_expr_alloc(int_loc, expr);
-		} else {
-			expr = json_parse_immediate_expr(ctx, "elem", value);
-			expr = set_elem_expr_alloc(int_loc, expr);
 		}
 
 		if (!set_expr)
@@ -1163,7 +1154,6 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		{ "prefix", json_parse_prefix_expr, CTX_F_RHS | CTX_F_STMT },
 		{ "range", json_parse_range_expr, CTX_F_RHS | CTX_F_STMT },
 		{ "*", json_parse_wildcard_expr, CTX_F_RHS | CTX_F_STMT },
-		{ "immediate", json_parse_immediate_expr, CTX_F_RHS | CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP }, /* symbol, boolean or integer expr */
 		{ "payload", json_parse_payload_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },
 		{ "exthdr", json_parse_exthdr_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },
 		{ "tcp option", json_parse_tcp_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES },
@@ -1188,14 +1178,15 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		{ "return", json_parse_verdict_expr, CTX_F_RHS | CTX_F_SET_RHS },
 		{ "elem", json_parse_set_elem_expr, CTX_F_RHS | CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SES },
 	};
+	struct expr *list;
 	const char *type;
 	unsigned int i;
 	json_t *value;
+	size_t index;
 
-	if (json_is_array(root)) {
-		struct expr *list;
-		size_t index;
 
+	switch (json_typeof(root)) {
+	case JSON_ARRAY:
 		if (!(ctx->flags & (CTX_F_RHS | CTX_F_STMT))) {
 			json_error(ctx, "List expression only allowed on RHS or in statement expression.");
 			return NULL;
@@ -1217,23 +1208,18 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 			compound_expr_add(list, expr);
 		}
 		return list;
-	} else if (json_is_string(root)) {
-		const struct datatype *dtype;
-
-		if (is_DTYPE(ctx)) {
-			dtype = datatype_lookup_byname(json_string_value(root));
-			if (!dtype) {
-				json_error(ctx, "Unknown datatype '%s'.", json_string_value(root));
-				return NULL;
-			}
-			return constant_expr_alloc(int_loc, dtype,
-						   dtype->byteorder, dtype->size, NULL);
-		} else {
-			return json_parse_immediate_expr(ctx, "immediate", root);
+	case JSON_TRUE:
+	case JSON_FALSE:
+		if (!is_RHS(ctx) && !is_PRIMARY(ctx)) {
+			json_error(ctx, "Boolean values not allowed in this context.");
+			return NULL;
 		}
-	} else if ((is_RHS(ctx) || is_STMT(ctx) || is_PRIMARY(ctx)) && (json_is_integer(root) || json_is_boolean(root))) {
-		/* is_STMT for mangle statement */
-		return json_parse_immediate_expr(ctx, "immediate", root);
+		/* fall through */
+	case JSON_STRING:
+	case JSON_INTEGER:
+		return json_parse_immediate(ctx, root);
+	default:
+		break;
 	}
 
 	if (json_unpack_stmt(ctx, root, &type, &value))
@@ -1800,7 +1786,7 @@ static struct stmt *json_parse_reject_stmt(struct json_ctx *ctx,
 		}
 	}
 	if (!json_unpack(value, "{s:o}", "expr", &tmp)) {
-		stmt->reject.expr = json_parse_immediate_expr(ctx, "immediate", tmp);
+		stmt->reject.expr = json_parse_immediate(ctx, tmp);
 		if (!stmt->reject.expr) {
 			json_error(ctx, "Illegal reject expr.");
 			stmt_free(stmt);

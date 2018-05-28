@@ -1021,6 +1021,22 @@
     }
 ]
 
+# tcp flags == syn
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "name": "tcp"
+                }
+            },
+            "op": "==",
+            "right": "syn"
+        }
+    }
+]
+
 # tcp flags & (syn|fin) == (syn|fin)
 [
     {

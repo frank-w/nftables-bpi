@@ -275,7 +275,7 @@ static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 	case NFT_OBJECT_CT_HELPER:
 		type = "ct helper";
 		tmp = json_pack("{s:s, s:o, s:s}",
-				"helper", obj->ct_helper.name, "protocol",
+				"type", obj->ct_helper.name, "protocol",
 				proto_name_json(obj->ct_helper.l4proto),
 				"l3proto", family2str(obj->ct_helper.l3proto));
 		json_object_update(root, tmp);

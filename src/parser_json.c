@@ -2643,14 +2643,14 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 	case NFT_OBJECT_CT_HELPER:
 		cmd_obj = CMD_OBJ_CT_HELPER;
 		obj->type = NFT_OBJECT_CT_HELPER;
-		if (!json_unpack(root, "{s:s}", "helper", &tmp)) {
+		if (!json_unpack(root, "{s:s}", "type", &tmp)) {
 			int ret;
 
 			ret = snprintf(obj->ct_helper.name,
 				       sizeof(obj->ct_helper.name), "%s", tmp);
 			if (ret < 0 ||
 			    ret >= (int)sizeof(obj->ct_helper.name)) {
-				json_error(ctx, "Invalid CT helper name '%s', max length is %zu.",
+				json_error(ctx, "Invalid CT helper type '%s', max length is %zu.",
 					   tmp, sizeof(obj->ct_helper.name));
 				obj_free(obj);
 				return NULL;

@@ -1186,7 +1186,7 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		{ "jump", json_parse_verdict_expr, CTX_F_RHS | CTX_F_SET_RHS },
 		{ "goto", json_parse_verdict_expr, CTX_F_RHS | CTX_F_SET_RHS },
 		{ "return", json_parse_verdict_expr, CTX_F_RHS | CTX_F_SET_RHS },
-		{ "elem", json_parse_set_elem_expr, CTX_F_RHS | CTX_F_STMT | CTX_F_PRIMARY },
+		{ "elem", json_parse_set_elem_expr, CTX_F_RHS | CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SES },
 	};
 	const char *type;
 	unsigned int i;
@@ -1992,7 +1992,7 @@ static struct stmt *json_parse_meter_stmt(struct json_ctx *ctx,
 	stmt->meter.name = xstrdup(name);
 	stmt->meter.size = size;
 
-	stmt->meter.key = json_parse_expr(ctx, jkey);
+	stmt->meter.key = json_parse_set_elem_expr_stmt(ctx, jkey);
 	if (!stmt->meter.key) {
 		json_error(ctx, "Invalid meter key.");
 		stmt_free(stmt);

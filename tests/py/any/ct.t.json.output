@@ -400,6 +400,65 @@
     }
 ]
 
+# ct expiration 30s
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "expiration"
+                }
+            },
+            "right": 30
+        }
+    }
+]
+
+# ct expiration 30000ms
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "expiration"
+                }
+            },
+            "right": 30
+        }
+    }
+]
+
+# ct expiration 1m-1h
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "expiration"
+                }
+            },
+            "right": {
+                "range": [ 60, 3600 ]
+            }
+        }
+    }
+]
+
+# ct expiration > 4d23h59m59s
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "expiration"
+                }
+            },
+	    "op": ">",
+            "right": 431999
+        }
+    }
+]
+
 # ct state . ct mark { new . 0x12345678}
 [
     {

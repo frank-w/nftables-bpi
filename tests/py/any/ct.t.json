@@ -708,7 +708,7 @@
     }
 ]
 
-# ct expiration 30
+# ct expiration 30s
 [
     {
         "match": {
@@ -717,12 +717,12 @@
                     "key": "expiration"
                 }
             },
-            "right": 30
+            "right": "30s"
         }
     }
 ]
 
-# ct expiration 22
+# ct expiration 30000ms
 [
     {
         "match": {
@@ -731,7 +731,38 @@
                     "key": "expiration"
                 }
             },
-            "right": 22
+            "right": "30000ms"
+        }
+    }
+]
+
+# ct expiration 1m-1h
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "expiration"
+                }
+            },
+            "right": {
+                "range": [ "1m", "1h" ]
+            }
+        }
+    }
+]
+
+# ct expiration > 4d23h59m59s
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "expiration"
+                }
+            },
+	    "op": ">",
+            "right": "4d23h59m59s"
         }
     }
 ]

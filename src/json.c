@@ -1212,9 +1212,10 @@ json_t *meter_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 	tmp = stmt_print_json(stmt->meter.stmt, octx);
 	octx->stateless--;
 
-	root = json_pack("{s:o, s:o}",
+	root = json_pack("{s:o, s:o, s:i}",
 			 "key", expr_print_json(stmt->meter.key, octx),
-			 "stmt", tmp);
+			 "stmt", tmp,
+			 "size", stmt->meter.size);
 	if (stmt->meter.set) {
 		tmp = json_string(stmt->meter.set->set->handle.set.name);
 		json_object_set_new(root, "name", tmp);

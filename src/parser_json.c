@@ -1989,15 +1989,16 @@ static struct stmt *json_parse_meter_stmt(struct json_ctx *ctx,
 	json_t *jkey, *jstmt;
 	struct stmt *stmt;
 	const char *name;
+	uint32_t size = 0xffff;
 
-	if (json_unpack_err(ctx, value, "{s:o, s:o}",
-			    "key", &jkey, "stmt", &jstmt))
+	if (json_unpack_err(ctx, value, "{s:s, s:o, s:o}",
+			    "name", &name, "key", &jkey, "stmt", &jstmt))
 		return NULL;
+	json_unpack(value, "{s:i}", "size", &size);
 
 	stmt = meter_stmt_alloc(int_loc);
-
-	if (!json_unpack(value, "{s:s}", "name", &name))
-		stmt->meter.name = xstrdup(name);
+	stmt->meter.name = xstrdup(name);
+	stmt->meter.size = size;
 
 	stmt->meter.key = json_parse_expr(ctx, jkey);
 	if (!stmt->meter.key) {

@@ -951,7 +951,7 @@ static struct expr *json_parse_prefix_expr(struct json_ctx *ctx,
 
 	expr = json_parse_primary_expr(ctx, addr);
 	if (!expr) {
-		json_error(ctx, "Invalid prefix in prefix expr.");
+		json_error(ctx, "Invalid address in prefix expr.");
 		return NULL;
 	}
 	return prefix_expr_alloc(int_loc, expr, len);

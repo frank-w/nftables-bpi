@@ -1140,11 +1140,11 @@ static struct expr *json_parse_set_elem_expr(struct json_ctx *ctx,
 
 	expr = set_elem_expr_alloc(int_loc, expr);
 
-	if (!json_unpack(root, "{s:i}", "elem_timeout", &i))
+	if (!json_unpack(root, "{s:i}", "timeout", &i))
 		expr->timeout = i * 1000;
-	if (!json_unpack(root, "{s:i}", "elem_expires", &i))
+	if (!json_unpack(root, "{s:i}", "expires", &i))
 		expr->expiration = i * 1000;
-	if (!json_unpack(root, "{s:s}", "elem_comment", &expr->comment))
+	if (!json_unpack(root, "{s:s}", "comment", &expr->comment))
 		expr->comment = xstrdup(expr->comment);
 
 	return expr;
@@ -1298,7 +1298,7 @@ static struct expr *json_parse_set_elem_expr_stmt(struct json_ctx *ctx, json_t *
 {
 	struct expr *expr = json_parse_flagged_expr(ctx, CTX_F_SES, root);
 
-	if (expr->ops->type != EXPR_SET_ELEM)
+	if (expr && expr->ops->type != EXPR_SET_ELEM)
 		expr = set_elem_expr_alloc(int_loc, expr);
 
 	return expr;
@@ -1820,7 +1820,6 @@ static struct stmt *json_parse_set_stmt(struct json_ctx *ctx,
 	struct expr *expr, *expr2;
 	struct stmt *stmt;
 	json_t *elem;
-	uint64_t tmp;
 	int op;
 
 	if (json_unpack_err(ctx, value, "{s:s, s:o, s:s}",
@@ -1841,12 +1840,6 @@ static struct stmt *json_parse_set_stmt(struct json_ctx *ctx,
 		json_error(ctx, "Illegal set statement element.");
 		return NULL;
 	}
-
-	if (!json_unpack(elem, "{s:I}", "elem_timeout", &tmp))
-		expr->timeout = tmp * 1000;
-	if (!json_unpack(elem, "{s:I}", "elem_expires", &tmp))
-		expr->expiration = tmp * 1000;
-	json_unpack(elem, "{s:s}", "elem_comment", &expr->comment);
 
 	if (set[0] != '@') {
 		json_error(ctx, "Illegal set reference in set statement.");

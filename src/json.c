@@ -508,13 +508,13 @@ json_t *set_elem_expr_json(const struct expr *expr, struct output_ctx *octx)
 		root = json_pack("{s:o}", "val", root);
 
 		if (expr->timeout)
-			json_object_set_new(root, "elem_timeout",
+			json_object_set_new(root, "timeout",
 					    json_integer(expr->timeout / 1000));
 		if (expr->expiration)
-			json_object_set_new(root, "elem_expires",
+			json_object_set_new(root, "expires",
 					    json_integer(expr->expiration / 1000));
 		if (expr->comment)
-			json_object_set_new(root, "elem_comment",
+			json_object_set_new(root, "comment",
 					    json_string(expr->comment));
 		return json_pack("{s:o}", "elem", root);
 	}

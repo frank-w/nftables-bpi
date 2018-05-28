@@ -4,7 +4,7 @@
         "meter": {
             "key": {
                 "elem": {
-                    "elem_timeout": 600,
+                    "timeout": 600,
                     "val": {
                         "concat": [
                             {
@@ -34,7 +34,7 @@
         "meter": {
             "key": {
                 "elem": {
-                    "elem_timeout": 600,
+                    "timeout": 600,
                     "val": {
                         "concat": [
                             {

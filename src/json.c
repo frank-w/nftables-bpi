@@ -236,10 +236,10 @@ static json_t *proto_name_json(uint8_t proto)
 
 static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 {
+	const char *rate_unit = NULL, *burst_unit = NULL;
 	const char *type = obj_type_name(obj->type);
+	uint64_t rate, burst;
 	json_t *root, *tmp;
-	const char *unit;
-	uint64_t rate;
 
 	root = json_pack("{s:s, s:s, s:s, s:I}",
 			"family", family2str(obj->handle.family),
@@ -273,29 +273,28 @@ static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 		json_decref(tmp);
 		break;
 	case NFT_OBJECT_LIMIT:
-		tmp = json_pack("{s:b, s:s}",
-				"inv", obj->limit.flags & NFT_LIMIT_F_INV,
+		rate = obj->limit.rate;
+		burst = obj->limit.burst;
+
+		if (obj->limit.type == NFT_LIMIT_PKT_BYTES) {
+			rate_unit = get_rate(obj->limit.rate, &rate);
+			burst_unit = get_rate(obj->limit.burst, &burst);
+		}
+
+		tmp = json_pack("{s:I, s:s}",
+				"rate", rate,
 				"per", get_unit(obj->limit.unit));
-		switch (obj->limit.type) {
-		case NFT_LIMIT_PKTS:
-			json_object_set_new(tmp, "rate",
-					    json_integer(obj->limit.rate));
-			json_object_set_new(tmp, "burst",
-					    json_integer(obj->limit.burst));
-			break;
-		case NFT_LIMIT_PKT_BYTES:
-			unit = get_rate(obj->limit.rate, &rate);
-			json_object_set_new(tmp, "rate", json_integer(rate));
+
+		if (obj->limit.flags & NFT_LIMIT_F_INV)
+			json_object_set_new(tmp, "inv", json_true());
+		if (rate_unit)
 			json_object_set_new(tmp, "rate_unit",
-					    json_string(unit));
-			if (obj->limit.burst) {
-				unit = get_rate(obj->limit.burst, &rate);
-				json_object_set_new(tmp, "burst",
-						    json_integer(rate));
+					    json_string(rate_unit));
+		if (burst) {
+			json_object_set_new(tmp, "burst", json_integer(burst));
+			if (burst_unit)
 				json_object_set_new(tmp, "burst_unit",
-						    json_string(unit));
-			}
-			break;
+						    json_string(burst_unit));
 		}
 
 		json_object_update(root, tmp);

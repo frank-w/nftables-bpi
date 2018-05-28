@@ -1569,15 +1569,15 @@ static struct stmt *json_parse_limit_stmt(struct json_ctx *ctx,
 					  const char *key, json_t *value)
 {
 	struct stmt *stmt;
-	int rate, burst = 0;
+	uint64_t rate, burst = 0;
 	const char *rate_unit = "packets", *time, *burst_unit = "bytes";
 	int inv = 0;
 
-	if (!json_unpack(value, "{s:i, s:s}",
-			   "rate", &rate, "per", &time)) {
+	if (!json_unpack(value, "{s:I, s:s}",
+			 "rate", &rate, "per", &time)) {
 		json_unpack(value, "{s:s}", "rate_unit", &rate_unit);
 		json_unpack(value, "{s:b}", "inv", &inv);
-		json_unpack(value, "{s:i}", "burst", &burst);
+		json_unpack(value, "{s:I}", "burst", &burst);
 		json_unpack(value, "{s:s}", "burst_unit", &burst_unit);
 
 		stmt = limit_stmt_alloc(int_loc);
@@ -2580,9 +2580,10 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 					     json_t *root, enum cmd_ops op,
 					     enum cmd_obj cmd_obj)
 {
-	const char *family, *tmp;
+	const char *family, *tmp, *rate_unit = "packets", *burst_unit = "bytes";
 	struct handle h = { 0 };
 	struct obj *obj;
+	int inv = 0;
 
 	if (json_unpack_err(ctx, root, "{s:s, s:s}",
 			    "family", &family,
@@ -2674,24 +2675,28 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 		break;
 	case CMD_OBJ_LIMIT:
 		obj->type = NFT_OBJECT_LIMIT;
-		json_unpack(root, "{s:i}", "rate", &obj->limit.rate);
-		if (!json_unpack(root, "{s:s}", "per", &tmp))
-			obj->limit.unit = seconds_from_unit(tmp);
-		json_unpack(root, "{s:i}", "burst", &obj->limit.burst);
-		if (!json_unpack(root, "{s:s}", "unit", &tmp)) {
-			if (!strcmp(tmp, "packets")) {
-				obj->limit.type = NFT_LIMIT_PKTS;
-			} else if (!strcmp(tmp, "bytes")) {
-				obj->limit.type = NFT_LIMIT_PKT_BYTES;
-			} else {
-				json_error(ctx, "Invalid limit unit '%s'.", tmp);
-				obj_free(obj);
-				return NULL;
-			}
+		if (json_unpack_err(ctx, root, "{s:I, s:s}",
+				    "rate", &obj->limit.rate,
+				    "per", &tmp)) {
+			obj_free(obj);
+			return NULL;
 		}
-		json_unpack(root, "{s:b}", "inv", &obj->limit.flags);
-		if (obj->limit.flags)
-			obj->limit.flags = NFT_LIMIT_F_INV;
+		json_unpack(root, "{s:s}", "rate_unit", &rate_unit);
+		json_unpack(root, "{s:b}", "inv", &inv);
+		json_unpack(root, "{s:I}", "burst", &obj->limit.burst);
+		json_unpack(root, "{s:s}", "burst_unit", &burst_unit);
+
+		if (!strcmp(rate_unit, "packets")) {
+			obj->limit.type = NFT_LIMIT_PKTS;
+		} else {
+			obj->limit.type = NFT_LIMIT_PKT_BYTES;
+			obj->limit.rate = rate_to_bytes(obj->limit.rate,
+							rate_unit);
+			obj->limit.burst = rate_to_bytes(obj->limit.burst,
+							 burst_unit);
+		}
+		obj->limit.unit = seconds_from_unit(tmp);
+		obj->limit.flags = inv ? NFT_LIMIT_F_INV : 0;
 		break;
 	default:
 		BUG("Invalid CMD '%d'", cmd_obj);

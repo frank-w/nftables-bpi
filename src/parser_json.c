@@ -2109,7 +2109,7 @@ static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 		{ "reject", json_parse_reject_stmt },
 		{ "set", json_parse_set_stmt },
 		{ "log", json_parse_log_stmt },
-		{ "cthelper", json_parse_cthelper_stmt },
+		{ "ct helper", json_parse_cthelper_stmt },
 		{ "meter", json_parse_meter_stmt },
 		{ "queue", json_parse_queue_stmt },
 	};

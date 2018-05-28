@@ -179,7 +179,7 @@ struct stmt *counter_stmt_alloc(const struct location *loc)
 static const char *objref_type[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_COUNTER]	= "counter",
 	[NFT_OBJECT_QUOTA]	= "quota",
-	[NFT_OBJECT_CT_HELPER]	= "cthelper",
+	[NFT_OBJECT_CT_HELPER]	= "ct helper",
 	[NFT_OBJECT_LIMIT]	= "limit",
 };
 

@@ -101,14 +101,14 @@
 # ct helper set "cthelp1"
 [
     {
-        "cthelper": "cthelp1"
+        "ct helper": "cthelp1"
     }
 ]
 
 # ct helper set tcp dport map {21 : "cthelp1", 2121 : "cthelp1" }
 [
     {
-        "cthelper": {
+        "ct helper": {
             "map": {
                 "left": {
                     "payload": {

@@ -910,9 +910,7 @@ static struct expr *json_parse_concat_expr(struct json_ctx *ctx,
 	json_t *value;
 	size_t index;
 
-	if (json_is_object(root))
-		return json_parse_primary_expr(ctx, root);
-	else if (!json_is_array(root)) {
+	if (!json_is_array(root)) {
 		json_error(ctx, "Unexpected concat object type %s.",
 			   json_typename(root));
 		return NULL;

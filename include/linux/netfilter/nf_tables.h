@@ -168,7 +168,6 @@ enum nft_table_flags {
  * @NFTA_TABLE_NAME: name of the table (NLA_STRING)
  * @NFTA_TABLE_FLAGS: bitmask of enum nft_table_flags (NLA_U32)
  * @NFTA_TABLE_USE: number of chains in this table (NLA_U32)
- * @NFTA_TABLE_HANDLE: numeric handle of the table (NLA_U64)
  */
 enum nft_table_attributes {
 	NFTA_TABLE_UNSPEC,
@@ -176,6 +175,7 @@ enum nft_table_attributes {
 	NFTA_TABLE_FLAGS,
 	NFTA_TABLE_USE,
 	NFTA_TABLE_HANDLE,
+	NFTA_TABLE_PAD,
 	__NFTA_TABLE_MAX
 };
 #define NFTA_TABLE_MAX		(__NFTA_TABLE_MAX - 1)
@@ -319,7 +319,7 @@ enum nft_set_desc_attributes {
  * @NFTA_SET_GC_INTERVAL: garbage collection interval (NLA_U32)
  * @NFTA_SET_USERDATA: user data (NLA_BINARY)
  * @NFTA_SET_OBJ_TYPE: stateful object type (NLA_U32: NFT_OBJECT_*)
- * @NFTA_SET_HANDLE: numeric handle of the set (NLA_U64)
+ * @NFTA_SET_HANDLE: set handle (NLA_U64)
  */
 enum nft_set_attributes {
 	NFTA_SET_UNSPEC,
@@ -831,7 +831,9 @@ enum nft_rt_keys {
 	NFT_RT_NEXTHOP4,
 	NFT_RT_NEXTHOP6,
 	NFT_RT_TCPMSS,
+	__NFT_RT_MAX
 };
+#define NFT_RT_MAX		(__NFT_RT_MAX - 1)
 
 /**
  * enum nft_hash_types - nf_tables hash expression types
@@ -854,6 +856,8 @@ enum nft_hash_types {
  * @NFTA_HASH_SEED: seed value (NLA_U32)
  * @NFTA_HASH_OFFSET: add this offset value to hash result (NLA_U32)
  * @NFTA_HASH_TYPE: hash operation (NLA_U32: nft_hash_types)
+ * @NFTA_HASH_SET_NAME: name of the map to lookup (NLA_STRING)
+ * @NFTA_HASH_SET_ID: id of the map (NLA_U32)
  */
 enum nft_hash_attributes {
 	NFTA_HASH_UNSPEC,
@@ -864,6 +868,8 @@ enum nft_hash_attributes {
 	NFTA_HASH_SEED,
 	NFTA_HASH_OFFSET,
 	NFTA_HASH_TYPE,
+	NFTA_HASH_SET_NAME,
+	NFTA_HASH_SET_ID,
 	__NFTA_HASH_MAX,
 };
 #define NFTA_HASH_MAX	(__NFTA_HASH_MAX - 1)
@@ -909,8 +915,8 @@ enum nft_rt_attributes {
  * @NFT_CT_EXPIRATION: relative conntrack expiration time in ms
  * @NFT_CT_HELPER: connection tracking helper assigned to conntrack
  * @NFT_CT_L3PROTOCOL: conntrack layer 3 protocol
- * @NFT_CT_SRC: conntrack layer 3 protocol source (IPv4/IPv6 address)
- * @NFT_CT_DST: conntrack layer 3 protocol destination (IPv4/IPv6 address)
+ * @NFT_CT_SRC: conntrack layer 3 protocol source (IPv4/IPv6 address, deprecated)
+ * @NFT_CT_DST: conntrack layer 3 protocol destination (IPv4/IPv6 address, deprecated)
  * @NFT_CT_PROTOCOL: conntrack layer 4 protocol
  * @NFT_CT_PROTO_SRC: conntrack layer 4 protocol source
  * @NFT_CT_PROTO_DST: conntrack layer 4 protocol destination
@@ -920,6 +926,10 @@ enum nft_rt_attributes {
  * @NFT_CT_AVGPKT: conntrack average bytes per packet
  * @NFT_CT_ZONE: conntrack zone
  * @NFT_CT_EVENTMASK: ctnetlink events to be generated for this conntrack
+ * @NFT_CT_SRC_IP: conntrack layer 3 protocol source (IPv4 address)
+ * @NFT_CT_DST_IP: conntrack layer 3 protocol destination (IPv4 address)
+ * @NFT_CT_SRC_IP6: conntrack layer 3 protocol source (IPv6 address)
+ * @NFT_CT_DST_IP6: conntrack layer 3 protocol destination (IPv6 address)
  */
 enum nft_ct_keys {
 	NFT_CT_STATE,
@@ -941,6 +951,10 @@ enum nft_ct_keys {
 	NFT_CT_AVGPKT,
 	NFT_CT_ZONE,
 	NFT_CT_EVENTMASK,
+	NFT_CT_SRC_IP,
+	NFT_CT_DST_IP,
+	NFT_CT_SRC_IP6,
+	NFT_CT_DST_IP6,
 	__NFT_CT_MAX
 };
 #define NFT_CT_MAX		(__NFT_CT_MAX - 1)
@@ -962,6 +976,17 @@ enum nft_ct_attributes {
 	__NFTA_CT_MAX
 };
 #define NFTA_CT_MAX		(__NFTA_CT_MAX - 1)
+
+/**
+ * enum nft_flow_attributes - ct offload expression attributes
+ * @NFTA_FLOW_TABLE_NAME: flow table name (NLA_STRING)
+ */
+enum nft_offload_attributes {
+	NFTA_FLOW_UNSPEC,
+	NFTA_FLOW_TABLE_NAME,
+	__NFTA_FLOW_MAX,
+};
+#define NFTA_FLOW_MAX		(__NFTA_FLOW_MAX - 1)
 
 enum nft_limit_type {
 	NFT_LIMIT_PKTS,
@@ -1306,10 +1331,10 @@ enum nft_ct_helper_attributes {
  *
  * @NFTA_OBJ_TABLE: name of the table containing the expression (NLA_STRING)
  * @NFTA_OBJ_NAME: name of this expression type (NLA_STRING)
- * @NFTA_OBJ_HANDLE: numeric handle of object (NLA_U64)
  * @NFTA_OBJ_TYPE: stateful object type (NLA_U32)
  * @NFTA_OBJ_DATA: stateful object data (NLA_NESTED)
  * @NFTA_OBJ_USE: number of references to this expression (NLA_U32)
+ * @NFTA_OBJ_HANDLE: object handle (NLA_U64)
  */
 enum nft_object_attributes {
 	NFTA_OBJ_UNSPEC,
@@ -1319,16 +1344,70 @@ enum nft_object_attributes {
 	NFTA_OBJ_DATA,
 	NFTA_OBJ_USE,
 	NFTA_OBJ_HANDLE,
+	NFTA_OBJ_PAD,
 	__NFTA_OBJ_MAX
 };
 #define NFTA_OBJ_MAX		(__NFTA_OBJ_MAX - 1)
+
+/**
+ * enum nft_flowtable_attributes - nf_tables flow table netlink attributes
+ *
+ * @NFTA_FLOWTABLE_TABLE: name of the table containing the expression (NLA_STRING)
+ * @NFTA_FLOWTABLE_NAME: name of this flow table (NLA_STRING)
+ * @NFTA_FLOWTABLE_HOOK: netfilter hook configuration(NLA_U32)
+ * @NFTA_FLOWTABLE_USE: number of references to this flow table (NLA_U32)
+ * @NFTA_FLOWTABLE_HANDLE: object handle (NLA_U64)
+ * @NFTA_FLOWTABLE_SIZE: maximum size (NLA_U32)
+ * @NFTA_FLOWTABLE_FLAGS: flags (NLA_U32)
+ */
+enum nft_flowtable_attributes {
+	NFTA_FLOWTABLE_UNSPEC,
+	NFTA_FLOWTABLE_TABLE,
+	NFTA_FLOWTABLE_NAME,
+	NFTA_FLOWTABLE_HOOK,
+	NFTA_FLOWTABLE_USE,
+	NFTA_FLOWTABLE_HANDLE,
+	NFTA_FLOWTABLE_PAD,
+	NFTA_FLOWTABLE_SIZE,
+	NFTA_FLOWTABLE_FLAGS,
+	__NFTA_FLOWTABLE_MAX
+};
+#define NFTA_FLOWTABLE_MAX	(__NFTA_FLOWTABLE_MAX - 1)
+
+/**
+ * enum nft_flowtable_hook_attributes - nf_tables flow table hook netlink attributes
+ *
+ * @NFTA_FLOWTABLE_HOOK_NUM: netfilter hook number (NLA_U32)
+ * @NFTA_FLOWTABLE_HOOK_PRIORITY: netfilter hook priority (NLA_U32)
+ * @NFTA_FLOWTABLE_HOOK_DEVS: input devices this flow table is bound to (NLA_NESTED)
+ */
+enum nft_flowtable_hook_attributes {
+	NFTA_FLOWTABLE_HOOK_UNSPEC,
+	NFTA_FLOWTABLE_HOOK_NUM,
+	NFTA_FLOWTABLE_HOOK_PRIORITY,
+	NFTA_FLOWTABLE_HOOK_DEVS,
+	__NFTA_FLOWTABLE_HOOK_MAX
+};
+#define NFTA_FLOWTABLE_HOOK_MAX	(__NFTA_FLOWTABLE_HOOK_MAX - 1)
+
+/**
+ * enum nft_device_attributes - nf_tables device netlink attributes
+ *
+ * @NFTA_DEVICE_NAME: name of this device (NLA_STRING)
+ */
+enum nft_devices_attributes {
+	NFTA_DEVICE_UNSPEC,
+	NFTA_DEVICE_NAME,
+	__NFTA_DEVICE_MAX
+};
+#define NFTA_DEVICE_MAX		(__NFTA_DEVICE_MAX - 1)
+
 
 /**
  * enum nft_trace_attributes - nf_tables trace netlink attributes
  *
  * @NFTA_TRACE_TABLE: name of the table (NLA_STRING)
  * @NFTA_TRACE_CHAIN: name of the chain (NLA_STRING)
- * @NFTA_TRACE_TABLE_HANDLE: numeric handle of the table (NLA_U64)
  * @NFTA_TRACE_RULE_HANDLE: numeric handle of the rule (NLA_U64)
  * @NFTA_TRACE_TYPE: type of the event (NLA_U32: nft_trace_types)
  * @NFTA_TRACE_VERDICT: verdict returned by hook (NLA_NESTED: nft_verdicts)
@@ -1348,7 +1427,6 @@ enum nft_trace_attributes {
 	NFTA_TRACE_UNSPEC,
 	NFTA_TRACE_TABLE,
 	NFTA_TRACE_CHAIN,
-	NFTA_TRACE_TABLE_HANDLE,
 	NFTA_TRACE_RULE_HANDLE,
 	NFTA_TRACE_TYPE,
 	NFTA_TRACE_VERDICT,
@@ -1384,6 +1462,8 @@ enum nft_trace_types {
  * @NFTA_NG_MODULUS: maximum counter value (NLA_U32)
  * @NFTA_NG_TYPE: operation type (NLA_U32)
  * @NFTA_NG_OFFSET: offset to be added to the counter (NLA_U32)
+ * @NFTA_NG_SET_NAME: name of the map to lookup (NLA_STRING)
+ * @NFTA_NG_SET_ID: id of the map (NLA_U32)
  */
 enum nft_ng_attributes {
 	NFTA_NG_UNSPEC,
@@ -1391,6 +1471,8 @@ enum nft_ng_attributes {
 	NFTA_NG_MODULUS,
 	NFTA_NG_TYPE,
 	NFTA_NG_OFFSET,
+	NFTA_NG_SET_NAME,
+	NFTA_NG_SET_ID,
 	__NFTA_NG_MAX
 };
 #define NFTA_NG_MAX	(__NFTA_NG_MAX - 1)

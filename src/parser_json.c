@@ -479,20 +479,19 @@ static struct expr *json_parse_payload_expr(struct json_ctx *ctx,
 static struct expr *json_parse_tcp_option_expr(struct json_ctx *ctx,
 					       const char *type, json_t *root)
 {
-	const char *desc, *field = NULL;
+	const char *desc, *field;
 	int descval, fieldval;
 	struct expr *expr;
 
 	if (json_unpack_err(ctx, root, "{s:s}", "name", &desc))
 		return NULL;
-	json_unpack(root, "{s:s}", "field", &field);
 
 	if (json_parse_tcp_option_type(desc, &descval)) {
 		json_error(ctx, "Unknown tcp option name '%s'.", desc);
 		return NULL;
 	}
 
-	if (!field) {
+	if (json_unpack(root, "{s:s}", "field", &field)) {
 		expr = tcpopt_expr_alloc(int_loc, descval,
 					 TCPOPTHDR_FIELD_KIND);
 		expr->exthdr.flags = NFT_EXTHDR_F_PRESENT;

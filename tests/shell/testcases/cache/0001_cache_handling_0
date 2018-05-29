@@ -16,6 +16,10 @@ table inet test {
 set -e
 
 $NFT -f - <<< $RULESET
+TMP=$(mktemp)
+echo "$RULESET" >> "$TMP"
+$NFT "flush ruleset;include \"$TMP\""
+rm -f "$TMP"
 rule_handle=$($NFT list ruleset -a | awk '/saddr/{print $NF}')
 $NFT delete rule inet test test handle $rule_handle
 $NFT delete set inet test test

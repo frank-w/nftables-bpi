@@ -2789,7 +2789,7 @@ meter_stmt_alloc	:	METER	identifier		'{' meter_key_expr stmt '}'
 			{
 				$$ = meter_stmt_alloc(&@$);
 				$$->meter.name = $2;
-				$$->meter.size = 0xffff;
+				$$->meter.size = 0;
 				$$->meter.key  = $4;
 				$$->meter.stmt = $5;
 				$$->location  = @$;

@@ -615,6 +615,21 @@ static void netlink_parse_meta_expr(struct netlink_parse_ctx *ctx,
 	netlink_set_register(ctx, dreg, expr);
 }
 
+static void netlink_parse_socket(struct netlink_parse_ctx *ctx,
+				      const struct location *loc,
+				      const struct nftnl_expr *nle)
+{
+	enum nft_registers dreg;
+	uint32_t key;
+	struct expr * expr;
+
+	key = nftnl_expr_get_u32(nle, NFTNL_EXPR_SOCKET_KEY);
+	expr = socket_expr_alloc(loc, key);
+
+	dreg = netlink_parse_register(nle, NFTNL_EXPR_SOCKET_DREG);
+	netlink_set_register(ctx, dreg, expr);
+}
+
 static void netlink_parse_meta_stmt(struct netlink_parse_ctx *ctx,
 				    const struct location *loc,
 				    const struct nftnl_expr *nle)
@@ -1337,6 +1352,7 @@ static const struct {
 	{ .name = "payload",	.parse = netlink_parse_payload },
 	{ .name = "exthdr",	.parse = netlink_parse_exthdr },
 	{ .name = "meta",	.parse = netlink_parse_meta },
+	{ .name = "socket",	.parse = netlink_parse_socket },
 	{ .name = "rt",		.parse = netlink_parse_rt },
 	{ .name = "ct",		.parse = netlink_parse_ct },
 	{ .name = "connlimit",	.parse = netlink_parse_connlimit },
@@ -2022,6 +2038,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 	case EXPR_VERDICT:
 	case EXPR_NUMGEN:
 	case EXPR_FIB:
+	case EXPR_SOCKET:
 		break;
 	case EXPR_HASH:
 		if (expr->hash.expr)

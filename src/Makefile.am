@@ -55,6 +55,7 @@ libnftables_la_SOURCES =			\
 		services.c			\
 		mergesort.c			\
 		tcpopt.c			\
+		socket.c			\
 		libnftables.c
 
 # yacc and lex generate dirty code

@@ -258,6 +258,9 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "ruleset"		{ return RULESET; }
 "trace"			{ return TRACE; }
 
+"socket"		{ return SOCKET; }
+"transparent"		{ return TRANSPARENT;}
+
 "accept"		{ return ACCEPT; }
 "drop"			{ return DROP; }
 "continue"		{ return CONTINUE; }

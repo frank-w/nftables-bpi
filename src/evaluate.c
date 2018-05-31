@@ -1712,6 +1712,13 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 	return expr_evaluate_primary(ctx, exprp);
 }
 
+static int expr_evaluate_socket(struct eval_ctx *ctx, struct expr **expr)
+{
+	__expr_set_context(&ctx->ectx, (*expr)->dtype, (*expr)->byteorder,
+			   (*expr)->len, 1);
+	return 0;
+}
+
 static int expr_evaluate_variable(struct eval_ctx *ctx, struct expr **exprp)
 {
 	struct expr *new = expr_clone((*exprp)->sym->expr);
@@ -1749,6 +1756,8 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 		return expr_evaluate_primary(ctx, expr);
 	case EXPR_META:
 		return expr_evaluate_meta(ctx, expr);
+	case EXPR_SOCKET:
+		return expr_evaluate_socket(ctx, expr);
 	case EXPR_FIB:
 		return expr_evaluate_fib(ctx, expr);
 	case EXPR_PAYLOAD:

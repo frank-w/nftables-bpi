@@ -24,6 +24,7 @@
  * @EXPR_PAYLOAD:	payload expression
  * @EXPR_EXTHDR:	exthdr expression
  * @EXPR_META:		meta expression
+ * @EXPR_SOCKET:	socket expression
  * @EXPR_CT:		conntrack expression
  * @EXPR_CONCAT:	concatenation
  * @EXPR_LIST:		list of expressions
@@ -50,6 +51,7 @@ enum expr_types {
 	EXPR_PAYLOAD,
 	EXPR_EXTHDR,
 	EXPR_META,
+	EXPR_SOCKET,
 	EXPR_CT,
 	EXPR_CONCAT,
 	EXPR_LIST,
@@ -188,6 +190,7 @@ enum expr_flags {
 #include <rt.h>
 #include <hash.h>
 #include <ct.h>
+#include <socket.h>
 
 /**
  * struct expr
@@ -296,6 +299,10 @@ struct expr {
 			enum nft_meta_keys	key;
 			enum proto_bases	base;
 		} meta;
+		struct {
+			/* SOCKET */
+			enum nft_socket_keys	key;
+		} socket;
 		struct {
 			/* EXPR_RT */
 			enum nft_rt_keys	key;

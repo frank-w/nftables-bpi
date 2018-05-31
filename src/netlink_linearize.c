@@ -207,6 +207,18 @@ static void netlink_gen_rt(struct netlink_linearize_ctx *ctx,
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
+static void netlink_gen_socket(struct netlink_linearize_ctx *ctx,
+			     const struct expr *expr,
+			     enum nft_registers dreg)
+{
+	struct nftnl_expr *nle;
+
+	nle = alloc_nft_expr("socket");
+	netlink_put_register(nle, NFTNL_EXPR_SOCKET_DREG, dreg);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_SOCKET_KEY, expr->socket.key);
+	nftnl_rule_add_expr(ctx->nlr, nle);
+}
+
 static void netlink_gen_numgen(struct netlink_linearize_ctx *ctx,
 			    const struct expr *expr,
 			    enum nft_registers dreg)
@@ -694,6 +706,8 @@ static void netlink_gen_expr(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_hash(ctx, expr, dreg);
 	case EXPR_FIB:
 		return netlink_gen_fib(ctx, expr, dreg);
+	case EXPR_SOCKET:
+		return netlink_gen_socket(ctx, expr, dreg);
 	default:
 		BUG("unknown expression type %s\n", expr->ops->name);
 	}

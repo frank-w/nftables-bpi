@@ -189,6 +189,9 @@ int nft_lex(void *, void *, void *);
 
 %token FIB			"fib"
 
+%token SOCKET			"socket"
+%token TRANSPARENT		"transparent"
+
 %token HOOK			"hook"
 %token DEVICE			"device"
 %token DEVICES			"devices"
@@ -691,6 +694,10 @@ int nft_lex(void *, void *, void *);
 %type <expr>			meta_expr
 %destructor { expr_free($$); }	meta_expr
 %type <val>			meta_key	meta_key_qualified	meta_key_unqualified	numgen_type
+
+%type <expr>			socket_expr
+%destructor { expr_free($$); } socket_expr
+%type<val>			socket_key
 
 %type <val>			nf_key_proto
 
@@ -2892,6 +2899,7 @@ primary_expr		:	symbol_expr			{ $$ = $1; }
 			|	exthdr_expr			{ $$ = $1; }
 			|	exthdr_exists_expr		{ $$ = $1; }
 			|	meta_expr			{ $$ = $1; }
+			|	socket_expr			{ $$ = $1; }
 			|	rt_expr				{ $$ = $1; }
 			|	ct_expr				{ $$ = $1; }
 			|	numgen_expr			{ $$ = $1; }
@@ -3556,6 +3564,15 @@ meta_stmt		:	META	meta_key	SET	stmt_expr
 			{
 				$$ = flow_offload_stmt_alloc(&@$, $4);
 			}
+			;
+
+socket_expr		:	SOCKET	socket_key
+			{
+				$$ = socket_expr_alloc(&@$, $2);
+			}
+			;
+
+socket_key 		: TRANSPARENT { $$ = NFT_SOCKET_TRANSPARENT; }
 			;
 
 offset_opt		:	/* empty */	{ $$ = 0; }

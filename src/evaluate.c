@@ -2703,6 +2703,7 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 	}
 
 	switch (stmt->ops->type) {
+	case STMT_CONNLIMIT:
 	case STMT_COUNTER:
 	case STMT_LIMIT:
 	case STMT_QUOTA:

@@ -149,6 +149,27 @@ struct stmt *meter_stmt_alloc(const struct location *loc)
 	return stmt_alloc(loc, &meter_stmt_ops);
 }
 
+static void connlimit_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
+{
+	nft_print(octx, "ct count %s%u ",
+		  stmt->connlimit.flags ? "over " : "", stmt->connlimit.count);
+}
+
+static const struct stmt_ops connlimit_stmt_ops = {
+	.type		= STMT_CONNLIMIT,
+	.name		= "connlimit",
+	.print		= connlimit_stmt_print,
+};
+
+struct stmt *connlimit_stmt_alloc(const struct location *loc)
+{
+	struct stmt *stmt;
+
+	stmt = stmt_alloc(loc, &connlimit_stmt_ops);
+	stmt->flags |= STMT_F_STATEFUL;
+	return stmt;
+}
+
 static void counter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	nft_print(octx, "counter");

@@ -734,6 +734,21 @@ static void netlink_gen_objref_stmt(struct netlink_linearize_ctx *ctx,
 }
 
 static struct nftnl_expr *
+netlink_gen_connlimit_stmt(struct netlink_linearize_ctx *ctx,
+			   const struct stmt *stmt)
+{
+	struct nftnl_expr *nle;
+
+	nle = alloc_nft_expr("connlimit");
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_CONNLIMIT_COUNT,
+			   stmt->connlimit.count);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_CONNLIMIT_FLAGS,
+			   stmt->connlimit.flags);
+
+	return nle;
+}
+
+static struct nftnl_expr *
 netlink_gen_counter_stmt(struct netlink_linearize_ctx *ctx,
 			 const struct stmt *stmt)
 {
@@ -789,6 +804,8 @@ netlink_gen_stmt_stateful(struct netlink_linearize_ctx *ctx,
 			  const struct stmt *stmt)
 {
 	switch (stmt->ops->type) {
+	case STMT_CONNLIMIT:
+		return netlink_gen_connlimit_stmt(ctx, stmt);
 	case STMT_COUNTER:
 		return netlink_gen_counter_stmt(ctx, stmt);
 	case STMT_LIMIT:
@@ -1269,6 +1286,7 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_set_stmt(ctx, stmt);
 	case STMT_FWD:
 		return netlink_gen_fwd_stmt(ctx, stmt);
+	case STMT_CONNLIMIT:
 	case STMT_COUNTER:
 	case STMT_LIMIT:
 	case STMT_QUOTA:

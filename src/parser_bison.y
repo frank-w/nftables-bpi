@@ -560,8 +560,8 @@ int nft_lex(void *, void *, void *);
 %type <stmt>			log_stmt log_stmt_alloc
 %destructor { stmt_free($$); }	log_stmt log_stmt_alloc
 %type <val>			level_type log_flags log_flags_tcp log_flag_tcp
-%type <stmt>			limit_stmt quota_stmt
-%destructor { stmt_free($$); }	limit_stmt quota_stmt
+%type <stmt>			limit_stmt quota_stmt connlimit_stmt
+%destructor { stmt_free($$); }	limit_stmt quota_stmt connlimit_stmt
 %type <val>			limit_burst limit_mode time_unit quota_mode
 %type <stmt>			reject_stmt reject_stmt_alloc
 %destructor { stmt_free($$); }	reject_stmt reject_stmt_alloc
@@ -2062,6 +2062,7 @@ stmt_list		:	stmt
 stmt			:	verdict_stmt
 			|	match_stmt
 			|	meter_stmt
+			|	connlimit_stmt
 			|	counter_stmt
 			|	payload_stmt
 			|	meta_stmt
@@ -2126,6 +2127,19 @@ verdict_map_list_expr	:	verdict_map_list_member_expr
 verdict_map_list_member_expr:	opt_newline	set_elem_expr	COLON	verdict_expr	opt_newline
 			{
 				$$ = mapping_expr_alloc(&@$, $2, $4);
+			}
+			;
+
+connlimit_stmt		:	CT	COUNT	NUM
+			{
+				$$ = connlimit_stmt_alloc(&@$);
+				$$->connlimit.count	= $3;
+			}
+			|	CT	COUNT	OVER	NUM
+			{
+				$$ = connlimit_stmt_alloc(&@$);
+				$$->connlimit.count = $4;
+				$$->connlimit.flags = NFT_CONNLIMIT_F_INV;
 			}
 			;
 

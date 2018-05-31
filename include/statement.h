@@ -25,6 +25,13 @@ struct objref_stmt {
 const char *objref_type_name(uint32_t type);
 struct stmt *objref_stmt_alloc(const struct location *loc);
 
+struct connlimit_stmt {
+	uint32_t		count;
+	uint32_t		flags;
+};
+
+extern struct stmt *connlimit_stmt_alloc(const struct location *loc);
+
 struct counter_stmt {
 	uint64_t		packets;
 	uint64_t		bytes;
@@ -247,6 +254,7 @@ extern struct stmt *xt_stmt_alloc(const struct location *loc);
  * @STMT_OBJREF:	stateful object reference statement
  * @STMT_EXTHDR:	extension header statement
  * @STMT_FLOW_OFFLOAD:	flow offload statement
+ * @STMT_CONNLIMIT:	connection limit statement
  * @STMT_MAP:		map statement
  */
 enum stmt_types {
@@ -272,6 +280,7 @@ enum stmt_types {
 	STMT_OBJREF,
 	STMT_EXTHDR,
 	STMT_FLOW_OFFLOAD,
+	STMT_CONNLIMIT,
 	STMT_MAP,
 };
 
@@ -318,6 +327,7 @@ struct stmt {
 		struct expr		*expr;
 		struct exthdr_stmt	exthdr;
 		struct meter_stmt	meter;
+		struct connlimit_stmt	connlimit;
 		struct counter_stmt	counter;
 		struct payload_stmt	payload;
 		struct meta_stmt	meta;

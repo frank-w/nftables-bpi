@@ -751,6 +751,21 @@ static void netlink_parse_ct(struct netlink_parse_ctx *ctx,
 		netlink_parse_ct_stmt(ctx, loc, nle);
 }
 
+static void netlink_parse_connlimit(struct netlink_parse_ctx *ctx,
+				    const struct location *loc,
+				    const struct nftnl_expr *nle)
+{
+	struct stmt *stmt;
+
+	stmt = connlimit_stmt_alloc(loc);
+	stmt->connlimit.count =
+		nftnl_expr_get_u32(nle, NFTNL_EXPR_CONNLIMIT_COUNT);
+	stmt->connlimit.flags =
+		nftnl_expr_get_u32(nle, NFTNL_EXPR_CONNLIMIT_FLAGS);
+
+	ctx->stmt = stmt;
+}
+
 static void netlink_parse_counter(struct netlink_parse_ctx *ctx,
 				  const struct location *loc,
 				  const struct nftnl_expr *nle)
@@ -1294,6 +1309,7 @@ static const struct {
 	{ .name = "meta",	.parse = netlink_parse_meta },
 	{ .name = "rt",		.parse = netlink_parse_rt },
 	{ .name = "ct",		.parse = netlink_parse_ct },
+	{ .name = "connlimit",	.parse = netlink_parse_connlimit },
 	{ .name = "counter",	.parse = netlink_parse_counter },
 	{ .name = "log",	.parse = netlink_parse_log },
 	{ .name = "limit",	.parse = netlink_parse_limit },

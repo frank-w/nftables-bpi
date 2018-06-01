@@ -1119,7 +1119,7 @@ static struct expr *json_parse_set_elem_expr(struct json_ctx *ctx,
 {
 	struct expr *expr;
 	json_t *tmp;
-	int i;
+	uint64_t i;
 
 	if (json_unpack_err(ctx, root, "{s:o}", "val", &tmp))
 		return NULL;
@@ -1130,9 +1130,9 @@ static struct expr *json_parse_set_elem_expr(struct json_ctx *ctx,
 
 	expr = set_elem_expr_alloc(int_loc, expr);
 
-	if (!json_unpack(root, "{s:i}", "timeout", &i))
+	if (!json_unpack(root, "{s:I}", "timeout", &i))
 		expr->timeout = i * 1000;
-	if (!json_unpack(root, "{s:i}", "expires", &i))
+	if (!json_unpack(root, "{s:I}", "expires", &i))
 		expr->expiration = i * 1000;
 	if (!json_unpack(root, "{s:s}", "comment", &expr->comment))
 		expr->comment = xstrdup(expr->comment);
@@ -1374,13 +1374,13 @@ static struct stmt *json_parse_match_stmt(struct json_ctx *ctx,
 static struct stmt *json_parse_counter_stmt(struct json_ctx *ctx,
 					  const char *key, json_t *value)
 {
-	int packets, bytes;
+	uint64_t packets, bytes;
 	struct stmt *stmt;
 
 	if (json_is_null(value))
 		return counter_stmt_alloc(int_loc);
 
-	if (!json_unpack(value, "{s:i, s:i}",
+	if (!json_unpack(value, "{s:I, s:I}",
 			    "packets", &packets,
 			    "bytes", &bytes)) {
 		stmt = counter_stmt_alloc(int_loc);
@@ -1461,7 +1461,7 @@ static struct stmt *json_parse_mangle_stmt(struct json_ctx *ctx,
 	}
 }
 
-static uint64_t rate_to_bytes(int val, const char *unit)
+static uint64_t rate_to_bytes(uint64_t val, const char *unit)
 {
 	uint64_t bytes = val;
 
@@ -1478,12 +1478,12 @@ static struct stmt *json_parse_quota_stmt(struct json_ctx *ctx,
 	struct stmt *stmt;
 	int inv = 0;
 	const char *val_unit = "bytes", *used_unit = "bytes";
-	int val, used = 0;
+	uint64_t val, used = 0;
 
-	if (!json_unpack(value, "{s:i}", "val", &val)) {
+	if (!json_unpack(value, "{s:I}", "val", &val)) {
 		json_unpack(value, "{s:b}", "inv", &inv);
 		json_unpack(value, "{s:s}", "val_unit", &val_unit);
-		json_unpack(value, "{s:i}", "used", &used);
+		json_unpack(value, "{s:I}", "used", &used);
 		json_unpack(value, "{s:s}", "used_unit", &used_unit);
 		stmt = quota_stmt_alloc(int_loc);
 		stmt->quota.bytes = rate_to_bytes(val, val_unit);
@@ -2397,7 +2397,7 @@ static struct cmd *json_parse_cmd_add_set(struct json_ctx *ctx, json_t *root,
 			return NULL;
 		}
 	}
-	if (!json_unpack(root, "{s:i}", "timeout", &set->timeout))
+	if (!json_unpack(root, "{s:I}", "timeout", &set->timeout))
 		set->timeout *= 1000;
 	if (!json_unpack(root, "{s:i}", "gc-interval", &set->gc_int))
 		set->gc_int *= 1000;
@@ -2573,13 +2573,13 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 	switch (cmd_obj) {
 	case CMD_OBJ_COUNTER:
 		obj->type = NFT_OBJECT_COUNTER;
-		json_unpack(root, "{s:i}", "packets", &obj->counter.packets);
-		json_unpack(root, "{s:i}", "bytes", &obj->counter.bytes);
+		json_unpack(root, "{s:I}", "packets", &obj->counter.packets);
+		json_unpack(root, "{s:I}", "bytes", &obj->counter.bytes);
 		break;
 	case CMD_OBJ_QUOTA:
 		obj->type = NFT_OBJECT_QUOTA;
-		json_unpack(root, "{s:i}", "bytes", &obj->quota.bytes);
-		json_unpack(root, "{s:i}", "used", &obj->quota.used);
+		json_unpack(root, "{s:I}", "bytes", &obj->quota.bytes);
+		json_unpack(root, "{s:I}", "used", &obj->quota.used);
 		json_unpack(root, "{s:b}", "inv", &obj->quota.flags);
 		if (obj->quota.flags)
 			obj->quota.flags = NFT_QUOTA_F_INV;

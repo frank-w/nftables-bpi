@@ -126,7 +126,7 @@ static json_t *set_print_json(struct output_ctx *octx, const struct set *set)
 	}
 
 	if (set->timeout) {
-		tmp = json_pack("i", set->timeout / 1000);
+		tmp = json_integer(set->timeout / 1000);
 		json_object_set_new(root, "timeout", tmp);
 	}
 	if (set->gc_int) {
@@ -498,6 +498,7 @@ json_t *set_ref_expr_json(const struct expr *expr, struct output_ctx *octx)
 json_t *set_elem_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
 	json_t *root = expr_print_json(expr->key, octx);
+	json_t *tmp;
 
 	if (!root)
 		return NULL;
@@ -506,15 +507,18 @@ json_t *set_elem_expr_json(const struct expr *expr, struct output_ctx *octx)
 	if (expr->timeout || expr->expiration || expr->comment) {
 		root = json_pack("{s:o}", "val", root);
 
-		if (expr->timeout)
-			json_object_set_new(root, "timeout",
-					    json_integer(expr->timeout / 1000));
-		if (expr->expiration)
-			json_object_set_new(root, "expires",
-					    json_integer(expr->expiration / 1000));
-		if (expr->comment)
-			json_object_set_new(root, "comment",
-					    json_string(expr->comment));
+		if (expr->timeout) {
+			tmp = json_integer(expr->timeout / 1000);
+			json_object_set_new(root, "timeout", tmp);
+		}
+		if (expr->expiration) {
+			tmp = json_integer(expr->expiration / 1000);
+			json_object_set_new(root, "expires", tmp);
+		}
+		if (expr->comment) {
+			tmp = json_string(expr->comment);
+			json_object_set_new(root, "comment", tmp);
+		}
 		return json_pack("{s:o}", "elem", root);
 	}
 
@@ -938,7 +942,7 @@ json_t *quota_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 		json_object_set_new(root, "inv", json_true());
 	if (!octx->stateless && stmt->quota.used) {
 		data_unit = get_rate(stmt->quota.used, &bytes);
-		json_object_set_new(root, "used", json_integer((int)bytes));
+		json_object_set_new(root, "used", json_integer(bytes));
 		json_object_set_new(root, "used_unit", json_string(data_unit));
 	}
 

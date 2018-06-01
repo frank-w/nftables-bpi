@@ -15,9 +15,17 @@ log level warn;ok;log
 log level notice;ok
 log level info;ok
 log level debug;ok
+log level audit;ok
 
 log level emerg group 2;fail
 log level alert group 2 prefix "log test2";fail
+
+# log level audit must reject all other parameters
+log level audit prefix "foo";fail
+log level audit group 42;fail
+log level audit snaplen 23;fail
+log level audit queue-threshold 1337;fail
+log level audit flags all;fail
 
 log prefix aaaaa-aaaaaa group 2 snaplen 33;ok;log prefix "aaaaa-aaaaaa" group 2 snaplen 33
 # TODO: Add an exception: 'queue-threshold' attribute needs 'group' attribute

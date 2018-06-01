@@ -77,6 +77,15 @@
     }
 ]
 
+# log level audit
+[
+    {
+        "log": {
+            "level": "audit"
+        }
+    }
+]
+
 # log prefix aaaaa-aaaaaa group 2 snaplen 33
 [
     {

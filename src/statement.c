@@ -220,7 +220,7 @@ struct stmt *objref_stmt_alloc(const struct location *loc)
 	return stmt;
 }
 
-static const char *syslog_level[LOG_DEBUG + 1] = {
+static const char *syslog_level[LOGLEVEL_AUDIT + 1] = {
 	[LOG_EMERG]	= "emerg",
 	[LOG_ALERT]	= "alert",
 	[LOG_CRIT]	= "crit",
@@ -229,11 +229,12 @@ static const char *syslog_level[LOG_DEBUG + 1] = {
 	[LOG_NOTICE]	= "notice",
 	[LOG_INFO]	= "info",
 	[LOG_DEBUG]	= "debug",
+	[LOGLEVEL_AUDIT] = "audit"
 };
 
 const char *log_level(uint32_t level)
 {
-	if (level > LOG_DEBUG)
+	if (level > LOGLEVEL_AUDIT)
 		return "unknown";
 
 	return syslog_level[level];
@@ -243,7 +244,7 @@ int log_level_parse(const char *level)
 {
 	int i;
 
-	for (i = 0; i <= LOG_DEBUG; i++) {
+	for (i = 0; i <= LOGLEVEL_AUDIT; i++) {
 		if (syslog_level[i] &&
 		    !strcmp(level, syslog_level[i]))
 			return i;

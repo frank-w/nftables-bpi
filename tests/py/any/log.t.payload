@@ -34,6 +34,10 @@ ip test-ip4 output
 ip test-ip4 output
   [ log level 7 ]
 
+# log level audit
+ip test-ip4 output
+  [ log level 8 ]
+
 # log prefix aaaaa-aaaaaa group 2 snaplen 33
 ip test-ip4 output
   [ log prefix aaaaa-aaaaaa group 2 snaplen 33 qthreshold 0 ]

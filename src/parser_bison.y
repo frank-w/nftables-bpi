@@ -2227,6 +2227,8 @@ level_type		:	string
 					$$ = LOG_INFO;
 				else if (!strcmp("debug", $1))
 					$$ = LOG_DEBUG;
+				else if (!strcmp("audit", $1))
+					$$ = LOGLEVEL_AUDIT;
 				else {
 					erec_queue(error(&@1, "invalid log level"),
 						   state->msgs);

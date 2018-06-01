@@ -2711,8 +2711,9 @@ static struct cmd *json_parse_cmd_replace(struct json_ctx *ctx,
 	struct rule *rule;
 	size_t index;
 
-	if (json_unpack_err(ctx, root, "{s:o}", "rule", &rule))
+	if (json_unpack_err(ctx, root, "{s:o}", "rule", &tmp))
 		return NULL;
+	root = tmp;
 
 	if (json_unpack_err(ctx, root, "{s:s, s:s, s:s, s:o}",
 			    "family", &family,

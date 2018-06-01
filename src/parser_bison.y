@@ -594,16 +594,16 @@ int nft_lex(void *, void *, void *);
 
 %type <expr>			multiton_rhs_expr
 %destructor { expr_free($$); }	multiton_rhs_expr
-%type <expr>			prefix_rhs_expr range_rhs_expr wildcard_rhs_expr
-%destructor { expr_free($$); }	prefix_rhs_expr range_rhs_expr wildcard_rhs_expr
+%type <expr>			prefix_rhs_expr range_rhs_expr
+%destructor { expr_free($$); }	prefix_rhs_expr range_rhs_expr
 
 %type <expr>			stmt_expr concat_stmt_expr map_stmt_expr map_stmt_expr_set
 %destructor { expr_free($$); }	stmt_expr concat_stmt_expr map_stmt_expr map_stmt_expr_set
 
 %type <expr>			multiton_stmt_expr
 %destructor { expr_free($$); }	multiton_stmt_expr
-%type <expr>			prefix_stmt_expr range_stmt_expr wildcard_stmt_expr
-%destructor { expr_free($$); }	prefix_stmt_expr range_stmt_expr wildcard_stmt_expr
+%type <expr>			prefix_stmt_expr range_stmt_expr wildcard_expr
+%destructor { expr_free($$); }	prefix_stmt_expr range_stmt_expr wildcard_expr
 
 %type <expr>			primary_stmt_expr basic_stmt_expr
 %destructor { expr_free($$); }	primary_stmt_expr basic_stmt_expr
@@ -2540,7 +2540,7 @@ range_stmt_expr		:	basic_stmt_expr	DASH	basic_stmt_expr
 			}
 			;
 
-wildcard_stmt_expr	:	ASTERISK
+wildcard_expr		:	ASTERISK
 			{
 				struct expr *expr;
 
@@ -2553,7 +2553,7 @@ wildcard_stmt_expr	:	ASTERISK
 
 multiton_stmt_expr	:	prefix_stmt_expr
 			|	range_stmt_expr
-			|	wildcard_stmt_expr
+			|	wildcard_expr
 			;
 
 stmt_expr		:	map_stmt_expr
@@ -2980,20 +2980,9 @@ range_rhs_expr		:	basic_rhs_expr	DASH	basic_rhs_expr
 			}
 			;
 
-wildcard_rhs_expr	:	ASTERISK
-	       		{
-				struct expr *expr;
-
-				expr = constant_expr_alloc(&@$, &integer_type,
-							   BYTEORDER_HOST_ENDIAN,
-							   0, NULL);
-				$$ = prefix_expr_alloc(&@$, expr, 0);
-			}
-			;
-
 multiton_rhs_expr	:	prefix_rhs_expr
 			|	range_rhs_expr
-			|	wildcard_rhs_expr
+			|	wildcard_expr
 			;
 
 map_expr		:	concat_expr	MAP	rhs_expr

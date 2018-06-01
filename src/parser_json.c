@@ -2220,7 +2220,7 @@ static struct cmd *json_parse_cmd_add_rule(struct json_ctx *ctx, json_t *root,
 		return NULL;
 	}
 
-	json_unpack(root, "{s:i}", "pos", &h.position.id);
+	json_unpack(root, "{s:i}", "index", &h.index.id);
 
 	rule = rule_alloc(int_loc, NULL);
 

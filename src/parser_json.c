@@ -278,13 +278,21 @@ static struct expr *json_parse_constant(struct json_ctx *ctx, const char *name)
 	return NULL;
 }
 
+static struct expr *wildcard_expr_alloc(void)
+{
+	struct expr *expr;
+
+	expr = constant_expr_alloc(int_loc, &integer_type,
+				   BYTEORDER_HOST_ENDIAN, 0, NULL);
+	return prefix_expr_alloc(int_loc, expr, 0);
+}
+
 /* this is a combination of symbol_expr, integer_expr, boolean_expr ... */
 static struct expr *json_parse_immediate(struct json_ctx *ctx, json_t *root)
 {
 	enum symbol_types symtype = SYMBOL_VALUE;
 	const char *str;
 	char buf[64] = {};
-	struct expr;
 
 	switch (json_typeof(root)) {
 	case JSON_STRING:
@@ -292,6 +300,8 @@ static struct expr *json_parse_immediate(struct json_ctx *ctx, json_t *root)
 		if (str[0] == '@') {
 			symtype = SYMBOL_SET;
 			str++;
+		} else if (str[0] == '*' && str[1] == '\0') {
+			return wildcard_expr_alloc();
 		} else if (is_keyword(str)) {
 			return symbol_expr_alloc(int_loc,
 						 SYMBOL_VALUE, NULL, str);
@@ -974,16 +984,6 @@ static struct expr *json_parse_range_expr(struct json_ctx *ctx,
 	return range_expr_alloc(int_loc, expr_low, expr_high);
 }
 
-static struct expr *json_parse_wildcard_expr(struct json_ctx *ctx,
-					     const char *type, json_t *root)
-{
-	struct expr *expr;
-
-	expr = constant_expr_alloc(int_loc, &integer_type,
-				   BYTEORDER_HOST_ENDIAN, 0, NULL);
-	return prefix_expr_alloc(int_loc, expr, 0);
-}
-
 static struct expr *json_parse_verdict_expr(struct json_ctx *ctx,
 					    const char *type, json_t *root)
 {
@@ -1153,7 +1153,6 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		/* below three are multiton_rhs_expr */
 		{ "prefix", json_parse_prefix_expr, CTX_F_RHS | CTX_F_STMT },
 		{ "range", json_parse_range_expr, CTX_F_RHS | CTX_F_STMT },
-		{ "*", json_parse_wildcard_expr, CTX_F_RHS | CTX_F_STMT },
 		{ "payload", json_parse_payload_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },
 		{ "exthdr", json_parse_exthdr_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },
 		{ "tcp option", json_parse_tcp_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES },

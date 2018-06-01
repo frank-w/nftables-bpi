@@ -1403,45 +1403,12 @@ static struct stmt *json_parse_counter_stmt(struct json_ctx *ctx,
 static struct stmt *json_parse_verdict_stmt(struct json_ctx *ctx,
 					    const char *key, json_t *value)
 {
-	struct {
-		const char *name;
-		int val;
-	} verdict_type_tbl[] = {
-		{ "accept", NF_ACCEPT },
-		{ "drop", NF_DROP },
-		{ "continue", NFT_CONTINUE },
-		{ "jump", NFT_JUMP },
-		{ "goto", NFT_GOTO },
-		{ "return", NFT_RETURN },
-	};
-	const char *identifier = NULL;
 	struct expr *expr;
-	unsigned int i;
-	int type = 255;	/* NFT_* are negative, NF_* are max 5 (NF_STOP) */
 
-	for (i = 0; i < array_size(verdict_type_tbl); i++) {
-		if (!strcmp(verdict_type_tbl[i].name, key)) {
-			type = verdict_type_tbl[i].val;
-			break;
-		}
-	}
-	switch(type) {
-	case NFT_JUMP:
-	case NFT_GOTO:
-		if (!json_is_string(value)) {
-			json_error(ctx, "Verdict '%s' requires destination.", key);
-			return NULL;
-		}
-		identifier = xstrdup(json_string_value(value));
-		/* fall through */
-	case NF_ACCEPT:
-	case NF_DROP:
-	case NFT_CONTINUE:
-	case NFT_RETURN:
-		expr = verdict_expr_alloc(int_loc, type, identifier);
+	expr = json_parse_verdict_expr(ctx, key, value);
+	if (expr)
 		return verdict_stmt_alloc(int_loc, expr);
-	}
-	json_error(ctx, "Unknown verdict '%s'.", key);
+
 	return NULL;
 }
 

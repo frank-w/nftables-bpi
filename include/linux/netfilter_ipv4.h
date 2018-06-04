@@ -1,13 +1,17 @@
-#ifndef __LINUX_IP_NETFILTER_H
-#define __LINUX_IP_NETFILTER_H
-
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 /* IPv4-specific defines for netfilter. 
  * (C)1998 Rusty Russell -- This code is GPL.
  */
+#ifndef __LINUX_IP_NETFILTER_H
+#define __LINUX_IP_NETFILTER_H
+
 
 #include <linux/netfilter.h>
 
 /* only for userspace compatibility */
+
+#include <limits.h> /* for INT_MIN, INT_MAX */
+
 /* IP Cache bits. */
 /* Src IP address. */
 #define NFC_IP_SRC		0x0001
@@ -51,6 +55,7 @@
 
 enum nf_ip_hook_priorities {
 	NF_IP_PRI_FIRST = INT_MIN,
+	NF_IP_PRI_RAW_BEFORE_DEFRAG = -450,
 	NF_IP_PRI_CONNTRACK_DEFRAG = -400,
 	NF_IP_PRI_RAW = -300,
 	NF_IP_PRI_SELINUX_FIRST = -225,
@@ -61,6 +66,7 @@ enum nf_ip_hook_priorities {
 	NF_IP_PRI_SECURITY = 50,
 	NF_IP_PRI_NAT_SRC = 100,
 	NF_IP_PRI_SELINUX_LAST = 225,
+	NF_IP_PRI_CONNTRACK_HELPER = 300,
 	NF_IP_PRI_CONNTRACK_CONFIRM = INT_MAX,
 	NF_IP_PRI_LAST = INT_MAX,
 };
@@ -72,4 +78,4 @@ enum nf_ip_hook_priorities {
 #define SO_ORIGINAL_DST 80
 
 
-#endif /*__LINUX_IP_NETFILTER_H*/
+#endif /* __LINUX_IP_NETFILTER_H */

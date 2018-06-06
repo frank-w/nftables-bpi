@@ -4812,14 +4812,14 @@ ip6 filter output log flags all
 						<arg choice="none">with</arg>
 						<group choice="req">
 							<arg>icmp</arg>
-							<arg>icmp6</arg>
+							<arg>icmpv6</arg>
 							<arg>icmpx</arg>
 						</group>
 						<arg choice="none">type</arg>
 						<group choice="req">
-							<arg>icmp_type</arg>
-							<arg>icmp6_type</arg>
-							<arg>icmpx_type</arg>
+							<arg>icmp_code</arg>
+							<arg>icmpv6_code</arg>
+							<arg>icmpx_code</arg>
 						</group>
 					</arg>
 				</cmdsynopsis>
@@ -4854,7 +4854,7 @@ ip6 filter output log flags all
 								<entry>icmp_code</entry>
 							</row>
 							<row>
-								<entry>icmp6</entry>
+								<entry>icmpv6</entry>
 								<entry>ip6</entry>
 								<entry>icmpv6_code</entry>
 							</row>

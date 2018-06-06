@@ -878,7 +878,7 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 			goto out_err;
 		}
 
-		if (family == AF_INET)
+		if (family == NFPROTO_IPV4)
 			expr_set_type(addr, &ipaddr_type, BYTEORDER_BIG_ENDIAN);
 		else
 			expr_set_type(addr, &ip6addr_type,
@@ -895,7 +895,7 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 			goto out_err;
 		}
 
-		if (family == AF_INET)
+		if (family == NFPROTO_IPV4)
 			expr_set_type(addr, &ipaddr_type, BYTEORDER_BIG_ENDIAN);
 		else
 			expr_set_type(addr, &ip6addr_type,

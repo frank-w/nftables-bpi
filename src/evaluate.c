@@ -2801,6 +2801,10 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 					 "specified in %s definition",
 					 set->key->dtype->name, type);
 	}
+	if (set->flags & NFT_SET_INTERVAL &&
+	    set->key->ops->type == EXPR_CONCAT)
+		return set_error(ctx, set, "concatenated types not supported in interval sets");
+
 	if (set->flags & NFT_SET_MAP) {
 		if (set->datatype == NULL)
 			return set_error(ctx, set, "map definition does not "

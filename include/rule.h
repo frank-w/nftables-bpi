@@ -580,7 +580,9 @@ extern int do_command(struct netlink_ctx *ctx, struct cmd *cmd);
 extern int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
 			enum cmd_ops cmd, struct list_head *msgs, unsigned int debug_flag,
 			struct output_ctx *octx);
-extern void cache_flush(struct list_head *table_list);
+extern void cache_flush(struct mnl_socket *nf_sock, struct nft_cache *cache,
+			enum cmd_ops cmd, struct list_head *msgs,
+			unsigned int debug_mask, struct output_ctx *octx);
 extern void cache_release(struct nft_cache *cache);
 
 enum udata_type {

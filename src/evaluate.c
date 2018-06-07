@@ -3348,7 +3348,8 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_RULESET:
-		cache_flush(&ctx->cache->list);
+		cache_flush(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
+			    ctx->debug_mask, ctx->octx);
 		break;
 	case CMD_OBJ_TABLE:
 		/* Flushing a table does not empty the sets in the table nor remove

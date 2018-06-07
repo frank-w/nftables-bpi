@@ -187,7 +187,7 @@ replay:
 	return 0;
 }
 
-void cache_flush(struct list_head *table_list)
+static void __cache_flush(struct list_head *table_list)
 {
 	struct table *table, *next;
 
@@ -197,9 +197,26 @@ void cache_flush(struct list_head *table_list)
 	}
 }
 
+void cache_flush(struct mnl_socket *nf_sock, struct nft_cache *cache,
+		 enum cmd_ops cmd, struct list_head *msgs,
+		 unsigned int debug_mask, struct output_ctx *octx)
+{
+	struct netlink_ctx ctx = {
+		.list		= LIST_HEAD_INIT(ctx.list),
+		.nf_sock	= nf_sock,
+		.cache		= cache,
+		.msgs		= msgs,
+		.debug_mask	= debug_mask,
+		.octx		= octx,
+	};
+
+	__cache_flush(&cache->list);
+	cache->genid = netlink_genid_get(&ctx);
+}
+
 void cache_release(struct nft_cache *cache)
 {
-	cache_flush(&cache->list);
+	__cache_flush(&cache->list);
 	cache->genid = 0;
 }
 

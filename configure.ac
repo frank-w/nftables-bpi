@@ -1,4 +1,4 @@
-AC_INIT([nftables], [0.8.5], [netfilter-devel@vger.kernel.org])
+AC_INIT([nftables], [0.9.0], [netfilter-devel@vger.kernel.org])
 AC_DEFINE([RELEASE_NAME], ["Fearless Fosdick"], [Release name])
 
 AC_CONFIG_AUX_DIR([build-aux])
@@ -76,7 +76,7 @@ AM_COND_IF([BUILD_PDF], [
 ])
 
 PKG_CHECK_MODULES([LIBMNL], [libmnl >= 1.0.3])
-PKG_CHECK_MODULES([LIBNFTNL], [libnftnl >= 1.1.0])
+PKG_CHECK_MODULES([LIBNFTNL], [libnftnl >= 1.1.1])
 
 AC_ARG_WITH([mini-gmp], [AS_HELP_STRING([--with-mini-gmp],
             [Use builtin mini-gmp (for embedded builds)])], [],

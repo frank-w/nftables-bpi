@@ -1276,6 +1276,16 @@ json_t *verdict_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 	return expr_print_json(stmt->expr, octx);
 }
 
+json_t *connlimit_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
+{
+	json_t *root = json_pack("{s:i}", "val", stmt->connlimit.count);
+
+	if (stmt->connlimit.flags & NFT_CONNLIMIT_F_INV)
+		json_object_set_new(root, "inv", json_true());
+
+	return json_pack("{s:o}", "ct count", root);
+}
+
 static json_t *table_print_json_full(struct netlink_ctx *ctx,
 				     struct table *table)
 {

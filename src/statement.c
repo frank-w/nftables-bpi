@@ -159,6 +159,7 @@ static const struct stmt_ops connlimit_stmt_ops = {
 	.type		= STMT_CONNLIMIT,
 	.name		= "connlimit",
 	.print		= connlimit_stmt_print,
+	.json		= connlimit_stmt_json,
 };
 
 struct stmt *connlimit_stmt_alloc(const struct location *loc)

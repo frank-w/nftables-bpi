@@ -74,6 +74,7 @@ json_t *objref_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 json_t *meter_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 json_t *queue_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 json_t *verdict_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
+json_t *connlimit_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 
 int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd);
 
@@ -149,6 +150,7 @@ STMT_PRINT_STUB(objref)
 STMT_PRINT_STUB(meter)
 STMT_PRINT_STUB(queue)
 STMT_PRINT_STUB(verdict)
+STMT_PRINT_STUB(connlimit)
 
 #undef STMT_PRINT_STUB
 #undef EXPR_PRINT_STUB

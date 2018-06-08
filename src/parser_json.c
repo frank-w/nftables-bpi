@@ -2048,6 +2048,24 @@ static struct stmt *json_parse_queue_stmt(struct json_ctx *ctx,
 	return stmt;
 }
 
+static struct stmt *json_parse_connlimit_stmt(struct json_ctx *ctx,
+					      const char *key, json_t *value)
+{
+	struct stmt *stmt = connlimit_stmt_alloc(int_loc);
+
+	if (json_unpack_err(ctx, value, "{s:i}",
+			    "val", &stmt->connlimit.count)) {
+		stmt_free(stmt);
+		return NULL;
+	}
+
+	json_unpack(value, "{s:b}", "inv", &stmt->connlimit.flags);
+	if (stmt->connlimit.flags)
+		stmt->connlimit.flags = NFT_CONNLIMIT_F_INV;
+
+	return stmt;
+}
+
 static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 {
 	struct {
@@ -2078,6 +2096,7 @@ static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 		{ "ct helper", json_parse_cthelper_stmt },
 		{ "meter", json_parse_meter_stmt },
 		{ "queue", json_parse_queue_stmt },
+		{ "ct count", json_parse_connlimit_stmt },
 	};
 	const char *type;
 	unsigned int i;

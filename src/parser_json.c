@@ -10,6 +10,7 @@
 #include <netlink.h>
 #include <parser.h>
 #include <rule.h>
+#include <socket.h>
 
 #include <netdb.h>
 #include <netinet/icmp6.h>
@@ -343,6 +344,27 @@ static struct expr *json_parse_meta_expr(struct json_ctx *ctx,
 		return NULL;
 	}
 	return meta_expr_alloc(int_loc, key);
+}
+
+static struct expr *json_parse_socket_expr(struct json_ctx *ctx,
+					   const char *type, json_t *root)
+{
+	const char *key;
+	int keyval = -1;
+
+
+	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
+		return NULL;
+
+	if (!strcmp(key, "transparent"))
+		keyval = NFT_SOCKET_TRANSPARENT;
+
+	if (keyval == -1) {
+		json_error(ctx, "Invalid socket key value.");
+		return NULL;
+	}
+
+	return socket_expr_alloc(int_loc, keyval);
 }
 
 static int json_parse_payload_field(const struct proto_desc *desc,
@@ -1157,6 +1179,7 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		{ "exthdr", json_parse_exthdr_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },
 		{ "tcp option", json_parse_tcp_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES },
 		{ "meta", json_parse_meta_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },
+		{ "socket", json_parse_socket_expr, CTX_F_PRIMARY },
 		{ "rt", json_parse_rt_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },
 		{ "ct", json_parse_ct_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },
 		{ "numgen", json_parse_numgen_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },

@@ -18,6 +18,8 @@ struct socket_template {
 	enum byteorder		byteorder;
 };
 
+extern const struct socket_template socket_templates[];
+
 extern struct expr *socket_expr_alloc(const struct location *loc,
 				    enum nft_socket_keys key);
 

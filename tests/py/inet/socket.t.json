@@ -1,0 +1,28 @@
+# socket transparent 0
+[
+    {
+        "match": {
+            "left": {
+                "socket": {
+                    "key": "transparent"
+                }
+            },
+            "right": 0
+        }
+    }
+]
+
+# socket transparent 1
+[
+    {
+        "match": {
+            "left": {
+                "socket": {
+                    "key": "transparent"
+                }
+            },
+            "right": 1
+        }
+    }
+]
+

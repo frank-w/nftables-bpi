@@ -805,6 +805,12 @@ json_t *constant_expr_json(const struct expr *expr, struct output_ctx *octx)
 	return datatype_json(expr, octx);
 }
 
+json_t *socket_expr_json(const struct expr *expr, struct output_ctx *octx)
+{
+	return json_pack("{s:{s:s}}", "socket", "key",
+			 socket_templates[expr->socket.key].token);
+}
+
 json_t *integer_type_json(const struct expr *expr, struct output_ctx *octx)
 {
 	char buf[1024] = "0x";

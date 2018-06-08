@@ -11,6 +11,7 @@
 #include <nftables.h>
 #include <expression.h>
 #include <socket.h>
+#include <json.h>
 
 const struct socket_template socket_templates[] = {
 	[NFT_SOCKET_TRANSPARENT]	= {.token = "transparent",
@@ -39,6 +40,7 @@ static const struct expr_ops socket_expr_ops = {
 	.type		= EXPR_SOCKET,
 	.name		= "socket",
 	.print		= socket_expr_print,
+	.json		= socket_expr_json,
 	.cmp		= socket_expr_cmp,
 	.clone		= socket_expr_clone,
 };

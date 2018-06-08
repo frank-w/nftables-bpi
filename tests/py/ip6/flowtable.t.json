@@ -21,6 +21,7 @@
                 }
             },
             "name": "acct_out",
+            "size": 4096,
             "stmt": {
                 "counter": null
             }
@@ -51,6 +52,7 @@
                 }
             },
             "name": "acct_out",
+            "size": 12345,
             "stmt": {
                 "counter": null
             }

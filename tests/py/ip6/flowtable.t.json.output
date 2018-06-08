@@ -1,4 +1,4 @@
-# meter acct_out { meta iif . ip6 saddr timeout 600s counter }
+# meter acct_out size 4096 { meta iif . ip6 saddr timeout 600s counter }
 [
     {
         "meter": {
@@ -21,7 +21,7 @@
                 }
             },
             "name": "acct_out",
-            "size": 65535,
+            "size": 4096,
             "stmt": {
                 "counter": null
             }
@@ -29,7 +29,7 @@
     }
 ]
 
-# meter acct_out { ip6 saddr . meta iif timeout 600s counter }
+# meter acct_out size 12345 { ip6 saddr . meta iif timeout 600s counter }
 [
     {
         "meter": {
@@ -52,7 +52,7 @@
                 }
             },
             "name": "acct_out",
-            "size": 65535,
+            "size": 12345,
             "stmt": {
                 "counter": null
             }

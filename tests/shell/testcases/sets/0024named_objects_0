@@ -30,4 +30,4 @@ table inet x {
 }"
 
 set -e
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"

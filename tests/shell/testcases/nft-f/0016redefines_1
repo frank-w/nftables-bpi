@@ -21,7 +21,7 @@ EXPECTED="table ip x {
         }
 }"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 
 GET="$($NFT list ruleset)"
 

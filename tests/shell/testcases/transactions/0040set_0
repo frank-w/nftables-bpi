@@ -20,7 +20,7 @@ RULESET="table ip filter {
 	chain CIn_1 {
 	}
 }"
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2
         exit 1
@@ -36,7 +36,7 @@ fi
 
 RULESET="delete element ip filter client_to_any { 1.2.3.4 : goto CIn_1 }
 delete chain ip filter CIn_1"
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2
         exit 1

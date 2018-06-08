@@ -7,6 +7,6 @@ add rule x test set update ip saddr timeout 1d2h3m4s5ms @y
 add rule x test set update ip daddr timeout 100ms @y"
 
 set -e
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 $NFT list chain x test | grep -q 'update @y { ip saddr timeout 1d2h3m4s5ms }'
 $NFT list chain x test | grep -q 'update @y { ip daddr timeout 100ms }'

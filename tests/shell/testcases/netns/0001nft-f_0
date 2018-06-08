@@ -83,7 +83,7 @@ if [ $? -ne 0 ] ; then
 	exit 1
 fi
 
-$IP netns exec $NETNS_NAME $NFT -f - <<< $RULESET
+$IP netns exec $NETNS_NAME $NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
 	echo "E: unable to load ruleset in netns" >&2
 	$IP netns del $NETNS_NAME

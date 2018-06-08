@@ -11,7 +11,7 @@ add map t m {type ipv4_addr : inet_service;}
 add rule t c tcp dport 80 meter f size 1024 {ip saddr limit rate 10/second}
 "
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 
 # Commands that should be invalid
 

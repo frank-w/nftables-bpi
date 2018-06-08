@@ -16,4 +16,4 @@ table ip filter {
 }"
 
 set -e
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"

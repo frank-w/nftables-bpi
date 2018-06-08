@@ -14,4 +14,4 @@ add element t sourcemap { 100.123.10.2 : jump c }
 "
 
 set -e
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"

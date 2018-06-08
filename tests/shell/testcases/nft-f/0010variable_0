@@ -10,4 +10,4 @@ table inet filter {
 add element inet filter whitelist_v4 \$whitelist_v4
 "
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"

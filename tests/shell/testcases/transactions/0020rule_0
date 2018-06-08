@@ -7,7 +7,7 @@ add chain x y
 add rule x y ip saddr 1.1.1.1 counter
 flush ruleset"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2
         exit 1

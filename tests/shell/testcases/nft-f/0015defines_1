@@ -13,4 +13,4 @@ table ip t {
 	}
 }"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"

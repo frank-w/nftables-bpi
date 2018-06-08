@@ -47,7 +47,7 @@ table ip6 x {
 	}
 }"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 RULESET_JSON=$($NFT export vm json)
 $NFT flush ruleset
-$NFT import vm json <<< $RULESET_JSON
+$NFT import vm json <<< "$RULESET_JSON"

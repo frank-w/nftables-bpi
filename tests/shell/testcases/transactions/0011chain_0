@@ -8,7 +8,7 @@ delete chain x y
 add chain x y { type filter hook input priority 0; }
 add chain x y { policy drop; }"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2
         exit 1

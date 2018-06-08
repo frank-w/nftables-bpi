@@ -8,5 +8,5 @@ delete chain x y
 add rule x y jump y"
 
 # kernel must return ENOENT
-$NFT -f - <<< $RULESET 2>/dev/null
+$NFT -f - <<< "$RULESET" 2>/dev/null
 echo "E: allowing jump loop to unexisting chain"

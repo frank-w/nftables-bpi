@@ -7,7 +7,7 @@ add chain x y
 add chain x z
 add rule x z jump y"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2
         exit 1
@@ -18,7 +18,7 @@ delete chain x z
 delete chain x y
 delete table x"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
         echo "E: unable to load good ruleset" >&2
         exit 1

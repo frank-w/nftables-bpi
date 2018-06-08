@@ -16,7 +16,7 @@ table ip x {
 	}
 }'
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
         echo "E: unable to load ruleset" >&2
         exit 1

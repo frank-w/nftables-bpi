@@ -14,7 +14,7 @@ add set t s {type ipv4_addr\;}
 add rule t c ip saddr @s
 "
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 ret=$?
 
 trap - EXIT

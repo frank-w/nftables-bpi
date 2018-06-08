@@ -8,6 +8,6 @@ add element x y { 1.1.1.1, 2.2.2.2 }
 delete element x y { 1.1.1.1 }
 delete element x y { 1.1.1.1 }"
 
-$NFT -f - <<< $RULESET 2> /dev/null
+$NFT -f - <<< "$RULESET" 2> /dev/null
 # Kernel must return ENOENT
 echo "E: allowing double-removal of element"

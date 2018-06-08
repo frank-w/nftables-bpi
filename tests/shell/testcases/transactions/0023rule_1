@@ -7,5 +7,5 @@ add chain x y
 add rule x y jump y"
 
 # kernel must return ELOOP
-$NFT -f - <<< $RULESET 2>/dev/null
+$NFT -f - <<< "$RULESET" 2>/dev/null
 echo "E: allowing jump to chain loop"

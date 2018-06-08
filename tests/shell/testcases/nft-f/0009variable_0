@@ -11,4 +11,4 @@ table inet forward {
 	}
 }"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"

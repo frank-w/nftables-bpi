@@ -12,7 +12,7 @@ add element inet filter blacklist_v4 {
 192.168.0.1/24,
 }"
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 
 # make sure flush ruleset works right
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"

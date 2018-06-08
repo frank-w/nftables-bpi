@@ -1,9 +1,9 @@
 if BUILD_MAN
-man_MANS = nft.8
+man_MANS = nft.8 libnftables-json.5
 endif
 
 if BUILD_PDF
-pdf_DATA = nft.pdf
+pdf_DATA = nft.pdf libnftables-json.pdf
 endif
 
 pdfdir=${docdir}/pdf
@@ -14,6 +14,15 @@ pdfdir=${docdir}/pdf
 .xml.8:
 	${AM_V_GEN}${DB2MAN} --xinclude $<
 
-EXTRA_DIST = nft.xml
+.adoc.pdf:
+	a2x --doctype manpage --format pdf $<
 
-CLEANFILES = nft.pdf nft.8 *~
+.adoc.5:
+	a2x --doctype manpage --format manpage $<
+
+EXTRA_DIST = nft.xml libnftables-json.adoc
+
+CLEANFILES = \
+	nft.pdf nft.8 \
+	libnftables-json.pdf libnftables-json.5 \
+	*~

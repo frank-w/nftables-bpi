@@ -1,0 +1,1236 @@
+libnftables-json(5)
+===================
+Phil Sutter <phil@nwl.cc>
+:doctype: manpage
+
+NAME
+----
+libnftables-json - Supported JSON schema by libnftables
+
+SYNOPSIS
+--------
+
+*{ "nftables": [* 'OBJECTS' *] }*
+
+'OBJECTS' := 'LIST_OBJECTS' | 'CMD_OBJECTS'
+
+'LIST_OBJECTS' := 'LIST_OBJECT' [ *,* 'LIST_OBJECTS' ]
+
+'CMD_OBJECTS' := 'CMD_OBJECT' [ *,* 'CMD_OBJECTS' ]
+
+'CMD_OBJECT' := *{* 'CMD'*:* 'LIST_OBJECT' *}*
+
+'CMD' := *"add"* | *"replace"* | *"create"* | *"insert"* | *"delete"* | *"list"*
+| *"reset"* | *"flush"* | *"rename"*
+
+'LIST_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
+'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT'
+
+'TABLE' := *{ "table":* 'TABLE_PROPERTIES' *}*
+
+'TABLE_PROPERTIES' := 'TABLE_PROPERTY' [ *,* 'TABLE_PROPERTIES' ]
+
+'TABLE_PROPERTY' := 'FAMILY' | 'NAME' | 'HANDLE'
+
+'FAMILY' := *"family":* 'FAMILY_VALUE'
+
+'FAMILY_VALUE' := *"ip"* | *"ip6"* | *"inet"* | *"bridge"* | *"arp"*
+
+'NAME' := *"name":* 'STRING'
+
+'HANDLE' := *"handle":* 'NUMBER'
+
+DESCRIPTION
+-----------
+libnftables supports JSON formatted input and output. This is implemented as an
+alternative frontend to the standard CLI syntax parser, therefore basic
+behaviour is identical and for (almost) any operation available in standard
+syntax there should be an equivalent one in JSON.
+
+JSON input may be provided in a single string as parameter to
+*nft_run_cmd_from_buffer()* or in a file identified by the 'filename' parameter
+of *nft_run_cmd_from_filename()* function.
+
+JSON output has to be enabled via *nft_ctx_output_set_json()* function, turning
+library standard output into JSON format. Error output remains unaffected.
+
+GLOBAL STRUCTURE
+----------------
+In general, any JSON input or output is enclosed in an object with a single
+property named 'nftables'. It's value is an array containing commands (for
+input) or ruleset elements (for output).
+
+A command is an object with a single property whose name identifies the command.
+It's value is a ruleset element - basically identical to output elements apart
+from certain properties which may be interpreted differently or are required
+when output generally omits them.
+
+COMMAND OBJECTS
+---------------
+The structure accepts an arbitrary amount of commands which are interpreted in
+order of appearance. For instance, the following standard syntax input:
+
+------------------------------------------------------------------------
+flush ruleset
+add table inet mytable
+list ruleset
+------------------------------------------------------------------------
+
+translates into JSON as such:
+
+------------------------------------------------------------------------
+{ "nftables": [
+	{ "flush": { "ruleset": null }},
+	{ "add": { "table": { "family": "inet", "name": "mytable" }}},
+	{ "list": { "ruleset": null }}
+]}
+------------------------------------------------------------------------
+
+ADD
+~~~
+
+*{ "add":* 'ADD_OBJECT' *}*
+
+'ADD_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
+'FLOWTABLE' | 'COUNTER | QUOTA' | 'CT_HELPER' | 'LIMIT'
+
+Add a new ruleset element to the kernel.
+
+REPLACE
+~~~~~~~
+
+*{ "replace":* 'RULE' *}*
+
+Replace a rule. In 'RULE', *handle* property is mandatory and identifies the
+rule to be replaced.
+
+CREATE
+~~~~~~
+
+*{ "create":* 'ADD_OBJECT' *}*
+
+Identical to *add* command, but returns an error if the object already exists.
+
+INSERT
+~~~~~~
+
+*{ "insert":* 'RULE' *}*
+
+This command is identical to *add* for rules, but instead of appending the rule
+to the chain by default, it inserts at first position. If a *handle* or *index*
+property is given, the rule is inserted before the rule identified by those
+properties.
+
+DELETE
+~~~~~~
+
+*{ "delete":* 'ADD_OBJECT' *}*
+
+Delete an object from the ruleset. Only the minimal number of properties
+required to uniquely identify an object is generally needed in 'ADD_OBJECT'. For
+most ruleset elements this is *family* and *table* plus either *handle* or
+*name* (except rules since they don't have a name).
+
+LIST
+~~~~
+
+*{ "list":* 'LIST_OBJECT' *}*
+
+'LIST_OBJECT' := 'TABLE' | 'TABLES' | 'CHAIN' | 'CHAINS' | 'SET' | 'SETS' |
+'MAP' | 'MAPS | COUNTER' | 'COUNTERS' | 'QUOTA' | 'QUOTAS' | 'CT_HELPER' |
+'CT_HELPERS' | 'LIMIT' | 'LIMITS | RULESET' | 'METER' | 'METERS' | 'FLOWTABLES'
+
+List ruleset elements. The plural forms are used to list all objects of that
+kind, optionally filtered by *family* and for some, also *table*.
+
+RESET
+~~~~~
+
+*{ "reset":* 'RESET_OBJECT' *}*
+
+'RESET_OBJECT' := 'COUNTER' | 'COUNTERS' | 'QUOTA' | 'QUOTAS'
+
+Reset state in suitable objects, i.e. zero their internal counter.
+
+FLUSH
+~~~~~
+
+*{ "flush":* 'FLUSH_OBJECT' *}*
+
+'FLUSH_OBJECT' := 'TABLE' | 'CHAIN' | 'SET' | 'MAP' | 'METER' | 'RULESET'
+
+Empty contents in given object, e.g. remove all chains from given *table* or
+remove all elements from given *set*.
+
+RENAME
+~~~~~~
+*{ "rename":* 'CHAIN' *}*
+
+Rename a chain. The new name is expected in a dedicated property named
+*newname*.
+
+RULESET ELEMENTS
+----------------
+
+TABLE
+~~~~~
+[verse]
+*{ "table":
+	"family":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* 'NUMBER'
+*}*
+
+This object describes a table.
+
+*family*::
+	The table's family, e.g. *"ip"* or *"ip6"*.
+*name*::
+	The table's name.
+*handle*::
+	The table's handle. In input, used only in *delete* command as
+	alternative to *name*.
+
+CHAIN
+~~~~~
+[verse]
+*{ "chain":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"newname":* 'STRING'*,
+	"handle":* 'NUMBER'*,
+	"type":* 'STRING'*,
+	"hook":* 'STRING'*,
+	"prio":* 'NUMBER'*,
+	"dev":* 'STRING'*,
+	"policy":* 'STRING'
+*}*
+
+This object describes a chain.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The chain's name.
+*handle*::
+	The chain's handle. In input, used only in *delete* command as
+	alternative to *name*.
+*newname*::
+	A new name for the chain, only relevant in *rename* command.
+
+The following properties are required for base chains:
+
+*type*::
+	The chain's type.
+*hook*::
+	The chain's hook.
+*prio*::
+	The chain's priority.
+*dev*::
+	The chain's bound interface (if in netdev family).
+*policy*::
+	The chain's policy.
+
+RULE
+~~~~
+[verse]
+*{ "rule":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"chain":* 'STRING'*,
+	"expr": [* 'STATEMENTS' *],
+	"handle":* 'NUMBER'*,
+	"index":* 'NUMBER'*,
+	"comment":* 'STRING'
+*}*
+
+[verse]
+'STATEMENTS' := 'STATEMENT' [*,* 'STATEMENTS' ]
+
+This object describes a rule. Basic building blocks of rules are statements,
+each rule consists of at least a single one.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*chain*::
+	The chain's name.
+*expr*::
+	An array of statements this rule consists of. In input, used in
+	*add*/*insert*/*replace* commands only.
+*handle*::
+	The rule's handle. In *delete*/*replace* commands, serves as identifier
+	of the rule to delete/replace. In *add*/*insert* commands, serves as
+	identifier of an existing rule to append/prepend the rule to.
+*index*::
+	The rule's position for *add*/*insert* commands. Used as alternative to
+	*handle* then.
+*comment*::
+	Optional rule comment.
+
+SET / MAP
+~~~~~~~~~
+[verse]
+*{ "set":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* 'NUMBER'*,
+	"type":* 'SET_TYPE'*,
+	"policy":* 'SET_POLICY'*,
+	"flags": [* 'SET_FLAG_LIST' *],
+	"elem":* 'SET_ELEMENTS'*,
+	"timeout":* 'NUMBER'*,
+	"gc-interval":* 'NUMBER'*,
+	"size":* 'NUMBER'
+*}*
+
+[verse]
+*{ "map":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* 'NUMBER'*,
+	"type":* 'SET_TYPE'*,
+	"map":* 'STRING'*,
+	"policy":* 'SET_POLICY'*,
+	"flags": [* 'SET_FLAG_LIST' *],
+	"elem":* 'SET_ELEMENTS'*,
+	"timeout":* 'NUMBER'*,
+	"gc-interval":* 'NUMBER'*,
+	"size":* 'NUMBER'
+*}*
+
+[verse]
+'SET_TYPE' := 'STRING' | *[* 'SET_TYPE_LIST' *]*
+'SET_TYPE_LIST' := 'STRING' [*,* 'SET_TYPE_LIST' ]
+'SET_POLICY' := *"performance"* | *"memory"*
+'SET_FLAG_LIST' := 'SET_FLAG' [*,* 'SET_FLAG_LIST' ]
+'SET_FLAG' := *"constant"* | *"interval"* | *"timeout"*
+'SET_ELEMENTS' := 'EXPRESSION' | *[* 'EXPRESSION_LIST' *]*
+'EXPRESSION_LIST' := 'EXPRESSION' [*,* 'EXPRESSION_LIST' ]
+
+These objects describe a named set or map. Maps are a special form of sets in
+that they translate a unique key to a value.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The set's name.
+*handle*::
+	The set's handle. For input, used in *delete* command only.
+*type*::
+	The set's datatype, see below.
+*map*::
+	Type of values this set maps to (i.e. this set is a map).
+*policy*::
+	The set's policy.
+*flags*::
+	The set's flags.
+*elem*::
+	Initial set element(s), see below.
+*timeout*::
+	Element timeout in seconds.
+*gc-interval*::
+	Garbage collector interval in seconds.
+*size*::
+	Maximum number of elements supported.
+
+TYPE
+^^^^
+The set type might be a string, such as *"ipv4_addr"* or an array
+consisting of strings (for concatenated types).
+
+ELEM
+^^^^
+A single set element might be given as string, integer or boolean value for
+simple cases. If additional properties are required, a formal *elem* object may
+be used.
+
+Multiple elements may be given in an array.
+
+ELEMENT
+~~~~~~~
+[verse]
+*{ "element":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"elem":* 'SET_ELEM'
+*}*
+
+[verse]
+'SET_ELEM' := 'EXPRESSION' | *[* 'EXPRESSION_LIST' *]*
+'EXPRESSION_LIST' := 'EXPRESSION' [*,* 'EXPRESSION' ]
+
+Manipulate element(s) in a named set.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The set's name.
+*elem*::
+	See elem property of set object.
+
+FLOWTABLE
+~~~~~~~~~
+[verse]
+*{ "flowtable":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"hook":* 'STRING'*,
+	"prio":* 'NUMBER'*,
+	"dev":* 'FT_INTERFACE'
+*}*
+
+[verse]
+'FT_INTERFACE' := 'STRING' | *[* 'FT_INTERFACE_LIST' *]*
+'FT_INTERFACE_LIST' := 'STRING' [*,* 'STRING' ]
+
+This object represents a named flowtable.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The flow table's name.
+*hook*::
+	The flow table's hook.
+*prio*::
+	The flow table's priority.
+*dev*::
+	The flow table's interface(s).
+
+COUNTER
+~~~~~~~
+[verse]
+*{ "counter":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* 'NUMBER'*,
+	"packets":* 'NUMBER'*,
+	"bytes":* 'NUMBER'
+*}*
+
+This object represents a named counter.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The counter's name.
+*handle*::
+	The counter's handle. In input, used for *delete* command only.
+*packets*::
+	Packet counter value.
+*bytes*::
+	Byte counter value.
+
+QUOTA
+~~~~~
+[verse]
+*{ "quota":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* 'NUMBER'*,
+	"bytes":* 'NUMBER'*,
+	"used":* 'NUMBER'*,
+	"inv":* 'BOOLEAN'
+*}*
+
+This object represents a named quota.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The quota's name.
+*handle*::
+	The quota's handle. In input, used for *delete* command only.
+*bytes*::
+	Quota threshold.
+*used*::
+	Quota used so far.
+*inv*::
+	If true, match if quota exceeded.
+
+CT HELPER
+~~~~~~~~~
+[verse]
+*{ "ct helper":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* '... '*,
+	"type":* 'STRING'*,
+	"protocol":* 'CTH_PROTO'*,
+	"l3proto":* 'STRING'
+*}*
+
+[verse]
+'CTH_PROTO' := *"tcp"* | *"udp"*
+
+This object represents a named conntrack helper.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The ct helper's name.
+*handle*::
+	The ct helper's handle. In input, used for *delete* command only.
+*type*::
+	The ct helper type name, e.g. *"ftp"* or *"tftp"*.
+*protocol*::
+	The ct helper's layer 4 protocol.
+*l3proto*::
+	The ct helper's layer 3 protocol, e.g. *"ip"* or *"ip6"*.
+
+LIMIT
+~~~~~
+[verse]
+*{ "limit":
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* 'NUMBER'*,
+	"rate":* 'NUMBER'*,
+	"per":* 'STRING'*,
+	"burst":* 'NUMBER'*,
+	"unit":* 'LIMIT_UNIT'*,
+	"inv":* 'BOOLEAN'
+*}*
+
+'LIMIT_UNIT' := *"packets"* | *"bytes"*
+
+This object represents a named limit.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The limit's name.
+*handle*::
+	The limit's handle. In input, used for *delete* command only.
+*rate*::
+	The limit's rate value.
+*per*::
+	Time unit to apply the limit to, e.g. *"week"*, *"day"*, *"hour"*, etc.
+	If omitted, defaults to *"second"*.
+*burst*::
+	The limit's burst value. If omitted, defaults to *0*.
+*unit*::
+	Unit of rate and burst values. If omitted, defaults to *"packets"*.
+*inv*::
+	If true, match if limit was exceeded. If omitted, defaults to *false*.
+
+STATEMENTS
+----------
+Statements are the building blocks for rules. Each rule consists of at least a
+single statement.
+
+VERDICT
+~~~~~~~
+[verse]
+*{ "accept": null }*
+*{ "drop": null }*
+*{ "continue": null }*
+*{ "return": null }*
+*{ "jump":* 'STRING' *}*
+*{ "goto":* 'STRING' *}*
+
+A verdict either terminates packet traversal through the current chain or
+delegates to a different one.
+
+*jump* and *goto* statements expect a target chain name as value.
+
+MATCH
+~~~~~
+[verse]
+*{ "match":
+	"left":* 'EXPRESSION'*,
+	"right":* 'EXPRESSION'*,
+	"op":* 'STRING'
+*}*
+
+Match expression on left hand side (typically a packet header or packet meta
+info) with expression on right hand side (typically a constant value). If the
+statement evaluates true, the next statement in this rule is considered. If not,
+processing continues with the next rule in the same chain.
+
+*left*::
+	Left hand side of this match.
+*right*::
+	Right hand side of this match.
+*op*::
+	Operator indicating the type of comparison.
+
+OPERATORS
+^^^^^^^^^
+The operator is usually optional and if omitted usually defaults to "==".
+Allowed operators are:
+
+[horizontal]
+*&*:: Binary AND
+*|*:: Binary OR
+*^*:: Binary XOR
+*<<*:: Left shift
+*>>*:: Right shift
+*==*:: Equal
+*!=*:: Not equal
+*<*:: Less than
+*>*:: Greater than
+*<=*:: Less than or equal to
+*>=*:: Greater than or equal to
+
+COUNTER
+~~~~~~~
+[verse]
+*{ "counter":
+	"packets":* 'NUMBER'*,
+	"bytes":* 'NUMBER'
+*}*
+
+[verse]
+*{ "counter":* 'STRING' *}*
+
+This object represents a byte/packet counter. In Input, no properties are
+required. If given, they act as initial values for the counter.
+
+The first form creates an anonymous counter which lives in the rule it appears
+in. The second form specifies a reference to a named counter object.
+
+*packets*::
+	Packets counted.
+*bytes*::
+	Bytes counted.
+
+MANGLE
+~~~~~~
+[verse]
+*{ "mangle":
+	"left":* 'EXPRESSION'*,
+	"right":* 'EXPRESSION'
+*}*
+
+Change packet data or meta info.
+
+*left*::
+	Packet data to be changed.
+*right*::
+	Value to change data to.
+
+QUOTA
+~~~~~
+[verse]
+*{ "quota":
+	"val":* 'NUMBER'*,
+	"val_unit":* 'STRING'*,
+	"used":* 'NUMBER'*,
+	"used_unit":* 'STRING'*,
+	"inv":* 'BOOLEAN'
+*}*
+
+[verse]
+*{ "quota":* 'STRING' *}*
+
+The first form creates an anonymous quota which lives in the rule it appears in.
+The second form specifies a reference to a named quota object.
+
+*val*::
+	Quota value.
+*val_unit*::
+	Unit of *val*, e.g. *"kbytes"* or *"mbytes"*. If omitted, defaults to
+	*"bytes"*.
+*used*::
+	Quota used so far. Optional on input. If given, serves as initial value.
+*used_unit*::
+	Unit of *used*. Defaults to *"bytes"*.
+*inv*::
+	If *true*, will match if quota was exceeded. Defaults to *false*.
+
+LIMIT
+~~~~~
+[verse]
+*{ "limit":
+	"rate":* 'NUMBER'*,
+	"rate_unit":* 'STRING'*,
+	"per":* 'STRING'*,
+	"burst":* 'NUMBER'*,
+	"burst_unit":* 'STRING'*,
+	"inv":* 'BOOLEAN'
+*}*
+
+[verse]
+*{ "limit":* 'STRING' *}*
+
+The first form creates an anonymous limit which lives in the rule it appears in.
+The second form specifies a reference to a named limit object.
+
+*rate*::
+	Rate value to limit to.
+*rate_unit*::
+	Unit of *rate*, e.g. *"packets"* or *"mbytes"*. Defaults to *"packets"*.
+*per*::
+	Denominator of *rate*, e.g. *"week"* or *"minutes"*.
+*burst*::
+	Burst value. Defaults to *0*.
+*burst_unit*::
+	Unit of *burst*, ignored if *rate_unit* is *"packets"*. Defaults to
+	*"bytes"*.
+*inv*::
+	If *true*, matches if limit was exceeded. Defaults to *false*.
+
+FWD
+~~~
+[verse]
+*{ "fwd":
+	"dev":* 'EXPRESSION'*,
+	"family":* 'FWD_FAMILY'*,
+	"addr":* 'EXPRESSION'
+*}*
+
+[verse]
+'FWD_FAMILY' := *"ip"* | *"ip6"*
+
+Forward a packet to a different destination.
+
+*dev*::
+	Interface to forward packet to.
+*family*::
+	Family of *addr*.
+*addr*::
+	IP(v6) address to forward the packet to.
+
+Both *family* and *addr* are optional, but if given both need to be present.
+
+NOTRACK
+~~~~~~~
+[verse]
+*{ "notrack": null }*
+
+Disable connection tracking for the packet.
+
+DUP
+~~~
+[verse]
+*{ "dup":
+	"addr":* 'EXPRESSION'*,
+	"dev":* 'EXPRESSION'
+*}*
+
+Duplicate a packet to a different destination.
+
+*addr*::
+	Address to duplicate packet to.
+*dev*::
+	Interface to duplicate packet to. May be omitted to not specify an
+	interface explicitly.
+
+NETWORK ADDRESS TRANSLATION
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*{ "snat":
+	"addr":* 'EXPRESSION'*,
+	"port":* 'EXPRESSION'*,
+	"flags":* 'FLAGS'
+*}*
+
+[verse]
+*{ "dnat":
+	"addr":* 'EXPRESSION'*,
+	"port":* 'EXPRESSION'*,
+	"flags":* 'FLAGS'
+*}*
+
+[verse]
+*{ "masquerade":
+	"port":* 'EXPRESSION'*,
+	"flags":* 'FLAGS'
+*}*
+
+[verse]
+*{ "redirect":
+	"port":* 'EXPRESSION'*,
+	"flags":* 'FLAGS'
+*}*
+
+[verse]
+'FLAGS' := 'FLAG' | *[* 'FLAG_LIST' *]*
+'FLAG_LIST' := 'FLAG' [*,* 'FLAG_LIST' ]
+'FLAG' := *"random"* | *"fully-random"* | *"persistent"*
+
+Perform Network Address Translation.
+
+*addr*::
+	Address to translate to.
+*port*::
+	Port to translate to.
+*flags*::
+	Flag(s).
+
+All properties are optional and default to none.
+
+REJECT
+~~~~~~
+[verse]
+*{ "reject":
+	"type":* 'STRING'*,
+	"expr":* 'EXPRESSION'
+*}*
+
+Reject the packet and send the given error reply.
+
+*type*::
+	Type of reject, either *"tcp reset"*, *"icmpx"*, *"icmp"* or *"icmpv6"*.
+*expr*::
+	ICMP type to reject with.
+
+All properties are optional.
+
+SET
+~~~
+[verse]
+*{ "set":
+	"op":* 'STRING'*,
+	"elem":* 'EXPRESSION'*,
+	"set":* 'STRING'
+*}*
+
+Dynamically add/update elements to a set.
+
+*op*::
+	Operator on set, either *"add"* or *"update"*.
+*elem*::
+	Set element to add or update.
+*set*::
+	Set reference.
+
+LOG
+~~~
+[verse]
+*{ "log":
+	"prefix":* 'STRING'*,
+	"group":* 'NUMBER'*,
+	"snaplen":* 'NUMBER'*,
+	"queue-threshold":* 'NUMBER'*,
+	"level":* 'LEVEL'*,
+	"flags":* 'FLAGS'
+*}*
+
+[verse]
+'LEVEL' := *"emerg"* | *"alert"* | *"crit"* | *"err"* | *"warn"* | *"notice"* |
+*"info"* | *"debug"* | *"audit"*
+
+[verse]
+'FLAGS' := 'FLAG' | *[* 'FLAG_LIST' *]*
+'FLAG_LIST' := 'FLAG' [*,* 'FLAG_LIST' ]
+'FLAG' := *"tcp sequence"* | *"tcp options"* | *"ip options"* | *"skuid"* |
+*"ether"* | *"all"*
+
+Log the packet.
+
+*prefix*::
+	Prefix for log entries.
+*group*::
+	Log group.
+*snaplen*::
+	Snaplen for logging.
+*queue-threshold*::
+	Queue threshold.
+*level*::
+	Log level. Defaults to *"warn"*.
+*flags*::
+	Log flags.
+
+All properties are optional.
+
+CT HELPER
+~~~~~~~~~
+[verse]
+*{ "ct helper":* 'EXPRESSION' *}*
+
+Enable specified conntrack helper for this packet.
+
+*ct helper*::
+	CT helper reference.
+
+METER
+~~~~~
+[verse]
+*{ "meter":
+	"name":* 'STRING'*,
+	"key":* 'EXPRESSION'*,
+	"stmt":* 'STATEMENT'
+*}*
+
+Apply given statement using a meter.
+
+*name*::
+	Meter name.
+*key*::
+	Meter key.
+*stmt*::
+	Meter statement.
+
+QUEUE
+~~~~~
+[verse]
+*{ "queue":
+	"num":* 'EXPRESSION'*,
+	"flags":* 'FLAGS'
+*}*
+
+[verse]
+'FLAGS' := 'FLAG' | *[* 'FLAG_LIST' *]*
+'FLAG_LIST' := 'FLAG' [*,* 'FLAG_LIST' ]
+'FLAG' := *"bypass"* | *"fanout"*
+
+Queue the packet to userspace.
+
+*num*::
+	Queue number.
+*flags*::
+	Queue flags.
+
+VERDICT MAP
+~~~~~~~~~~~
+[verse]
+*{ "vmap":
+	"left":* 'EXPRESSION'*,
+	"right":* 'EXPRESSION'
+*}*
+
+Apply a verdict conditionally.
+
+*left*::
+	Map key.
+*right*::
+	Mapping expression consisting of value/verdict pairs.
+
+CT COUNT
+~~~~~~~~
+[verse]
+*{ "ct count":
+	"val":* 'NUMBER'*,
+	"inv":* 'BOOLEAN'
+*}*
+
+Limit number of connections using conntrack.
+
+*val*::
+	Connection count threshold.
+*inv*::
+	If *true*, match if *val* was exceeded. If omitted, defaults to
+	*false*.
+
+EXPRESSIONS
+-----------
+Expressions are the building blocks of (most) statements. In their most basic
+form, they are just immediate values represented as JSON string, integer or
+boolean types.
+
+IMMEDIATES
+~~~~~~~~~~
+[verse]
+'STRING'
+'NUMBER'
+'BOOLEAN'
+
+Immediate expressions are typically used for constant values. For strings, there
+are two special cases:
+
+*@STRING*::
+	The remaining part is taken as set name to create a set reference.
+*\**::
+	Construct a wildcard expression.
+
+LISTS
+~~~~~
+[verse]
+'ARRAY'
+
+List expressions are constructed by plain arrays containing of an arbitrary
+number of expressions.
+
+CONCAT
+~~~~~~
+[verse]
+*{ "concat":* 'CONCAT' *}*
+
+[verse]
+'CONCAT' := *[* 'EXPRESSION_LIST' *]*
+'EXPRESSION_LIST' := 'EXPRESSION' [*,* 'EXPRESSION_LIST' ]
+
+Concatenate several expressions.
+
+SET
+~~~
+[verse]
+*{ "set":* 'SET' *}*
+
+[verse]
+'SET' := 'EXPRESSION' | *[* 'EXPRESSION_LIST' *]*
+
+This object constructs an anonymous set. For mappings, an array of arrays with
+exactly two elements is expected.
+
+MAP
+~~~
+[verse]
+*{ "map":
+	"left":* 'EXPRESSION'*,
+	"right":* 'EXPRESSION'
+*}*
+
+Map a key to a value.
+
+*left*::
+	Map key.
+*right*::
+	Mapping expression consisting of value/target pairs.
+
+PREFIX
+~~~~~~
+[verse]
+*{ "prefix":
+	"addr":* 'EXPRESSION'*,
+	"len":* 'NUMBER'
+*}*
+
+Construct an IPv4 or IPv6 prefix consisting of address part in *addr* and prefix
+length in *len*.
+
+RANGE
+~~~~~
+[verse]
+*{ "range": [* 'EXPRESSION' *,* 'EXPRESSION' *] }*
+
+Construct a range of values. The first array item denotes the lower boundary,
+the second one the upper boundary.
+
+PAYLOAD
+~~~~~~~
+[verse]
+*{ "payload":
+	"name": "raw",
+	"base":* 'BASE'*,
+	"offset":* 'NUMBER'*,
+	"len":* 'NUMBER'
+*}*
+
+[verse]
+*{ "payload":
+	"name":* 'STRING'*,
+	"field":* 'STRING'
+*}*
+
+[verse]
+'BASE' := *"ll"* | *"nh"* | *"th"*
+
+Construct a payload expression, i.e. a reference to a certain part of packet
+data. The first form creates a raw payload expression to point at a random
+number (*len*) of bytes at a certain offset (*offset*) from a given reference
+point (*base*). Following *base* values are accepted:
+
+*"ll"*::
+	Offset is relative to Link Layer header start offset.
+*"nh"*::
+	Offset is relative to Network Layer header start offset.
+*"th"*::
+	Offset is relative to Transport Layer header start offset.
+
+The second form allows to reference a field by name (*field*) in a named packet header (*name*).
+
+EXTHDR
+~~~~~~
+[verse]
+*{ "exthdr":
+	"name":* 'STRING'*,
+	"field":* 'STRING'*,
+	"offset":* 'NUMBER'
+*}*
+
+Create a reference to a field (*field*) in an IPv6 extension header (*name*).
+*offset* is used only for *rt0* protocol.
+
+If *field* property is not given, expression is to be used as header
+existence check in a *match* statement with boolean on right hand side.
+
+TCP OPTION
+~~~~~~~~~~
+[verse]
+*{ "tcp option":
+	"name":* 'STRING'*,
+	"field":* 'STRING'
+*}*
+
+Create a reference to a field (*field*) of a TCP option header (*name*).
+
+If *field* property is not given, expression is to be used as TCP option
+existence check in a *match* statement with boolean on right hand side.
+
+META
+~~~~
+[verse]
+*{ "meta":* 'STRING' *}*
+
+Create a reference to packet meta data.
+
+RT
+~~~
+[verse]
+*{ "rt":
+	"key":* 'RT_KEY'*,
+	"family":* 'RT_FAMILY'
+*}*
+
+[verse]
+'RT_KEY' := *"classid"* | *"nexthop"* | *"mtu"*
+'RT_FAMILY' := *"ip"* | *"ip6"*
+
+Create a reference to packet routing data.
+
+The *family* property is optional and defaults to unspecified.
+
+CT
+~~~
+[verse]
+*{ "ct":
+	"key":* 'STRING'*,
+	"family":* 'CT_FAMILY'*,
+	"dir":* 'CT_DIRECTION'
+*}*
+
+[verse]
+'CT_FAMILY' := *"ip"* | *"ip6"*
+'CT_DIRECTION' := *"original"* | *"reply"*
+
+Create a reference to packet conntrack data.
+
+Some CT keys don't support a direction. In this case *dir* must not be
+given.
+
+NUMGEN
+~~~~~~
+[verse]
+*{ "numgen":
+	"mode":* 'NG_MODE'*,
+	"mod":* 'NUMBER'*,
+	"offset":* 'NUMBER'
+*}*
+
+[verse]
+'NG_MODE' := *"inc"* | *"random"*
+
+Create a number generator.
+
+The *offset* property is optional and defaults to 0.
+
+HASH
+~~~~
+[verse]
+*{ "jhash":
+	"mod":* 'NUMBER'*,
+	"offset":* 'NUMBER'*,
+	"expr":* 'EXPRESSION'*,
+	"seed":* 'NUMBER'
+*}*
+
+[verse]
+*{ "symhash":
+	"mod":* 'NUMBER'*,
+	"offset":* 'NUMBER'
+*}*
+
+Hash packet data.
+
+The *offset* and *seed* properties are optional and default to 0.
+
+FIB
+~~~
+[verse]
+*{ "fib":
+	"result":* 'FIB_RESULT'*,
+	"flags":* 'FIB_FLAGS'
+*}*
+
+[verse]
+'FIB_RESULT' := *"oif"* | *"oifname"* | *"type"*
+
+[verse]
+'FIB_FLAGS' := 'FIB_FLAG' | *[* 'FIB_FLAG_LIST' *]*
+'FIB_FLAG_LIST' := 'FIB_FLAG' [*,* 'FIB_FLAG_LIST' ]
+'FIB_FLAG' := *"saddr"* | *"daddr"* | *"mark"* | *"iif"* | *"oif"*
+
+Perform kernel Forwarding Information Base lookups.
+
+BINARY OPERATION
+~~~~~~~~~~~~~~~~
+[verse]
+*{ "|": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
+*{ "^": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
+*{ "&": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
+*{ "+<<+": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
+*{ ">>": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
+
+All binary operations expect an array of exactly two expressions of which the
+first element denotes the left hand side and the second one the right hand
+side.
+
+VERDICT
+~~~~~~~
+[verse]
+*{ "continue": null }*
+*{ "break": null }*
+*{ "jump":* 'STRING' *}*
+*{ "goto":* 'STRING' *}*
+*{ "return": null }*
+*{ "accept": null }*
+*{ "drop": null }*
+*{ "queue": null }*
+
+Same as *verdict* statement, but for use in verdict maps.
+
+Only *jump* and *goto* verdicts expect a string denoting the target chain name.
+
+ELEM
+~~~~
+[verse]
+*{ "elem":
+	"val":* 'EXPRESSION'*,
+	"timeout":* 'NUMBER'*,
+	"expires":* 'NUMBER'*,
+	"comment":* 'STRING'
+*}*
+
+Explicit set element object, in case *timeout*, *expires* or *comment* are
+desired. Otherwise may be replaced by the value of *val*.
+
+SOCKET
+~~~~~~
+[verse]
+*{ "socket":
+	"key":* 'SOCKET_KEY'
+*}*
+
+[verse]
+'SOCKET_KEY' := *"transparent"*
+
+Construct a reference to packet's socket.

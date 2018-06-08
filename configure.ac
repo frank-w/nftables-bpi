@@ -67,12 +67,22 @@ AM_COND_IF([BUILD_MAN], [
 	     )]
 	)
 	AC_SUBST(DB2MAN)
+
+	[need_a2x=yes]
 ])
 
 AM_COND_IF([BUILD_PDF], [
 	AC_CHECK_PROG(DBLATEX, [dblatex], [found], [no])
 	AS_IF([test "$DBLATEX" == "no"],
 	      [AC_MSG_ERROR([dblatex not found])])
+
+	[need_a2x=yes]
+])
+
+AS_IF([test "$need_a2x" = "yes"], [
+       AC_CHECK_PROG(A2X, [a2x], [found], [no])
+       AS_IF([test "$A2X" != "found"],
+	     [AC_MSG_ERROR([a2x not found])])
 ])
 
 PKG_CHECK_MODULES([LIBMNL], [libmnl >= 1.0.3])

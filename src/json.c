@@ -990,7 +990,7 @@ json_t *limit_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 		json_object_set_new(root, "inv", json_boolean(inv));
 	if (rate_unit)
 		json_object_set_new(root, "rate_unit", json_string(rate_unit));
-	if (burst) {
+	if (burst && burst != 5) {
 		json_object_set_new(root, "burst", json_integer(burst));
 		if (burst_unit)
 			json_object_set_new(root, "burst_unit",

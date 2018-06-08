@@ -2,21 +2,23 @@
 [
     {
         "fwd": {
-            "map": {
-                "left": {
-                    "meta": "mark"
-                },
-                "right": {
-                    "set": [
-                        [
-                            1,
-                            "lo"
-                        ],
-                        [
-                            2,
-                            "lo"
+            "dev": {
+                "map": {
+                    "left": {
+                        "meta": "mark"
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                1,
+                                "lo"
+                            ],
+                            [
+                                2,
+                                "lo"
+                            ]
                         ]
-                    ]
+                    }
                 }
             }
         }

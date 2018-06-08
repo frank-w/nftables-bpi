@@ -1008,9 +1008,18 @@ json_t *limit_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 
 json_t *fwd_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 {
-	json_t *root;
+	json_t *root, *tmp;
 
-	root = expr_print_json(stmt->fwd.dev, octx);
+	root = json_pack("{s:o}", "dev", expr_print_json(stmt->fwd.dev, octx));
+
+	if (stmt->fwd.addr) {
+		tmp = json_string(family2str(stmt->fwd.family));
+		json_object_set_new(root, "family", tmp);
+
+		tmp = expr_print_json(stmt->fwd.addr, octx);
+		json_object_set_new(root, "addr", tmp);
+	}
+
 	return json_pack("{s:o}", "fwd", root);
 }
 

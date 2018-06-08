@@ -12,3 +12,9 @@ netdev test-netdev ingress
   [ lookup reg 1 set __map%d dreg 1 ]
   [ fwd sreg_dev 1 ]
 
+# fwd ip to 192.168.2.200 device "lo"
+netdev test-netdev ingress 
+  [ immediate reg 1 0x00000001 ]
+  [ immediate reg 2 0xc802a8c0 ]
+  [ fwd sreg_dev 1 sreg_addr 2 nfproto 2 ]
+

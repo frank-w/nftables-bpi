@@ -1584,11 +1584,47 @@ static struct stmt *json_parse_limit_stmt(struct json_ctx *ctx,
 static struct stmt *json_parse_fwd_stmt(struct json_ctx *ctx,
 					const char *key, json_t *value)
 {
-	struct stmt *stmt = fwd_stmt_alloc(int_loc);
+	json_t *jaddr, *jdev;
+	const char *family;
+	struct stmt *stmt;
+	int familyval;
 
-	stmt->fwd.dev = json_parse_expr(ctx, value);
+	if (json_unpack_err(ctx, value, "{s:o}", "dev", &jdev))
+		return NULL;
+
+	stmt = fwd_stmt_alloc(int_loc);
+
+	stmt->fwd.dev = json_parse_stmt_expr(ctx, jdev);
+	if (!stmt->fwd.dev) {
+		json_error(ctx, "Invalid fwd dev value.");
+		goto out_err;
+	}
+
+	if (json_unpack(value, "{s:s, s:o}",
+			"family", &family, "addr", &jaddr))
+		return stmt;
+
+	familyval = parse_family(family);
+	switch (familyval) {
+	case NFPROTO_IPV4:
+	case NFPROTO_IPV6:
+		stmt->fwd.family = familyval;
+		break;
+	default:
+		json_error(ctx, "Invalid fwd family value '%s'.", family);
+		goto out_err;
+	}
+
+	stmt->fwd.addr = json_parse_stmt_expr(ctx, jaddr);
+	if (!stmt->fwd.addr) {
+		json_error(ctx, "Invalid fwd addr value.");
+		goto out_err;
+	}
 
 	return stmt;
+out_err:
+	stmt_free(stmt);
+	return NULL;
 }
 
 static struct stmt *json_parse_notrack_stmt(struct json_ctx *ctx,

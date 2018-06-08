@@ -6,6 +6,7 @@ noinst_HEADERS = 	cli.h		\
 			expression.h	\
 			fib.h		\
 			hash.h		\
+			json.h		\
 			mini-gmp.h	\
 			gmputil.h	\
 			iface.h		\
@@ -25,6 +26,7 @@ noinst_HEADERS = 	cli.h		\
 			netlink.h	\
 			parser.h	\
 			proto.h		\
+			socket.h	\
 			rule.h		\
 			rt.h		\
 			utils.h		\

@@ -2064,7 +2064,7 @@ static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 		return NULL;
 
 	/* Yes, verdict_map_stmt is actually an expression */
-	if (!strcmp(type, "map")) {
+	if (!strcmp(type, "vmap")) {
 		struct expr *expr = json_parse_map_expr(ctx, type, tmp);
 
 		if (!expr) {

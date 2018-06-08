@@ -570,7 +570,7 @@
 # ct state . ct mark vmap { new . 0x12345678 : drop}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "concat": [
                     {

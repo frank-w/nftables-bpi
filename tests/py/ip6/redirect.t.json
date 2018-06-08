@@ -503,7 +503,7 @@
         }
     },
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "dport",

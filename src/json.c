@@ -560,7 +560,13 @@ json_t *mapping_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *map_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
-	return json_pack("{s:{s:o, s:o}}", "map",
+	const char *type = "map";
+
+	if (expr->mappings->ops->type == EXPR_SET_REF &&
+	    expr->mappings->set->datatype->type == TYPE_VERDICT)
+		type = "vmap";
+
+	return json_pack("{s:{s:o, s:o}}", type,
 			 "left", expr_print_json(expr->map, octx),
 			 "right", expr_print_json(expr->mappings, octx));
 }

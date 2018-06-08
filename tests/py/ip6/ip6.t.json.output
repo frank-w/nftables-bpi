@@ -71,7 +71,7 @@
 # ip6 dscp vmap { 0x04 : accept, 0x3f : continue } counter
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "dscp",

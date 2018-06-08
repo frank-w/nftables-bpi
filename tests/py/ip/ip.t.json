@@ -123,7 +123,7 @@
 # ip dscp vmap { cs1 : continue , cs4 : accept } counter
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "dscp",
@@ -1542,7 +1542,7 @@
 # ip hdrlength vmap { 0-4 : drop, 5 : accept, 6 : continue } counter
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "hdrlength",

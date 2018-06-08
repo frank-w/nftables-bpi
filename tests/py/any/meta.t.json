@@ -2361,7 +2361,7 @@
 # meta iif . meta oif vmap { "lo" . "lo" : drop }
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "concat": [
                     {

@@ -1,7 +1,7 @@
 # ip6 saddr vmap { ::1234:1234:1234:1234:1234:1234:1234 : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -25,7 +25,7 @@
 # ip6 saddr vmap { 1234::1234:1234:1234:1234:1234:1234 : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -49,7 +49,7 @@
 # ip6 saddr vmap { 1234:1234::1234:1234:1234:1234:1234 : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -73,7 +73,7 @@
 # ip6 saddr vmap { 1234:1234:1234::1234:1234:1234:1234 : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -97,7 +97,7 @@
 # ip6 saddr vmap { 1234:1234:1234:1234::1234:1234:1234 : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -121,7 +121,7 @@
 # ip6 saddr vmap { 1234:1234:1234:1234:1234::1234:1234 : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -145,7 +145,7 @@
 # ip6 saddr vmap { 1234:1234:1234:1234:1234:1234::1234 : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -169,7 +169,7 @@
 # ip6 saddr vmap { 1234:1234:1234:1234:1234:1234:1234:: : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -193,7 +193,7 @@
 # ip6 saddr vmap { ::1234:1234 : accept}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -217,7 +217,7 @@
 # ip6 saddr vmap {1234:1234:1234:1234:1234:1234:aaaa:: : accept, ::aaaa : drop}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -247,7 +247,7 @@
 # ip6 saddr vmap {1234:1234:1234:1234:1234:1234:aaaa:::accept, ::bbbb : drop}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -277,7 +277,7 @@
 # ip6 saddr vmap {1234:1234:1234:1234:1234:1234:aaaa:::accept,::cccc : drop}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",
@@ -307,7 +307,7 @@
 # ip6 saddr vmap {1234:1234:1234:1234:1234:1234:aaaa:::accept,::dddd: drop}
 [
     {
-        "map": {
+        "vmap": {
             "left": {
                 "payload": {
                     "field": "saddr",

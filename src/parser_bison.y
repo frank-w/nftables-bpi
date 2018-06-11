@@ -242,6 +242,7 @@ int nft_lex(void *, void *, void *);
 
 %token CONSTANT			"constant"
 %token INTERVAL			"interval"
+%token DYNAMIC			"dynamic"
 %token AUTOMERGE		"auto-merge"
 %token TIMEOUT			"timeout"
 %token GC_INTERVAL		"gc-interval"
@@ -1541,6 +1542,7 @@ set_flag_list		:	set_flag_list	COMMA		set_flag
 set_flag		:	CONSTANT	{ $$ = NFT_SET_CONSTANT; }
 			|	INTERVAL	{ $$ = NFT_SET_INTERVAL; }
 			|	TIMEOUT		{ $$ = NFT_SET_TIMEOUT; }
+			|	DYNAMIC		{ $$ = NFT_SET_EVAL; }
 			;
 
 map_block_alloc		:	/* empty */

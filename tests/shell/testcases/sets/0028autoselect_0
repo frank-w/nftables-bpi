@@ -7,9 +7,9 @@
 set -e
 
 $NFT add table t
-$NFT add set t s1 { type inet_proto \; }
-$NFT add set t s2 { type ipv4_addr \; }
-$NFT add set t s3 { type ipv4_addr \; size 1024\; }
+$NFT add set t s1 { type inet_proto \; flags dynamic \; }
+$NFT add set t s2 { type ipv4_addr \; flags dynamic \; }
+$NFT add set t s3 { type ipv4_addr \; size 1024\; flags dynamic \; }
 $NFT add chain t c {type filter hook input priority 0 \; }
 
 $NFT add rule t c meta iifname foobar add @s1 { ip protocol }

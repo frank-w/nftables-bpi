@@ -280,8 +280,12 @@ static void verdict_type_print(const struct expr *expr, struct output_ctx *octx)
 		case NF_QUEUE:
 			nft_print(octx, "queue");
 			break;
+		case NF_STOLEN:
+			nft_print(octx, "stolen");
+			break;
 		default:
-			BUG("invalid verdict value %u\n", expr->verdict);
+			nft_print(octx, "unknown verdict value %u", expr->verdict);
+			break;
 		}
 	}
 }

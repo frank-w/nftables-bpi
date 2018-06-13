@@ -198,6 +198,7 @@ static int init_cookie(struct cookie *cookie)
 	cookie->fp = fopencookie(cookie, "w", cookie_fops);
 	if (!cookie->fp) {
 		cookie->fp = cookie->orig_fp;
+		cookie->orig_fp = NULL;
 		return 1;
 	}
 
@@ -211,6 +212,7 @@ static int exit_cookie(struct cookie *cookie)
 
 	fclose(cookie->fp);
 	cookie->fp = cookie->orig_fp;
+	cookie->orig_fp = NULL;
 	free(cookie->buf);
 	cookie->buf = NULL;
 	cookie->buflen = 0;

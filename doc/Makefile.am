@@ -28,5 +28,5 @@ EXTRA_DIST = nft.xml libnftables-json.adoc libnftables.adoc
 CLEANFILES = \
 	nft.pdf nft.8 \
 	libnftables-json.pdf libnftables-json.5 \
-	libnftables.pdf libnftables.3
+	libnftables.pdf libnftables.3 \
 	*~

@@ -2,14 +2,12 @@ libnftables-json(5)
 ===================
 Phil Sutter <phil@nwl.cc>
 :doctype: manpage
+:compat-mode!:
 
-NAME
-----
+== NAME
 libnftables-json - Supported JSON schema by libnftables
 
-SYNOPSIS
---------
-
+== SYNOPSIS
 *{ "nftables": [* 'OBJECTS' *] }*
 
 'OBJECTS' := 'LIST_OBJECTS' | 'CMD_OBJECTS'
@@ -20,8 +18,8 @@ SYNOPSIS
 
 'CMD_OBJECT' := *{* 'CMD'*:* 'LIST_OBJECT' *}*
 
-'CMD' := *"add"* | *"replace"* | *"create"* | *"insert"* | *"delete"* | *"list"*
-| *"reset"* | *"flush"* | *"rename"*
+'CMD' := *"add"* | *"replace"* | *"create"* | *"insert"* | *"delete"* |
+         *"list"* | *"reset"* | *"flush"* | *"rename"*
 
 'LIST_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
 'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT'
@@ -40,8 +38,7 @@ SYNOPSIS
 
 'HANDLE' := *"handle":* 'NUMBER'
 
-DESCRIPTION
------------
+== DESCRIPTION
 libnftables supports JSON formatted input and output. This is implemented as an
 alternative frontend to the standard CLI syntax parser, therefore basic
 behaviour is identical and for (almost) any operation available in standard
@@ -54,8 +51,7 @@ of *nft_run_cmd_from_filename()* function.
 JSON output has to be enabled via *nft_ctx_output_set_json()* function, turning
 library standard output into JSON format. Error output remains unaffected.
 
-GLOBAL STRUCTURE
-----------------
+== GLOBAL STRUCTURE
 In general, any JSON input or output is enclosed in an object with a single
 property named 'nftables'. It's value is an array containing commands (for
 input) or ruleset elements (for output).
@@ -65,55 +61,52 @@ It's value is a ruleset element - basically identical to output elements apart
 from certain properties which may be interpreted differently or are required
 when output generally omits them.
 
-COMMAND OBJECTS
----------------
+== COMMAND OBJECTS
 The structure accepts an arbitrary amount of commands which are interpreted in
 order of appearance. For instance, the following standard syntax input:
 
-------------------------------------------------------------------------
+----
 flush ruleset
 add table inet mytable
 list ruleset
-------------------------------------------------------------------------
+----
 
 translates into JSON as such:
 
-------------------------------------------------------------------------
+----
 { "nftables": [
 	{ "flush": { "ruleset": null }},
 	{ "add": { "table": { "family": "inet", "name": "mytable" }}},
 	{ "list": { "ruleset": null }}
 ]}
-------------------------------------------------------------------------
+----
 
-ADD
-~~~
-
+=== ADD
+[verse]
+____
 *{ "add":* 'ADD_OBJECT' *}*
 
 'ADD_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
-'FLOWTABLE' | 'COUNTER | QUOTA' | 'CT_HELPER' | 'LIMIT'
+                'FLOWTABLE' | 'COUNTER | QUOTA' | 'CT_HELPER' | 'LIMIT'
+____
 
 Add a new ruleset element to the kernel.
 
-REPLACE
-~~~~~~~
-
+=== REPLACE
+[verse]
 *{ "replace":* 'RULE' *}*
 
 Replace a rule. In 'RULE', *handle* property is mandatory and identifies the
 rule to be replaced.
 
-CREATE
-~~~~~~
-
+=== CREATE
+[verse]
 *{ "create":* 'ADD_OBJECT' *}*
 
 Identical to *add* command, but returns an error if the object already exists.
 
-INSERT
-~~~~~~
-
+=== INSERT
+[verse]
 *{ "insert":* 'RULE' *}*
 
 This command is identical to *add* for rules, but instead of appending the rule
@@ -121,9 +114,8 @@ to the chain by default, it inserts at first position. If a *handle* or *index*
 property is given, the rule is inserted before the rule identified by those
 properties.
 
-DELETE
-~~~~~~
-
+=== DELETE
+[verse]
 *{ "delete":* 'ADD_OBJECT' *}*
 
 Delete an object from the ruleset. Only the minimal number of properties
@@ -131,49 +123,51 @@ required to uniquely identify an object is generally needed in 'ADD_OBJECT'. For
 most ruleset elements this is *family* and *table* plus either *handle* or
 *name* (except rules since they don't have a name).
 
-LIST
-~~~~
-
+=== LIST
+[verse]
+____
 *{ "list":* 'LIST_OBJECT' *}*
 
 'LIST_OBJECT' := 'TABLE' | 'TABLES' | 'CHAIN' | 'CHAINS' | 'SET' | 'SETS' |
-'MAP' | 'MAPS | COUNTER' | 'COUNTERS' | 'QUOTA' | 'QUOTAS' | 'CT_HELPER' |
-'CT_HELPERS' | 'LIMIT' | 'LIMITS | RULESET' | 'METER' | 'METERS' | 'FLOWTABLES'
+                 'MAP' | 'MAPS | COUNTER' | 'COUNTERS' | 'QUOTA' | 'QUOTAS' |
+                 'CT_HELPER' | 'CT_HELPERS' | 'LIMIT' | 'LIMITS | RULESET' |
+                 'METER' | 'METERS' | 'FLOWTABLES'
+____
 
 List ruleset elements. The plural forms are used to list all objects of that
 kind, optionally filtered by *family* and for some, also *table*.
 
-RESET
-~~~~~
-
+=== RESET
+[verse]
+____
 *{ "reset":* 'RESET_OBJECT' *}*
 
 'RESET_OBJECT' := 'COUNTER' | 'COUNTERS' | 'QUOTA' | 'QUOTAS'
+____
 
 Reset state in suitable objects, i.e. zero their internal counter.
 
-FLUSH
-~~~~~
-
+=== FLUSH
+[verse]
+____
 *{ "flush":* 'FLUSH_OBJECT' *}*
 
 'FLUSH_OBJECT' := 'TABLE' | 'CHAIN' | 'SET' | 'MAP' | 'METER' | 'RULESET'
+____
 
 Empty contents in given object, e.g. remove all chains from given *table* or
 remove all elements from given *set*.
 
-RENAME
-~~~~~~
+=== RENAME
+[verse]
 *{ "rename":* 'CHAIN' *}*
 
 Rename a chain. The new name is expected in a dedicated property named
 *newname*.
 
-RULESET ELEMENTS
-----------------
+== RULESET ELEMENTS
 
-TABLE
-~~~~~
+=== TABLE
 [verse]
 *{ "table":
 	"family":* 'STRING'*,
@@ -191,8 +185,7 @@ This object describes a table.
 	The table's handle. In input, used only in *delete* command as
 	alternative to *name*.
 
-CHAIN
-~~~~~
+=== CHAIN
 [verse]
 *{ "chain":
 	"family":* 'STRING'*,
@@ -234,9 +227,9 @@ The following properties are required for base chains:
 *policy*::
 	The chain's policy.
 
-RULE
-~~~~
+=== RULE
 [verse]
+____
 *{ "rule":
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
@@ -247,8 +240,8 @@ RULE
 	"comment":* 'STRING'
 *}*
 
-[verse]
 'STATEMENTS' := 'STATEMENT' [*,* 'STATEMENTS' ]
+____
 
 This object describes a rule. Basic building blocks of rules are statements,
 each rule consists of at least a single one.
@@ -272,9 +265,9 @@ each rule consists of at least a single one.
 *comment*::
 	Optional rule comment.
 
-SET / MAP
-~~~~~~~~~
+=== SET / MAP
 [verse]
+____
 *{ "set":
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
@@ -289,7 +282,6 @@ SET / MAP
 	"size":* 'NUMBER'
 *}*
 
-[verse]
 *{ "map":
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
@@ -305,7 +297,6 @@ SET / MAP
 	"size":* 'NUMBER'
 *}*
 
-[verse]
 'SET_TYPE' := 'STRING' | *[* 'SET_TYPE_LIST' *]*
 'SET_TYPE_LIST' := 'STRING' [*,* 'SET_TYPE_LIST' ]
 'SET_POLICY' := *"performance"* | *"memory"*
@@ -313,6 +304,7 @@ SET / MAP
 'SET_FLAG' := *"constant"* | *"interval"* | *"timeout"*
 'SET_ELEMENTS' := 'EXPRESSION' | *[* 'EXPRESSION_LIST' *]*
 'EXPRESSION_LIST' := 'EXPRESSION' [*,* 'EXPRESSION_LIST' ]
+____
 
 These objects describe a named set or map. Maps are a special form of sets in
 that they translate a unique key to a value.
@@ -342,22 +334,20 @@ that they translate a unique key to a value.
 *size*::
 	Maximum number of elements supported.
 
-TYPE
-^^^^
+==== TYPE
 The set type might be a string, such as *"ipv4_addr"* or an array
 consisting of strings (for concatenated types).
 
-ELEM
-^^^^
+==== ELEM
 A single set element might be given as string, integer or boolean value for
 simple cases. If additional properties are required, a formal *elem* object may
 be used.
 
 Multiple elements may be given in an array.
 
-ELEMENT
-~~~~~~~
+=== ELEMENT
 [verse]
+____
 *{ "element":
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
@@ -365,9 +355,9 @@ ELEMENT
 	"elem":* 'SET_ELEM'
 *}*
 
-[verse]
 'SET_ELEM' := 'EXPRESSION' | *[* 'EXPRESSION_LIST' *]*
 'EXPRESSION_LIST' := 'EXPRESSION' [*,* 'EXPRESSION' ]
+____
 
 Manipulate element(s) in a named set.
 
@@ -380,9 +370,9 @@ Manipulate element(s) in a named set.
 *elem*::
 	See elem property of set object.
 
-FLOWTABLE
-~~~~~~~~~
+=== FLOWTABLE
 [verse]
+____
 *{ "flowtable":
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
@@ -392,9 +382,9 @@ FLOWTABLE
 	"dev":* 'FT_INTERFACE'
 *}*
 
-[verse]
 'FT_INTERFACE' := 'STRING' | *[* 'FT_INTERFACE_LIST' *]*
 'FT_INTERFACE_LIST' := 'STRING' [*,* 'STRING' ]
+____
 
 This object represents a named flowtable.
 
@@ -411,8 +401,7 @@ This object represents a named flowtable.
 *dev*::
 	The flow table's interface(s).
 
-COUNTER
-~~~~~~~
+=== COUNTER
 [verse]
 *{ "counter":
 	"family":* 'STRING'*,
@@ -438,8 +427,7 @@ This object represents a named counter.
 *bytes*::
 	Byte counter value.
 
-QUOTA
-~~~~~
+=== QUOTA
 [verse]
 *{ "quota":
 	"family":* 'STRING'*,
@@ -468,9 +456,9 @@ This object represents a named quota.
 *inv*::
 	If true, match if quota exceeded.
 
-CT HELPER
-~~~~~~~~~
+=== CT HELPER
 [verse]
+____
 *{ "ct helper":
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
@@ -481,8 +469,8 @@ CT HELPER
 	"l3proto":* 'STRING'
 *}*
 
-[verse]
 'CTH_PROTO' := *"tcp"* | *"udp"*
+____
 
 This object represents a named conntrack helper.
 
@@ -501,9 +489,9 @@ This object represents a named conntrack helper.
 *l3proto*::
 	The ct helper's layer 3 protocol, e.g. *"ip"* or *"ip6"*.
 
-LIMIT
-~~~~~
+=== LIMIT
 [verse]
+____
 *{ "limit":
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
@@ -517,6 +505,7 @@ LIMIT
 *}*
 
 'LIMIT_UNIT' := *"packets"* | *"bytes"*
+____
 
 This object represents a named limit.
 
@@ -540,13 +529,11 @@ This object represents a named limit.
 *inv*::
 	If true, match if limit was exceeded. If omitted, defaults to *false*.
 
-STATEMENTS
-----------
+== STATEMENTS
 Statements are the building blocks for rules. Each rule consists of at least a
 single statement.
 
-VERDICT
-~~~~~~~
+=== VERDICT
 [verse]
 *{ "accept": null }*
 *{ "drop": null }*
@@ -560,8 +547,7 @@ delegates to a different one.
 
 *jump* and *goto* statements expect a target chain name as value.
 
-MATCH
-~~~~~
+=== MATCH
 [verse]
 *{ "match":
 	"left":* 'EXPRESSION'*,
@@ -581,8 +567,7 @@ processing continues with the next rule in the same chain.
 *op*::
 	Operator indicating the type of comparison.
 
-OPERATORS
-^^^^^^^^^
+==== OPERATORS
 The operator is usually optional and if omitted usually defaults to "==".
 Allowed operators are:
 
@@ -599,16 +584,16 @@ Allowed operators are:
 *<=*:: Less than or equal to
 *>=*:: Greater than or equal to
 
-COUNTER
-~~~~~~~
+=== COUNTER
 [verse]
+____
 *{ "counter":
 	"packets":* 'NUMBER'*,
 	"bytes":* 'NUMBER'
 *}*
 
-[verse]
 *{ "counter":* 'STRING' *}*
+____
 
 This object represents a byte/packet counter. In Input, no properties are
 required. If given, they act as initial values for the counter.
@@ -621,8 +606,7 @@ in. The second form specifies a reference to a named counter object.
 *bytes*::
 	Bytes counted.
 
-MANGLE
-~~~~~~
+=== MANGLE
 [verse]
 *{ "mangle":
 	"left":* 'EXPRESSION'*,
@@ -636,9 +620,9 @@ Change packet data or meta info.
 *right*::
 	Value to change data to.
 
-QUOTA
-~~~~~
+=== QUOTA
 [verse]
+____
 *{ "quota":
 	"val":* 'NUMBER'*,
 	"val_unit":* 'STRING'*,
@@ -647,8 +631,8 @@ QUOTA
 	"inv":* 'BOOLEAN'
 *}*
 
-[verse]
 *{ "quota":* 'STRING' *}*
+____
 
 The first form creates an anonymous quota which lives in the rule it appears in.
 The second form specifies a reference to a named quota object.
@@ -665,9 +649,9 @@ The second form specifies a reference to a named quota object.
 *inv*::
 	If *true*, will match if quota was exceeded. Defaults to *false*.
 
-LIMIT
-~~~~~
+=== LIMIT
 [verse]
+____
 *{ "limit":
 	"rate":* 'NUMBER'*,
 	"rate_unit":* 'STRING'*,
@@ -677,8 +661,8 @@ LIMIT
 	"inv":* 'BOOLEAN'
 *}*
 
-[verse]
 *{ "limit":* 'STRING' *}*
+____
 
 The first form creates an anonymous limit which lives in the rule it appears in.
 The second form specifies a reference to a named limit object.
@@ -697,17 +681,17 @@ The second form specifies a reference to a named limit object.
 *inv*::
 	If *true*, matches if limit was exceeded. Defaults to *false*.
 
-FWD
-~~~
+=== FWD
 [verse]
+____
 *{ "fwd":
 	"dev":* 'EXPRESSION'*,
 	"family":* 'FWD_FAMILY'*,
 	"addr":* 'EXPRESSION'
 *}*
 
-[verse]
 'FWD_FAMILY' := *"ip"* | *"ip6"*
+____
 
 Forward a packet to a different destination.
 
@@ -720,15 +704,13 @@ Forward a packet to a different destination.
 
 Both *family* and *addr* are optional, but if given both need to be present.
 
-NOTRACK
-~~~~~~~
+=== NOTRACK
 [verse]
 *{ "notrack": null }*
 
 Disable connection tracking for the packet.
 
-DUP
-~~~
+=== DUP
 [verse]
 *{ "dup":
 	"addr":* 'EXPRESSION'*,
@@ -743,38 +725,35 @@ Duplicate a packet to a different destination.
 	Interface to duplicate packet to. May be omitted to not specify an
 	interface explicitly.
 
-NETWORK ADDRESS TRANSLATION
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== NETWORK ADDRESS TRANSLATION
 [verse]
+____
 *{ "snat":
 	"addr":* 'EXPRESSION'*,
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
 *}*
 
-[verse]
 *{ "dnat":
 	"addr":* 'EXPRESSION'*,
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
 *}*
 
-[verse]
 *{ "masquerade":
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
 *}*
 
-[verse]
 *{ "redirect":
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
 *}*
 
-[verse]
 'FLAGS' := 'FLAG' | *[* 'FLAG_LIST' *]*
 'FLAG_LIST' := 'FLAG' [*,* 'FLAG_LIST' ]
 'FLAG' := *"random"* | *"fully-random"* | *"persistent"*
+____
 
 Perform Network Address Translation.
 
@@ -787,8 +766,7 @@ Perform Network Address Translation.
 
 All properties are optional and default to none.
 
-REJECT
-~~~~~~
+=== REJECT
 [verse]
 *{ "reject":
 	"type":* 'STRING'*,
@@ -804,8 +782,7 @@ Reject the packet and send the given error reply.
 
 All properties are optional.
 
-SET
-~~~
+=== SET
 [verse]
 *{ "set":
 	"op":* 'STRING'*,
@@ -822,9 +799,9 @@ Dynamically add/update elements to a set.
 *set*::
 	Set reference.
 
-LOG
-~~~
+=== LOG
 [verse]
+____
 *{ "log":
 	"prefix":* 'STRING'*,
 	"group":* 'NUMBER'*,
@@ -834,15 +811,14 @@ LOG
 	"flags":* 'FLAGS'
 *}*
 
-[verse]
 'LEVEL' := *"emerg"* | *"alert"* | *"crit"* | *"err"* | *"warn"* | *"notice"* |
-*"info"* | *"debug"* | *"audit"*
+           *"info"* | *"debug"* | *"audit"*
 
-[verse]
 'FLAGS' := 'FLAG' | *[* 'FLAG_LIST' *]*
 'FLAG_LIST' := 'FLAG' [*,* 'FLAG_LIST' ]
 'FLAG' := *"tcp sequence"* | *"tcp options"* | *"ip options"* | *"skuid"* |
-*"ether"* | *"all"*
+          *"ether"* | *"all"*
+____
 
 Log the packet.
 
@@ -861,8 +837,7 @@ Log the packet.
 
 All properties are optional.
 
-CT HELPER
-~~~~~~~~~
+=== CT HELPER
 [verse]
 *{ "ct helper":* 'EXPRESSION' *}*
 
@@ -871,8 +846,7 @@ Enable specified conntrack helper for this packet.
 *ct helper*::
 	CT helper reference.
 
-METER
-~~~~~
+=== METER
 [verse]
 *{ "meter":
 	"name":* 'STRING'*,
@@ -889,18 +863,18 @@ Apply given statement using a meter.
 *stmt*::
 	Meter statement.
 
-QUEUE
-~~~~~
+=== QUEUE
 [verse]
+____
 *{ "queue":
 	"num":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
 *}*
 
-[verse]
 'FLAGS' := 'FLAG' | *[* 'FLAG_LIST' *]*
 'FLAG_LIST' := 'FLAG' [*,* 'FLAG_LIST' ]
 'FLAG' := *"bypass"* | *"fanout"*
+____
 
 Queue the packet to userspace.
 
@@ -909,8 +883,7 @@ Queue the packet to userspace.
 *flags*::
 	Queue flags.
 
-VERDICT MAP
-~~~~~~~~~~~
+=== VERDICT MAP
 [verse]
 *{ "vmap":
 	"left":* 'EXPRESSION'*,
@@ -924,8 +897,7 @@ Apply a verdict conditionally.
 *right*::
 	Mapping expression consisting of value/verdict pairs.
 
-CT COUNT
-~~~~~~~~
+=== CT COUNT
 [verse]
 *{ "ct count":
 	"val":* 'NUMBER'*,
@@ -940,14 +912,12 @@ Limit number of connections using conntrack.
 	If *true*, match if *val* was exceeded. If omitted, defaults to
 	*false*.
 
-EXPRESSIONS
------------
+== EXPRESSIONS
 Expressions are the building blocks of (most) statements. In their most basic
 form, they are just immediate values represented as JSON string, integer or
 boolean types.
 
-IMMEDIATES
-~~~~~~~~~~
+=== IMMEDIATES
 [verse]
 'STRING'
 'NUMBER'
@@ -961,38 +931,36 @@ are two special cases:
 *\**::
 	Construct a wildcard expression.
 
-LISTS
-~~~~~
+=== LISTS
 [verse]
 'ARRAY'
 
 List expressions are constructed by plain arrays containing of an arbitrary
 number of expressions.
 
-CONCAT
-~~~~~~
+=== CONCAT
 [verse]
+____
 *{ "concat":* 'CONCAT' *}*
 
-[verse]
 'CONCAT' := *[* 'EXPRESSION_LIST' *]*
 'EXPRESSION_LIST' := 'EXPRESSION' [*,* 'EXPRESSION_LIST' ]
+____
 
 Concatenate several expressions.
 
-SET
-~~~
+=== SET
 [verse]
+____
 *{ "set":* 'SET' *}*
 
-[verse]
 'SET' := 'EXPRESSION' | *[* 'EXPRESSION_LIST' *]*
+____
 
 This object constructs an anonymous set. For mappings, an array of arrays with
 exactly two elements is expected.
 
-MAP
-~~~
+=== MAP
 [verse]
 *{ "map":
 	"left":* 'EXPRESSION'*,
@@ -1006,8 +974,7 @@ Map a key to a value.
 *right*::
 	Mapping expression consisting of value/target pairs.
 
-PREFIX
-~~~~~~
+=== PREFIX
 [verse]
 *{ "prefix":
 	"addr":* 'EXPRESSION'*,
@@ -1017,17 +984,16 @@ PREFIX
 Construct an IPv4 or IPv6 prefix consisting of address part in *addr* and prefix
 length in *len*.
 
-RANGE
-~~~~~
+=== RANGE
 [verse]
 *{ "range": [* 'EXPRESSION' *,* 'EXPRESSION' *] }*
 
 Construct a range of values. The first array item denotes the lower boundary,
 the second one the upper boundary.
 
-PAYLOAD
-~~~~~~~
+=== PAYLOAD
 [verse]
+____
 *{ "payload":
 	"name": "raw",
 	"base":* 'BASE'*,
@@ -1035,14 +1001,13 @@ PAYLOAD
 	"len":* 'NUMBER'
 *}*
 
-[verse]
 *{ "payload":
 	"name":* 'STRING'*,
 	"field":* 'STRING'
 *}*
 
-[verse]
 'BASE' := *"ll"* | *"nh"* | *"th"*
+____
 
 Construct a payload expression, i.e. a reference to a certain part of packet
 data. The first form creates a raw payload expression to point at a random
@@ -1058,8 +1023,7 @@ point (*base*). Following *base* values are accepted:
 
 The second form allows to reference a field by name (*field*) in a named packet header (*name*).
 
-EXTHDR
-~~~~~~
+=== EXTHDR
 [verse]
 *{ "exthdr":
 	"name":* 'STRING'*,
@@ -1073,8 +1037,7 @@ Create a reference to a field (*field*) in an IPv6 extension header (*name*).
 If *field* property is not given, expression is to be used as header
 existence check in a *match* statement with boolean on right hand side.
 
-TCP OPTION
-~~~~~~~~~~
+=== TCP OPTION
 [verse]
 *{ "tcp option":
 	"name":* 'STRING'*,
@@ -1086,66 +1049,65 @@ Create a reference to a field (*field*) of a TCP option header (*name*).
 If *field* property is not given, expression is to be used as TCP option
 existence check in a *match* statement with boolean on right hand side.
 
-META
-~~~~
+=== META
 [verse]
 *{ "meta":* 'STRING' *}*
 
 Create a reference to packet meta data.
 
-RT
-~~~
+=== RT
 [verse]
+____
 *{ "rt":
 	"key":* 'RT_KEY'*,
 	"family":* 'RT_FAMILY'
 *}*
 
-[verse]
 'RT_KEY' := *"classid"* | *"nexthop"* | *"mtu"*
 'RT_FAMILY' := *"ip"* | *"ip6"*
+____
 
 Create a reference to packet routing data.
 
 The *family* property is optional and defaults to unspecified.
 
-CT
-~~~
+=== CT
 [verse]
+____
 *{ "ct":
 	"key":* 'STRING'*,
 	"family":* 'CT_FAMILY'*,
 	"dir":* 'CT_DIRECTION'
 *}*
 
-[verse]
 'CT_FAMILY' := *"ip"* | *"ip6"*
 'CT_DIRECTION' := *"original"* | *"reply"*
+____
 
 Create a reference to packet conntrack data.
 
 Some CT keys don't support a direction. In this case *dir* must not be
 given.
 
-NUMGEN
-~~~~~~
+=== NUMGEN
 [verse]
+____
 *{ "numgen":
 	"mode":* 'NG_MODE'*,
 	"mod":* 'NUMBER'*,
 	"offset":* 'NUMBER'
 *}*
 
-[verse]
 'NG_MODE' := *"inc"* | *"random"*
+____
 
 Create a number generator.
 
 The *offset* property is optional and defaults to 0.
 
-HASH
-~~~~
+=== HASH
 [verse]
+____
 *{ "jhash":
 	"mod":* 'NUMBER'*,
 	"offset":* 'NUMBER'*,
@@ -1153,36 +1115,34 @@ HASH
 	"seed":* 'NUMBER'
 *}*
 
-[verse]
 *{ "symhash":
 	"mod":* 'NUMBER'*,
 	"offset":* 'NUMBER'
 *}*
+____
 
 Hash packet data.
 
 The *offset* and *seed* properties are optional and default to 0.
 
-FIB
-~~~
+=== FIB
 [verse]
+____
 *{ "fib":
 	"result":* 'FIB_RESULT'*,
 	"flags":* 'FIB_FLAGS'
 *}*
 
-[verse]
 'FIB_RESULT' := *"oif"* | *"oifname"* | *"type"*
 
-[verse]
 'FIB_FLAGS' := 'FIB_FLAG' | *[* 'FIB_FLAG_LIST' *]*
 'FIB_FLAG_LIST' := 'FIB_FLAG' [*,* 'FIB_FLAG_LIST' ]
 'FIB_FLAG' := *"saddr"* | *"daddr"* | *"mark"* | *"iif"* | *"oif"*
+____
 
 Perform kernel Forwarding Information Base lookups.
 
-BINARY OPERATION
-~~~~~~~~~~~~~~~~
+=== BINARY OPERATION
 [verse]
 *{ "|": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
 *{ "^": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
@@ -1194,8 +1154,7 @@ All binary operations expect an array of exactly two expressions of which the
 first element denotes the left hand side and the second one the right hand
 side.
 
-VERDICT
-~~~~~~~
+=== VERDICT
 [verse]
 *{ "continue": null }*
 *{ "break": null }*
@@ -1210,8 +1169,7 @@ Same as *verdict* statement, but for use in verdict maps.
 
 Only *jump* and *goto* verdicts expect a string denoting the target chain name.
 
-ELEM
-~~~~
+=== ELEM
 [verse]
 *{ "elem":
 	"val":* 'EXPRESSION'*,
@@ -1223,14 +1181,14 @@ ELEM
 Explicit set element object, in case *timeout*, *expires* or *comment* are
 desired. Otherwise may be replaced by the value of *val*.
 
-SOCKET
-~~~~~~
+=== SOCKET
 [verse]
+____
 *{ "socket":
 	"key":* 'SOCKET_KEY'
 *}*
 
-[verse]
 'SOCKET_KEY' := *"transparent"*
+____
 
 Construct a reference to packet's socket.

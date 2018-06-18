@@ -614,21 +614,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 				return NEWLINE;
 			}
 
-{tab}			{
-				/*
-				 * Compensate difference between visible length
-				 * and real length.
-				 */
-				struct parser_state *state = yyget_extra(yyscanner);
-				unsigned int diff;
-
-				diff = TABSIZE - strlen("\t");
-				diff -= (state->indesc->column -
-					 strlen("\t") - 1) % TABSIZE;
-
-				update_pos(state, yylloc, diff);
-			}
-
+{tab}+
 {space}+
 {comment}
 

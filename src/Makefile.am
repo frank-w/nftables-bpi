@@ -1,3 +1,5 @@
+include $(top_srcdir)/Make_global.am
+
 sbin_PROGRAMS = nft
 
 CLEANFILES = scanner.c parser_bison.c
@@ -70,7 +72,7 @@ libparser_la_CFLAGS = ${AM_CFLAGS} \
 		      -Wno-redundant-decls
 
 libnftables_la_LIBADD = ${LIBMNL_LIBS} ${LIBNFTNL_LIBS} libparser.la
-libnftables_la_LDFLAGS = -version-info 1:0:0
+libnftables_la_LDFLAGS = -version-info ${libnftables_LIBVERSION}
 
 if BUILD_MINIGMP
 noinst_LTLIBRARIES += libminigmp.la

@@ -3120,7 +3120,7 @@ static int __json_parse(struct json_ctx *ctx, json_t *root)
 }
 
 
-int nft_parse_json_buffer(struct nft_ctx *nft, char *buf, size_t buflen,
+int nft_parse_json_buffer(struct nft_ctx *nft, const char *buf,
 			  struct list_head *msgs, struct list_head *cmds)
 {
 	struct json_ctx ctx = {

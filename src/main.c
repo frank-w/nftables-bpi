@@ -279,7 +279,7 @@ int main(int argc, char * const *argv)
 			if (i + 1 < argc)
 				strcat(buf, " ");
 		}
-		rc = !!nft_run_cmd_from_buffer(nft, buf, len);
+		rc = !!nft_run_cmd_from_buffer(nft, buf);
 	} else if (filename != NULL) {
 		rc = !!nft_run_cmd_from_filename(nft, filename);
 	} else if (interactive) {

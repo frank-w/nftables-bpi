@@ -110,7 +110,7 @@ static void cli_complete(char *line)
 	if (hist == NULL || strcmp(hist->line, line))
 		add_history(line);
 
-	nft_run_cmd_from_buffer(cli_nft, line, strlen(line) + 1);
+	nft_run_cmd_from_buffer(cli_nft, line);
 	xfree(line);
 }
 

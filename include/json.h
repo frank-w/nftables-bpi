@@ -78,7 +78,7 @@ json_t *connlimit_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 
 int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd);
 
-int nft_parse_json_buffer(struct nft_ctx *nft, char *buf, size_t buflen,
+int nft_parse_json_buffer(struct nft_ctx *nft, const char *buf,
 			  struct list_head *msgs, struct list_head *cmds);
 int nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
 			    struct list_head *msgs, struct list_head *cmds);
@@ -168,11 +168,12 @@ static inline int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 }
 
 static inline int
-nft_parse_json_buffer(struct nft_ctx *nft, char *buf, size_t buflen,
+nft_parse_json_buffer(struct nft_ctx *nft, const char *buf,
 		      struct list_head *msgs, struct list_head *cmds)
 {
 	return -EINVAL;
 }
+
 static inline int
 nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
 			struct list_head *msgs, struct list_head *cmds)

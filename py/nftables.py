@@ -100,7 +100,7 @@ class Nftables:
 
         self.nft_run_cmd_from_buffer = lib.nft_run_cmd_from_buffer
         self.nft_run_cmd_from_buffer.restype = c_int
-        self.nft_run_cmd_from_buffer.argtypes = [c_void_p, c_char_p, c_int]
+        self.nft_run_cmd_from_buffer.argtypes = [c_void_p, c_char_p]
 
         self.nft_ctx_free = lib.nft_ctx_free
         lib.nft_ctx_free.argtypes = [c_void_p]
@@ -267,7 +267,7 @@ class Nftables:
         output -- a string containing output written to stdout
         error  -- a string containing output written to stderr
         """
-        rc = self.nft_run_cmd_from_buffer(self.__ctx, cmdline, len(cmdline))
+        rc = self.nft_run_cmd_from_buffer(self.__ctx, cmdline)
         output = self.nft_ctx_get_output_buffer(self.__ctx)
         error = self.nft_ctx_get_error_buffer(self.__ctx)
 

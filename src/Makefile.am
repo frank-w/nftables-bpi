@@ -70,6 +70,7 @@ libparser_la_CFLAGS = ${AM_CFLAGS} \
 		      -Wno-redundant-decls
 
 libnftables_la_LIBADD = ${LIBMNL_LIBS} ${LIBNFTNL_LIBS} libparser.la
+libnftables_la_LDFLAGS = -version-info 1:0:0
 
 if BUILD_MINIGMP
 noinst_LTLIBRARIES += libminigmp.la

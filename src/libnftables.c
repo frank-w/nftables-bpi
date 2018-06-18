@@ -396,7 +396,7 @@ static const struct input_descriptor indesc_cmdline = {
 	.name	= "<cmdline>",
 };
 
-static int nft_parse_bison_buffer(struct nft_ctx *nft, char *buf, size_t buflen,
+static int nft_parse_bison_buffer(struct nft_ctx *nft, const char *buf,
 				  struct list_head *msgs, struct list_head *cmds)
 {
 	struct cmd *cmd;
@@ -438,23 +438,21 @@ static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 	return 0;
 }
 
-int nft_run_cmd_from_buffer(struct nft_ctx *nft, char *buf, size_t buflen)
+int nft_run_cmd_from_buffer(struct nft_ctx *nft, const char *buf)
 {
 	struct cmd *cmd, *next;
 	LIST_HEAD(msgs);
 	LIST_HEAD(cmds);
-	size_t nlbuflen;
 	char *nlbuf;
 	int rc = -EINVAL;
 
-	nlbuflen = max(buflen + 1, strlen(buf) + 2);
-	nlbuf = xzalloc(nlbuflen);
-	snprintf(nlbuf, nlbuflen, "%s\n", buf);
+	nlbuf = xzalloc(strlen(buf) + 2);
+	sprintf(nlbuf, "%s\n", buf);
 
 	if (nft->output.json)
-		rc = nft_parse_json_buffer(nft, nlbuf, nlbuflen, &msgs, &cmds);
+		rc = nft_parse_json_buffer(nft, nlbuf, &msgs, &cmds);
 	if (rc == -EINVAL)
-		rc = nft_parse_bison_buffer(nft, nlbuf, nlbuflen, &msgs, &cmds);
+		rc = nft_parse_bison_buffer(nft, nlbuf, &msgs, &cmds);
 	if (rc)
 		goto err;
 

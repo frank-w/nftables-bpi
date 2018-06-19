@@ -108,7 +108,7 @@ AC_SUBST(with_cli)
 AM_CONDITIONAL([BUILD_CLI], [test "x$with_cli" != xno])
 
 AC_ARG_WITH([xtables], [AS_HELP_STRING([--with-xtables],
-            [Use libxtables for iptables interaction)])],
+            [Use libxtables for iptables interaction])],
 	    [with_libxtables=$withval], [with_libxtables=no])
 AS_IF([test "x$with_libxtables" != xno], [
 PKG_CHECK_MODULES([XTABLES], [xtables >= 1.6.1])
@@ -118,7 +118,7 @@ AC_SUBST(with_libxtables)
 AM_CONDITIONAL([BUILD_XTABLES], [test "x$with_libxtables" == xyes])
 
 AC_ARG_WITH([json], [AS_HELP_STRING([--with-json],
-            [Enable JSON output support)])],
+            [Enable JSON output support])],
 	    [], [with_json=no])
 AS_IF([test "x$with_json" != xno], [
 AC_CHECK_LIB([jansson], [json_object], ,

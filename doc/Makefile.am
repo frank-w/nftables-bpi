@@ -9,19 +9,19 @@ endif
 pdfdir=${docdir}/pdf
 
 .xml.pdf:
-	${AM_V_GEN}dblatex -q -t pdf -o $@ $<
+	${AM_V_GEN}dblatex -q -t pdf -o ${builddir}/$@ $<
 
 .xml.8:
 	${AM_V_GEN}${DB2MAN} --xinclude $<
 
 .adoc.pdf:
-	a2x --doctype manpage --format pdf $<
+	a2x --doctype manpage --format pdf -D ${builddir} $<
 
 .adoc.3:
-	a2x --doctype manpage --format manpage $<
+	a2x --doctype manpage --format manpage -D ${builddir} $<
 
 .adoc.5:
-	a2x --doctype manpage --format manpage $<
+	a2x --doctype manpage --format manpage -D ${builddir} $<
 
 EXTRA_DIST = nft.xml libnftables-json.adoc libnftables.adoc
 

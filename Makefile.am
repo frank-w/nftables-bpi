@@ -3,7 +3,8 @@ ACLOCAL_AMFLAGS	= -I m4
 SUBDIRS = 	src	\
 		include	\
 		files	\
-		doc
+		doc		\
+		py
 
 EXTRA_DIST =	tests	\
 		files

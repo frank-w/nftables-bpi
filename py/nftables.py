@@ -2,6 +2,8 @@ import json
 from ctypes import *
 import sys
 
+NFTABLES_VERSION = "0.1"
+
 class Nftables:
     """A class representing libnftables interface"""
 

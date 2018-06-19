@@ -19,6 +19,10 @@ import argparse
 import signal
 import json
 
+sys.path.insert(0,'../../py/')
+
+from nftables import Nftables
+
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 TESTS_DIRECTORY = ["any", "arp", "bridge", "inet", "ip", "ip6"]
 LOGFILE = "/tmp/nftables-test.log"
@@ -1328,16 +1332,13 @@ def main():
     # Change working directory to repository root
     os.chdir(TESTS_PATH + "/../..")
 
-    sys.path.append('py/')
-    from nftables import Nftables
-
     if not os.path.exists('src/.libs/libnftables.so'):
         print "The nftables library does not exist. " \
               "You need to build the project."
         return
 
     global nftables
-    nftables = Nftables('src/.libs/libnftables.so')
+    nftables = Nftables(sofile = 'src/.libs/libnftables.so')
 
     test_files = files_ok = run_total = 0
     tests = passed = warnings = errors = 0

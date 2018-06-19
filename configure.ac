@@ -56,14 +56,11 @@ AM_PROG_LIBTOOL
 
 AM_COND_IF([BUILD_MAN], [
 	AC_CHECK_PROG(DOCBOOK2X_MAN, [docbook2x-man], [docbook2x-man], [no])
-	AC_CHECK_PROG(DOCBOOK2MAN, [docbook2man], [docbook2man], [no])
 	AC_CHECK_PROG(DB2X_DOCBOOK2MAN, [db2x_docbook2man], [db2x_docbook2man], [no])
 	AS_IF([test "$DOCBOOK2X_MAN" != "no"], [DB2MAN="$DOCBOOK2X_MAN"],
-	      [AS_IF([test "$DOCBOOK2MAN" != "no"], [DB2MAN="$DOCBOOK2MAN"],
-		     [AS_IF([test "$DB2X_DOCBOOK2MAN" != "no"],
-			    [DB2MAN="$DB2X_DOCBOOK2MAN"],
-			    [AC_MSG_ERROR([docbook2x-man/db2x_docbook2man not found, required for building man pages])]
-		     )]
+	     [AS_IF([test "$DB2X_DOCBOOK2MAN" != "no"],
+		    [DB2MAN="$DB2X_DOCBOOK2MAN --xinclude"],
+		    [AC_MSG_ERROR([docbook2x-man/db2x_docbook2man not found, required for building man pages])]
 	     )]
 	)
 	AC_SUBST(DB2MAN)

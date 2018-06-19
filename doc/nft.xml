@@ -1433,7 +1433,7 @@ table inet filter {
 			</cmdsynopsis>
 		</para>
 		<para>
-			Stateful objects are attached to tables and are identified by an unique name. They group stateful information from rules, to reference them in rules the keywords "type name" are used e.g. "counter name".
+			Stateful objects are attached to tables and are identified by a unique name. They group stateful information from rules, to reference them in rules the keywords "type name" are used e.g. "counter name".
 		</para>
 
 		<variablelist>
@@ -1782,7 +1782,7 @@ cwr                           	0x80
 				</table>
 			</para>
 			<para>
-				The string type is used to for character strings. A string begins with an alphabetic character
+				The string type is used for character strings. A string begins with an alphabetic character
 				(a-zA-Z) followed by zero or more alphanumeric characters or the characters <literal>/</literal>,
 				<literal>-</literal>, <literal>_</literal> and <literal>.</literal>. In addition anything enclosed
 				in double quotes (<literal>"</literal>) is recognized as a string.
@@ -4052,7 +4052,7 @@ ip6 nexthdr ipv6-frag counter
 			</para>
 
 			The raw payload expression instructs to load <replaceable>length</replaceable>bits starting at <replaceable>offset</replaceable>bits.
-			Bit 0 refers the the very first bit -- in the C programming language, this corresponds to the topmost bit, i.e. 0x80 in case of an octet.
+			Bit 0 refers to the very first bit -- in the C programming language, this corresponds to the topmost bit, i.e. 0x80 in case of an octet.
 			They are useful to match headers that do not have a human-readable template expression yet.
 			Note that nft will not add dependencies for Raw payload expressions.
 			If you e.g. want to match protocol fields of a transport header with protocol number 5, you need to manually
@@ -5447,7 +5447,7 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 		<refsect2>
 			<title>Fwd statement</title>
 			<para>
-				The fwd statement is used to redirect a raw packet to another interface.  Its is only available in the netdev family ingress hook.
+				The fwd statement is used to redirect a raw packet to another interface.  It is only available in the netdev family ingress hook.
 				It is similar to the dup statement except that no copy is made.
 			</para>
 			<para>

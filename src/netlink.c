@@ -1704,7 +1704,22 @@ static void trace_print_verdict(const struct nftnl_trace *nlt,
 		chain = xstrdup(nftnl_trace_get_str(nlt, NFTNL_TRACE_JUMP_TARGET));
 	expr = verdict_expr_alloc(&netlink_location, verdict, chain);
 
-	printf("verdict ");
+	nft_print(octx, "verdict ");
+	expr_print(expr, octx);
+	expr_free(expr);
+}
+
+static void trace_print_policy(const struct nftnl_trace *nlt,
+			       struct output_ctx *octx)
+{
+	unsigned int policy;
+	struct expr *expr;
+
+	policy = nftnl_trace_get_u32(nlt, NFTNL_TRACE_POLICY);
+
+	expr = verdict_expr_alloc(&netlink_location, policy, NULL);
+
+	nft_print(octx, "policy ");
 	expr_print(expr, octx);
 	expr_free(expr);
 }
@@ -1920,6 +1935,20 @@ int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 			trace_print_rule(nlt, monh->ctx->octx, monh->cache);
 		break;
 	case NFT_TRACETYPE_POLICY:
+		trace_print_hdr(nlt, monh->ctx->octx);
+
+		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_POLICY)) {
+			trace_print_policy(nlt, monh->ctx->octx);
+			nft_mon_print(monh, " ");
+		}
+
+		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_MARK))
+			trace_print_expr(nlt, NFTNL_TRACE_MARK,
+					 meta_expr_alloc(&netlink_location,
+							 NFT_META_MARK),
+					 monh->ctx->octx);
+		nft_mon_print(monh, "\n");
+		break;
 	case NFT_TRACETYPE_RETURN:
 		trace_print_hdr(nlt, monh->ctx->octx);
 

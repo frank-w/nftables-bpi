@@ -19,11 +19,11 @@ import argparse
 import signal
 import json
 
-sys.path.insert(0,'../../py/')
+TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(TESTS_PATH, '../../py/'))
 
 from nftables import Nftables
 
-TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 TESTS_DIRECTORY = ["any", "arp", "bridge", "inet", "ip", "ip6"]
 LOGFILE = "/tmp/nftables-test.log"
 log_file = None

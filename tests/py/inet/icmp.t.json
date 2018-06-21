@@ -1,0 +1,114 @@
+# icmp type echo-request
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+
+# icmpv6 type echo-request
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+
+# meta nfproto ipv4 icmp type echo-request
+[
+    {
+        "match": {
+            "left": { "meta": "nfproto" },
+            "right": "ipv4"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+
+# meta nfproto ipv4 icmpv6 type echo-request
+[
+    {
+        "match": {
+            "left": { "meta": "nfproto" },
+            "right": "ipv4"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+
+# meta nfproto ipv6 icmp type echo-request
+[
+    {
+        "match": {
+            "left": { "meta": "nfproto" },
+            "right": "ipv6"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmp"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+
+# meta nfproto ipv6 icmpv6 type echo-request
+[
+    {
+        "match": {
+            "left": { "meta": "nfproto" },
+            "right": "ipv6"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "name": "icmpv6"
+                }
+            },
+            "right": "echo-request"
+        }
+    }
+]
+

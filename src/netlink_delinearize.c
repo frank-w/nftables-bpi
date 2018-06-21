@@ -1522,61 +1522,64 @@ static bool meta_may_dependency_kill(struct payload_dep_ctx *ctx,
 				     const struct expr *expr)
 {
 	struct expr *dep = ctx->pdep->expr;
+	uint16_t l3proto;
+	uint8_t l4proto;
 
 	if (ctx->pbase != PROTO_BASE_NETWORK_HDR)
 		return true;
 
 	switch (family) {
 	case NFPROTO_INET:
-		switch (dep->left->ops->type) {
-		case EXPR_META:
-			if (dep->left->meta.key == NFT_META_NFPROTO &&
-			    (mpz_get_uint16(dep->right->value) == NFPROTO_IPV4 ||
-			     mpz_get_uint16(dep->right->value) == NFPROTO_IPV6) &&
-			    expr->left->meta.key == NFT_META_L4PROTO &&
-			    mpz_get_uint8(expr->right->value) != IPPROTO_ICMP &&
-			    mpz_get_uint8(expr->right->value) != IPPROTO_ICMPV6)
-				return false;
-			break;
-		case EXPR_PAYLOAD:
-			if (dep->left->payload.base == PROTO_BASE_LL_HDR &&
-			    (mpz_get_uint16(dep->right->value) == ETH_P_IP ||
-			     mpz_get_uint16(dep->right->value) == ETH_P_IPV6) &&
-			    expr->left->meta.key == NFT_META_L4PROTO &&
-			    mpz_get_uint8(expr->right->value) != IPPROTO_ICMP &&
-			    mpz_get_uint8(expr->right->value) != IPPROTO_ICMPV6)
-				return false;
-			break;
-		default:
-			break;
-		}
-		break;
 	case NFPROTO_NETDEV:
 	case NFPROTO_BRIDGE:
-		switch (dep->left->ops->type) {
-		case EXPR_META:
-			if (dep->left->meta.key == NFT_META_PROTOCOL &&
-			    (mpz_get_uint16(dep->right->value) == ETH_P_IP ||
-			     mpz_get_uint16(dep->right->value) == ETH_P_IPV6) &&
-			    expr->left->meta.key == NFT_META_L4PROTO &&
-			    mpz_get_uint8(expr->right->value) != IPPROTO_ICMP &&
-			    mpz_get_uint8(expr->right->value) != IPPROTO_ICMPV6)
-				return false;
+		break;
+	default:
+		return true;
+	}
+
+	if (expr->left->meta.key != NFT_META_L4PROTO)
+		return true;
+
+	l3proto = mpz_get_uint16(dep->right->value);
+
+	switch (dep->left->ops->type) {
+	case EXPR_META:
+		if (dep->left->meta.key != NFT_META_NFPROTO)
+			return true;
+		break;
+	case EXPR_PAYLOAD:
+		if (dep->left->payload.base != PROTO_BASE_LL_HDR)
+			return true;
+
+		switch(l3proto) {
+		case ETH_P_IP:
+			l3proto = NFPROTO_IPV4;
 			break;
-		case EXPR_PAYLOAD:
-			if (dep->left->payload.base == PROTO_BASE_LL_HDR &&
-			    (mpz_get_uint16(dep->right->value) == ETH_P_IP ||
-			     mpz_get_uint16(dep->right->value) == ETH_P_IPV6) &&
-			    expr->left->meta.key == NFT_META_L4PROTO &&
-			    mpz_get_uint8(expr->right->value) != IPPROTO_ICMP &&
-			    mpz_get_uint8(expr->right->value) != IPPROTO_ICMPV6)
-				return false;
+		case ETH_P_IPV6:
+			l3proto = NFPROTO_IPV6;
 			break;
 		default:
 			break;
 		}
 		break;
+	default:
+		break;
 	}
+
+	l4proto = mpz_get_uint8(expr->right->value);
+
+	switch (l4proto) {
+	case IPPROTO_ICMP:
+	case IPPROTO_ICMPV6:
+		break;
+	default:
+		return false;
+	}
+
+	if ((l3proto == NFPROTO_IPV4 && l4proto == IPPROTO_ICMPV6) ||
+	    (l3proto == NFPROTO_IPV6 && l4proto == IPPROTO_ICMP))
+		return false;
+
 	return true;
 }
 

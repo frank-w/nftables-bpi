@@ -4,8 +4,14 @@ table inet t {
 		elements = { "eth0" }
 	}
 
+	set sc {
+		type inet_service . ifname
+		elements = { 22 . "eth0" }
+	}
+
 	chain c {
 		iifname @s accept
 		oifname @s accept
+		tcp dport . iifname @sc accept
 	}
 }

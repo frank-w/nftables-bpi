@@ -8,9 +8,15 @@ EXPECTED="table inet t {
 		elements = { \"eth0\" }
 	}
 
+	set sc {
+		type inet_service . ifname
+		elements = { \"ssh\" . \"eth0\" }
+	}
+
 	chain c {
 		iifname @s accept
 		oifname @s accept
+		tcp dport . meta iifname @sc accept
 	}
 }"
 

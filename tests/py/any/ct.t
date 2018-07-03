@@ -55,8 +55,8 @@ ct mark set 0x11 xor 0x1331;ok;ct mark set 0x00001320
 ct mark set 0x11333 and 0x11;ok;ct mark set 0x00000011
 ct mark set 0x12 or 0x11;ok;ct mark set 0x00000013
 ct mark set 0x11;ok;ct mark set 0x00000011
-ct mark set mark;ok;ct mark set mark
-ct mark set mark map { 1 : 10, 2 : 20, 3 : 30 };ok;ct mark set mark map { 0x00000003 : 0x0000001e, 0x00000002 : 0x00000014, 0x00000001 : 0x0000000a}
+ct mark set mark;ok;ct mark set meta mark
+ct mark set mark map { 1 : 10, 2 : 20, 3 : 30 };ok;ct mark set meta mark map { 0x00000003 : 0x0000001e, 0x00000002 : 0x00000014, 0x00000001 : 0x0000000a}
 
 ct mark set {0x11333, 0x11};fail
 ct zone set {123, 127};fail
@@ -130,7 +130,7 @@ ct reply zone 1;ok
 ct zone set 1;ok
 ct original zone set 1;ok
 ct reply zone set 1;ok
-ct zone set mark map { 1 : 1,  2 : 2 };ok;ct zone set mark map { 0x00000001 : 1, 0x00000002 : 2}
+ct zone set mark map { 1 : 1,  2 : 2 };ok;ct zone set meta mark map { 0x00000001 : 1, 0x00000002 : 2}
 ct both zone set 1;fail
 
 ct invalid;fail

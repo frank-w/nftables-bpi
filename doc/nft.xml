@@ -3148,7 +3148,7 @@ filter prerouting fib saddr . iif oif missing drop
 filter prerouting fib daddr . iif type != { local, broadcast, multicast } drop
 
 # perform lookup in a specific 'blackhole' table (0xdead, needs ip appropriate ip rule)
-filter prerouting meta mark set 0xdead fib daddr . mark type vmap { blackhole : drop, prohibit : jump prohibited, unreachable : drop }
+filter prerouting meta mark set 0xdead fib daddr . meta mark type vmap { blackhole : drop, prohibit : jump prohibited, unreachable : drop }
 					</programlisting>
 				</example>
 			</para>

@@ -7,4 +7,4 @@
 ip protocol tcp tcp dport 22;ok;tcp dport 22
 
 # but not here
-ip protocol tcp meta mark set 1 tcp dport 22;ok;ip protocol 6 mark set 0x00000001 tcp dport 22
+ip protocol tcp meta mark set 1 tcp dport 22;ok;ip protocol 6 meta mark set 0x00000001 tcp dport 22

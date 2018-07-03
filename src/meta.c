@@ -446,18 +446,15 @@ const struct meta_template meta_templates[] = {
 						BITS_PER_BYTE, BYTEORDER_HOST_ENDIAN),
 };
 
-static bool meta_key_is_qualified(enum nft_meta_keys key)
+static bool meta_key_is_unqualified(enum nft_meta_keys key)
 {
 	switch (key) {
-	case NFT_META_LEN:
-	case NFT_META_NFPROTO:
-	case NFT_META_L4PROTO:
-	case NFT_META_PROTOCOL:
-	case NFT_META_PRIORITY:
-	case NFT_META_PRANDOM:
-	case NFT_META_SECPATH:
-	case NFT_META_BRI_IIFNAME:
-	case NFT_META_BRI_OIFNAME:
+	case NFT_META_IIF:
+	case NFT_META_OIF:
+	case NFT_META_IIFNAME:
+	case NFT_META_OIFNAME:
+	case NFT_META_IIFGROUP:
+	case NFT_META_OIFGROUP:
 		return true;
 	default:
 		return false;
@@ -466,11 +463,11 @@ static bool meta_key_is_qualified(enum nft_meta_keys key)
 
 static void meta_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	if (meta_key_is_qualified(expr->meta.key))
-		nft_print(octx, "meta %s",
+	if (meta_key_is_unqualified(expr->meta.key))
+		nft_print(octx, "%s",
 			  meta_templates[expr->meta.key].token);
 	else
-		nft_print(octx, "%s",
+		nft_print(octx, "meta %s",
 			  meta_templates[expr->meta.key].token);
 }
 
@@ -594,11 +591,11 @@ struct expr *meta_expr_alloc(const struct location *loc, enum nft_meta_keys key)
 
 static void meta_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	if (meta_key_is_qualified(stmt->meta.key))
-		nft_print(octx, "meta %s set ",
+	if (meta_key_is_unqualified(stmt->meta.key))
+		nft_print(octx, "%s set ",
 			  meta_templates[stmt->meta.key].token);
 	else
-		nft_print(octx, "%s set ",
+		nft_print(octx, "meta %s set ",
 			  meta_templates[stmt->meta.key].token);
 
 	expr_print(stmt->meta.expr, octx);

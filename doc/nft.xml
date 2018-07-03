@@ -3016,6 +3016,62 @@ raw prerouting meta secpath exists accept
 			</para>
 		</refsect2>
 		<refsect2>
+			<title>socket expression</title>
+			<para>
+				<cmdsynopsis>
+					<command>socket</command>
+					<group choice="req">
+						<arg>transparent</arg>
+					</group>
+				</cmdsynopsis>
+			</para>
+			<para>
+				Socket expression can be used to search for an existing open TCP/UDP socket
+				and its attributes that can be associated with a packet. It looks for an
+				established or non-zero bound listening socket (possibly with a non-local address).
+			</para>
+			<para>
+				<table frame="all">
+					<title>Available socket attributes</title>
+					<tgroup cols='3' align='left' colsep='1' rowsep='1'>
+						<colspec colname='c1'/>
+						<colspec colname='c2'/>
+						<colspec colname='c3'/>
+						<thead>
+							<row>
+								<entry>Name</entry>
+								<entry>Description</entry>
+								<entry>Type</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>transparent</entry>
+								<entry>
+									Value of the IP_TRANSPARENT socket option in the found socket. It can be 0 or 1.
+								</entry>
+								<entry>boolean (1 bit)</entry> <!-- From the aspect of the user at least. -->
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				<example>
+					<title>Using socket expression</title>
+					<programlisting>
+# Mark packets that correspond to a transparent socket
+table inet x {
+    chain y {
+        type filter hook prerouting priority -150; policy accept;
+        socket transparent 1 mark set 0x00000001 accept
+    }
+}
+					</programlisting>
+				</example>
+			</para>
+		</refsect2>
+		<refsect2>
 			<title>fib expressions</title>
 			<para>
 				<cmdsynopsis>

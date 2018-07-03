@@ -18,7 +18,7 @@ struct cookie {
 struct output_ctx {
 	unsigned int numeric;
 	unsigned int stateless;
-	unsigned int ip2name;
+	unsigned int literal;
 	unsigned int handle;
 	unsigned int echo;
 	unsigned int json;

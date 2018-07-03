@@ -5,6 +5,6 @@ table ip filter {
 
 	chain input {
 		type filter hook input priority 0; policy accept;
-		limit name tcp dport map { http : "http-traffic", https : "http-traffic" }
+		limit name tcp dport map { 80 : "http-traffic", 443 : "http-traffic" }
 	}
 }

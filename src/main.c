@@ -35,13 +35,14 @@ enum opt_vals {
 	OPT_NUMERIC		= 'n',
 	OPT_STATELESS		= 's',
 	OPT_IP2NAME		= 'N',
+	OPT_LITERAL		= 'l',
 	OPT_DEBUG		= 'd',
 	OPT_HANDLE_OUTPUT	= 'a',
 	OPT_ECHO		= 'e',
 	OPT_INVALID		= '?',
 };
 
-#define OPTSTRING	"hvcf:iI:jvnsNae"
+#define OPTSTRING	"hvcf:iI:jvnsNael"
 
 static const struct option options[] = {
 	{
@@ -76,6 +77,10 @@ static const struct option options[] = {
 	{
 		.name		= "reversedns",
 		.val		= OPT_IP2NAME,
+	},
+	{
+		.name		= "literal",
+		.val		= OPT_LITERAL,
 	},
 	{
 		.name		= "includepath",
@@ -173,6 +178,7 @@ int main(int argc, char * const *argv)
 {
 	char *buf = NULL, *filename = NULL;
 	enum nft_numeric_level numeric;
+	enum nft_literal_level literal;
 	bool interactive = false;
 	unsigned int debug_mask;
 	unsigned int len;
@@ -224,7 +230,22 @@ int main(int argc, char * const *argv)
 			nft_ctx_output_set_stateless(nft, true);
 			break;
 		case OPT_IP2NAME:
-			nft_ctx_output_set_ip2name(nft, true);
+			literal = nft_ctx_output_get_literal(nft);
+			if (literal + 2 > NFT_LITERAL_ADDR) {
+				fprintf(stderr, "Cannot combine `-N' with `-l'\n");
+				exit(EXIT_FAILURE);
+			}
+			nft_ctx_output_set_literal(nft, literal + 2);
+			break;
+		case OPT_LITERAL:
+			literal = nft_ctx_output_get_literal(nft);
+			if (literal + 1 > NFT_LITERAL_ADDR) {
+				fprintf(stderr, "Too many `-l' options or "
+						"perhaps you combined `-l' "
+						"with `-N'?\n");
+				exit(EXIT_FAILURE);
+			}
+			nft_ctx_output_set_literal(nft, literal + 1);
 			break;
 		case OPT_DEBUG:
 			debug_mask = nft_ctx_output_get_debug(nft);

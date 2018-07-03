@@ -336,14 +336,14 @@ void nft_ctx_output_set_stateless(struct nft_ctx *ctx, bool val)
 	ctx->output.stateless = val;
 }
 
-bool nft_ctx_output_get_ip2name(struct nft_ctx *ctx)
+enum nft_literal_level nft_ctx_output_get_literal(struct nft_ctx *ctx)
 {
-	return ctx->output.ip2name;
+	return ctx->output.literal;
 }
 
-void nft_ctx_output_set_ip2name(struct nft_ctx *ctx, bool val)
+void nft_ctx_output_set_literal(struct nft_ctx *ctx, enum nft_literal_level val)
 {
-	ctx->output.ip2name = val;
+	ctx->output.literal = val;
 }
 
 unsigned int nft_ctx_output_get_debug(struct nft_ctx *ctx)

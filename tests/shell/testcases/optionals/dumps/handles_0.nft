@@ -1,5 +1,5 @@
 table ip test {
 	chain test {
-		tcp dport ssh counter packets 0 bytes 0 accept
+		tcp dport 22 counter packets 0 bytes 0 accept
 	}
 }

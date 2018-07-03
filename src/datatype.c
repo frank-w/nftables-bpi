@@ -454,7 +454,7 @@ static void ipaddr_type_print(const struct expr *expr, struct output_ctx *octx)
 	sin.sin_addr.s_addr = mpz_get_be32(expr->value);
 	err = getnameinfo((struct sockaddr *)&sin, sizeof(sin), buf,
 			  sizeof(buf), NULL, 0,
-			  octx->ip2name ? 0 : NI_NUMERICHOST);
+			  octx->literal >= NFT_LITERAL_ADDR ? 0 : NI_NUMERICHOST);
 	if (err != 0) {
 		getnameinfo((struct sockaddr *)&sin, sizeof(sin), buf,
 			    sizeof(buf), NULL, 0, NI_NUMERICHOST);
@@ -512,7 +512,7 @@ static void ip6addr_type_print(const struct expr *expr, struct output_ctx *octx)
 
 	err = getnameinfo((struct sockaddr *)&sin6, sizeof(sin6), buf,
 			  sizeof(buf), NULL, 0,
-			  octx->ip2name ? 0 : NI_NUMERICHOST);
+			  octx->literal >= NFT_LITERAL_ADDR ? 0 : NI_NUMERICHOST);
 	if (err != 0) {
 		getnameinfo((struct sockaddr *)&sin6, sizeof(sin6), buf,
 			    sizeof(buf), NULL, 0, NI_NUMERICHOST);
@@ -617,11 +617,11 @@ const struct datatype inet_protocol_type = {
 static void inet_service_type_print(const struct expr *expr,
 				     struct output_ctx *octx)
 {
-	if (octx->numeric >= NFT_NUMERIC_PORT) {
-		integer_type_print(expr, octx);
+	if (octx->literal == NFT_LITERAL_PORT) {
+		symbolic_constant_print(&inet_service_tbl, expr, false, octx);
 		return;
 	}
-	symbolic_constant_print(&inet_service_tbl, expr, false, octx);
+	integer_type_print(expr, octx);
 }
 
 static struct error_record *inet_service_type_parse(const struct expr *sym,

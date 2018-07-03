@@ -5,7 +5,7 @@ set -e
 RULESET="table inet filter {
 	chain ssh {
 		type filter hook input priority 0; policy accept;
-		tcp dport ssh accept;
+		tcp dport 22 accept;
 	}
 }
 

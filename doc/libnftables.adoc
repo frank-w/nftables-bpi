@@ -25,8 +25,8 @@ void nft_ctx_output_set_numeric(struct nft_ctx* '\*ctx'*,
 bool nft_ctx_output_get_stateless(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_stateless(struct nft_ctx* '\*ctx'*, bool* 'val'*);
 
-bool nft_ctx_output_get_ip2name(struct nft_ctx* '\*ctx'*);
-void nft_ctx_output_set_ip2name(struct nft_ctx* '\*ctx'*, bool* 'val'*);
+enum nft_literal_level nft_ctx_output_get_literal(struct nft_ctx* '\*ctx'*);
+void nft_ctx_output_set_literal(struct nft_ctx* '\*ctx'*, bool* 'val'*);
 
 unsigned int nft_ctx_output_get_debug(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_debug(struct nft_ctx* '\*ctx'*, unsigned int* 'mask'*);
@@ -133,14 +133,14 @@ The *nft_ctx_output_get_stateless*() function returns the stateless output setti
 
 The *nft_ctx_output_set_stateless*() function sets the stateless output setting in 'ctx' to the value of 'val'.
 
-=== nft_ctx_output_get_ip2name() and nft_ctx_output_set_ip2name()
-The ip2name setting controls whether reverse DNS lookups are performed for IP addresses when printing them.
+=== nft_ctx_output_get_literal() and nft_ctx_output_set_literal()
+The literal setting controls whether reverse DNS lookups are performed for IP addresses when printing them.
 Note that this may add significant delay to *list* commands depending on DNS resolver speed.
-The default setting is *false*.
+The default setting is *NFT_LITERAL_NONE*.
 
-The *nft_ctx_output_get_ip2name*() function returns the ip2name output setting's value in 'ctx'.
+The *nft_ctx_output_get_literal*() function returns the literal output setting's value in 'ctx'.
 
-The *nft_ctx_output_set_ip2name*() function sets the ip2name output setting in 'ctx' to the value of 'val'.
+The *nft_ctx_output_set_literal*() function sets the literal output setting in 'ctx' to the value of 'val'.
 
 === nft_ctx_output_get_debug() and nft_ctx_output_set_debug()
 Libnftables supports separate debugging of different parts of its internals.

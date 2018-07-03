@@ -1,6 +1,6 @@
 table inet t {
 	set s {
 		type inet_service
-		elements = { ssh comment "test" }
+		elements = { 22 comment "test" }
 	}
 }

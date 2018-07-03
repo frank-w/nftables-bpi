@@ -114,18 +114,22 @@ vi:ts=4 sw=4
 				</listitem>
 			</varlistentry>
 			<varlistentry>
-				<term><option>-N, --reversedns</option></term>
-				<listitem>
-					<para>
-						Translate IP addresses to names. Usually requires network traffic for DNS lookup.
-					</para>
-				</listitem>
-			</varlistentry>
-			<varlistentry>
 				<term><option>-s, --stateless</option></term>
 				<listitem>
 					<para>
 						Omit stateful information of rules and stateful objects.
+					</para>
+				</listitem>
+			</varlistentry>
+			<varlistentry>
+				<term><option>-l, --literal</option></term>
+				<listitem>
+					<para>
+						Translate numeric to literal. When used once (the default behaviour),
+						print services (instead of numerical port numbers). Use twice to
+						perform the IP address to name lookup, this usually requires network
+						traffic for DNS lookup that slows down the ruleset listing.
+
 					</para>
 				</listitem>
 			</varlistentry>

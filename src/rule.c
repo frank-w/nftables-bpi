@@ -1479,7 +1479,7 @@ static void obj_print_data(const struct obj *obj,
 			nft_print(octx, "rate %s%" PRIu64 "/%s",
 				  inv ? "over " : "", obj->limit.rate,
 				  get_unit(obj->limit.unit));
-			if (obj->limit.burst > 0)
+			if (obj->limit.burst > 0 && obj->limit.burst != 5)
 				nft_print(octx, " burst %u packets",
 					  obj->limit.burst);
 			break;

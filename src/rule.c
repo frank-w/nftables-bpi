@@ -383,10 +383,14 @@ static void set_print_declaration(const struct set *set,
 	if (set->timeout)
 		flags &= ~NFT_SET_TIMEOUT;
 
-	if (flags & (NFT_SET_CONSTANT | NFT_SET_INTERVAL | NFT_SET_TIMEOUT)) {
+	if (flags & (NFT_SET_CONSTANT | NFT_SET_INTERVAL | NFT_SET_TIMEOUT | NFT_SET_EVAL)) {
 		nft_print(octx, "%s%sflags ", opts->tab, opts->tab);
 		if (set->flags & NFT_SET_CONSTANT) {
 			nft_print(octx, "%sconstant", delim);
+			delim = ",";
+		}
+		if (set->flags & NFT_SET_EVAL) {
+			nft_print(octx, "%sdynamic", delim);
 			delim = ",";
 		}
 		if (set->flags & NFT_SET_INTERVAL) {

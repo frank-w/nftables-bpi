@@ -1089,7 +1089,8 @@ static int list_member_evaluate(struct eval_ctx *ctx, struct expr **expr)
 	return err;
 }
 
-static int expr_evaluate_concat(struct eval_ctx *ctx, struct expr **expr)
+static int expr_evaluate_concat(struct eval_ctx *ctx, struct expr **expr,
+				bool eval)
 {
 	const struct datatype *dtype = ctx->ectx.dtype, *tmp;
 	uint32_t type = dtype ? dtype->type : 0, ntype = 0;
@@ -1110,7 +1111,7 @@ static int expr_evaluate_concat(struct eval_ctx *ctx, struct expr **expr)
 			tmp = concat_subtype_lookup(type, --off);
 		expr_set_context(&ctx->ectx, tmp, tmp->size);
 
-		if (list_member_evaluate(ctx, &i) < 0)
+		if (eval && list_member_evaluate(ctx, &i) < 0)
 			return -1;
 		flags &= i->flags;
 
@@ -1775,7 +1776,7 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 	case EXPR_BINOP:
 		return expr_evaluate_binop(ctx, expr);
 	case EXPR_CONCAT:
-		return expr_evaluate_concat(ctx, expr);
+		return expr_evaluate_concat(ctx, expr, true);
 	case EXPR_LIST:
 		return expr_evaluate_list(ctx, expr);
 	case EXPR_SET:
@@ -2824,7 +2825,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 
 	if (set->key->len == 0) {
 		if (set->key->ops->type == EXPR_CONCAT &&
-		    expr_evaluate_concat(ctx, &set->key) < 0)
+		    expr_evaluate_concat(ctx, &set->key, false) < 0)
 			return -1;
 
 		if (set->key->len == 0)

@@ -1075,6 +1075,7 @@ table inet filter {
 		</para>
 		<para>
 			Sets are elements containers of an user-defined data type, they are uniquely identified by an user-defined name and attached to tables.
+			Their behaviour can be tuned with the <literal>flags</literal> that can be specified at set creation time.
 		</para>
 
 		<variablelist>
@@ -1082,7 +1083,8 @@ table inet filter {
 				<term><option>add</option></term>
 				<listitem>
 					<para>
-						Add a new set in the specified table.
+						Add a new set in the specified table. See the <literal>Set specification</literal> table below
+						for more information about how to specify a sets properties.
 					</para>
 				</listitem>
 			</varlistentry>
@@ -1150,7 +1152,7 @@ table inet filter {
 					<row>
 						<entry>flags</entry>
 						<entry>set flags</entry>
-						<entry>string: constant, interval, timeout</entry>
+						<entry>string: constant, dynamic, interval, timeout</entry>
 					</row>
 					<row>
 						<entry>timeout</entry>
@@ -5523,10 +5525,10 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 			<title>Set statement</title>
 			<para>
 				The set statement is used to dynamically add or update elements in a set from the packet path.
-				The set <literal>setname</literal> must already exist in the given table.
-				Furthermore, any set that will be dynamically updated from the nftables ruleset must specify
-				both a maximum set size (to prevent memory exhaustion) and a timeout (so that number of entries in
-				set will not grow indefinitely).
+				The set <literal>setname</literal> must already exist in the given table and must have been
+				created with the <literal>dynamic</literal> flag.
+				Furthermore, these sets must specify both a maximum set size (to prevent memory exhaustion) and
+				a timeout (so that number of entries in set will not grow indefinitely).
 				The set statement can be used to e.g. create dynamic blacklists.
 			</para>
 			<para>

@@ -1593,15 +1593,13 @@ static int do_list_obj(struct netlink_ctx *ctx, struct cmd *cmd, uint32_t type)
 		    cmd->handle.family != table->handle.family)
 			continue;
 
-		nft_print(ctx->octx, "table %s %s {\n",
-			  family2str(table->handle.family),
-			  table->handle.table.name);
-
 		if (cmd->handle.table.name != NULL &&
-		    strcmp(cmd->handle.table.name, table->handle.table.name)) {
-			nft_print(ctx->octx, "}\n");
+		    !strcmp(cmd->handle.table.name, table->handle.table.name)) {
+			nft_print(ctx->octx, "table %s %s {\n",
+				  family2str(table->handle.family),
+				  cmd->handle.table.name);
+		} else
 			continue;
-		}
 
 		list_for_each_entry(obj, &table->objs, list) {
 			if (obj->type != type ||

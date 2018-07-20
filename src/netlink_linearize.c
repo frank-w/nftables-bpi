@@ -1071,6 +1071,45 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
+static void netlink_gen_tproxy_stmt(struct netlink_linearize_ctx *ctx,
+				 const struct stmt *stmt)
+{
+	struct nftnl_expr *nle;
+	enum nft_registers addr_reg;
+	enum nft_registers port_reg;
+	int registers = 0;
+	const int family = stmt->tproxy.family;
+	int nftnl_reg_port;
+
+	nle = alloc_nft_expr("tproxy");
+
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_TPROXY_FAMILY, family);
+
+	nftnl_reg_port = NFTNL_EXPR_TPROXY_REG_PORT;
+
+	if (stmt->tproxy.addr) {
+		addr_reg = get_register(ctx, NULL);
+		registers++;
+		netlink_gen_expr(ctx, stmt->tproxy.addr, addr_reg);
+		netlink_put_register(nle, NFTNL_EXPR_TPROXY_REG_ADDR,
+				     addr_reg);
+	}
+
+	if (stmt->tproxy.port) {
+		port_reg = get_register(ctx, NULL);
+		registers++;
+		netlink_gen_expr(ctx, stmt->tproxy.port, port_reg);
+		netlink_put_register(nle, nftnl_reg_port, port_reg);
+	}
+
+	while (registers > 0) {
+		release_register(ctx, NULL);
+		registers--;
+	}
+
+	nftnl_rule_add_expr(ctx->nlr, nle);
+}
+
 static void netlink_gen_dup_stmt(struct netlink_linearize_ctx *ctx,
 				 const struct stmt *stmt)
 {
@@ -1301,6 +1340,8 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_reject_stmt(ctx, stmt);
 	case STMT_NAT:
 		return netlink_gen_nat_stmt(ctx, stmt);
+	case STMT_TPROXY:
+		return netlink_gen_tproxy_stmt(ctx, stmt);
 	case STMT_DUP:
 		return netlink_gen_dup_stmt(ctx, stmt);
 	case STMT_QUEUE:

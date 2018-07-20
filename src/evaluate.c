@@ -2478,6 +2478,86 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 	return 0;
 }
 
+static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
+{
+	const struct datatype *dtype;
+	int err, len;
+
+	switch (ctx->pctx.family) {
+	case NFPROTO_IPV4:
+	case NFPROTO_IPV6:
+	case NFPROTO_INET:
+		break;
+	default:
+		return stmt_error(ctx, stmt,
+				  "tproxy is only supported for IPv4/IPv6/INET");
+	}
+
+	if (ctx->pctx.protocol[PROTO_BASE_TRANSPORT_HDR].desc == NULL)
+		return stmt_error(ctx, stmt, "Transparent proxy support requires"
+					     " transport protocol match");
+
+	if (!stmt->tproxy.addr && !stmt->tproxy.port)
+		return stmt_error(ctx, stmt, "Either address or port must be specified!");
+
+	if (ctx->pctx.family != NFPROTO_INET) {
+		if (stmt->tproxy.family != NFPROTO_UNSPEC)
+			return stmt_error(ctx, stmt, "Family can only be specified in inet tables.");
+		stmt->tproxy.family = ctx->pctx.family;
+	}
+	else {
+		const struct proto_desc *nproto =
+			ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
+		if ((nproto == &proto_ip && stmt->tproxy.family == NFPROTO_IPV6) ||
+		    (nproto == &proto_ip6 && stmt->tproxy.family == NFPROTO_IPV4))
+			/* this prevents us from rules like
+			 * ip protocol tcp tproxy ip6 to [dead::beef]
+			 */
+			return stmt_error(ctx, stmt,
+					  "Conflicting network layer protocols.");
+	}
+
+	if (stmt->tproxy.addr != NULL) {
+		if (stmt->tproxy.addr->ops->type == EXPR_RANGE)
+			return stmt_error(ctx, stmt, "Address ranges are not supported for tproxy.");
+		if (ctx->pctx.family == NFPROTO_INET) {
+			switch (stmt->tproxy.family) {
+			case NFPROTO_IPV4:
+				dtype = &ipaddr_type;
+				len   = 4 * BITS_PER_BYTE;
+				break;
+			case NFPROTO_IPV6:
+				dtype = &ip6addr_type;
+				len   = 16 * BITS_PER_BYTE;
+				break;
+			default:
+				return stmt_error(ctx, stmt,
+						  "Family must be specified in tproxy statement with address for inet tables.");
+			}
+			err = stmt_evaluate_arg(ctx, stmt, dtype, len,
+						BYTEORDER_BIG_ENDIAN,
+						&stmt->tproxy.addr);
+			if (err < 0)
+				return err;
+		}
+		else {
+			err = evaluate_addr(ctx, stmt, &stmt->tproxy.addr);
+			if (err < 0)
+				return err;
+		}
+	}
+
+	if (stmt->tproxy.port != NULL) {
+		if (stmt->tproxy.port->ops->type == EXPR_RANGE)
+			return stmt_error(ctx, stmt, "Port ranges are not supported for tproxy.");
+		err = nat_evaluate_transport(ctx, stmt, &stmt->tproxy.port);
+		if (err < 0)
+			return err;
+	}
+
+	return 0;
+}
+
 static int stmt_evaluate_dup(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	int err;
@@ -2761,6 +2841,8 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 		return stmt_evaluate_reject(ctx, stmt);
 	case STMT_NAT:
 		return stmt_evaluate_nat(ctx, stmt);
+	case STMT_TPROXY:
+		return stmt_evaluate_tproxy(ctx, stmt);
 	case STMT_QUEUE:
 		return stmt_evaluate_queue(ctx, stmt);
 	case STMT_DUP:

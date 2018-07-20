@@ -760,6 +760,51 @@ struct stmt *fwd_stmt_alloc(const struct location *loc)
 	return stmt_alloc(loc, &fwd_stmt_ops);
 }
 
+static void tproxy_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
+{
+	nft_print(octx, "tproxy");
+
+	if (stmt->tproxy.table_family == NFPROTO_INET &&
+	    stmt->tproxy.family != NFPROTO_UNSPEC)
+		nft_print(octx, " %s", nfproto_family_name(stmt->tproxy.family));
+	nft_print(octx, " to");
+	if (stmt->tproxy.addr) {
+		nft_print(octx, " ");
+		if (stmt->tproxy.addr->ops->type == EXPR_VALUE &&
+		    stmt->tproxy.addr->dtype->type == TYPE_IP6ADDR) {
+			nft_print(octx, "[");
+			expr_print(stmt->tproxy.addr, octx);
+			nft_print(octx, "]");
+		} else {
+			expr_print(stmt->tproxy.addr, octx);
+		}
+	}
+	if (stmt->tproxy.port && stmt->tproxy.port->ops->type == EXPR_VALUE) {
+		if (!stmt->tproxy.addr)
+			nft_print(octx, " ");
+		nft_print(octx, ":");
+		expr_print(stmt->tproxy.port, octx);
+	}
+}
+
+static void tproxy_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->tproxy.addr);
+	expr_free(stmt->tproxy.port);
+}
+
+static const struct stmt_ops tproxy_stmt_ops = {
+	.type		= STMT_TPROXY,
+	.name		= "tproxy",
+	.print		= tproxy_stmt_print,
+	.destroy	= tproxy_stmt_destroy,
+};
+
+struct stmt *tproxy_stmt_alloc(const struct location *loc)
+{
+	return stmt_alloc(loc, &tproxy_stmt_ops);
+}
+
 static void xt_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	xt_stmt_xlate(stmt);

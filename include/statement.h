@@ -128,6 +128,15 @@ struct nat_stmt {
 extern struct stmt *nat_stmt_alloc(const struct location *loc,
 				   enum nft_nat_etypes type);
 
+struct tproxy_stmt {
+	struct expr	*addr;
+	struct expr	*port;
+	uint8_t		family;
+	uint8_t		table_family; /* only used for printing the rule */
+};
+
+extern struct stmt *tproxy_stmt_alloc(const struct location *loc);
+
 struct queue_stmt {
 	struct expr		*queue;
 	uint16_t		flags;
@@ -271,6 +280,7 @@ enum stmt_types {
 	STMT_LOG,
 	STMT_REJECT,
 	STMT_NAT,
+	STMT_TPROXY,
 	STMT_QUEUE,
 	STMT_CT,
 	STMT_SET,
@@ -337,6 +347,7 @@ struct stmt {
 		struct limit_stmt	limit;
 		struct reject_stmt	reject;
 		struct nat_stmt		nat;
+		struct tproxy_stmt	tproxy;
 		struct queue_stmt	queue;
 		struct quota_stmt	quota;
 		struct ct_stmt		ct;

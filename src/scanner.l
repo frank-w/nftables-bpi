@@ -261,6 +261,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "socket"		{ return SOCKET; }
 "transparent"		{ return TRANSPARENT;}
 
+"tproxy"		{ return TPROXY; }
+
 "accept"		{ return ACCEPT; }
 "drop"			{ return DROP; }
 "continue"		{ return CONTINUE; }

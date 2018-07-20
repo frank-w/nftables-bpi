@@ -969,6 +969,50 @@ out_err:
 	xfree(stmt);
 }
 
+static void netlink_parse_tproxy(struct netlink_parse_ctx *ctx,
+			      const struct location *loc,
+			      const struct nftnl_expr *nle)
+{
+	struct stmt *stmt;
+	struct expr *addr, *port;
+	enum nft_registers reg;
+
+	stmt = tproxy_stmt_alloc(loc);
+	stmt->tproxy.family = nftnl_expr_get_u32(nle, NFTNL_EXPR_TPROXY_FAMILY);
+	stmt->tproxy.table_family = ctx->table->handle.family;
+
+	reg = netlink_parse_register(nle, NFTNL_EXPR_TPROXY_REG_ADDR);
+	if (reg) {
+		addr = netlink_get_register(ctx, loc, reg);
+
+		switch (stmt->tproxy.family) {
+		case NFPROTO_IPV4:
+			expr_set_type(addr, &ipaddr_type, BYTEORDER_BIG_ENDIAN);
+			break;
+		case NFPROTO_IPV6:
+			expr_set_type(addr, &ip6addr_type, BYTEORDER_BIG_ENDIAN);
+			break;
+		default:
+			netlink_error(ctx, loc,
+				      "tproxy address must be IPv4 or IPv6");
+			goto err;
+		}
+		stmt->tproxy.addr = addr;
+	}
+
+	reg = netlink_parse_register(nle, NFTNL_EXPR_TPROXY_REG_PORT);
+	if (reg) {
+		port = netlink_get_register(ctx, loc, reg);
+		expr_set_type(port, &inet_service_type, BYTEORDER_BIG_ENDIAN);
+		stmt->tproxy.port = port;
+	}
+
+	ctx->stmt = stmt;
+	return;
+err:
+	xfree(stmt);
+}
+
 static void netlink_parse_masq(struct netlink_parse_ctx *ctx,
 			       const struct location *loc,
 			       const struct nftnl_expr *nle)
@@ -1362,6 +1406,7 @@ static const struct {
 	{ .name = "range",	.parse = netlink_parse_range },
 	{ .name = "reject",	.parse = netlink_parse_reject },
 	{ .name = "nat",	.parse = netlink_parse_nat },
+	{ .name = "tproxy",	.parse = netlink_parse_tproxy },
 	{ .name = "notrack",	.parse = netlink_parse_notrack },
 	{ .name = "masq",	.parse = netlink_parse_masq },
 	{ .name = "redir",	.parse = netlink_parse_redir },
@@ -2433,6 +2478,14 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 			if (stmt->nat.proto != NULL) {
 				payload_dependency_reset(&rctx.pdctx);
 				expr_postprocess(&rctx, &stmt->nat.proto);
+			}
+			break;
+		case STMT_TPROXY:
+			if (stmt->tproxy.addr)
+				expr_postprocess(&rctx, &stmt->tproxy.addr);
+			if (stmt->tproxy.port) {
+				payload_dependency_reset(&rctx.pdctx);
+				expr_postprocess(&rctx, &stmt->tproxy.port);
 			}
 			break;
 		case STMT_REJECT:

@@ -192,6 +192,8 @@ int nft_lex(void *, void *, void *);
 %token SOCKET			"socket"
 %token TRANSPARENT		"transparent"
 
+%token TPROXY			"tproxy"
+
 %token HOOK			"hook"
 %token DEVICE			"device"
 %token DEVICES			"devices"
@@ -572,6 +574,9 @@ int nft_lex(void *, void *, void *);
 %type <stmt>			nat_stmt nat_stmt_alloc masq_stmt masq_stmt_alloc redir_stmt redir_stmt_alloc
 %destructor { stmt_free($$); }	nat_stmt nat_stmt_alloc masq_stmt masq_stmt_alloc redir_stmt redir_stmt_alloc
 %type <val>			nf_nat_flags nf_nat_flag offset_opt
+%type <stmt>			tproxy_stmt
+%destructor { stmt_free($$); }	tproxy_stmt
+%type <val>				tproxy_family_spec
 %type <stmt>			queue_stmt queue_stmt_alloc
 %destructor { stmt_free($$); }	queue_stmt queue_stmt_alloc
 %type <val>			queue_stmt_flags queue_stmt_flag
@@ -2082,6 +2087,7 @@ stmt			:	verdict_stmt
 			|	quota_stmt
 			|	reject_stmt
 			|	nat_stmt
+			|	tproxy_stmt
 			|	queue_stmt
 			|	ct_stmt
 			|	masq_stmt
@@ -2475,6 +2481,44 @@ nat_stmt		:	nat_stmt_alloc	nat_stmt_args
 
 nat_stmt_alloc		:	SNAT	{ $$ = nat_stmt_alloc(&@$, NFT_NAT_SNAT); }
 			|	DNAT	{ $$ = nat_stmt_alloc(&@$, NFT_NAT_DNAT); }
+			;
+
+tproxy_family_spec	:	IP	{ $$ = NFPROTO_IPV4; }
+			|	IP6	{ $$ = NFPROTO_IPV6; }
+			;
+
+tproxy_stmt		:	TPROXY TO stmt_expr
+			{
+				$$ = tproxy_stmt_alloc(&@$);
+				$$->tproxy.family = NFPROTO_UNSPEC;
+				$$->tproxy.addr = $3;
+			}
+			|	TPROXY tproxy_family_spec TO stmt_expr
+			{
+				$$ = tproxy_stmt_alloc(&@$);
+				$$->tproxy.family = $2;
+				$$->tproxy.addr = $4;
+			}
+			|	TPROXY TO COLON stmt_expr
+			{
+				$$ = tproxy_stmt_alloc(&@$);
+				$$->tproxy.family = NFPROTO_UNSPEC;
+				$$->tproxy.port = $4;
+			}
+			|	TPROXY TO stmt_expr COLON stmt_expr
+			{
+				$$ = tproxy_stmt_alloc(&@$);
+				$$->tproxy.family = NFPROTO_UNSPEC;
+				$$->tproxy.addr = $3;
+				$$->tproxy.port = $5;
+			}
+			|	TPROXY tproxy_family_spec TO stmt_expr COLON stmt_expr
+			{
+				$$ = tproxy_stmt_alloc(&@$);
+				$$->tproxy.family = $2;
+				$$->tproxy.addr = $4;
+				$$->tproxy.port = $6;
+			}
 			;
 
 primary_stmt_expr	:	symbol_expr		{ $$ = $1; }

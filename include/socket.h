@@ -1,10 +1,8 @@
 #ifndef NFTABLES_SOCKET_H
 #define NFTABLES_SOCKET_H
 
-//#include <parser.h>
-
 /**
- * struct rt_template - template for routing expressions
+ * struct socket_template - template for routing expressions
  *
  * @token:	parser token for the expression
  * @dtype:	data type of the expression

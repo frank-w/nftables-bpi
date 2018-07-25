@@ -1,0 +1,590 @@
+ETHERNET HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*ether* ['Ethernet' 'header' 'field']
+
+.Ethernet header expression types
+[options="header"]
+|==================
+|Keyword| Description| Type
+|daddr|
+Destination MAC address|
+ether_addr
+|saddr|
+Source MAC address|
+ether_addr
+|type|
+EtherType|
+ether_type
+|==================
+
+VLAN HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*vlan* ['VLAN' 'header' 'field']
+
+.VLAN header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|id|
+VLAN ID (VID) |
+integer (12 bit)
+|cfi|
+Canonical Format Indicator|
+integer (1 bit)
+|pcp|
+Priority code point|
+integer (3 bit)
+|type|
+EtherType|
+ether_type
+|==================
+
+.ARP HEADER EXPRESSION
+[options="header"]
+|==================
+|Keyword| Description| Type
+|htype|
+ARP hardware type|
+integer (16 bit)
+|ptype|
+EtherType|
+ether_type
+|hlen|
+Hardware address len|
+integer (8 bit)
+|plen|
+Protocol address len |
+integer (8 bit)
+|operation|
+Operation |
+arp_op
+|======================
+
+IPV4 HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+ip ['IPv4' 'header' 'field']
+
+.IPv4 header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|version|
+IP header version (4)|
+integer (4 bit)
+|hdrlength|
+IP header length including options|
+integer (4 bit) FIXME scaling
+|dscp|
+Differentiated Services Code Point|
+dscp
+|ecn|
+Explicit Congestion Notification|
+ecn
+|length|
+Total packet length |
+integer (16 bit)
+|id|
+IP ID|
+integer (16 bit)
+|frag-off|
+Fragment offset |
+integer (16 bit)
+|ttl|
+Time to live|
+integer (8 bit)
+|protocol|
+Upper layer protocol |
+inet_proto
+|checksum|
+IP header checksum|
+integer (16 bit)
+|saddr|
+Source address|
+ipv4_addr
+|daddr|
+Destination address |
+ipv4_addr
+|======================
+
+ICMP HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+icmp ['ICMP' 'header' 'field']
+
+.ICMP header expression
+[options="header"]
+|==================
+|Keyword|Description| Type
+|type|
+ICMP type field |
+icmp_type
+|code|
+ICMP code field |
+integer (8 bit)
+|checksum|
+ICMP checksum field |
+integer (16 nit)
+|id|
+ID of echo request/response |
+integer (16 bit)
+|sequence|
+sequence   number   of   echo request/response|
+integer (16 bit)
+|gateway|
+gateway of redirects|
+integer (32 bit)
+|mtu|
+MTU of path MTU discovery|
+integer (32 bit)
+|============================
+
+IPV6 HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+ip6 ['IPv6' 'header' 'field']
+
+This expression refers to the ipv6 header fields. Caution when using ip6 nexthdr, the value only refers to the next header, i.e. ip6  nexthdr  tcp  will only match if the ipv6 packet does not contain any extension headers. Packets that are fragmented or e.g. contain a routing extension headers will not be matched. Please use meta l4proto if you wish to match the real transport header and ignore any additional extension headers instead.
+
+.IPv6 header expression
+[options="header"]
+|==================
+|Keyword|Description| Type
+|version|
+IP header version (6)|
+integer (4 bit)
+|dscp|
+Differentiated Services Code Point|
+dscp
+|ecn|
+Explicit Congestion Notification|
+ecn
+|flowlabel|
+Flow label|
+integer (20 bit)
+|length|
+Payload length|
+integer (16 bit)
+|nexthdr|
+Nexthdr protocol|
+inet_proto
+|hoplimit|
+Hop limit|
+integer (8 bit)
+|saddr|
+Source address|
+ipv6_addr
+|daddr|
+Destination address |
+ipv6_addr
+|=======================
+*matching if first extension header indicates a fragment* +
+
+ip6 nexthdr ipv6-frag counter
+
+ICMPV6 HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+icmpv6 ['ICMPv6' 'header' 'field']
+
+.ICMPv6 header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|type|
+ICMPv6 type field|
+icmpv6_type
+|code|
+ICMPv6 code field|
+integer (8 bit)
+|checksum|
+ICMPv6 checksum field|
+integer (16 bit)
+|parameter-problem|
+pointer to problem|
+integer (32 bit)
+|packet-too-big|
+oversized MTU|
+integer (32 bit)
+|id|
+ID of echo request/response |
+integer (16 bit)
+|sequence|
+sequence number of echo request/response|
+integer (16 bit)
+|max-delay|
+maximum response delay of MLD queries|
+integer (16 bit)
+|==============================
+
+TCP HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~
+[verse]
+tcp ['TCP' 'header' 'field']
+
+.TCP header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|sport|
+source port|
+inet_service
+|dport|
+Destination port|
+inet_service
+|sequence|
+Sequence number|
+integer (32 bit)
+|ackseq|
+Acknowledgement number |
+integer (32 bit)
+|doff|
+Data offset |
+integer (4 bit) FIXME scaling
+|reserved|
+Reserved area |
+integer (4 bit)
+|flags|
+TCP flags|
+tcp_flags
+|window|
+Window|
+integer (16 bit)
+|checksum|
+checksum|
+integer (16 bit)
+|urgptr|
+Urgent pointer|
+integer (16 bit)
+|======================
+
+UDP HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~
+[verse]
+udp ['UDP' 'header' 'field']
+
+.UDP header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|sport|
+source port|
+inet_service
+|dport|
+Destination port|
+inet_service
+|length|
+Total packet length|
+integer (16 bit)
+|checksum|
+Checksum|
+integer (16 bit)
+|================
+
+UDP-LITE HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*udplite* ['UDP-Lite' 'header' 'field']
+
+.UDP-Lite header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|sport|
+source port|
+inet_service
+|dport|
+Destination port|
+inet_service
+|checksum|
+Checksum|
+integer (16 bit)
+|================
+
+SCTP HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*sctp* ['SCTP' 'header' 'field']
+
+.SCTP header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|sport|
+source port|
+inet_service
+|dport|
+Destination port|
+inet_service
+|vtag|
+Verification Tag|
+integer (32 bit)
+|checksum|
+Checksum|
+integer (32 bit)
+|================
+
+DCCP HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*dccp* ['DCCP' 'header' 'field']
+
+.DCCP header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|sport|
+source port|
+inet_service
+|dport|
+Destination port|
+inet_service
+|========================
+
+AUTHENTICATION HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*ah* ['AH' 'header' 'field']
+
+.AH header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|nexthdr|
+Next header protocol|
+inet_proto
+|hdrlength|
+AH Header length|
+integer (8 bit)
+|reserved|
+Reserved area|
+integer (16 bit)
+|spi|
+Security Parameter Index |
+integer (32 bit)
+|sequence|
+Sequence number|
+integer (32 bit)
+|========================
+
+ENCRYPTED SECURITY PAYLOAD HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*esp* ['ESP' 'header' 'field']
+
+.ESP header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|spi|
+Security Parameter Index |
+integer (32 bit)
+|sequence|
+Sequence number|
+integer (32 bit)
+|===========================
+
+IPCOMP HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~~~~
+*comp* ['IPComp' 'header' 'field']
+
+.IPComp header expression
+[options="header"]
+|==================
+|Keyword| Description| Type
+|nexthdr|
+Next header protocol|
+inet_proto
+|flags|
+Flags|
+bitmask
+|cpi|
+compression Parameter Index |
+integer (16 bit)
+|============================
+
+RAW PAYLOAD EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*@* [base,offset,length]
+
+The raw payload expression instructs to load lengthbits starting at offsetbits. Bit 0 refers to the very first bit -- in the C programming language, this corresponds to the topmost bit, i.e. 0x80 in case of an octet. They are useful to match headers that do not have a human-readable template expression yet. Note that nft will not add dependencies for Raw payload expressions. If you e.g. want to match protocol fields of a transport header with protocol number 5, you need to manually exclude packets that have a different transport header, for instance my using meta l4proto 5 before the raw expression.
+
+.Support payload protocol bases
+[options="header"]
+|==================
+|Base| Description
+|ll|
+Link layer, for example the Ethernet header
+|nh|
+Network header, for example IPv4 or IPv6
+|th|
+Transport Header, for example TCP
+|==============================
+
+.Matching destination port of both UDP and TCP
+----------------------------------------------
+inet filter input meta l4proto {tcp, udp} @th,16,16 { dns, http }
+-----------------------------------------------------------------
+
+.Rewrite arp packet target hardware address if target protocol address matches a given address
+----------------------------------------------------------------------------------------------
+input meta iifname enp2s0 arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566 accept
+-----------------------------------------------------------------------------------------------
+
+EXTENSION HEADER EXPRESSIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Extension header expressions refer to data from variable-sized protocol headers, such as IPv6 extension headers and TCP options.
+
+nftables currently supports matching (finding) a given ipv6 extension header or TCP option.
+[verse]
+*hbh* {nexthdr | hdrlength}
+*frag* {nexthdr | frag-off | more-fragments | id}
+*rt* {nexthdr | hdrlength | type | seg-left}
+*dst* {nexthdr | hdrlength}
+*mh* {nexthdr | hdrlength | checksum | type}
+*srh* {flags | tag | sid | seg-left}
+*tcp option* {eol | noop | maxseg | window | sack-permitted | sack | sack0 | sack1 | sack2 | sack3 | timestamp} 'tcp_option_field'
+
+The following syntaxes are valid only in a relational expression with boolean type on right-hand side for checking header existence only:
+[verse]
+*exthdr* {hbh | frag | rt | dst | mh}
+*tcp option* {eol | noop | maxseg | window | sack-permitted | sack | sack0 | sack1 | sack2 | sack3 | timestamp}
+
+.IPv6 extension headers
+[options="header"]
+|==================
+|Keyword| Description
+|hbh|
+Hop by Hop
+|rt|
+Routing Header
+|frag|
+Fragmentation header
+|dst|
+dst options
+|mh|
+Mobility Header
+|srh|
+Segment Routing Header
+|=====================
+
+.TCP Options
+[options="header"]
+|==================
+|Keyword| Description | TCP option fields
+|eol|
+End if option list|
+kind
+|noop|
+1 Byte TCP No-op options |
+kind
+|maxseg|
+TCP Maximum Segment Size|
+kind, length, size
+|window|
+TCP Window Scaling |
+kind, length, count
+|sack-permitted|
+TCP SACK permitted |
+kind, length
+|sack|
+TCP Selective Acknowledgement (alias of block 0) |
+kind, length, left, right
+|sack0|
+TCP Selective Acknowledgement (block 0) |
+kind, length, left, right
+|sack1|
+TCP Selective Acknowledgement (block 1) |
+kind, length, left, right
+|sack2|
+TCP Selective Acknowledgement (block 2) |
+kind, length, left, right
+|sack3|
+TCP Selective Acknowledgement (block 3) |
+kind, length, left, right
+|timestamp|
+TCP Timestamps |
+kind, length, tsval, tsecr
+|============================
+
+.finding TCP options
+--------------------
+filter input tcp option sack-permitted kind 1 counter
+--------------------
+
+.matching IPv6 exthdr
+---------------------
+ip6 filter input frag more-fragments 1 counter
+---------------------------------------
+
+CONNTRACK EXPRESSIONS
+~~~~~~~~~~~~~~~~~~~~~
+Conntrack expressions refer to meta data of the connection tracking entry associated with a packet. +
+
+There are three types of conntrack expressions. Some conntrack expressions require the flow direction before the conntrack key, others must be used directly because they are direction agnostic.  The *packets*, *bytes* and *avgpkt* keywords can be used with or without a direction. If the direction is omitted, the sum of the original and the reply direction is returned. The same is true for the *zone*, if a direction is given, the zone is only matched if the zone id is tied to the given direction. +
+
+[verse]
+*ct* {state | direction | status | mark | expiration | helper | label | l3proto | protocol | bytes | packets | avgpkt | zone}
+*ct* {original | reply} {l3proto | protocol | proto-src | proto-dst | bytes | packets | avgpkt | zone}
+*ct* {original | reply} {ip | ip6} {saddr | daddr}
+
+.Conntrack expressions
+[options="header"]
+|==================
+|Keyword| Description | Type
+|state|
+State of the connection |
+ct_state
+|direction|
+Direction of the packet relative to the connection |
+ct_dir
+|status|
+Status of the connection |
+ct_status
+|mark|
+Connection mark |
+mark
+|expiration|
+Connection expiration time |
+time
+|helper|
+Helper associated with the connection|
+string
+|label|
+Connection tracking label  bit  or symbolic  name  defined in connlabel.conf in the nftables include path|
+ct_label
+|l3proto|
+Layer 3 protocol of the connection|
+nf_proto
+|saddr|
+Source address of the connection for the given direction |
+ipv4_addr/ipv6_addr
+|daddr|
+Destination address of the connection for the given direction |
+ipv4_addr/ipv6_addr
+|protocol|
+Layer 4 protocol of the connection for the given direction |
+inet_proto
+|proto-src|
+Layer 4 protocol source for the given direction|
+integer (16 bit)
+|proto-dst|
+Layer  4  protocol destination for the given direction |
+integer (16 bit)
+|packets|
+packet count seen in the given direction or sum of original and reply |
+integer (64 bit)
+|bytes|
+byte count seen, see description for *packets* keyword |
+integer (64 bit)
+|avgpkt|
+average  bytes per packet, see description for packets keyword |
+integer (64 bit)
+|zone|
+conntrack zone |
+integer (64 bit)
+|==========================================
+A description of conntrack-specific types listed above can be found sub-section CONNTRACK TYPES above.

@@ -54,25 +54,15 @@ fi
 AM_PROG_AR
 AM_PROG_LIBTOOL
 
-AM_COND_IF([BUILD_MAN], [
-	AC_CHECK_PROG(DOCBOOK2X_MAN, [docbook2x-man], [docbook2x-man], [no])
-	AC_CHECK_PROG(DB2X_DOCBOOK2MAN, [db2x_docbook2man], [db2x_docbook2man], [no])
-	AS_IF([test "$DOCBOOK2X_MAN" != "no"], [DB2MAN="$DOCBOOK2X_MAN"],
-	     [AS_IF([test "$DB2X_DOCBOOK2MAN" != "no"],
-		    [DB2MAN="$DB2X_DOCBOOK2MAN --xinclude"],
-		    [AC_MSG_ERROR([docbook2x-man/db2x_docbook2man not found, required for building man pages])]
-	     )]
-	)
-	AC_SUBST(DB2MAN)
-
-	[need_a2x=yes]
-])
+AC_CHECK_PROG(A2X, [a2x], [a2x])
+AM_CONDITIONAL([BUILD_MAN], [test -n "$A2X"])
 
 AM_COND_IF([BUILD_PDF], [
 	AC_CHECK_PROG(DBLATEX, [dblatex], [found], [no])
 	AS_IF([test "$DBLATEX" == "no"],
 	      [AC_MSG_ERROR([dblatex not found])])
-
+	AS_IF([test -z "$A2X"],
+	      [AC_MSG_ERROR([a2x not found])])
 	[need_a2x=yes]
 ])
 

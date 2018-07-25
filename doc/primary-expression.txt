@@ -1,0 +1,226 @@
+META EXPRESSIONS
+~~~~~~~~~~~~~~~~
+[verse]
+meta {length | nfproto | l4proto | protocol | priority}
+[meta] {mark | iif | iifname | iiftype | oif | oifname | oiftype |
+skuid | skgid | nftrace | rtclassid | ibrname | obrname | pkttype | cpu
+| iifgroup | oifgroup | cgroup | random | secpath}
+
+A meta expression refers to meta data associated with a packet.
+
+There are two types of meta expressions: unqualified and qualified meta expressions. Qualified meta expressions require the meta keyword before the meta key, unqualified meta expressions can be specified by using the meta key directly or as qualified  meta  expressions. Meta l4proto is useful to match a particular transport protocol that is part of either an IPv4 or IPv6 packet. It will also skip any IPv6 extension headers present in an IPv6 packet.
+
+.Meta expression types
+[options="header"]
+|==================
+|Keyword | Description | Type
+|length|
+Length of the packet in bytes|
+integer (32 bit)
+|nfproto|
+real hook  protocol family, useful only in inet table|
+integer (32 bit)
+|l4proto|
+layer 4 protocol, skips ipv6 extension headers|
+integer (32 bit)
+|protocol|
+EtherType protocol value|
+ether_type
+|priority|
+TC packet priority|
+tc_handle
+|mark|
+Packet mark |
+mark
+|iif|
+Input interface index |
+iface_index
+|iifname|
+Input interface name |
+ifname
+|iiftype|
+Input interface type|
+iface_itype
+|oif|
+Output interface index|
+iface_index
+|oifname|
+Output interface name|
+ifname
+|oiftype|
+Outout interface hardware type|
+iface_type
+|skuid|
+UID  associated  with  originating socket|
+uid
+|skgid|
+GID  associated  with  originating socket|
+gid
+|rtlclassid|
+Routing realm|
+realm
+|ibrname|
+Input bridge interface name|
+ifname
+|obrname|
+Output bridge interface name|
+ifname
+|pkttype|
+packet type|
+pkt_type
+|cpu|
+cpu number processing the packet|
+integer (32 bits)
+|iifgroup|
+incoming device group|
+devgroup
+|oifgroup|
+outgoing device group|
+devgroup
+|cgroup|
+control group id |
+integer (32 bit)
+|random|
+pseudo-random number|
+integer (32 bits)
+|secpath|
+boolean|
+boolean (1 bit)
+|====================
+
+.Meta expression specific types
+[options="header"]
+|==================
+|Type | Description
+|iface_index |
+Interface index (32 bit number). Can be specified numerically  or as name of an existing interface.
+|ifname|
+Interface name (16 byte string). Does not have to exist.
+|iface_type|
+Interface type (16 bit number).
+|uid|
+User ID (32 bit number). Can be specified numerically or as user name.
+|gid|
+Group ID (32 bit number). Can be specified numerically or as group name.
+|realm|
+Routing  Realm (32 bit number). Can be specified numerically or as symbolic name  defined in /etc/iproute2/rt_realms.
+|devgroup_type|
+Device  group  (32 bit number). Can be specified numerically or as symbolic name  defined in /etc/iproute2/group.
+|pkt_type|
+Packet  type: Unicast (addressed to local host), Broadcast (to all), Multicast (to group).
+|=============================
+
+.Using meta expressions
+-----------------------
+# qualified meta expression
+filter output meta oif eth0
+
+# unqualified meta expression
+filter output oif eth0
+
+# packed was subject to ipsec processing
+raw prerouting meta secpath exists accept
+-----------------------
+
+SOCKET EXPRESSION
+~~~~~~~~~~~~~~~~~
+[verse]
+socket {transparent}
+
+Socket expression can be used to search for an existing open TCP/UDP socket and its attributes that can be associated with a packet. It looks for an established or non-zero bound listening socket (possibly with a non-local address).
+
+.Available socket attributes
+[options="header"]
+|==================
+|Name |Description| Type
+|transparent|
+Value of the IP_TRANSPARENT socket option in the found socket. It can be 0 or 1.|
+boolean (1 bit)
+|==================
+
+.Using socket expression
+------------------------
+# Mark packets that correspond to a transparent socket
+table inet x {
+    chain y {
+	type filter hook prerouting priority -150; policy accept;
+        socket transparent 1 mark set 0x00000001 accept
+    }
+}
+----------------------
+
+FIB EXPRESSIONS
+~~~~~~~~~~~~~~~
+[verse]
+fib {saddr | daddr | {mark | iif | oif}} {oif | oifname | type}
+
+A fib expression queries the fib (forwarding information base) to obtain information such as the output interface index a particular address would use. The input is a tuple of elements that is used as input to the fib lookup functions.
+
+.fib expression specific types
+[options="header"]
+|==================
+|Keyword| Description| Type
+|oif|
+Output interface index|
+integer (32 bit)
+|oifname|
+Output interface name|
+string
+|type|
+Address type |
+fib_addrtype
+|=======================
+
+.Using fib expressions
+----------------------
+# drop packets without a reverse path
+filter prerouting fib saddr . iif oif missing drop
+
+# drop packets to address not configured on ininterface
+filter prerouting fib daddr . iif type != { local, broadcast, multicast } drop
+
+# perform lookup in a specific 'blackhole' table (0xdead, needs ip appropriate ip rule)
+filter prerouting meta mark set 0xdead fib daddr . mark type vmap { blackhole : drop, prohibit : jump prohibited, unreachable : drop }
+----------------------
+
+ROUTING EXPRESSIONS
+~~~~~~~~~~~~~~~~~~~
+[verse]
+rt {classid | nexthop}
+
+A routing expression refers to routing data associated with a packet.
+
+.Routing expression types
+[options="header"]
+|=======================
+|Keyword| Description| Type
+|classid|
+Routing realm|
+realm
+|nexthop|
+Routing nexthop|
+ipv4_addr/ipv6_addr
+|mtu|
+TCP maximum segment size of route |
+integer (16 bit)
+|=================================
+
+.Routing expression specific types
+[options="header"]
+|=======================
+|Type| Description
+|realm|
+Routing  Realm (32 bit number). Can be specified numerically or as symbolic name  defined in /etc/iproute2/rt_realms.
+|========================
+
+.Using routing expressions
+--------------------------
+# IP family independent rt expression
+filter output rt classid 10
+
+# IP family dependent rt expressions
+ip filter output rt nexthop 192.168.0.1
+ip6 filter output rt nexthop fd00::1
+inet filter output rt ip nexthop 192.168.0.1
+inet filter output rt ip6 nexthop fd00::1
+-------------------------- 

@@ -1,0 +1,71 @@
+CT
+~~
+[verse]
+*ct* helper 'helper' {type 'type' protocol 'protocol' ; [l3proto 'family' ;] }
+
+Ct helper is used to define connection tracking helpers that can then be used in combination with the *ct helper set* statement. 'type' and 'protocol' are mandatory, l3proto is derived from the table family by default, i.e. in the inet table the kernel will try to load both the ipv4 and ipv6 helper backends, if they are supported by the kernel.
+
+.conntrack helper specifications
+[options="header"]
+|=================
+|Keyword | Description | Type
+| type |
+name of helper type |
+quoted string (e.g. "ftp")
+|protocol |
+layer 4 protocol of the helper |
+address family (e.g. ip)
+|l3proto |
+layer 3 protocol of the helper |
+address family (e.g. ip)
+|=================
+
+.defining and assigning ftp helper
+----------------------------------
+Unlike iptables, helper assignment needs to be performed after the conntrack lookup has completed, for example with the default 0 hook priority.
+
+table inet myhelpers {
+  ct helper ftp-standard {
+     type "ftp" protocol tcp
+  }
+  chain prerouting {
+      type filter hook prerouting priority 0;
+      tcp dport 21 ct helper set "ftp-standard"
+  }
+}
+----------------------------------
+
+COUNTER
+~~~~~~~
+[verse]
+*counter* [packets bytes]
+
+.Counter specifications
+[options="header"]
+|=================
+|Keyword | Description | Type
+|packets |
+initial count of packets |
+unsigned integer (64 bit)
+|bytes |
+initial count of bytes |
+unsigned integer (64 bit)
+|=================
+
+QUOTA
+~~~~~
+[verse]
+*quota* [over | until] [used]
+
+.Quota specifications
+[options="header"]
+|=================
+|Keyword | Description | Type
+|quota |
+quota limit, used as the quota name |
+Two arguments, unsigned interger (64 bit) and string: bytes, kbytes, mbytes.
+"over" and "until" go before these arguments
+|used |
+initial value of used quota |
+Two arguments, unsigned interger (64 bit) and string: bytes, kbytes, mbytes
+|=================

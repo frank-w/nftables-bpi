@@ -35,7 +35,7 @@ nft.pdf: ${ASCIIDOCS}
 EXTRA_DIST = ${ASCIIDOCS} libnftables-json.adoc libnftables.adoc
 
 CLEANFILES = \
-	nft.xml nft.pdf nft.8 \
+	nft.pdf nft.8 \
 	libnftables-json.pdf libnftables-json.5 \
 	libnftables.pdf libnftables.3 \
 	*~

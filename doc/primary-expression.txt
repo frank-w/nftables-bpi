@@ -27,7 +27,7 @@ real hook  protocol family, useful only in inet table|
 integer (32 bit)
 |l4proto|
 layer 4 protocol, skips ipv6 extension headers|
-integer (32 bit)
+integer (8 bit)
 |protocol|
 EtherType protocol value|
 ether_type
@@ -45,7 +45,7 @@ Input interface name |
 ifname
 |iiftype|
 Input interface type|
-iface_itype
+iface_type
 |oif|
 Output interface index|
 iface_index

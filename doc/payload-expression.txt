@@ -41,7 +41,12 @@ EtherType|
 ether_type
 |==================
 
-.ARP HEADER EXPRESSION
+ARP HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*arp* ['ARP' 'header' 'field']
+
+.ARP header expression
 [options="header"]
 |==================
 |Keyword| Description| Type
@@ -424,7 +429,7 @@ to match protocol fields of a transport header with protocol number 5, you need
 to manually exclude packets that have a different transport header, for instance
 my using meta l4proto 5 before the raw expression.
 
-.Support payload protocol bases
+.Supported payload protocol bases
 [options="header"]
 |==================
 |Base| Description
@@ -603,6 +608,6 @@ average  bytes per packet, see description for packets keyword |
 integer (64 bit)
 |zone|
 conntrack zone |
-integer (64 bit)
+integer (16 bit)
 |==========================================
 A description of conntrack-specific types listed above can be found sub-section CONNTRACK TYPES above.

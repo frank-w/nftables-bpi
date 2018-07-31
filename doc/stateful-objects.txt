@@ -18,7 +18,7 @@ name of helper type |
 quoted string (e.g. "ftp")
 |protocol |
 layer 4 protocol of the helper |
-address family (e.g. ip)
+string (e.g. ip)
 |l3proto |
 layer 3 protocol of the helper |
 address family (e.g. ip)

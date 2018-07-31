@@ -136,30 +136,18 @@ The  boolean type is a syntactical helper type in user space. It's use is in the
 right-hand side of a (typically implicit) relational expression to change the
 expression on the left-hand side into a boolean check (usually for existence). +
 
-The following keywords will automatically resolve into a  boolean  type with given value:
-The bitmask type (bitmask) is used for bitmasks.
+.The following keywords will automatically resolve into a boolean type with given value
 
 [options="header"]
 |==================
 |Keyword | Value
-|exits |
+|exists |
 1 |
 missing |
 0
 |===================
 
-[options="header"]
-|======================================
-|Expression | Behaviour
-|fib |
-Check route existence.
-|exthdr|
-Check IPv6 extension header existence.
-|tcp option |
-Check  TCP  option  header existence.
-|===================
-
-.expressions support a boolean comparison:
+.expressions support a boolean comparison
 [options="header"]
 |======================================
 |Expression | Behaviour
@@ -242,15 +230,15 @@ ICMP CODE TYPE
 [options="header"]
 |==================
 |Name | Keyword | Size | Base type
-|ICMP Type |
-icmp_type |
+|ICMP Code |
+icmp_code |
 8 bit |
 integer
 |===================
 
 The ICMP Code type is used to conveniently specify  the  ICMP  header's code field.
 
-.Keywords may be used when specifying the ICMP type
+.Keywords may be used when specifying the ICMP code
 [options="header"]
 |==================
 |Keyword | Value
@@ -339,7 +327,7 @@ ICMPV6 CODE TYPE
 |==================
 |Name | Keyword | Size | Base type
 |ICMPv6 Code |
-icmpv6_type |
+icmpv6_code |
 8 bit |
 integer
 |===================
@@ -412,7 +400,7 @@ ct_status|
 4 byte|
 bitmask
 |conntrack event bits|
-ct_events |
+ct_event |
 4 byte |
 bitmask
 |conntrack label|
@@ -456,7 +444,7 @@ For each of the types above, keywords are available for convenience:
 |expected|
 1
 |seen-reply|
-1
+2
 |assured|
 4
 |confirmed|

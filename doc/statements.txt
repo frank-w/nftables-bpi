@@ -96,7 +96,7 @@ Number  of packets to queue inside the kernel before sending them to userpace |
 unsigned integer (32 bit)
 |==================================
 
-.log statement options
+.log-flags
 [options="header"]
 |==================
 | Flag | Description
@@ -265,7 +265,7 @@ that is optional, makes it match over the specified rate.
 .limit statement values
 [options="header"]
 |==================
-|Value | Description | Type|
+|Value | Description | Type
 |packet_number |
 Number of packets |
 unsigned integer (32 bit)

@@ -218,7 +218,7 @@ RULESET
 -------
 [verse]
 {list | flush} *ruleset* ['family']
-\{export\} [*ruleset*] {'format'}
+export [*ruleset*] 'format'
 
 The *ruleset* keyword is used to identify the whole set of tables, chains, etc.
 currently in place in kernel. The following *ruleset* commands exist:
@@ -373,18 +373,15 @@ rule  index might change if a rule was inserted or deleted before the referred
 one. If the referred rule was deleted, the command is rejected by the kernel
 just as if an invalid 'handle' was given.
 
-*add*::
-Add a new rule described by the list of statements. The rule is appended to the
-given chain unless a position is specified, in which case the rule is appended
-to the rule given by the 'handle'. The alternative name position is deprecated
-and should not be used anymore.
-
+[horizontal]
+*add*:: Add a new rule described by the list of statements. The
+rule is appended to the given chain unless a position is specified, in which
+case the rule is appended to the rule given by the 'handle'. The alternative
+name position is deprecated and should not be used anymore.
 *insert*:: Similar to the *add* command, but the rule is prepended to the
-beginning of the chain or before the rule at the given position.
-
+beginning of the chain or before the rule with the given 'handle'.
 *replace*:: Similar to the add command, but the rule replaces the specified
 rule.
-
 *delete*:: Delete the specified rule.
 
 .*add a rule to ip table input chain*

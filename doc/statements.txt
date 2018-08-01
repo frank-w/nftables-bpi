@@ -11,9 +11,14 @@ The verdict statement alters control flow in the ruleset and issues policy decis
 *drop*:: Terminate ruleset evaluation and drop the packet.
 *queue*:: Terminate ruleset evaluation and queue the packet to userspace.
 *continue*:: Continue ruleset evaluation with the next rule. FIXME
-*return*:: Return from the current chain and continue evaluation at the next rule in the last chain. If issued in a base chain, it is equivalent to *accept*.
-*jump* 'chain':: Continue evaluation at the first rule in 'chain'.  The current position in the ruleset is pushed to a call stack and evaluation will continue there when the new chain is entirely evaluated of a *return* verdict is issued.
-*goto* 'chain':: Similar to *jump*, but the current position is not pushed to the call stack, meaning that after the new chain evaluation will continue at the last chain instead of the one containing the goto statement.
+*return*:: Return from the current chain and continue evaluation at the
+ next rule in the last chain. If issued in a base chain, it is equivalent to *accept*.
+*jump* 'chain':: Continue evaluation at the first rule in 'chain'.  The current
+ position in the ruleset is pushed to a call stack and evaluation will continue
+ there when the new chain is entirely evaluated of a *return* verdict is issued.
+*goto* 'chain':: Similar to *jump*, but the current position is not pushed to the
+ call stack, meaning that after the new chain evaluation will continue at the last
+ chain instead of the one containing the goto statement.
 
 .Verdict statements
 -------------------
@@ -26,7 +31,8 @@ filter input iif eth0 drop
 
 PAYLOAD STATEMENT
 ~~~~~~~~~~~~~~~~~
-The  payload  statement alters packet content.  It can be used for example to set ip DSCP (differv) header field or ipv6 flow labels.
+The  payload  statement alters packet content.  It can be used for example to
+set ip DSCP (differv) header field or ipv6 flow labels.
 
 .route some packets instead of bridging
 ---------------------------------------
@@ -42,7 +48,9 @@ ip forward ip dscp set 42
 
 EXTENSION HEADER STATEMENT
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-The extension header statement alters packet content in variable-sized headers.  This can currently be used to alter the TCP Maximum segment size of packets, similar to TCPMSS.
+The extension header statement alters packet content in variable-sized headers.
+This can currently be used to alter the TCP Maximum segment size of packets,
+similar to TCPMSS.
 
 .change tcp mss
 ---------------
@@ -57,7 +65,15 @@ LOG STATEMENT
 log [prefix quoted_string] [level syslog-level] [flags log-flags]
 log group nflog_group [prefix quoted_string] [queue-threshold value] [snaplen size]
 
-The log statement enables logging of matching packets. When this statement is used from a rule, the Linux kernel will print some information on all matching packets, such as header fields, via the kernel log (where it can be read with dmesg(1) or read in the syslog). If the group number is specified, the Linux kernel will pass the packet to nfnetlink_log which will multicast the packet through a netlink socket to the specified multicast group. One or more userspace processes may subscribe to the group to  receive the packets, see libnetfilter_queue documentation for details. This is a non-terminating statement, so the rule evaluation continues after the packet is logged.
+The log statement enables logging of matching packets. When this statement is
+used from a rule, the Linux kernel will print some information on all matching
+packets, such as header fields, via the kernel log (where it can be read with
+dmesg(1) or read in the syslog). If the group number is specified, the Linux
+kernel will pass the packet to nfnetlink_log which will multicast the packet
+through a netlink socket to the specified multicast group. One or more userspace
+processes may subscribe to the group to  receive the packets, see
+libnetfilter_queue documentation for details. This is a non-terminating
+statement, so the rule evaluation continues after the packet is logged.
 
 .log statement options
 [options="header"]
@@ -116,7 +132,11 @@ REJECT STATEMENT
 *reject* [ with {icmp | icmpv6 | icmpx} type {icmp_code | icmpv6_code | icmpx_code} ]
 *reject* [ with tcp reset ]
 
-A reject statement is used to send back an error packet in response to the matched packet otherwise it is equivalent to drop so it is a terminating statement, ending rule traversal. This statement is only valid in the input, forward and output chains, and user-defined chains which are only called from those chains.
+A reject statement is used to send back an error packet in response to the
+matched packet otherwise it is equivalent to drop so it is a terminating
+statement, ending rule traversal. This statement is only valid in the input,
+forward and output chains, and user-defined chains which are only called from
+those chains.
 
 .different ICMP reject variants are meant for use in different table families
 [options="header"]
@@ -133,9 +153,12 @@ inet|
 icmpx_code
 |==================
 
-For a description of the different types and a list of supported keywords refer to DATA TYPES section above.  The common default reject value is *port-unreachable*. +
+For a description of the different types and a list of supported keywords refer
+to DATA TYPES section above.  The common default reject value is
+*port-unreachable*. +
 
-Note that in bridge family, reject statement is only allowed in base chains which hook into input or prerouting.
+Note that in bridge family, reject statement is only allowed in base chains
+which hook into input or prerouting.
 
 COUNTER STATEMENT
 ~~~~~~~~~~~~~~~~~
@@ -151,7 +174,10 @@ The conntrack statement can be used to set the conntrack mark and conntrack labe
 [verse]
 *ct* {mark | event | label | zone} set 'value'
 
-The  ct  statement  sets  meta data associated with a connection.  The zone id has to be assigned before a conntrack lookup takes place, i.e. this has to be done in prerouting and possibly output (if locally generated packets need to be placed in a distinct zone), with a hook priority of -300.
+The  ct  statement  sets  meta data associated with a connection.  The zone id
+has to be assigned before a conntrack lookup takes place, i.e. this has to be
+done in prerouting and possibly output (if locally generated packets need to be
+placed in a distinct zone), with a hook priority of -300.
 
 .Conntrack statement types
 [options="header"]
@@ -200,7 +226,8 @@ ct event set new,related,destroy
 
 META STATEMENT
 ~~~~~~~~~~~~~~
-A meta statement sets the value of a meta expression. The existing meta fields are: priority, mark, pkttype, nftrace. +
+A meta statement sets the value of a meta expression. The existing meta fields
+are: priority, mark, pkttype, nftrace. +
 
 meta {mark | priority | pkttype | nftrace} set 'value' +
 
@@ -230,7 +257,10 @@ LIMIT STATEMENT
 *limit* rate [over] 'packet_number' / {second | minute | hour | day} [burst 'packet_number' packets]
 *limit* rate [over] 'byte_number' {bytes | kbytes | mbytes} / {second | minute | hour | day | week} [burst 'byte_number' bytes]
 
-A limit statement matches at a limited rate using a token bucket filter. A rule using this statement will match until this  limit is  reached. It can be used in combination with the log statement to give limited logging. The over keyword, that is optional, makes it match over the specified rate.
+A limit statement matches at a limited rate using a token bucket filter. A rule
+using this statement will match until this  limit is  reached. It can be used in
+combination with the log statement to give limited logging. The over keyword,
+that is optional, makes it match over the specified rate.
 
 .limit statement values
 [options="header"]
@@ -258,20 +288,35 @@ NAT STATEMENTS
 
 The nat statements are only valid from nat chain types. +
 
-The *snat* and *masquerade* statements specify that the source address of the packet should be modified. While *snat* is only valid  in the postrouting and input chains, *masquerade* makes sense only in postrouting. The dnat and redirect statements are only valid in the prerouting and output chains, they specify that the destination address of the packet should be modified. You  can  use  nonbase  chains which are called from base chains of nat chain type too. All future packets in this connection will also be mangled, and rules should cease being examined.
+The *snat* and *masquerade* statements specify that the source address of the
+packet should be modified. While *snat* is only valid  in the postrouting and
+input chains, *masquerade* makes sense only in postrouting. The dnat and
+redirect statements are only valid in the prerouting and output chains, they
+specify that the destination address of the packet should be modified. You  can
+use  nonbase  chains which are called from base chains of nat chain type too.
+All future packets in this connection will also be mangled, and rules should
+cease being examined.
 
-The *masquerade* statement is a special form of snat which always uses the outgoing interface's IP address to translate to. It is particularly useful on gateways with dynamic (public) IP addresses.
+The *masquerade* statement is a special form of snat which always uses the
+outgoing interface's IP address to translate to. It is particularly useful on
+gateways with dynamic (public) IP addresses.
 
-The *redirect* statement  is a special form of dnat which always translates the destination address to the local host's one. It comes in handy if one only wants to alter the destination port of incoming traffic on different interfaces.
+The *redirect* statement  is a special form of dnat which always translates the
+destination address to the local host's one. It comes in handy if one only wants
+to alter the destination port of incoming traffic on different interfaces.
 
-Note that all nat statements require both prerouting and postrouting base chains to be present since otherwise packets on the return path won't be seen by netfilter and therefore no reverse translation will take place.
+Note that all nat statements require both prerouting and postrouting base chains
+to be present since otherwise packets on the return path won't be seen by
+netfilter and therefore no reverse translation will take place.
 
 .NAT statement values
 [options="header"]
 |==================
 |Expression| Description| Type
 |address|
-Specifies that the source/destination address of the packet should be  modified. You may specify a mapping to relate a list of tuples composed of arbitrary expression key with address value. |
+Specifies that the source/destination address of the packet should be  modified.
+You may specify a mapping to relate a list of tuples composed of arbitrary
+expression key with address value. |
 ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping, e.g. meta mark map { 10 : 192.168.1.2, 20 : 192.168.1.3 }
 |port|
 Specifies that the source/destination address of the packet should be modified. |
@@ -313,14 +358,19 @@ add rule nat prerouting tcp dport 22 redirect to :2222
 
 FLOW OFFLOAD STATEMENT
 ~~~~~~~~~~~~~~~~~~~~~~
-A flow offload statement allows us to select what flows you want to accelerate forwarding through layer 3 network stack bypass.
-You have to specify the flowtable name where you want to offload this flow.
+A flow offload statement allows us to select what flows you want to accelerate
+forwarding through layer 3 network stack bypass.  You have to specify the
+flowtable name where you want to offload this flow.
 
 *flow offload* @flowtable
 
 QUEUE STATEMENT
 ~~~~~~~~~~~~~~~
-This statement passes the packet to userspace using the nfnetlink_queue handler. The packet is put into the queue identified by its 16-bit queue number. Userspace can inspect and modify the packet if desired. Userspace must then drop or re-inject the packet into the kernel. See libnetfilter_queue documentation for details.
+This statement passes the packet to userspace using the nfnetlink_queue handler.
+The packet is put into the queue identified by its 16-bit queue number.
+Userspace can inspect and modify the packet if desired. Userspace must then drop
+or re-inject the packet into the kernel. See libnetfilter_queue documentation
+for details.
 
 [verse]
 *queue* [num 'queue_number'] [bypass]
@@ -346,14 +396,16 @@ unsigned integer (16 bit)
 |==================
 |Flag   | Description
 |bypass |
-Let  packets go through if userspace application cannot back off. Before using this flag, read libnetfilter_queue documentation for performance tuning recommendations.
+Let  packets go through if userspace application cannot back off. Before using
+this flag, read libnetfilter_queue documentation for performance tuning recommendations.
 |fanout |
 Distribute packets between several queues.
 |===============================
 
 DUP STATEMENT
 ~~~~~~~~~~~~~
-The dup statement is used to duplicate a packet and send the copy to a different destination.
+The dup statement is used to duplicate a packet and send the copy to a different
+destination.
 
 [verse]
 *dup* to 'device'
@@ -387,14 +439,20 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 
 FWD STATEMENT
 ~~~~~~~~~~~~~
-The fwd statement is used to redirect a raw packet to another interface. It is only available in the netdev family ingress  hook.
-It is similar to the dup statement except that no copy is made.
+The fwd statement is used to redirect a raw packet to another interface. It is
+only available in the netdev family ingress  hook.  It is similar to the dup
+statement except that no copy is made.
 
 *fwd* to 'device'
 
 SET STATEMENT
 ~~~~~~~~~~~~~
-The set statement is used to dynamically add or update elements in a set from the packet path. The set setname must already exist in the given table and must have been created with the dynamic flag.  Furthermore, these sets must specify both a maximum set size  (to prevent memory exhaustion) and a timeout (so that number of entries in set will not grow indefinitely). The set statement can be used to e.g. create dynamic blacklists.
+The set statement is used to dynamically add or update elements in a set from
+the packet path. The set setname must already exist in the given table and must
+have been created with the dynamic flag.  Furthermore, these sets must specify
+both a maximum set size  (to prevent memory exhaustion) and a timeout (so that
+number of entries in set will not grow indefinitely). The set statement can be
+used to e.g. create dynamic blacklists.
 
 [verse]
 {add | update} '@setname' { 'expression' [timeout 'timeout'] [comment 'string'] }

@@ -9,7 +9,9 @@ variable |
 -
 |===================
 
-The integer type is used for numeric values. It may be specified as decimal, hexadecimal or octal number. The integer type doesn't have a fixed size, its size is determined by the expression for which it is used.
+The integer type is used for numeric values. It may be specified as decimal,
+hexadecimal or octal number. The integer type doesn't have a fixed size, its
+size is determined by the expression for which it is used.
 
 BITMASK TYPE
 ~~~~~~~~~~~~
@@ -35,7 +37,10 @@ variable |
 -
 |===================
 
-The string type is used for character strings. A string begins with an alphabetic character (a-zA-Z) followed by zero or more alphanumeric characters or the characters /, -, _ and .. In  addition  anything  enclosed in double quotes (") is recognized as a string.
+The string type is used for character strings. A string begins with an
+alphabetic character (a-zA-Z) followed by zero or more alphanumeric characters
+or the characters /, -, _ and .. In  addition  anything  enclosed in double
+quotes (") is recognized as a string.
 
 .String specification
 ----------------------
@@ -57,7 +62,9 @@ variable |
 integer
 |===================
 
-The link layer address type is used for link layer addresses. Link layer addresses are specified as a variable amount of groups of two hexadecimal digits separated using colons (:).
+The link layer address type is used for link layer addresses. Link layer
+addresses are specified as a variable amount of groups of two hexadecimal digits
+separated using colons (:).
 
 .Link layer address specification
 ----------------------
@@ -76,7 +83,10 @@ ipv4_addr|
 integer
 |===================
 
-The IPv4 address type is used for IPv4 addresses. Addresses are  specified  in either dotted decimal, dotted hexadecimal, dotted octal, decimal, hexadecimal, octal notation or as a host name. A host name will be resolved using the standard system resolver.
+The IPv4 address type is used for IPv4 addresses. Addresses are  specified  in
+either dotted decimal, dotted hexadecimal, dotted octal, decimal, hexadecimal,
+octal notation or as a host name. A host name will be resolved using the
+standard system resolver.
 
 .IPv4 address specification
 ----------------------
@@ -98,7 +108,9 @@ ipv6_addr|
 integer
 |===================
 
-The IPv6 address type is used for IPv6 addresses.  Addresses are specified as a host name or as hexadecimal halfwords separated by colons. Addresses might be enclosed in square brackets ("[]") to differentiate them from port numbers.
+The IPv6 address type is used for IPv6 addresses.  Addresses are specified as a
+host name or as hexadecimal halfwords separated by colons. Addresses might be
+enclosed in square brackets ("[]") to differentiate them from port numbers.
 
 .IPv6 address specificationIPv6 address specification with bracket notation
 ----------------------
@@ -120,7 +132,9 @@ boolean |
 integer
 |===================
 
-The  boolean type is a syntactical helper type in user space. It's use is in the right-hand side of a (typically implicit) relational expression to change the expression on the left-hand side into a boolean check (usually for existence). +
+The  boolean type is a syntactical helper type in user space. It's use is in the
+right-hand side of a (typically implicit) relational expression to change the
+expression on the left-hand side into a boolean check (usually for existence). +
 
 The following keywords will automatically resolve into a  boolean  type with given value:
 The bitmask type (bitmask) is used for bitmasks.
@@ -361,7 +375,8 @@ icmpv6_type |
 integer
 |===================
 
-The ICMPvX Code type abstraction is a set of values which overlap between ICMP and ICMPv6 Code types to be used from the inet family.
+The ICMPvX Code type abstraction is a set of values which overlap between ICMP
+and ICMPv6 Code types to be used from the inet family.
 
 .keywords may be used when specifying the ICMPvX code
 [options="header"]

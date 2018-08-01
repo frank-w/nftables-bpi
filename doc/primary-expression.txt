@@ -8,7 +8,12 @@ skuid | skgid | nftrace | rtclassid | ibrname | obrname | pkttype | cpu
 
 A meta expression refers to meta data associated with a packet.
 
-There are two types of meta expressions: unqualified and qualified meta expressions. Qualified meta expressions require the meta keyword before the meta key, unqualified meta expressions can be specified by using the meta key directly or as qualified  meta  expressions. Meta l4proto is useful to match a particular transport protocol that is part of either an IPv4 or IPv6 packet. It will also skip any IPv6 extension headers present in an IPv6 packet.
+There are two types of meta expressions: unqualified and qualified meta
+expressions. Qualified meta expressions require the meta keyword before the meta
+key, unqualified meta expressions can be specified by using the meta key
+directly or as qualified  meta  expressions. Meta l4proto is useful to match a
+particular transport protocol that is part of either an IPv4 or IPv6 packet. It
+will also skip any IPv6 extension headers present in an IPv6 packet.
 
 .Meta expression types
 [options="header"]
@@ -127,7 +132,9 @@ SOCKET EXPRESSION
 [verse]
 socket {transparent}
 
-Socket expression can be used to search for an existing open TCP/UDP socket and its attributes that can be associated with a packet. It looks for an established or non-zero bound listening socket (possibly with a non-local address).
+Socket expression can be used to search for an existing open TCP/UDP socket and
+its attributes that can be associated with a packet. It looks for an established
+or non-zero bound listening socket (possibly with a non-local address).
 
 .Available socket attributes
 [options="header"]
@@ -154,7 +161,10 @@ FIB EXPRESSIONS
 [verse]
 fib {saddr | daddr | {mark | iif | oif}} {oif | oifname | type}
 
-A fib expression queries the fib (forwarding information base) to obtain information such as the output interface index a particular address would use. The input is a tuple of elements that is used as input to the fib lookup functions.
+A fib expression queries the fib (forwarding information base) to obtain
+information such as the output interface index a particular address would use.
+The input is a tuple of elements that is used as input to the fib lookup
+functions.
 
 .fib expression specific types
 [options="header"]

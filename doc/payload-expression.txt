@@ -146,7 +146,12 @@ IPV6 HEADER EXPRESSION
 [verse]
 ip6 ['IPv6' 'header' 'field']
 
-This expression refers to the ipv6 header fields. Caution when using ip6 nexthdr, the value only refers to the next header, i.e. ip6  nexthdr  tcp  will only match if the ipv6 packet does not contain any extension headers. Packets that are fragmented or e.g. contain a routing extension headers will not be matched. Please use meta l4proto if you wish to match the real transport header and ignore any additional extension headers instead.
+This expression refers to the ipv6 header fields. Caution when using ip6
+nexthdr, the value only refers to the next header, i.e. ip6  nexthdr  tcp  will
+only match if the ipv6 packet does not contain any extension headers. Packets
+that are fragmented or e.g. contain a routing extension headers will not be
+matched. Please use meta l4proto if you wish to match the real transport header
+and ignore any additional extension headers instead.
 
 .IPv6 header expression
 [options="header"]
@@ -410,7 +415,14 @@ RAW PAYLOAD EXPRESSION
 [verse]
 *@* [base,offset,length]
 
-The raw payload expression instructs to load lengthbits starting at offsetbits. Bit 0 refers to the very first bit -- in the C programming language, this corresponds to the topmost bit, i.e. 0x80 in case of an octet. They are useful to match headers that do not have a human-readable template expression yet. Note that nft will not add dependencies for Raw payload expressions. If you e.g. want to match protocol fields of a transport header with protocol number 5, you need to manually exclude packets that have a different transport header, for instance my using meta l4proto 5 before the raw expression.
+The raw payload expression instructs to load lengthbits starting at offsetbits.
+Bit 0 refers to the very first bit -- in the C programming language, this
+corresponds to the topmost bit, i.e. 0x80 in case of an octet. They are useful
+to match headers that do not have a human-readable template expression yet. Note
+that nft will not add dependencies for Raw payload expressions. If you e.g. want
+to match protocol fields of a transport header with protocol number 5, you need
+to manually exclude packets that have a different transport header, for instance
+my using meta l4proto 5 before the raw expression.
 
 .Support payload protocol bases
 [options="header"]
@@ -524,7 +536,13 @@ CONNTRACK EXPRESSIONS
 ~~~~~~~~~~~~~~~~~~~~~
 Conntrack expressions refer to meta data of the connection tracking entry associated with a packet. +
 
-There are three types of conntrack expressions. Some conntrack expressions require the flow direction before the conntrack key, others must be used directly because they are direction agnostic.  The *packets*, *bytes* and *avgpkt* keywords can be used with or without a direction. If the direction is omitted, the sum of the original and the reply direction is returned. The same is true for the *zone*, if a direction is given, the zone is only matched if the zone id is tied to the given direction. +
+There are three types of conntrack expressions. Some conntrack expressions
+require the flow direction before the conntrack key, others must be used
+directly because they are direction agnostic.  The *packets*, *bytes* and
+*avgpkt* keywords can be used with or without a direction. If the direction is
+omitted, the sum of the original and the reply direction is returned. The same
+is true for the *zone*, if a direction is given, the zone is only matched if the
+zone id is tied to the given direction. +
 
 [verse]
 *ct* {state | direction | status | mark | expiration | helper | label | l3proto | protocol | bytes | packets | avgpkt | zone}

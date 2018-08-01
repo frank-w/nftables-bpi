@@ -2531,6 +2531,7 @@ primary_stmt_expr	:	symbol_expr		{ $$ = $1; }
 			|	hash_expr               { $$ = $1; }
 			|	payload_expr		{ $$ = $1; }
 			|	keyword_expr		{ $$ = $1; }
+			|	socket_expr		{ $$ = $1; }
 			;
 
 shift_stmt_expr		:	primary_stmt_expr
@@ -3618,7 +3619,8 @@ socket_expr		:	SOCKET	socket_key
 			}
 			;
 
-socket_key 		: TRANSPARENT { $$ = NFT_SOCKET_TRANSPARENT; }
+socket_key 		: 	TRANSPARENT	{ $$ = NFT_SOCKET_TRANSPARENT; }
+			|	MARK		{ $$ = NFT_SOCKET_MARK; }
 			;
 
 offset_opt		:	/* empty */	{ $$ = 0; }

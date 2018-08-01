@@ -143,6 +143,7 @@ or non-zero bound listening socket (possibly with a non-local address).
 |transparent|
 Value of the IP_TRANSPARENT socket option in the found socket. It can be 0 or 1.|
 boolean (1 bit)
+|mark| Value of the socket mark (SOL_SOCKET, SO_MARK). | mark
 |==================
 
 .Using socket expression
@@ -152,6 +153,22 @@ table inet x {
     chain y {
 	type filter hook prerouting priority -150; policy accept;
         socket transparent 1 mark set 0x00000001 accept
+    }
+}
+
+# Trace packets that corresponds to a socket with a mark value of 15
+table inet x {
+    chain y {
+        type filter hook prerouting priority -150; policy accept;
+        socket mark 0x0000000f nftrace set 1
+    }
+}
+
+# Set packet mark to socket mark
+table inet x {
+    chain y {
+        type filter hook prerouting priority -150; policy accept;
+        tcp dport 8080 mark set socket mark
     }
 }
 ----------------------

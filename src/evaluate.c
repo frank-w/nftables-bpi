@@ -1715,8 +1715,12 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 
 static int expr_evaluate_socket(struct eval_ctx *ctx, struct expr **expr)
 {
+	int maxval = 0;
+
+	if((*expr)->socket.key == NFT_SOCKET_TRANSPARENT)
+		maxval = 1;
 	__expr_set_context(&ctx->ectx, (*expr)->dtype, (*expr)->byteorder,
-			   (*expr)->len, 1);
+			   (*expr)->len, maxval);
 	return 0;
 }
 

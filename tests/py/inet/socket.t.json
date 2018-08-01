@@ -26,3 +26,17 @@
     }
 ]
 
+# socket mark 0x00000005
+[
+    {
+        "match": {
+            "left": {
+                "socket": {
+                    "key": "mark"
+                }
+            },
+            "right": 5
+        }
+    }
+]
+

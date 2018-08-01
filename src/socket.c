@@ -14,11 +14,18 @@
 #include <json.h>
 
 const struct socket_template socket_templates[] = {
-	[NFT_SOCKET_TRANSPARENT]	= {.token = "transparent",
-					   .dtype = &integer_type,
-					   .len = BITS_PER_BYTE,
-					   .byteorder = BYTEORDER_HOST_ENDIAN,
-					  }
+	[NFT_SOCKET_TRANSPARENT] = {
+		.token		= "transparent",
+		.dtype		= &integer_type,
+		.len		= BITS_PER_BYTE,
+		.byteorder	= BYTEORDER_HOST_ENDIAN,
+	},
+	[NFT_SOCKET_MARK] = {
+		.token		= "mark",
+		.dtype		= &mark_type,
+		.len		= 4 * BITS_PER_BYTE,
+		.byteorder	= BYTEORDER_HOST_ENDIAN,
+	},
 };
 
 static void socket_expr_print(const struct expr *expr, struct output_ctx *octx)

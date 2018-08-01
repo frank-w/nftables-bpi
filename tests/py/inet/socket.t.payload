@@ -28,3 +28,18 @@ inet sockin sockchain
   [ socket load transparent => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
+# socket mark 0x00000005
+ip sockip4 sockchain 
+  [ socket load mark => reg 1 ]
+  [ cmp eq reg 1 0x00000005 ]
+
+# socket mark 0x00000005
+ip6 sockip6 sockchain 
+  [ socket load mark => reg 1 ]
+  [ cmp eq reg 1 0x00000005 ]
+
+# socket mark 0x00000005
+inet sockin sockchain 
+  [ socket load mark => reg 1 ]
+  [ cmp eq reg 1 0x00000005 ]
+

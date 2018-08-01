@@ -356,6 +356,64 @@ add rule nat postrouting oif eth0 masquerade
 add rule nat prerouting tcp dport 22 redirect to :2222
 ------------------------
 
+TPROXY STATEMENT
+~~~~~~~~~~~~~~~~
+Tproxy redirects the packet to a local socket without changing the packet header
+in any way.  If any of the arguments is missing the data of the incoming packet
+is used as parameter.  Tproxy matching requires another rule that ensures the
+presence of transport protocol header is specified.
+
+[verse]
+tproxy to 'address' : 'port'
+tproxy to {'address' | : 'port'}
+
+This syntax can be used in *ip/ip6* tables where network layer protocol is
+obvious. Either ip address or port can be specified, but at least one of them is
+necessary.
+
+[verse]
+tproxy {ip | ip6} to 'address' [: 'port']
+tproxy to : 'port'
+
+This syntax can be used in *inet* tables. The *ip/ip6* parameter defines the
+family the rule will match. The *address* parameter must be of this family.
+When only *port* is defined, the address family should not be specified.  In
+this case the rule will match for both families.
+
+.tproxy attributes
+[options="header"]
+|=================
+| Name | Description
+| address | IP address the listening socket with IP_TRANSPARENT option is bound to.
+| port | Port the listening socket with IP_TRANSPARENT option is bound to.
+|=================
+
+.Example ruleset for tproxy statement
+-------------------------------------
+table ip x {
+    chain y {
+        type filter hook prerouting priority -150; policy accept;
+        tcp dport ntp tproxy to 1.1.1.1
+        udp dport ssh tproxy to :2222
+    }
+}
+table ip6 x {
+    chain y {
+       type filter hook prerouting priority -150; policy accept;
+       tcp dport ntp tproxy to [dead::beef]
+       udp dport ssh tproxy to :2222
+    }
+}
+table inet x {
+    chain y {
+        type filter hook prerouting priority -150; policy accept;
+        tcp dport 321 tproxy to :ssh
+        tcp dport 99 tproxy ip to 1.1.1.1:999
+        udp dport 155 tproxy ip6 to [dead::beef]:smux
+    }
+}
+-------------------------------------
+
 FLOW OFFLOAD STATEMENT
 ~~~~~~~~~~~~~~~~~~~~~~
 A flow offload statement allows us to select what flows you want to accelerate

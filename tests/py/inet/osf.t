@@ -2,5 +2,5 @@
 
 *ip;osfip;osfchain
 
-osf name Linux;ok
-osf name;fail
+osf name "Linux";ok;osf "Linux"
+osf name ;fail

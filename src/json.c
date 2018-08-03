@@ -214,7 +214,7 @@ static json_t *chain_print_json(const struct output_ctx *octx,
 				"type", chain->type,
 				"hook", hooknum2str(chain->handle.family,
 						    chain->hooknum),
-				"prio", chain->priority,
+				"prio", chain->priority.num,
 				"policy", chain_policy2str(chain->policy));
 		if (chain->dev)
 			json_object_set_new(tmp, "dev", json_string(chain->dev));
@@ -315,7 +315,7 @@ static json_t *flowtable_print_json(const struct flowtable *ftable)
 			"name", ftable->handle.flowtable,
 			"table", ftable->handle.table.name,
 			"hook", hooknum2str(NFPROTO_NETDEV, ftable->hooknum),
-			"prio", ftable->priority);
+			"prio", ftable->priority.num);
 
 	for (i = 0; i < ftable->dev_array_len; i++) {
 		const char *dev = ftable->dev_array[i];

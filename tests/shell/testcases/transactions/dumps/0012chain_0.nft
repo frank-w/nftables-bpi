@@ -1,5 +1,5 @@
 table ip w {
 	chain y {
-		type filter hook output priority 0; policy accept;
+		type filter hook output priority filter; policy accept;
 	}
 }

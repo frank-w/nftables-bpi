@@ -1,6 +1,6 @@
 table ip t {
 	chain c1 {
-		type nat hook postrouting priority 0; policy accept;
+		type nat hook postrouting priority filter; policy accept;
 		masquerade
 	}
 }

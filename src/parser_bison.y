@@ -153,6 +153,7 @@ int nft_lex(void *, void *, void *);
 	const struct datatype	*datatype;
 	struct handle_spec	handle_spec;
 	struct position_spec	position_spec;
+	struct prio_spec	prio_spec;
 	const struct exthdr_desc *exthdr_desc;
 }
 
@@ -181,6 +182,8 @@ int nft_lex(void *, void *, void *);
 %token DASH			"-"
 %token AT			"@"
 %token VMAP			"vmap"
+
+%token PLUS			"+"
 
 %token INCLUDE			"include"
 %token DEFINE			"define"
@@ -526,6 +529,7 @@ int nft_lex(void *, void *, void *);
 %type <handle>			set_spec setid_spec set_identifier flowtable_identifier obj_spec objid_spec obj_identifier
 %destructor { handle_free(&$$); } set_spec setid_spec set_identifier obj_spec objid_spec obj_identifier
 %type <val>			family_spec family_spec_explicit chain_policy prio_spec
+%type <prio_spec>		extended_prio_spec
 
 %type <string>			dev_spec quota_unit
 %destructor { xfree($$); }	dev_spec quota_unit
@@ -1643,7 +1647,7 @@ flowtable_block_alloc	:	/* empty */
 flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 			|	flowtable_block	common_block
 			|	flowtable_block	stmt_separator
-			|	flowtable_block	HOOK		STRING	PRIORITY        prio_spec	stmt_separator
+			|	flowtable_block	HOOK		STRING	PRIORITY	extended_prio_spec	stmt_separator
 			{
 				$$->hookstr	= chain_hookname_lookup($3);
 				if ($$->hookstr == NULL) {
@@ -1776,7 +1780,7 @@ type_identifier		:	STRING	{ $$ = $1; }
 			|	CLASSID { $$ = xstrdup("classid"); }
 			;
 
-hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	PRIORITY	prio_spec
+hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	PRIORITY	extended_prio_spec
 			{
 				const char *chain_type = chain_type_name_lookup($2);
 
@@ -1801,6 +1805,34 @@ hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	PRIORITY	prio_spec
 				$<chain>0->dev		= $5;
 				$<chain>0->priority	= $7;
 				$<chain>0->flags	|= CHAIN_F_BASECHAIN;
+			}
+			;
+
+extended_prio_spec	:	prio_spec
+			{
+				struct prio_spec spec = {0};
+				spec.num = $1;
+				$$ = spec;
+			}
+			|	STRING
+			{
+				struct prio_spec spec = {0};
+				spec.str = $1;
+				$$ = spec;
+			}
+			|	STRING PLUS NUM
+			{
+				struct prio_spec spec = {0};
+				spec.num = $3;
+				spec.str = $1;
+				$$ = spec;
+			}
+			|	STRING DASH NUM
+			{
+				struct prio_spec spec = {0};
+				spec.num = -$3;
+				spec.str = $1;
+				$$ = spec;
 			}
 			;
 

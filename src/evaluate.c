@@ -17,6 +17,7 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_arp.h>
 #include <linux/netfilter/nf_tables.h>
+#include <linux/netfilter_ipv4.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/icmp6.h>
 #include <net/ethernet.h>
@@ -2962,6 +2963,22 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 	return 0;
 }
 
+static bool evaluate_priority(struct prio_spec *prio, int family, int hook)
+{
+	int priority;
+
+	/* A numeric value has been used to specify priority. */
+	if (prio->str == NULL)
+		return true;
+
+	priority = std_prio_lookup(prio->str, family, hook);
+	if (priority == NF_IP_PRI_LAST)
+		return false;
+	prio->num += priority;
+
+	return true;
+}
+
 static uint32_t str2hooknum(uint32_t family, const char *hook);
 
 static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
@@ -2977,6 +2994,10 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 	ft->hooknum = str2hooknum(NFPROTO_NETDEV, ft->hookstr);
 	if (ft->hooknum == NF_INET_NUMHOOKS)
 		return chain_error(ctx, ft, "invalid hook %s", ft->hookstr);
+
+	if (!evaluate_priority(&ft->priority, NFPROTO_NETDEV, ft->hooknum))
+		return chain_error(ctx, ft, "'%s' is invalid priority.",
+				   ft->priority.str);
 
 	if (!ft->dev_expr)
 		return chain_error(ctx, ft, "Unbound flowtable not allowed (must specify devices)");
@@ -3130,6 +3151,12 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 		if (chain->hooknum == NF_INET_NUMHOOKS)
 			return chain_error(ctx, chain, "invalid hook %s",
 					   chain->hookstr);
+
+		if (!evaluate_priority(&chain->priority, chain->handle.family,
+				       chain->hooknum))
+			return chain_error(ctx, chain,
+					   "'%s' is invalid priority in this context.",
+					   chain->priority.str);
 	}
 
 	list_for_each_entry(rule, &chain->rules, list) {

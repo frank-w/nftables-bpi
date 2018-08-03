@@ -162,6 +162,19 @@ enum chain_flags {
 };
 
 /**
+ * struct prio_spec - extendend priority specification for mixed
+ *                    textual/numerical parsing.
+ *
+ * @str:  name of the standard priority value
+ * @num:  Numerical value. This MUST contain the parsed value of str after
+ *        evaluation.
+ */
+struct prio_spec {
+	const char  *str;
+	int          num;
+};
+
+/**
  * struct chain - nftables chain
  *
  * @list:	list node in table list
@@ -185,7 +198,7 @@ struct chain {
 	uint32_t		flags;
 	const char		*hookstr;
 	unsigned int		hooknum;
-	int			priority;
+	struct prio_spec	priority;
 	int			policy;
 	const char		*type;
 	const char		*dev;
@@ -193,6 +206,8 @@ struct chain {
 	struct list_head	rules;
 };
 
+#define STD_PRIO_BUFSIZE 100
+extern int std_prio_lookup(const char *std_prio_name, int family, int hook);
 extern const char *chain_type_name_lookup(const char *name);
 extern const char *chain_hookname_lookup(const char *name);
 extern struct chain *chain_alloc(const char *name);
@@ -357,7 +372,7 @@ struct flowtable {
 	struct location		location;
 	const char *		hookstr;
 	unsigned int		hooknum;
-	int			priority;
+	struct prio_spec	priority;
 	const char		**dev_array;
 	struct expr		*dev_expr;
 	int			dev_array_len;

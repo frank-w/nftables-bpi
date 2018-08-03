@@ -21,7 +21,7 @@ table inet x {
 	}
 
 	chain y {
-		type filter hook input priority 0; policy accept;
+		type filter hook input priority filter; policy accept;
 		counter name ip saddr map { 1.1.1.1 : "user123", 2.2.2.2 : "user123", 192.168.2.2 : "user123" }
 		quota name ip saddr map @test drop
 	}

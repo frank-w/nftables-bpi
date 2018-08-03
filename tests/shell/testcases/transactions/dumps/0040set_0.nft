@@ -4,7 +4,7 @@ table ip filter {
 	}
 
 	chain FORWARD {
-		type filter hook forward priority 0; policy accept;
+		type filter hook forward priority filter; policy accept;
 		goto client_to_any
 	}
 

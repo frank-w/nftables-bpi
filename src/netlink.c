@@ -597,7 +597,7 @@ int netlink_add_chain_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
 			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_HOOKNUM,
 					    chain->hooknum);
 			nftnl_chain_set_s32(nlc, NFTNL_CHAIN_PRIO,
-					    chain->priority);
+					    chain->priority.num);
 			nftnl_chain_set_str(nlc, NFTNL_CHAIN_TYPE,
 					    chain->type);
 		}
@@ -666,7 +666,7 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 			nftnl_chain_get_u32(nlc, NFTNL_CHAIN_HOOKNUM);
 		chain->hookstr       =
 			hooknum2str(chain->handle.family, chain->hooknum);
-		chain->priority      =
+		chain->priority.num  =
 			nftnl_chain_get_s32(nlc, NFTNL_CHAIN_PRIO);
 		chain->type          =
 			xstrdup(nftnl_chain_get_str(nlc, NFTNL_CHAIN_TYPE));
@@ -1495,7 +1495,7 @@ int netlink_add_flowtable(struct netlink_ctx *ctx, const struct cmd *cmd,
 
 	flo = alloc_nftnl_flowtable(&cmd->handle, ft);
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM, ft->hooknum);
-	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, ft->priority);
+	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, ft->priority.num);
 
 	list_for_each_entry(expr, &ft->dev_expr->expressions, list)
 		dev_array[i++] = expr->identifier;
@@ -1598,7 +1598,7 @@ netlink_delinearize_flowtable(struct netlink_ctx *ctx,
 
 	flowtable->dev_array_len = len;
 
-	flowtable->priority =
+	flowtable->priority.num =
 		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_PRIO);
 	flowtable->hooknum =
 		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_HOOKNUM);

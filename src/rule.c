@@ -28,6 +28,8 @@
 #include <netinet/ip.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_arp.h>
+#include <linux/netfilter_ipv4.h>
+#include <linux/netfilter_bridge.h>
 
 void handle_free(struct handle *h)
 {
@@ -675,6 +677,7 @@ void chain_free(struct chain *chain)
 	xfree(chain->type);
 	if (chain->dev != NULL)
 		xfree(chain->dev);
+	xfree(chain->priority.str);
 	xfree(chain);
 }
 
@@ -773,9 +776,159 @@ const char *chain_policy2str(uint32_t policy)
 	return "unknown";
 }
 
+struct prio_tag {
+	int val;
+	const char *str;
+};
+
+const static struct prio_tag std_prios[] = {
+	{ NF_IP_PRI_RAW,      "raw" },
+	{ NF_IP_PRI_MANGLE,   "mangle" },
+	{ NF_IP_PRI_NAT_DST,  "dstnat" },
+	{ NF_IP_PRI_FILTER,   "filter" },
+	{ NF_IP_PRI_SECURITY, "security" },
+	{ NF_IP_PRI_NAT_SRC,  "srcnat" },
+};
+
+const static struct prio_tag bridge_std_prios[] = {
+	{ NF_BR_PRI_NAT_DST_BRIDGED,  "dstnat" },
+	{ NF_BR_PRI_FILTER_BRIDGED,   "filter" },
+	{ NF_BR_PRI_NAT_DST_OTHER,    "out" },
+	{ NF_BR_PRI_NAT_SRC,          "srcnat" },
+};
+
+static bool std_prio_family_hook_compat(int prio, int family, int hook)
+{
+	/* bridge family has different values */
+	if (family == NFPROTO_BRIDGE) {
+		switch (prio) {
+		case NF_BR_PRI_NAT_DST_BRIDGED:
+			if (hook == NF_BR_PRE_ROUTING)
+				return true;
+			break;
+		case NF_BR_PRI_FILTER_BRIDGED:
+			return true;
+		case NF_BR_PRI_NAT_DST_OTHER:
+			if (hook == NF_BR_LOCAL_OUT)
+				return true;
+			break;
+		case NF_BR_PRI_NAT_SRC:
+			if (hook == NF_BR_POST_ROUTING)
+				return true;
+		}
+		return false;
+	}
+	switch(prio) {
+	case NF_IP_PRI_FILTER:
+		switch (family) {
+		case NFPROTO_INET:
+		case NFPROTO_IPV4:
+		case NFPROTO_IPV6:
+		case NFPROTO_ARP:
+		case NFPROTO_NETDEV:
+			return true;
+		}
+		break;
+	case NF_IP_PRI_RAW:
+	case NF_IP_PRI_MANGLE:
+	case NF_IP_PRI_SECURITY:
+		switch (family) {
+		case NFPROTO_INET:
+		case NFPROTO_IPV4:
+		case NFPROTO_IPV6:
+			return true;
+		}
+		break;
+	case NF_IP_PRI_NAT_DST:
+		switch(family) {
+		case NFPROTO_INET:
+		case NFPROTO_IPV4:
+		case NFPROTO_IPV6:
+			if (hook == NF_INET_PRE_ROUTING)
+				return true;
+		}
+		break;
+	case NF_IP_PRI_NAT_SRC:
+		switch(family) {
+		case NFPROTO_INET:
+		case NFPROTO_IPV4:
+		case NFPROTO_IPV6:
+			if (hook == NF_INET_POST_ROUTING)
+				return true;
+		}
+	}
+	return false;
+}
+
+int std_prio_lookup(const char *std_prio_name, int family, int hook)
+{
+	const struct prio_tag *prio_arr;
+	size_t i, arr_size;
+
+	if (family == NFPROTO_BRIDGE) {
+		prio_arr = bridge_std_prios;
+		arr_size = array_size(bridge_std_prios);
+	} else {
+		prio_arr = std_prios;
+		arr_size = array_size(std_prios);
+	}
+
+	for (i = 0; i < arr_size; ++i) {
+		if (strcmp(prio_arr[i].str, std_prio_name) == 0 &&
+		    std_prio_family_hook_compat(prio_arr[i].val, family, hook))
+			return prio_arr[i].val;
+	}
+	return NF_IP_PRI_LAST;
+}
+
+static const char *prio2str(char *buf, size_t bufsize, int family, int hook,
+			    int prio, int numeric)
+{
+	const struct prio_tag *prio_arr;
+	const char *std_prio_str;
+	const int reach = 10;
+	int std_prio, offset;
+	size_t i, arr_size;
+
+	if (family == NFPROTO_BRIDGE) {
+		prio_arr = bridge_std_prios;
+		arr_size = array_size(bridge_std_prios);
+	} else {
+		prio_arr = std_prios;
+		arr_size = array_size(std_prios);
+	}
+
+	if (numeric != NFT_NUMERIC_ALL) {
+		for (i = 0; i < arr_size; ++i) {
+			std_prio = prio_arr[i].val;
+			std_prio_str = prio_arr[i].str;
+			if (abs(prio - std_prio) <= reach) {
+				if (!std_prio_family_hook_compat(std_prio,
+								 family, hook))
+					break;
+				offset = prio - std_prio;
+				strncpy(buf, std_prio_str, bufsize);
+				if (offset > 0)
+					snprintf(buf + strlen(buf),
+						 bufsize - strlen(buf), " + %d",
+						 offset);
+				else if (offset < 0)
+					snprintf(buf + strlen(buf),
+						 bufsize - strlen(buf), " - %d",
+						 -offset);
+				return buf;
+			}
+		}
+	}
+	snprintf(buf, bufsize, "%d", prio);
+	return buf;
+}
+
 static void chain_print_declaration(const struct chain *chain,
 				    struct output_ctx *octx)
 {
+	char priobuf[STD_PRIO_BUFSIZE];
+
 	nft_print(octx, "\tchain %s {", chain->handle.chain.name);
 	if (octx->handle > 0)
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
@@ -785,8 +938,11 @@ static void chain_print_declaration(const struct chain *chain,
 			  hooknum2str(chain->handle.family, chain->hooknum));
 		if (chain->dev != NULL)
 			nft_print(octx, " device %s", chain->dev);
-		nft_print(octx, " priority %d; policy %s;\n",
-			  chain->priority, chain_policy2str(chain->policy));
+		nft_print(octx, " priority %s; policy %s;\n",
+			  prio2str(priobuf, sizeof(priobuf),
+				   chain->handle.family, chain->hooknum,
+				   chain->priority.num, octx->numeric),
+			  chain_policy2str(chain->policy));
 	}
 }
 
@@ -806,13 +962,18 @@ static void chain_print(const struct chain *chain, struct output_ctx *octx)
 
 void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 {
+	char priobuf[STD_PRIO_BUFSIZE];
+
 	nft_print(octx, "chain %s %s %s", family2str(chain->handle.family),
 		  chain->handle.table.name, chain->handle.chain.name);
 
 	if (chain->flags & CHAIN_F_BASECHAIN) {
-		nft_print(octx, " { type %s hook %s priority %d; policy %s; }",
+		nft_print(octx, " { type %s hook %s priority %s; policy %s; }",
 			  chain->type, chain->hookstr,
-			  chain->priority, chain_policy2str(chain->policy));
+			  prio2str(priobuf, sizeof(priobuf),
+				   chain->handle.family, chain->hooknum,
+				   chain->priority.num, octx->numeric),
+			  chain_policy2str(chain->policy));
 	}
 	if (octx->handle > 0)
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
@@ -1638,6 +1799,7 @@ void flowtable_free(struct flowtable *flowtable)
 	if (--flowtable->refcnt > 0)
 		return;
 	handle_free(&flowtable->handle);
+	xfree(flowtable->priority.str);
 	xfree(flowtable);
 }
 
@@ -1650,6 +1812,7 @@ static void flowtable_print_declaration(const struct flowtable *flowtable,
 					struct print_fmt_options *opts,
 					struct output_ctx *octx)
 {
+	char priobuf[STD_PRIO_BUFSIZE];
 	int i;
 
 	nft_print(octx, "%sflowtable", opts->tab);
@@ -1662,10 +1825,13 @@ static void flowtable_print_declaration(const struct flowtable *flowtable,
 
 	nft_print(octx, " %s {%s", flowtable->handle.flowtable, opts->nl);
 
-	nft_print(octx, "%s%shook %s priority %d%s",
+	nft_print(octx, "%s%shook %s priority %s%s",
 		  opts->tab, opts->tab,
 		  hooknum2str(NFPROTO_NETDEV, flowtable->hooknum),
-		  flowtable->priority, opts->stmt_separator);
+		  prio2str(priobuf, sizeof(priobuf), NFPROTO_NETDEV,
+			   flowtable->hooknum, flowtable->priority.num,
+			   octx->numeric),
+		  opts->stmt_separator);
 
 	nft_print(octx, "%s%sdevices = { ", opts->tab, opts->tab);
 	for (i = 0; i < flowtable->dev_array_len; i++) {

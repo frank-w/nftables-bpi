@@ -2595,7 +2595,7 @@ static struct cmd *json_parse_cmd_add_flowtable(struct json_ctx *ctx,
 
 	flowtable = flowtable_alloc(int_loc);
 	flowtable->hookstr = hookstr;
-	flowtable->priority = prio;
+	flowtable->priority.num = prio;
 
 	flowtable->dev_expr = json_parse_flowtable_devs(ctx, devs);
 	if (!flowtable->dev_expr) {

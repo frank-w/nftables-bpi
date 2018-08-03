@@ -37,7 +37,7 @@ For a full summary of options, run *nft --help*.
 	Show data numerically. When used once (the default behaviour), skip
 	lookup of addresses to symbolic names. Use twice to also show Internet
 	services (port numbers) numerically. Use three times to also show
-	protocols and UIDs/GIDs numerically.
+	protocols, UIDs/GIDs and priorities numerically.
 
 *-s*::
 *--stateless*::
@@ -345,13 +345,51 @@ further quirks worth noticing:
 * arp family supports only *input* and *output* hooks, both in chains of type
   *filter*.
 
-The *priority* parameter accepts a signed integer value which specifies the
-order in which chains with same *hook* value are traversed. The ordering is
-ascending, i.e. lower priority values have precedence over higher ones.
+The *priority* parameter accepts a signed integer value or a standard priority
+name which specifies the order in which chains with same *hook* value are
+traversed. The ordering is ascending, i.e. lower priority values have precedence
+over higher ones.
 
-Base chains also allow to set the chain's *policy*, i.e. what happens to packets
-not explicitly accepted or refused in contained rules. Supported policy values
-are *accept* (which is the default) or *drop*.
+Standard priority values can be replaced with easily memorizable names.  Not all
+names make sense in every family with every hook (see the compatibility matrices
+below) but their numerical value can still be used for prioritizing chains.
+
+These names and values are defined and made available based on what priorities
+are used by xtables when registering their default chains.
+
+Most of the families use the same values, but bridge uses different ones from
+the others. See the following tables that describe the values and compatibility.
+
+.Standard priority names, family and hook compatibility matrix
+[options="header"]
+|==================
+| Name | Value | Families | Hooks
+| raw | -300 | ip, ip6, inet | all
+| mangle | -150 | ip, ip6, inet | all
+| dstnat | -100 | ip, ip6, inet | prerouting
+| filter | 0 | ip, ip6, inet, arp, netdev | all
+| security | 50 | ip, ip6, inet | all
+| srcnat | 100 | ip, ip6, inet | postrouting
+|===================
+
+.Standard priority names and hook compatibility for the bridge family
+[option="header"]
+|==================
+| Name | Value | Hooks
+| dstnat | -300 | prerouting
+| filter | -200 | all
+| out | 100 | output
+| srcnat | 300 | postrouting
+|==================
+
+Basic arithmetic expressions (addition and substraction) can also be achieved
+with these standard names to ease relative prioritizing, eg. *mangle - 5* stands
+for *-155*.  Values will also be printed like this untill the value is not
+further than 10 form the standard value.
+
+Base chains also allow to set the chain's *policy*, i.e.  what happens to
+packets not explicitly accepted or refused in contained rules. Supported policy
+values are *accept* (which is the default) or *drop*.
 
 RULES
 -----
@@ -544,6 +582,10 @@ expression from the forward chain. Flowtables are identified by their address
 family and their name. The address family must be one of ip, ip6, inet. The inet
 address family is a dummy family which is used to create hybrid IPv4/IPv6
 tables.  When no address family is specified, ip is used by default.
+
+The *priority* can be a signed integer or *filter* which stands for 0. Addition
+and substraction can be used to set relative priority eg. filter + 5 equals to
+5.
 
 [horizontal]
 *add*:: Add a new flowtable for the given family with the given name.

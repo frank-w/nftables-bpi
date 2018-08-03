@@ -1,6 +1,6 @@
 table inet t {
 	flowtable f {
-		hook ingress priority 10
+		hook ingress priority filter + 10
 		devices = { lo }
 	}
 

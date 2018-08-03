@@ -173,6 +173,35 @@ table inet x {
 }
 ----------------------
 
+OSF EXPRESSION
+~~~~~~~~~~~~~~
+[verse]
+osf {name}
+
+The osf expression does passive operating system fingerprinting. This
+expression compares some data (Window Size, MSS, options and their order, DF,
+and others) from packets with the SYN bit set.
+
+.Available osf attributes
+[options="header"]
+|==================
+|Name |Description| Type
+|name|
+Name of the OS signature to match. All signatures can be found at pf.os file.|
+Use "unknown" for OS signatures that the expression could not detect.
+|==================
+
+.Using osf expression
+---------------------
+# Accept packets that match the "Linux" OS signature.
+table inet x {
+    chain y {
+	type filter hook input priority 0; policy accept;
+        osf "Linux"
+    }
+}
+-----------------------
+
 FIB EXPRESSIONS
 ~~~~~~~~~~~~~~~
 [verse]

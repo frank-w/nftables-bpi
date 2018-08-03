@@ -56,6 +56,7 @@ libnftables_la_SOURCES =			\
 		iface.c				\
 		services.c			\
 		mergesort.c			\
+		osf.c				\
 		tcpopt.c			\
 		socket.c			\
 		libnftables.c

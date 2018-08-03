@@ -194,6 +194,8 @@ int nft_lex(void *, void *, void *);
 
 %token TPROXY			"tproxy"
 
+%token OSF			"osf"
+
 %token HOOK			"hook"
 %token DEVICE			"device"
 %token DEVICES			"devices"
@@ -720,6 +722,9 @@ int nft_lex(void *, void *, void *);
 %type <expr>			fib_expr
 %destructor { expr_free($$); }	fib_expr
 %type <val>			fib_tuple	fib_result	fib_flag
+
+%type <expr>			osf_expr
+%destructor { expr_free($$); }	osf_expr
 
 %type <val>			markup_format
 %type <string>			monitor_event
@@ -2952,6 +2957,7 @@ primary_expr		:	symbol_expr			{ $$ = $1; }
 			|	numgen_expr			{ $$ = $1; }
 			|	hash_expr			{ $$ = $1; }
 			|	fib_expr			{ $$ = $1; }
+			|	osf_expr			{ $$ = $1; }
 			|	'('	basic_expr	')'	{ $$ = $2; }
 			;
 
@@ -2995,6 +3001,12 @@ fib_tuple		:  	fib_flag	DOT	fib_tuple
 				$$ = $1 | $3;
 			}
 			|	fib_flag
+			;
+
+osf_expr		:	OSF	NAME
+			{
+				$$ = osf_expr_alloc(&@$);
+			}
 			;
 
 shift_expr		:	primary_expr

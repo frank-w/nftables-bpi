@@ -536,6 +536,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "fib"			{ return FIB; }
 
+"osf"			{ return OSF; }
+
 "notrack"		{ return NOTRACK; }
 
 "options"		{ return OPTIONS; }

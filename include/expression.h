@@ -25,6 +25,7 @@
  * @EXPR_EXTHDR:	exthdr expression
  * @EXPR_META:		meta expression
  * @EXPR_SOCKET:	socket expression
+ * @EXPR_OSF:		osf expression
  * @EXPR_CT:		conntrack expression
  * @EXPR_CONCAT:	concatenation
  * @EXPR_LIST:		list of expressions
@@ -52,6 +53,7 @@ enum expr_types {
 	EXPR_EXTHDR,
 	EXPR_META,
 	EXPR_SOCKET,
+	EXPR_OSF,
 	EXPR_CT,
 	EXPR_CONCAT,
 	EXPR_LIST,
@@ -191,6 +193,7 @@ enum expr_flags {
 #include <hash.h>
 #include <ct.h>
 #include <socket.h>
+#include <osf.h>
 
 /**
  * struct expr

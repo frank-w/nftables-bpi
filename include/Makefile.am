@@ -24,6 +24,7 @@ noinst_HEADERS = 	cli.h		\
 			meta.h		\
 			numgen.h	\
 			netlink.h	\
+			osf.h		\
 			parser.h	\
 			proto.h		\
 			socket.h	\

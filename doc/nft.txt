@@ -45,11 +45,11 @@ For a full summary of options, run *nft --help*.
 
 *-l*::
 *--literal*::
-	Translate numeric to literal. When used once (the default behav‐
-	iour),  print  services (instead of numerical port numbers). Use
-	twice to perform the IP address to name lookup, this usually re‐
-	quires  network traffic for DNS lookup that slows down the rule‐
-	set listing.
+	Translate numeric to literal. When used once (the default
+	behaviour),  print  services (instead of numerical port numbers). Use
+	twice to perform the IP address to name lookup, this usually
+	requires  network traffic for DNS lookup that slows down the
+	ruleset listing.
 
 *-c*::
 *--check*::
@@ -66,8 +66,8 @@ For a full summary of options, run *nft --help*.
 
 *-I*::
 *--includepath directory*::
-	Add the directory 'directory' to the list of directories to be searched for included files. This  op‐
-	tion may be specified multiple times.
+	Add the directory 'directory' to the list of directories to be searched for included files. This
+	option may be specified multiple times.
 
 *-f*::
 *--file 'filename'*::
@@ -76,8 +76,8 @@ For a full summary of options, run *nft --help*.
 
 *-i*::
 *--interactive*::
-	Read  input from an interactive readline CLI. You can use quit to exit, or use the EOF marker, nor‐
-	mally this is CTRL-D.
+	Read  input from an interactive readline CLI. You can use quit to exit, or use the EOF marker,
+	normally this is CTRL-D.
 
 INPUT FILE FORMATS
 ------------------
@@ -362,7 +362,7 @@ delete *rule* ['family'] 'table' 'chain' handle 'handle'
 
 Rules are added to chain in the given table. If the family is not specified, the
 ip family is used. Rules are constructed from two kinds of components according
-to a set of grammatical rules: ex‐ pressions and statements.
+to a set of grammatical rules: expressions and statements.
 
 The add and insert commands support an optional location specifier, which is
 either a 'handle' of an existing rule or an 'index' (starting  at zero).
@@ -745,4 +745,4 @@ nftables is free software; you can redistribute it and/or modify it under  the
 terms of the GNU General Public License version 2 as published by the Free
 Software Foundation. +
 
-This documentation is licensed under the terms of the Creative Commons Attribution-ShareAlike 4.0 license, CC BY-SA 4.0 ⟨http://creativecommons.org/licenses/by-sa/4.0/⟩.
+This documentation is licensed under the terms of the Creative Commons Attribution-ShareAlike 4.0 license, CC BY-SA 4.0 http://creativecommons.org/licenses/by-sa/4.0/.

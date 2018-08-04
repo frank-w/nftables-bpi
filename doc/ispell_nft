@@ -28,6 +28,7 @@ connlabel
 conntrack
 cpi
 cpu
+creativecommons
 crit
 ct
 ctnetlink
@@ -37,6 +38,7 @@ daddr
 datatype
 dccp
 devgroup
+DF
 dir
 dmesg
 dnat
@@ -138,6 +140,7 @@ nftrace
 nh
 nNscae
 noop
+ntp
 num
 obrname
 oif
@@ -146,9 +149,12 @@ oifname
 oiftype
 op
 org
+os
+osf
 pablo
 parseable
 pcp
+pf
 pkt
 pkttype
 plen
@@ -165,7 +171,7 @@ rst
 rt
 rtclassid
 ruleset
-SA
+sa
 saddr
 sbin
 sctp
@@ -178,6 +184,7 @@ ShareAlike
 sid
 skgid
 skuid
+smux
 snaplen
 snat
 spi
@@ -192,9 +199,11 @@ syslog
 tc
 tcp
 TCPMSS
+tproxy
 tsecr
 tsval
 ttl
+txt
 udp
 udplite
 uid

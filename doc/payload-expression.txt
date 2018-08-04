@@ -420,7 +420,7 @@ RAW PAYLOAD EXPRESSION
 [verse]
 *@* [base,offset,length]
 
-The raw payload expression instructs to load lengthbits starting at offsetbits.
+The raw payload expression instructs to load 'length' bits starting at 'offset' bits.
 Bit 0 refers to the very first bit -- in the C programming language, this
 corresponds to the topmost bit, i.e. 0x80 in case of an octet. They are useful
 to match headers that do not have a human-readable template expression yet. Note

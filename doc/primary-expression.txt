@@ -53,7 +53,7 @@ iface_index
 Output interface name|
 ifname
 |oiftype|
-Outout interface hardware type|
+Output interface hardware type|
 iface_type
 |skuid|
 UID  associated  with  originating socket|
@@ -61,7 +61,7 @@ uid
 |skgid|
 GID  associated  with  originating socket|
 gid
-|rtlclassid|
+|rtclassid|
 Routing realm|
 realm
 |ibrname|

@@ -86,13 +86,13 @@ quoted string
 Syslog level of logging |
 string: emerg, alert,  crit,  err, warn  [default], notice, info, debug
 |group|
-NFLOG group to sned messages to|
+NFLOG group to send messages to|
 unsigned integer (16 bit)
 |snaplen|
 Length of packet payload to include in netlink messages |
 unsigned integer (32 bit)
 |queue-threshold|
-Number  of packets to queue inside the kernel before sending them to userpace |
+Number  of packets to queue inside the kernel before sending them to userspace |
 unsigned integer (32 bit)
 |==================================
 
@@ -293,7 +293,7 @@ packet should be modified. While *snat* is only valid  in the postrouting and
 input chains, *masquerade* makes sense only in postrouting. The dnat and
 redirect statements are only valid in the prerouting and output chains, they
 specify that the destination address of the packet should be modified. You  can
-use  nonbase  chains which are called from base chains of nat chain type too.
+use  non-base  chains which are called from base chains of nat chain type too.
 All future packets in this connection will also be mangled, and rules should
 cease being examined.
 

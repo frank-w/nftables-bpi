@@ -68,9 +68,9 @@ QUOTA
 |Keyword | Description | Type
 |quota |
 quota limit, used as the quota name |
-Two arguments, unsigned interger (64 bit) and string: bytes, kbytes, mbytes.
+Two arguments, unsigned integer (64 bit) and string: bytes, kbytes, mbytes.
 "over" and "until" go before these arguments
 |used |
 initial value of used quota |
-Two arguments, unsigned interger (64 bit) and string: bytes, kbytes, mbytes
+Two arguments, unsigned integer (64 bit) and string: bytes, kbytes, mbytes
 |=================

@@ -197,7 +197,7 @@ Packets send by the local system are processed by the output hook.
 
 BRIDGE ADDRESS FAMILY
 ~~~~~~~~~~~~~~~~~~~~~
-The bridge address family handles ethernet packets traversing bridge devices.
+The bridge address family handles Ethernet packets traversing bridge devices.
 
 The list of supported hooks is identical to IPv4/IPv6/Inet address families above.
 
@@ -471,7 +471,7 @@ string, decimal followed by unit. Units are: d, h, m, s
 elements contained by the set |
 set data type
 |size |
-maximun number of elements in the set, mandatory if set is added to from the packet path (ruleset).|
+maximum number of elements in the set, mandatory if set is added to from the packet path (ruleset).|
 unsigned integer (64 bit)
 |policy |
 set policy |
@@ -512,7 +512,7 @@ string: constant, interval
 elements contained by the map |
 map data type
 |size |
-maximun number of elements in the map |
+maximum number of elements in the map |
 unsigned integer (64 bit)
 | policy |
 map policy |

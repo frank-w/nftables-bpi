@@ -89,7 +89,7 @@ string: emerg, alert,  crit,  err, warn  [default], notice, info, debug
 NFLOG group to send messages to|
 unsigned integer (16 bit)
 |snaplen|
-Length of packet payload to include in netlink messages |
+Length of packet payload to include in netlink message |
 unsigned integer (32 bit)
 |queue-threshold|
 Number  of packets to queue inside the kernel before sending them to userspace |
@@ -247,7 +247,7 @@ mark
 packet type |
 pkt_type
 |nftrace |
-ruleset packet tracing on/off. Use monitor trace command to watch traces|
+ruleset packet tracing on/off. Use *monitor trace* command to watch traces|
 0, 1
 |==========================
 
@@ -320,7 +320,7 @@ expression key with address value. |
 ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping, e.g. meta mark map { 10 : 192.168.1.2, 20 : 192.168.1.3 }
 |port|
 Specifies that the source/destination address of the packet should be modified. |
-port number (16 bits)
+port number (16 bit)
 |===============================
 
 .NAT statement flags
@@ -475,7 +475,7 @@ destination.
 |Expression | Description | Type
 |address |
 Specifies that the copy of the packet should be sent to a new gateway.|
-ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping. e.g. ip saddr map { 192.168.1.2 : 10.1.1.1 }
+ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping, e.g. ip saddr map { 192.168.1.2 : 10.1.1.1 }
 |device |
 Specifies that the copy should be transmitted via device. |
 string

@@ -17,7 +17,7 @@ DESCRIPTION
 -----------
 nft is the command line tool used to set up, maintain and inspect packet
 filtering and classification rules in the Linux kernel, in the nftables
-framework. The Linux kernel subsystem is known as nf_tables,  and `nft' stands
+framework. The Linux kernel subsystem is known as nf_tables,  and `nf' stands
 for Netfilter.
 
 OPTIONS
@@ -145,12 +145,12 @@ address family the kernel contains so called hooks at specific stages of the
 packet processing paths, which invoke nftables if rules for these hooks exist.
 
 [horizontal]
-ip:: IPv4 address family.
-ip6:: IPv6 address family.
-inet:: Internet (IPv4/IPv6) address family.
-arp:: ARP address family, handling IPv4 ARP packets.
-bridge:: Bridge address family, handling packets which traverse a bridge device.
-netdev:: Netdev address family, handling packets from ingress.
+*ip*:: IPv4 address family.
+*ip6*:: IPv6 address family.
+*inet*:: Internet (IPv4/IPv6) address family.
+*arp*:: ARP address family, handling IPv4 ARP packets.
+*bridge*:: Bridge address family, handling packets which traverse a bridge device.
+*netdev*:: Netdev address family, handling packets from ingress.
 
 All nftables objects exist in address family specific namespaces, therefore all
 identifiers include an address family. If an identifier is specified without an
@@ -232,7 +232,7 @@ no packet filtering will happen anymore, so the kernel accepts any valid packet
 it receives.
 
 *export*:: Print the ruleset in machine readable format. The mandatory 'format'
-parameter may be either *xml* or *json*.
+parameter may be either xml or json.
 
 It is possible to limit *list* and *flush* to a specific address family only.
 For a list of valid family names, see <<ADDRESS_FAMILIES>> above.
@@ -360,7 +360,7 @@ RULES
 replace *rule* ['family'] 'table' 'chain' handle 'handle' 'statement'...
 delete *rule* ['family'] 'table' 'chain' handle 'handle'
 
-Rules are added to chain in the given table. If the family is not specified, the
+Rules are added to chains in the given table. If the family is not specified, the
 ip family is used. Rules are constructed from two kinds of components according
 to a set of grammatical rules: expressions and statements.
 
@@ -571,7 +571,6 @@ numbers etc. or data gathered from the packet  during  ruleset  evaluation.
 Expressions can be combined using binary, logical, relational and other types of
 expressions to form complex or relational (match) expressions. They are also
 used as arguments to certain types of operations, like NAT, packet marking etc.
-+
 
 Each expression has a data type, which determines the size, parsing and
 representation of symbolic values and type compatibility with other expressions.
@@ -717,7 +716,7 @@ filter output tcp dport == tcp dport
 -----------------------------
 <cmdline>:0:0-23: Error: Could not process rule: Operation not permitted
 filter output oif wlan0
-       ^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 ---------------------------------
 
 EXIT STATUS

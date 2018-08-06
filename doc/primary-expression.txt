@@ -1,7 +1,7 @@
 META EXPRESSIONS
 ~~~~~~~~~~~~~~~~
 [verse]
-meta {length | nfproto | l4proto | protocol | priority}
+*meta* {length | nfproto | l4proto | protocol | priority}
 [meta] {mark | iif | iifname | iiftype | oif | oifname | oiftype |
 skuid | skgid | nftrace | rtclassid | ibrname | obrname | pkttype | cpu
 | iifgroup | oifgroup | cgroup | random | secpath}
@@ -75,7 +75,7 @@ packet type|
 pkt_type
 |cpu|
 cpu number processing the packet|
-integer (32 bits)
+integer (32 bit)
 |iifgroup|
 incoming device group|
 devgroup
@@ -87,7 +87,7 @@ control group id |
 integer (32 bit)
 |random|
 pseudo-random number|
-integer (32 bits)
+integer (32 bit)
 |secpath|
 boolean|
 boolean (1 bit)
@@ -205,7 +205,7 @@ table inet x {
 FIB EXPRESSIONS
 ~~~~~~~~~~~~~~~
 [verse]
-fib {saddr | daddr | {mark | iif | oif}} {oif | oifname | type}
+*fib* {saddr | daddr | {mark | iif | oif}} {oif | oifname | type}
 
 A fib expression queries the fib (forwarding information base) to obtain
 information such as the output interface index a particular address would use.
@@ -242,7 +242,7 @@ filter prerouting meta mark set 0xdead fib daddr . mark type vmap { blackhole : 
 ROUTING EXPRESSIONS
 ~~~~~~~~~~~~~~~~~~~
 [verse]
-rt {classid | nexthop}
+*rt* {classid | nexthop}
 
 A routing expression refers to routing data associated with a packet.
 

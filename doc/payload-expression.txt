@@ -70,7 +70,7 @@ arp_op
 IPV4 HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-ip ['IPv4' 'header' 'field']
+*ip* ['IPv4' 'header' 'field']
 
 .IPv4 header expression
 [options="header"]
@@ -117,7 +117,7 @@ ipv4_addr
 ICMP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-icmp ['ICMP' 'header' 'field']
+*icmp* ['ICMP' 'header' 'field']
 
 .ICMP header expression
 [options="header"]
@@ -131,7 +131,7 @@ ICMP code field |
 integer (8 bit)
 |checksum|
 ICMP checksum field |
-integer (16 nit)
+integer (16 bit)
 |id|
 ID of echo request/response |
 integer (16 bit)
@@ -143,19 +143,19 @@ gateway of redirects|
 integer (32 bit)
 |mtu|
 MTU of path MTU discovery|
-integer (32 bit)
+integer (16 bit)
 |============================
 
 IPV6 HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-ip6 ['IPv6' 'header' 'field']
+*ip6* ['IPv6' 'header' 'field']
 
-This expression refers to the ipv6 header fields. Caution when using ip6
-nexthdr, the value only refers to the next header, i.e. ip6  nexthdr  tcp  will
+This expression refers to the ipv6 header fields. Caution when using *ip6
+nexthdr*, the value only refers to the next header, i.e. *ip6 nexthdr tcp* will
 only match if the ipv6 packet does not contain any extension headers. Packets
 that are fragmented or e.g. contain a routing extension headers will not be
-matched. Please use meta l4proto if you wish to match the real transport header
+matched. Please use *meta l4proto* if you wish to match the real transport header
 and ignore any additional extension headers instead.
 
 .IPv6 header expression
@@ -192,12 +192,12 @@ ipv6_addr
 |=======================
 *matching if first extension header indicates a fragment* +
 
-ip6 nexthdr ipv6-frag counter
+*ip6* nexthdr ipv6-frag counter
 
 ICMPV6 HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-icmpv6 ['ICMPv6' 'header' 'field']
+*icmpv6* ['ICMPv6' 'header' 'field']
 
 .ICMPv6 header expression
 [options="header"]
@@ -232,14 +232,14 @@ integer (16 bit)
 TCP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~
 [verse]
-tcp ['TCP' 'header' 'field']
+*tcp* ['TCP' 'header' 'field']
 
 .TCP header expression
 [options="header"]
 |==================
 |Keyword| Description| Type
 |sport|
-source port|
+Source port|
 inet_service
 |dport|
 Destination port|
@@ -258,12 +258,12 @@ Reserved area |
 integer (4 bit)
 |flags|
 TCP flags|
-tcp_flags
+tcp_flag
 |window|
 Window|
 integer (16 bit)
 |checksum|
-checksum|
+Checksum|
 integer (16 bit)
 |urgptr|
 Urgent pointer|
@@ -273,14 +273,14 @@ integer (16 bit)
 UDP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~
 [verse]
-udp ['UDP' 'header' 'field']
+*udp* ['UDP' 'header' 'field']
 
 .UDP header expression
 [options="header"]
 |==================
 |Keyword| Description| Type
 |sport|
-source port|
+Source port|
 inet_service
 |dport|
 Destination port|
@@ -303,7 +303,7 @@ UDP-LITE HEADER EXPRESSION
 |==================
 |Keyword| Description| Type
 |sport|
-source port|
+Source port|
 inet_service
 |dport|
 Destination port|
@@ -323,7 +323,7 @@ SCTP HEADER EXPRESSION
 |==================
 |Keyword| Description| Type
 |sport|
-source port|
+Source port|
 inet_service
 |dport|
 Destination port|
@@ -346,7 +346,7 @@ DCCP HEADER EXPRESSION
 |==================
 |Keyword| Description| Type
 |sport|
-source port|
+Source port|
 inet_service
 |dport|
 Destination port|
@@ -604,7 +604,7 @@ integer (64 bit)
 byte count seen, see description for *packets* keyword |
 integer (64 bit)
 |avgpkt|
-average  bytes per packet, see description for packets keyword |
+average  bytes per packet, see description for *packets* keyword |
 integer (64 bit)
 |zone|
 conntrack zone |

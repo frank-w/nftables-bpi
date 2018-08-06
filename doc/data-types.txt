@@ -24,7 +24,7 @@ variable |
 integer
 |===================
 
-The bitmask type (bitmask) is used for bitmasks.
+The bitmask type (*bitmask*) is used for bitmasks.
 
 STRING TYPE
 ~~~~~~~~~~~~

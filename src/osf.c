@@ -4,8 +4,6 @@
 #include <string.h>
 #include <osf.h>
 
-#include <net/if.h>
-
 static void osf_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	nft_print(octx, "osf name");
@@ -24,7 +22,7 @@ static const struct expr_ops osf_expr_ops = {
 
 struct expr *osf_expr_alloc(const struct location *loc)
 {
-	unsigned int len = IFNAMSIZ * BITS_PER_BYTE;
+	unsigned int len = NFT_OSF_MAXGENRELEN * BITS_PER_BYTE;
 	const struct datatype *type = &string_type;
 	struct expr *expr;
 

@@ -13,6 +13,14 @@ inet osfinet osfchain
   [ osf dreg 1 ]
   [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
 
+# osf name { "Windows", "MacOs" }
+__set%d osfinet 3 size 2
+__set%d osfinet 0
+	element 646e6957 0073776f 00000000 00000000  : 0 [end]	element 4f63614d 00000073 00000000 00000000  : 0 [end]
+inet osfinet osfchain 
+  [ osf dreg 1 ]
+  [ lookup reg 1 set __set%d ]
+
 # ct mark set osf name map { "Windows" : 0x00000001, "MacOs" : 0x00000002 }
 __map%d osfip b size 2
 __map%d osfip 0

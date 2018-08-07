@@ -443,8 +443,8 @@ add *set* ['family'] 'table' 'set' { type 'type' ; [flags 'flags' ;] [timeout 't
 delete *set* ['family'] 'table' handle 'handle'
 {add | delete} *element* ['family'] 'table' 'set' { 'element'[,...] }
 
-Sets are elements containers of an user-defined data type, they are uniquely
-identified by an user-defined name and attached to tables. Their behaviour can
+Sets are elements containers of a user-defined data type, they are uniquely
+identified by a user-defined name and attached to tables. Their behaviour can
 be tuned with the flags that can be specified at set creation time.
 
 [horizontal]
@@ -493,7 +493,7 @@ add *map* ['family'] 'table' 'map' { type 'type' [flags 'flags' ;] [elements = {
 {delete | list | flush} *map* ['family'] 'table' 'map'
 {add | delete} *element* ['family'] 'table' 'map' { elements = { 'elements'[,...] } ; }
 
-Maps store data based on some specific key used as input, they are uniquely identified by an user-defined name and attached to tables.
+Maps store data based on some specific key used as input, they are uniquely identified by a user-defined name and attached to tables.
 
 [horizontal]
 *add*:: Add a new map in the specified table.

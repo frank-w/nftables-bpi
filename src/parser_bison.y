@@ -2537,6 +2537,7 @@ primary_stmt_expr	:	symbol_expr		{ $$ = $1; }
 			|	payload_expr		{ $$ = $1; }
 			|	keyword_expr		{ $$ = $1; }
 			|	socket_expr		{ $$ = $1; }
+			|	osf_expr		{ $$ = $1; }
 			;
 
 shift_stmt_expr		:	primary_stmt_expr

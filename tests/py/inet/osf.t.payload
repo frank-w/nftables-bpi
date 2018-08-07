@@ -12,3 +12,12 @@ ip6 osfip6 osfchain
 inet osfinet osfchain
   [ osf dreg 1 ]
   [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# ct mark set osf name map { "Windows" : 0x00000001, "MacOs" : 0x00000002 }
+__map%d osfip b size 2
+__map%d osfip 0
+        element 646e6957 0073776f 00000000 00000000  : 00000001 0 [end] element 4f63614d 00000073 00000000 00000000  : 00000002 0 [end]
+ip osfip osfchain
+  [ osf dreg 1 ]
+  [ lookup reg 1 set __map%d dreg 1 ]
+  [ ct set mark with reg 1 ]

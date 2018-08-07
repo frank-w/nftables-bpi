@@ -1,4 +1,14 @@
 # osf name "Linux"
 ip osfip osfchain
-  [ osf 1]
+  [ osf dreg 1 ]
+  [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# osf name "Linux"
+ip6 osfip6 osfchain
+  [ osf dreg 1 ]
+  [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# osf name "Linux"
+inet osfinet osfchain
+  [ osf dreg 1 ]
   [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]

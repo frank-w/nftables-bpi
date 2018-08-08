@@ -17,11 +17,11 @@ ASCIIDOCS = ${ASCIIDOC_MAIN} ${ASCIIDOC_INCLUDES}
 
 pdfdir=${docdir}/pdf
 
-nft.8: ${ASCIIDOCS}
-	${AM_V_GEN}${A2X} --doctype manpage --format manpage ${ASCIIDOC_MAIN}
+.txt.8: ${ASCIIDOCS}
+	${AM_V_GEN}${A2X} --doctype manpage --format manpage -D ${builddir} $<
 
-nft.pdf: ${ASCIIDOCS}
-	${AM_V_GEN}${A2X} --doctype manpage --format pdf ${ASCIIDOC_MAIN}
+.txt.pdf: ${ASCIIDOCS}
+	${AM_V_GEN}${A2X} --doctype manpage --format pdf -D ${builddir} $<
 
 .adoc.pdf:
 	a2x --doctype manpage --format pdf -D ${builddir} $<

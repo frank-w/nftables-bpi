@@ -6,7 +6,9 @@ MAX_JUMPS=16
 
 $NFT add table t
 
-for i in $(seq 1 $MAX_JUMPS)
+$NFT add chain t c1 { type filter hook input priority 0\; }
+
+for i in $(seq 2 $MAX_JUMPS)
 do
 	$NFT add chain t c${i}
 done

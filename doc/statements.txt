@@ -62,8 +62,8 @@ tcp flags syn tcp option maxseg size set rt mtu
 LOG STATEMENT
 ~~~~~~~~~~~~~
 [verse]
-log [prefix quoted_string] [level syslog-level] [flags log-flags]
-log group nflog_group [prefix quoted_string] [queue-threshold value] [snaplen size]
+*log* [prefix 'quoted_string'] [level 'syslog-level'] [flags 'log-flags']
+*log* group 'nflog_group' [prefix 'quoted_string'] [queue-threshold 'value'] [snaplen 'size']
 
 The log statement enables logging of matching packets. When this statement is
 used from a rule, the Linux kernel will print some information on all matching
@@ -165,7 +165,7 @@ COUNTER STATEMENT
 A counter statement sets the hit count of packets along with the number of bytes.
 
 [verse]
-counter [ packets 'number' bytes 'number' ]
+*counter* [ packets 'number' bytes 'number' ]
 
 CONNTRACK STATEMENT
 ~~~~~~~~~~~~~~~~~~~

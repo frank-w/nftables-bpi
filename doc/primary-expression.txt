@@ -130,7 +130,7 @@ raw prerouting meta secpath exists accept
 SOCKET EXPRESSION
 ~~~~~~~~~~~~~~~~~
 [verse]
-socket {transparent}
+*socket* \{transparent\}
 
 Socket expression can be used to search for an existing open TCP/UDP socket and
 its attributes that can be associated with a packet. It looks for an established

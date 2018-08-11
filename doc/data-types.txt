@@ -268,7 +268,7 @@ ICMPV6 TYPE TYPE
 |==================
 |Name | Keyword | Size | Base type
 |ICMPv6 Type |
-icmpv6_type |
+icmpx_code |
 8 bit |
 integer
 |===================

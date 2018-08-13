@@ -12,6 +12,12 @@ EXPECTED="table ip test {
 		l3proto ip
 	}
 
+	ct timeout cttime {
+		protocol udp;
+		l3proto ip
+		policy = {unreplied: 15, replied: 12}
+	}
+
 	chain input {
 	}
 }"
@@ -22,6 +28,7 @@ $NFT add table test
 $NFT add chain test input
 $NFT add quota test https-quota 25 mbytes
 $NFT add ct helper test cthelp { type \"sip\" protocol tcp \; }
+$NFT add ct timeout test cttime { protocol udp \; policy = {replied: 12, unreplied: 15 } \; }
 $NFT add table test-ip
 
 GET="$($NFT list table test)"

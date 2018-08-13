@@ -32,6 +32,70 @@
 #include <net/if.h>
 #include <linux/netfilter_bridge.h>
 
+static const char *const tcp_state_to_name[] = {
+	[NFTNL_CTTIMEOUT_TCP_SYN_SENT]		= "syn_sent",
+	[NFTNL_CTTIMEOUT_TCP_SYN_RECV]		= "syn_recv",
+	[NFTNL_CTTIMEOUT_TCP_ESTABLISHED]	= "established",
+	[NFTNL_CTTIMEOUT_TCP_FIN_WAIT]		= "fin_wait",
+	[NFTNL_CTTIMEOUT_TCP_CLOSE_WAIT]	= "close_wait",
+	[NFTNL_CTTIMEOUT_TCP_LAST_ACK]		= "last_ack",
+	[NFTNL_CTTIMEOUT_TCP_TIME_WAIT]		= "time_wait",
+	[NFTNL_CTTIMEOUT_TCP_CLOSE]		= "close",
+	[NFTNL_CTTIMEOUT_TCP_SYN_SENT2]		= "syn_sent2",
+	[NFTNL_CTTIMEOUT_TCP_RETRANS]		= "retrans",
+	[NFTNL_CTTIMEOUT_TCP_UNACK]		= "unack",
+};
+
+static const char *const udp_state_to_name[] = {
+	[NFTNL_CTTIMEOUT_UDP_UNREPLIED]		= "unreplied",
+	[NFTNL_CTTIMEOUT_UDP_REPLIED]		= "replied",
+};
+
+static uint32_t tcp_dflt_timeout[] = {
+	[NFTNL_CTTIMEOUT_TCP_SYN_SENT]		= 120,
+	[NFTNL_CTTIMEOUT_TCP_SYN_RECV]		= 60,
+	[NFTNL_CTTIMEOUT_TCP_ESTABLISHED]	= 432000,
+	[NFTNL_CTTIMEOUT_TCP_FIN_WAIT]		= 120,
+	[NFTNL_CTTIMEOUT_TCP_CLOSE_WAIT]	= 60,
+	[NFTNL_CTTIMEOUT_TCP_LAST_ACK]		= 30,
+	[NFTNL_CTTIMEOUT_TCP_TIME_WAIT]		= 120,
+	[NFTNL_CTTIMEOUT_TCP_CLOSE]		= 10,
+	[NFTNL_CTTIMEOUT_TCP_SYN_SENT2]		= 120,
+	[NFTNL_CTTIMEOUT_TCP_RETRANS]		= 300,
+	[NFTNL_CTTIMEOUT_TCP_UNACK]		= 300,
+};
+
+static uint32_t udp_dflt_timeout[] = {
+	[NFTNL_CTTIMEOUT_UDP_UNREPLIED]		= 30,
+	[NFTNL_CTTIMEOUT_UDP_REPLIED]		= 180,
+};
+
+struct timeout_protocol timeout_protocol[IPPROTO_MAX] = {
+	[IPPROTO_TCP]	= {
+		.array_size	= NFTNL_CTTIMEOUT_TCP_MAX,
+		.state_to_name	= tcp_state_to_name,
+		.dflt_timeout	= tcp_dflt_timeout,
+	},
+	[IPPROTO_UDP]	= {
+		.array_size	= NFTNL_CTTIMEOUT_UDP_MAX,
+		.state_to_name	= udp_state_to_name,
+		.dflt_timeout	= udp_dflt_timeout,
+	},
+};
+
+int timeout_str2num(uint16_t l4proto, struct timeout_state *ts)
+{
+	unsigned int i;
+
+	for (i = 0; i < timeout_protocol[l4proto].array_size; i++) {
+		if (!strcmp(timeout_protocol[l4proto].state_to_name[i], ts->timeout_str)) {
+			ts->timeout_index = i;
+			return 0;
+		}
+	}
+	return -1;
+}
+
 void handle_free(struct handle *h)
 {
 	xfree(h->table.name);
@@ -1261,6 +1325,7 @@ void cmd_free(struct cmd *cmd)
 		case CMD_OBJ_COUNTER:
 		case CMD_OBJ_QUOTA:
 		case CMD_OBJ_CT_HELPER:
+		case CMD_OBJ_CT_TIMEOUT:
 		case CMD_OBJ_LIMIT:
 			obj_free(cmd->object);
 			break;
@@ -1359,6 +1424,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:
+	case CMD_OBJ_CT_TIMEOUT:
 	case CMD_OBJ_LIMIT:
 		return netlink_add_obj(ctx, cmd, flags);
 	case CMD_OBJ_FLOWTABLE:
@@ -1444,6 +1510,9 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_QUOTA);
 	case CMD_OBJ_CT_HELPER:
 		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_CT_HELPER);
+	case CMD_OBJ_CT_TIMEOUT:
+		return netlink_delete_obj(ctx, cmd,
+					  NFT_OBJECT_CT_TIMEOUT);
 	case CMD_OBJ_LIMIT:
 		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_LIMIT);
 	case CMD_OBJ_FLOWTABLE:
@@ -1589,9 +1658,29 @@ static void print_proto_name_proto(uint8_t l4, struct output_ctx *octx)
 	const struct protoent *p = getprotobynumber(l4);
 
 	if (p)
-		nft_print(octx, "%s\n", p->p_name);
+		nft_print(octx, "%s", p->p_name);
 	else
-		nft_print(octx, "%d\n", l4);
+		nft_print(octx, "%d", l4);
+}
+
+static void print_proto_timeout_policy(uint8_t l4, const uint32_t *timeout,
+				       struct output_ctx *octx)
+{
+	bool comma = false;
+	unsigned int i;
+
+	nft_print(octx, "\t\tpolicy = {");
+	for (i = 0; i < timeout_protocol[l4].array_size; i++) {
+		if (timeout[i] != timeout_protocol[l4].dflt_timeout[i]) {
+			if (comma)
+				nft_print(octx, ", ");
+			nft_print(octx, "%s: %u",
+				  timeout_protocol[l4].state_to_name[i],
+				  timeout[i]);
+			comma = true;
+		}
+	}
+	nft_print(octx, "}");
 }
 
 static void obj_print_data(const struct obj *obj,
@@ -1638,8 +1727,23 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, "\t\ttype \"%s\" protocol ",
 			  obj->ct_helper.name);
 		print_proto_name_proto(obj->ct_helper.l4proto, octx);
+		nft_print(octx, "\n");
 		nft_print(octx, "\t\tl3proto %s",
 			  family2str(obj->ct_helper.l3proto));
+		break;
+	case NFT_OBJECT_CT_TIMEOUT:
+		nft_print(octx, "ct timeout %s {", obj->handle.obj.name);
+		if (octx->handle > 0)
+			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+		nft_print(octx, "%s", opts->nl);
+		nft_print(octx, "\t\tprotocol ");
+		print_proto_name_proto(obj->ct_timeout.l4proto, octx);
+		nft_print(octx, ";%s", opts->nl);
+		nft_print(octx, "\t\tl3proto %s",
+			  family2str(obj->ct_timeout.l3proto));
+		nft_print(octx, "%s", opts->nl);
+		print_proto_timeout_policy(obj->ct_timeout.l4proto,
+					   obj->ct_timeout.timeout, octx);
 		break;
 	case NFT_OBJECT_LIMIT: {
 		bool inv = obj->limit.flags & NFT_LIMIT_F_INV;
@@ -1687,6 +1791,7 @@ static const char * const obj_type_name_array[] = {
 	[NFT_OBJECT_QUOTA]	= "quota",
 	[NFT_OBJECT_CT_HELPER]	= "",
 	[NFT_OBJECT_LIMIT]	= "limit",
+	[NFT_OBJECT_CT_TIMEOUT] = "",
 };
 
 const char *obj_type_name(enum stmt_types type)
@@ -1701,6 +1806,7 @@ static uint32_t obj_type_cmd_array[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_QUOTA]	= CMD_OBJ_QUOTA,
 	[NFT_OBJECT_CT_HELPER]	= CMD_OBJ_CT_HELPER,
 	[NFT_OBJECT_LIMIT]	= CMD_OBJ_LIMIT,
+	[NFT_OBJECT_CT_TIMEOUT] = CMD_OBJ_CT_TIMEOUT,
 };
 
 uint32_t obj_type_to_cmd(uint32_t type)
@@ -2054,6 +2160,8 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_CT_HELPER:
 	case CMD_OBJ_CT_HELPERS:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_CT_HELPER);
+	case CMD_OBJ_CT_TIMEOUT:
+		return do_list_obj(ctx, cmd, NFT_OBJECT_CT_TIMEOUT);
 	case CMD_OBJ_LIMIT:
 	case CMD_OBJ_LIMITS:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_LIMIT);
@@ -2270,6 +2378,9 @@ struct cmd *cmd_alloc_obj_ct(enum cmd_ops op, int type, const struct handle *h,
 	switch (type) {
 	case NFT_OBJECT_CT_HELPER:
 		cmd_obj = CMD_OBJ_CT_HELPER;
+		break;
+	case NFT_OBJECT_CT_TIMEOUT:
+		cmd_obj = CMD_OBJ_CT_TIMEOUT;
 		break;
 	default:
 		BUG("missing type mapping");

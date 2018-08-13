@@ -334,6 +334,14 @@ alloc_nftnl_obj(const struct handle *h, struct obj *obj)
 			nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_HELPER_L3PROTO,
 					  obj->ct_helper.l3proto);
 		break;
+	case NFT_OBJECT_CT_TIMEOUT:
+		nftnl_obj_set_u8(nlo, NFTNL_OBJ_CT_TIMEOUT_L4PROTO,
+				  obj->ct_timeout.l4proto);
+		if (obj->ct_timeout.l3proto)
+			nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_TIMEOUT_L3PROTO,
+					  obj->ct_timeout.l3proto);
+		nftnl_obj_set(nlo, NFTNL_OBJ_CT_TIMEOUT_ARRAY, obj->ct_timeout.timeout);
+		break;
 	case NFT_OBJECT_LIMIT:
 		nftnl_obj_set_u64(nlo, NFTNL_OBJ_LIMIT_RATE, obj->limit.rate);
 		nftnl_obj_set_u64(nlo, NFTNL_OBJ_LIMIT_UNIT, obj->limit.unit);
@@ -1436,6 +1444,13 @@ struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 			 nftnl_obj_get_str(nlo, NFTNL_OBJ_CT_HELPER_NAME));
 		obj->ct_helper.l3proto = nftnl_obj_get_u16(nlo, NFTNL_OBJ_CT_HELPER_L3PROTO);
 		obj->ct_helper.l4proto = nftnl_obj_get_u8(nlo, NFTNL_OBJ_CT_HELPER_L4PROTO);
+		break;
+	case NFT_OBJECT_CT_TIMEOUT:
+		obj->ct_timeout.l3proto = nftnl_obj_get_u16(nlo, NFTNL_OBJ_CT_TIMEOUT_L3PROTO);
+		obj->ct_timeout.l4proto = nftnl_obj_get_u8(nlo, NFTNL_OBJ_CT_TIMEOUT_L4PROTO);
+		memcpy(obj->ct_timeout.timeout,
+		       nftnl_obj_get(nlo, NFTNL_OBJ_CT_TIMEOUT_ARRAY),
+		       NFTNL_CTTIMEOUT_ARRAY_MAX * sizeof(uint32_t));
 		break;
 	case NFT_OBJECT_LIMIT:
 		obj->limit.rate =

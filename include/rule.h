@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <nftables.h>
 #include <list.h>
+#include <netinet/in.h>
+#include <libnftnl/object.h>	/* For NFTNL_CTTIMEOUT_ARRAY_MAX. */
 
 /**
  * struct handle_spec - handle ID
@@ -324,6 +326,21 @@ struct ct_helper {
 	uint8_t l4proto;
 };
 
+struct timeout_state {
+	struct list_head head;
+	struct location location;
+	uint8_t timeout_index;
+	const char *timeout_str;
+	unsigned int timeout_value;
+};
+
+struct ct_timeout {
+	uint16_t l3proto;
+	uint8_t l4proto;
+	uint32_t timeout[NFTNL_CTTIMEOUT_ARRAY_MAX];
+	struct list_head timeout_list;
+};
+
 struct limit {
 	uint64_t	rate;
 	uint64_t	unit;
@@ -352,6 +369,7 @@ struct obj {
 		struct quota		quota;
 		struct ct_helper	ct_helper;
 		struct limit		limit;
+		struct ct_timeout	ct_timeout;
 	};
 };
 
@@ -478,6 +496,7 @@ enum cmd_obj {
 	CMD_OBJ_LIMITS,
 	CMD_OBJ_FLOWTABLE,
 	CMD_OBJ_FLOWTABLES,
+	CMD_OBJ_CT_TIMEOUT,
 };
 
 struct markup {
@@ -632,5 +651,14 @@ enum udata_set_elem_type {
 enum udata_set_elem_flags {
 	SET_ELEM_F_INTERVAL_OPEN	= 0x1,
 };
+
+struct timeout_protocol {
+	uint32_t array_size;
+	const char *const *state_to_name;
+	uint32_t *dflt_timeout;
+};
+
+extern struct timeout_protocol timeout_protocol[IPPROTO_MAX];
+extern int timeout_str2num(uint16_t l4proto, struct timeout_state *ts);
 
 #endif /* NFTABLES_RULE_H */

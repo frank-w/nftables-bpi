@@ -3196,11 +3196,36 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 	return 0;
 }
 
+static int obj_evaluate(struct eval_ctx *ctx, struct obj *obj)
+{
+	struct ct_timeout *ct = &obj->ct_timeout;
+	struct timeout_state *ts, *next;
+	unsigned int i;
+
+	if (obj->type != NFT_OBJECT_CT_TIMEOUT)
+		return 0;
+
+	for (i = 0; i < timeout_protocol[ct->l4proto].array_size; i++)
+		ct->timeout[i] = timeout_protocol[ct->l4proto].dflt_timeout[i];
+
+	list_for_each_entry_safe(ts, next, &ct->timeout_list, head) {
+		if (timeout_str2num(ct->l4proto, ts) < 0)
+			return __stmt_binary_error(ctx, &ts->location, NULL,
+						   "invalid state for this protocol");
+
+		ct->timeout[ts->timeout_index] = ts->timeout_value;
+		list_del(&ts->head);
+		xfree(ts);
+	}
+	return 0;
+}
+
 static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 {
 	struct flowtable *ft;
 	struct chain *chain;
 	struct set *set;
+	struct obj *obj;
 
 	if (table_lookup(&ctx->cmd->handle, ctx->cache) == NULL) {
 		if (table == NULL) {
@@ -3230,6 +3255,11 @@ static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 	list_for_each_entry(ft, &table->flowtables, list) {
 		handle_merge(&ft->handle, &table->handle);
 		if (flowtable_evaluate(ctx, ft) < 0)
+			return -1;
+	}
+	list_for_each_entry(obj, &table->objs, list) {
+		handle_merge(&obj->handle, &table->handle);
+		if (obj_evaluate(ctx, obj) < 0)
 			return -1;
 	}
 
@@ -3281,7 +3311,8 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:
 	case CMD_OBJ_LIMIT:
-		return 0;
+	case CMD_OBJ_CT_TIMEOUT:
+		return obj_evaluate(ctx, cmd->object);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -3307,6 +3338,7 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:
+	case CMD_OBJ_CT_TIMEOUT:
 	case CMD_OBJ_LIMIT:
 		return 0;
 	default:
@@ -3439,6 +3471,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_COUNTER);
 	case CMD_OBJ_CT_HELPER:
 		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_CT_HELPER);
+	case CMD_OBJ_CT_TIMEOUT:
+		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_CT_TIMEOUT);
 	case CMD_OBJ_LIMIT:
 		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_LIMIT);
 	case CMD_OBJ_COUNTERS:

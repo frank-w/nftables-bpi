@@ -554,7 +554,7 @@ int nft_lex(void *, void *, void *);
 %type <flowtable>		flowtable_block_alloc flowtable_block
 %destructor { flowtable_free($$); }	flowtable_block_alloc
 
-%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block limit_block
+%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block limit_block
 %destructor { obj_free($$); }	obj_block_alloc
 
 %type <list>			stmt_list
@@ -754,6 +754,9 @@ int nft_lex(void *, void *, void *);
 %type <val>			exthdr_key
 
 %type <val>			ct_l4protoname ct_obj_type
+
+%type <list>			timeout_states timeout_state
+%destructor { xfree($$); }	timeout_states timeout_state
 
 %%
 
@@ -962,6 +965,10 @@ add_cmd			:	TABLE		table_spec
 
 				$$ = cmd_alloc_obj_ct(CMD_ADD, NFT_OBJECT_CT_HELPER, &$3, &@$, $4);
 			}
+			|	CT	TIMEOUT obj_spec	ct_obj_alloc	'{' ct_timeout_block '}' stmt_separator
+			{
+				$$ = cmd_alloc_obj_ct(CMD_ADD, NFT_OBJECT_CT_TIMEOUT, &$3, &@$, $4);
+			}
 			|	LIMIT		obj_spec	limit_obj
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_LIMIT, &$2, &@$, $3);
@@ -1042,6 +1049,10 @@ create_cmd		:	TABLE		table_spec
 			|	CT	HELPER	obj_spec	ct_obj_alloc	'{' ct_helper_block '}'	stmt_separator
 			{
 				$$ = cmd_alloc_obj_ct(CMD_CREATE, NFT_OBJECT_CT_HELPER, &$3, &@$, $4);
+			}
+			|	CT	TIMEOUT obj_spec	ct_obj_alloc	'{' ct_timeout_block '}' stmt_separator
+			{
+				$$ = cmd_alloc_obj_ct(CMD_CREATE, NFT_OBJECT_CT_TIMEOUT, &$3, &@$, $4);
 			}
 			|	LIMIT		obj_spec	limit_obj
 			{
@@ -1234,6 +1245,10 @@ list_cmd		:	TABLE		table_spec
 			|       CT		HELPERS		TABLE   table_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_CT_HELPERS, &$4, &@$, NULL);
+			}
+			|	CT		TIMEOUT		TABLE		table_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_CT_TIMEOUT, &$4, &@$, NULL);
 			}
 			;
 
@@ -1461,6 +1476,15 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 			{
 				$5->location = @4;
 				$5->type = NFT_OBJECT_CT_HELPER;
+				handle_merge(&$5->handle, &$4);
+				handle_free(&$4);
+				list_add_tail(&$5->list, &$1->objs);
+				$$ = $1;
+			}
+			|	table_block	CT	TIMEOUT obj_identifier obj_block_alloc '{'	ct_timeout_block	'}' stmt_separator
+			{
+				$5->location = @4;
+				$5->type = NFT_OBJECT_CT_TIMEOUT;
 				handle_merge(&$5->handle, &$4);
 				handle_free(&$4);
 				list_add_tail(&$5->list, &$1->objs);
@@ -1756,6 +1780,15 @@ ct_helper_block		:	/* empty */	{ $$ = $<obj>-1; }
 			|       ct_helper_block     common_block
 			|       ct_helper_block     stmt_separator
 			|       ct_helper_block     ct_helper_config
+			{
+				$$ = $1;
+			}
+			;
+
+ct_timeout_block	:	/*empty */	{ $$ = $<obj>-1; }
+			|	ct_timeout_block     common_block
+			|	ct_timeout_block     stmt_separator
+			|	ct_timeout_block     ct_timeout_config
 			{
 				$$ = $1;
 			}
@@ -3279,6 +3312,7 @@ quota_obj		:	quota_config
 			;
 
 ct_obj_type		:	HELPER		{ $$ = NFT_OBJECT_CT_HELPER; }
+			|	TIMEOUT		{ $$ = NFT_OBJECT_CT_TIMEOUT; }
 			;
 
 ct_l4protoname		:	TCP	{ $$ = IPPROTO_TCP; }
@@ -3303,6 +3337,55 @@ ct_helper_config		:	TYPE	QUOTED_STRING	PROTOCOL	ct_l4protoname	stmt_separator
 			|	L3PROTOCOL	family_spec_explicit	stmt_separator
 			{
 				$<obj>0->ct_helper.l3proto = $2;
+			}
+			;
+
+timeout_states		:	timeout_state
+			{
+				$$ = xmalloc(sizeof(*$$));
+				init_list_head($$);
+				list_add_tail($1, $$);
+			}
+			|	timeout_states	COMMA	timeout_state
+			{
+				list_add_tail($3, $1);
+				$$ = $1;
+			}
+			;
+
+timeout_state		:	STRING	COLON	NUM
+
+			{
+				struct timeout_state *ts;
+
+				ts = xzalloc(sizeof(*ts));
+				ts->timeout_str = $1;
+				ts->timeout_value = $3;
+				ts->location = @1;
+				init_list_head(&ts->head);
+				$$ = &ts->head;
+			}
+			;
+
+ct_timeout_config	:	PROTOCOL	ct_l4protoname	SEMICOLON
+			{
+				struct ct_timeout *ct;
+				int l4proto = $2;
+
+				ct = &$<obj>0->ct_timeout;
+				ct->l4proto = l4proto;
+			}
+			|	POLICY 	'=' 	'{' 	timeout_states 	'}'	 stmt_separator
+			{
+				struct ct_timeout *ct;
+
+				ct = &$<obj>0->ct_timeout;
+				init_list_head(&ct->timeout_list);
+				list_splice_tail($4, &ct->timeout_list);
+			}
+			|	L3PROTOCOL	family_spec_explicit	stmt_separator
+			{
+				$<obj>0->ct_timeout.l3proto = $2;
 			}
 			;
 
@@ -3781,6 +3864,7 @@ ct_key			:	L3PROTOCOL	{ $$ = NFT_CT_L3PROTOCOL; }
 			|	PROTO_DST	{ $$ = NFT_CT_PROTO_DST; }
 			|	LABEL		{ $$ = NFT_CT_LABELS; }
 			|	EVENT		{ $$ = NFT_CT_EVENTMASK; }
+			|	TIMEOUT 	{ $$ = NFT_CT_TIMEOUT; }
 			|	ct_key_dir_optional
 			;
 
@@ -3827,6 +3911,11 @@ ct_stmt			:	CT	ct_key		SET	stmt_expr
 				case NFT_CT_HELPER:
 					$$ = objref_stmt_alloc(&@$);
 					$$->objref.type = NFT_OBJECT_CT_HELPER;
+					$$->objref.expr = $4;
+					break;
+				case NFT_CT_TIMEOUT:
+					$$ = objref_stmt_alloc(&@$);
+					$$->objref.type = NFT_OBJECT_CT_TIMEOUT;
 					$$->objref.expr = $4;
 					break;
 				default:

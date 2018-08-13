@@ -1081,6 +1081,10 @@ def obj_process(obj_line, filename, lineno):
        obj_type = "ct helper"
        tokens[3] = ""
 
+    if obj_type == "ct" and tokens[3] == "timeout":
+       obj_type = "ct timeout"
+       tokens[3] = ""
+
     if len(tokens) > 3:
         obj_spcf = " ".join(tokens[3:])
 

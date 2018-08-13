@@ -59,3 +59,7 @@ ip test-ip4 output
   [ cmp eq reg 1 0x00000006 ]
   [ payload load 2b @ transport header + 2 => reg 1 ]
   [ objref sreg 1 set __objmap%d ]
+
+# ct timeout set "cttime1"
+ip test-ip4 output
+  [ objref type 7 name cttime1 ]

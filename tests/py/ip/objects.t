@@ -32,3 +32,12 @@ ct helper set tcp dport map {21 : "cthelp1", 2121 : "cthelp1" };ok
 ip saddr 192.168.1.3 limit name "lim1";ok
 ip saddr 192.168.1.3 limit name "lim3";fail
 limit name tcp dport map {443 : "lim1", 80 : "lim2", 22 : "lim1"};ok
+
+# ct timeout
+%cttime1 type ct timeout { protocol tcp; policy = { established:122 } ;};ok
+%cttime2 type ct timeout { protocol udp; policy = { syn_sent:122 } ;};fail
+%cttime3 type ct timeout { protocol tcp; policy = { established:132, close:16, close_wait:16 } ; l3proto ip ;};ok
+%cttime4 type ct timeout { protocol udp; policy = { replied:14, unreplied:19 } ;};ok
+%cttime5 type ct timeout {protocol tcp; policy = { estalbished:100 } ;};fail
+
+ct timeout set "cttime1";ok

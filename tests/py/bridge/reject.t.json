@@ -219,3 +219,47 @@
     }
 ]
 
+# ether type ip reject with icmpx type admin-prohibited
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "ip"
+        }
+    },
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpx"
+        }
+    }
+]
+
+# ether type ip6 reject with icmpx type admin-prohibited
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "ip6"
+        }
+    },
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpx"
+        }
+    }
+]
+

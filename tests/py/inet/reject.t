@@ -34,3 +34,6 @@ meta nfproto ipv6 reject with icmp type host-unreachable;fail
 meta nfproto ipv4 ip protocol icmp reject with icmpv6 type no-route;fail
 meta nfproto ipv6 ip protocol icmp reject with icmp type host-unreachable;fail
 meta l4proto udp reject with tcp reset;fail
+
+meta nfproto ipv4 reject with icmpx type admin-prohibited;ok
+meta nfproto ipv6 reject with icmpx type admin-prohibited;ok

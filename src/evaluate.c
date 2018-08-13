@@ -2143,9 +2143,7 @@ static int stmt_evaluate_reject_inet_family(struct eval_ctx *ctx,
 	case NFT_REJECT_TCP_RST:
 		break;
 	case NFT_REJECT_ICMPX_UNREACH:
-		return stmt_binary_error(ctx, stmt->reject.expr,
-				    &ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR],
-				    "conflicting network protocol specified");
+		break;
 	case NFT_REJECT_ICMP_UNREACH:
 		base = ctx->pctx.protocol[PROTO_BASE_LL_HDR].desc;
 		protocol = proto_find_num(base, desc);
@@ -2196,9 +2194,6 @@ static int stmt_evaluate_reject_bridge_family(struct eval_ctx *ctx,
 
 	switch (stmt->reject.type) {
 	case NFT_REJECT_ICMPX_UNREACH:
-		return stmt_binary_error(ctx, stmt->reject.expr,
-				    &ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR],
-				    "conflicting network protocol specified");
 	case NFT_REJECT_TCP_RST:
 		base = ctx->pctx.protocol[PROTO_BASE_LL_HDR].desc;
 		protocol = proto_find_num(base, desc);

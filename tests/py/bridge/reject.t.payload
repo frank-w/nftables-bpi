@@ -106,3 +106,15 @@ bridge test-bridge input
 bridge test-bridge input
   [ reject type 2 code 1 ]
 
+# ether type ip reject with icmpx type admin-prohibited
+bridge test-bridge input
+  [ payload load 2b @ link header + 12 => reg 1 ]
+  [ cmp eq reg 1 0x00000008 ]
+  [ reject type 2 code 3 ]
+
+# ether type ip6 reject with icmpx type admin-prohibited
+bridge test-bridge input
+  [ payload load 2b @ link header + 12 => reg 1 ]
+  [ cmp eq reg 1 0x0000dd86 ]
+  [ reject type 2 code 3 ]
+

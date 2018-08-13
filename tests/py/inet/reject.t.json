@@ -238,3 +238,45 @@
     }
 ]
 
+# meta nfproto ipv4 reject with icmpx type admin-prohibited
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "nfproto"
+                }
+            },
+            "op": "==",
+            "right": "ipv4"
+        }
+    },
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpx"
+        }
+    }
+]
+
+# meta nfproto ipv6 reject with icmpx type admin-prohibited
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "nfproto"
+                }
+            },
+            "op": "==",
+            "right": "ipv6"
+        }
+    },
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpx"
+        }
+    }
+]
+

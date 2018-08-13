@@ -220,3 +220,15 @@ inet test-inet input
   [ cmp eq reg 1 0x0000000a ]
   [ reject type 0 code 0 ]
 
+# meta nfproto ipv4 reject with icmpx type admin-prohibited
+inet test-inet input
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x00000002 ]
+  [ reject type 2 code 3 ]
+
+# meta nfproto ipv6 reject with icmpx type admin-prohibited
+inet test-inet input
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x0000000a ]
+  [ reject type 2 code 3 ]
+

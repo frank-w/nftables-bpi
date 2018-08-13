@@ -37,3 +37,8 @@ ether type arp reject;fail
 ether type vlan reject with tcp reset;fail
 ether type arp reject with tcp reset;fail
 ip protocol udp reject with tcp reset;fail
+
+ether type ip reject with icmpx type admin-prohibited;ok
+ether type ip6 reject with icmpx type admin-prohibited;ok
+ether type vlan reject with icmpx type admin-prohibited;fail
+ether type arp reject with icmpx type admin-prohibited;fail

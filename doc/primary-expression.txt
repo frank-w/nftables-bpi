@@ -11,7 +11,7 @@ A meta expression refers to meta data associated with a packet.
 There are two types of meta expressions: unqualified and qualified meta
 expressions. Qualified meta expressions require the meta keyword before the meta
 key, unqualified meta expressions can be specified by using the meta key
-directly or as qualified  meta  expressions. Meta l4proto is useful to match a
+directly or as qualified meta expressions. Meta l4proto is useful to match a
 particular transport protocol that is part of either an IPv4 or IPv6 packet. It
 will also skip any IPv6 extension headers present in an IPv6 packet.
 
@@ -23,7 +23,7 @@ will also skip any IPv6 extension headers present in an IPv6 packet.
 Length of the packet in bytes|
 integer (32 bit)
 |nfproto|
-real hook  protocol family, useful only in inet table|
+real hook protocol family, useful only in inet table|
 integer (32 bit)
 |l4proto|
 layer 4 protocol, skips ipv6 extension headers|
@@ -56,10 +56,10 @@ ifname
 Output interface hardware type|
 iface_type
 |skuid|
-UID  associated  with  originating socket|
+UID associated with originating socket|
 uid
 |skgid|
-GID  associated  with  originating socket|
+GID associated with originating socket|
 gid
 |rtclassid|
 Routing realm|
@@ -98,7 +98,7 @@ boolean (1 bit)
 |==================
 |Type | Description
 |iface_index |
-Interface index (32 bit number). Can be specified numerically  or as name of an existing interface.
+Interface index (32 bit number). Can be specified numerically or as name of an existing interface.
 |ifname|
 Interface name (16 byte string). Does not have to exist.
 |iface_type|
@@ -108,11 +108,11 @@ User ID (32 bit number). Can be specified numerically or as user name.
 |gid|
 Group ID (32 bit number). Can be specified numerically or as group name.
 |realm|
-Routing  Realm (32 bit number). Can be specified numerically or as symbolic name  defined in /etc/iproute2/rt_realms.
+Routing Realm (32 bit number). Can be specified numerically or as symbolic name defined in /etc/iproute2/rt_realms.
 |devgroup_type|
-Device  group  (32 bit number). Can be specified numerically or as symbolic name  defined in /etc/iproute2/group.
+Device group (32 bit number). Can be specified numerically or as symbolic name defined in /etc/iproute2/group.
 |pkt_type|
-Packet  type: Unicast (addressed to local host), Broadcast (to all), Multicast (to group).
+Packet type: Unicast (addressed to local host), Broadcast (to all), Multicast (to group).
 |=============================
 
 .Using meta expressions
@@ -266,7 +266,7 @@ integer (16 bit)
 |=======================
 |Type| Description
 |realm|
-Routing  Realm (32 bit number). Can be specified numerically or as symbolic name  defined in /etc/iproute2/rt_realms.
+Routing Realm (32 bit number). Can be specified numerically or as symbolic name defined in /etc/iproute2/rt_realms.
 |========================
 
 .Using routing expressions

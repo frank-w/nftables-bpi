@@ -17,7 +17,7 @@ DESCRIPTION
 -----------
 nft is the command line tool used to set up, maintain and inspect packet
 filtering and classification rules in the Linux kernel, in the nftables
-framework. The Linux kernel subsystem is known as nf_tables,  and `nf' stands
+framework. The Linux kernel subsystem is known as nf_tables, and `nf' stands
 for Netfilter.
 
 OPTIONS
@@ -46,9 +46,9 @@ For a full summary of options, run *nft --help*.
 *-l*::
 *--literal*::
 	Translate numeric to literal. When used once (the default
-	behaviour),  print  services (instead of numerical port numbers). Use
+	behaviour), print services (instead of numerical port numbers). Use
 	twice to perform the IP address to name lookup, this usually
-	requires  network traffic for DNS lookup that slows down the
+	requires network traffic for DNS lookup that slows down the
 	ruleset listing.
 
 *-c*::
@@ -61,7 +61,7 @@ For a full summary of options, run *nft --help*.
 
 *-e*::
 *--echo*::
-	When  inserting  items  into the ruleset using *add*, *insert* or *replace* commands, print notifications
+	When inserting items into the ruleset using *add*, *insert* or *replace* commands, print notifications
 	just like *nft monitor*.
 
 *-I*::
@@ -76,7 +76,7 @@ For a full summary of options, run *nft --help*.
 
 *-i*::
 *--interactive*::
-	Read  input from an interactive readline CLI. You can use quit to exit, or use the EOF marker,
+	Read input from an interactive readline CLI. You can use quit to exit, or use the EOF marker,
 	normally this is CTRL-D.
 
 INPUT FILE FORMATS
@@ -105,7 +105,7 @@ Other files can be included by using the *include* statement. The directories to
 be searched for include files can be specified using the *-I*/*--includepath*
 option. You can override this behaviour either by prepending `./' to your path
 to force inclusion of files located in the current working directory (i.e.
-relative path) or / for  file  location expressed as an absolute path. +
+relative path) or / for file location expressed as an absolute path. +
 
 If *-I*/*--includepath* is not specified, then nft relies on the default
 directory that is specified at compile time. You can retrieve this default
@@ -332,7 +332,7 @@ statements for instance).
 |route | ip, ip6 | output |
 If a packet has traversed a chain of this type and is about to be accepted, a
 new route lookup is performed if relevant parts of the IP header have changed.
-This allows to e.g.  implement policy routing selectors in nftables.
+This allows to e.g. implement policy routing selectors in nftables.
 |=================
 
 Apart from the special cases illustrated above (e.g. *nat* type not supporting
@@ -403,11 +403,11 @@ ip family is used. Rules are constructed from two kinds of components according
 to a set of grammatical rules: expressions and statements.
 
 The add and insert commands support an optional location specifier, which is
-either a 'handle' of an existing rule or an 'index' (starting  at zero).
+either a 'handle' of an existing rule or an 'index' (starting at zero).
 Internally, rule locations are always identified by 'handle' and the translation
 from 'index' happens in userspace. This has two potential implications in case a
 concurrent ruleset change happens after the translation was done: The effective
-rule  index might change if a rule was inserted or deleted before the referred
+rule index might change if a rule was inserted or deleted before the referred
 one. If the referred rule was deleted, the command is rejected by the kernel
 just as if an invalid 'handle' was given.
 
@@ -449,7 +449,7 @@ table inet filter {
 
 SETS
 ----
-nftables offers two kinds of set concepts.  Anonymous sets are sets that have no
+nftables offers two kinds of set concepts. Anonymous sets are sets that have no
 specific name. The set members are enclosed in curly braces, with commas to
 separate elements when creating the rule the set is used in. Once that rule is
 removed, the set is removed as well. They cannot be updated, i.e. once an
@@ -504,7 +504,7 @@ string: ipv4_addr, ipv6_addr, ether_addr, inet_proto, inet_service, mark
 set flags |
 string: constant, dynamic, interval, timeout
 |timeout |
-time an element stays in the set, mandatory  if  set is added to from the packet path (ruleset).|
+time an element stays in the set, mandatory if set is added to from the packet path (ruleset).|
 string, decimal followed by unit. Units are: d, h, m, s
 |gc-interval |
 garbage collection interval, only available when timeout or flag timeout are
@@ -520,7 +520,7 @@ unsigned integer (64 bit)
 set policy |
 string: performance [default], memory
 |auto-merge |
-automatic  merge  of adjacent/overlapping set elements (only for  interval sets) |
+automatic merge of adjacent/overlapping set elements (only for interval sets) |
 |=================
 
 
@@ -573,7 +573,7 @@ Flowtables allow you to accelerate packet forwarding in software. Flowtables
 entries are represented through a tuple that is composed of the input interface,
 source and destination address, source and destination port; and layer 3/4
 protocols. Each entry also caches the destination interface and the gateway
-address - to update the destination link-layer address - to forward  packets.
+address - to update the destination link-layer address - to forward packets.
 The ttl and hoplimit fields are also decremented. Hence, flowtables provides an
 alternative path that allow packets to bypass the classic forwarding path.
 Flowtables reside in the ingress hook, that is located before the prerouting
@@ -581,7 +581,7 @@ hook. You can select what flows you want to offload through the flow offload
 expression from the forward chain. Flowtables are identified by their address
 family and their name. The address family must be one of ip, ip6, inet. The inet
 address family is a dummy family which is used to create hybrid IPv4/IPv6
-tables.  When no address family is specified, ip is used by default.
+tables. When no address family is specified, ip is used by default.
 
 The *priority* can be a signed integer or *filter* which stands for 0. Addition
 and substraction can be used to set relative priority eg. filter + 5 equals to
@@ -614,7 +614,7 @@ include::stateful-objects.txt[]
 EXPRESSIONS
 ------------
 Expressions represent values, either constants like network addresses, port
-numbers etc. or data gathered from the packet  during  ruleset  evaluation.
+numbers etc. or data gathered from the packet during ruleset evaluation.
 Expressions can be combined using binary, logical, relational and other types of
 expressions to form complex or relational (match) expressions. They are also
 used as arguments to certain types of operations, like NAT, packet marking etc.
@@ -648,8 +648,8 @@ cwr                           0x80
 DATA TYPES
 ----------
 
-Data  types  determine the size, parsing and representation of symbolic values
-and type compatibility of expressions. A number of global data types  exist, in
+Data types determine the size, parsing and representation of symbolic values
+and type compatibility of expressions. A number of global data types exist, in
 addition some expression types define further data types specific to the
 expression type. Most data types have a fixed size, some however may have a
 dynamic size, f.i. the string type. +
@@ -665,7 +665,7 @@ include::data-types.txt[]
 
 PRIMARY EXPRESSIONS
 -------------------
-The  lowest  order expression is a primary expression, representing either a
+The lowest order expression is a primary expression, representing either a
 constant or a single datum from a packet's payload, meta data or a stateful
 module.
 
@@ -683,10 +683,10 @@ Statements represent actions to be performed. They can alter control flow
 (return, jump to a different chain, accept or drop the packet) or can perform
 actions, such as logging, rejecting a packet, etc. +
 
-Statements  exist in two kinds. Terminal statements unconditionally terminate
+Statements exist in two kinds. Terminal statements unconditionally terminate
 evaluation of the current rule, non-terminal statements either only
 conditionally or never terminate evaluation of the current rule, in other words,
-they  are  passive from the ruleset evaluation perspective. There can be an
+they are passive from the ruleset evaluation perspective. There can be an
 arbitrary amount of non-terminal statements in a rule, but only a single
 terminal statement as the final statement.
 
@@ -699,13 +699,13 @@ These are some additional commands included in nft.
 MONITOR
 ~~~~~~~~
 The monitor command allows you to listen to Netlink events produced by the
-nf_tables  subsystem, related to creation and deletion of objects. When they
+nf_tables subsystem, related to creation and deletion of objects. When they
 occur, nft will print to stdout the monitored events in either XML, JSON or
 native nft format. +
 
 To filter events related to a concrete object, use one of the keywords 'tables', 'chains', 'sets', 'rules', 'elements', 'ruleset'. +
 
-To filter events related to a concrete action,  use  keyword  'new'  or 'destroy'.
+To filter events related to a concrete action, use keyword 'new' or 'destroy'.
 
 Hit ^C to finish the monitor operation.
 
@@ -736,7 +736,7 @@ Hit ^C to finish the monitor operation.
 
 ERROR REPORTING
 ---------------
-When an error is detected, nft shows the line(s) containing the  error, the
+When an error is detected, nft shows the line(s) containing the error, the
 position of the erroneous parts in the input stream and marks up the erroneous
 parts using carets (^). If the error results from the combination of two
 expressions or statements, the part imposing the constraints which are violated
@@ -781,13 +781,13 @@ There is an official wiki at: https://wiki.nftables.org
 
 AUTHORS
 -------
-nftables  was  written  by Patrick McHardy and Pablo Neira Ayuso, among many other contributors from the Netfilter community.
+nftables was written by Patrick McHardy and Pablo Neira Ayuso, among many other contributors from the Netfilter community.
 
 COPYRIGHT
 ---------
 Copyright © 2008-2014 Patrick McHardy <kaber@trash.net> Copyright © 2013-2018 Pablo Neira Ayuso <pablo@netfilter.org> +
 
-nftables is free software; you can redistribute it and/or modify it under  the
+nftables is free software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License version 2 as published by the Free
 Software Foundation. +
 

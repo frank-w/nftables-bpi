@@ -13,7 +13,7 @@ The verdict statement alters control flow in the ruleset and issues policy decis
 *continue*:: Continue ruleset evaluation with the next rule. FIXME
 *return*:: Return from the current chain and continue evaluation at the
  next rule in the last chain. If issued in a base chain, it is equivalent to *accept*.
-*jump* 'chain':: Continue evaluation at the first rule in 'chain'.  The current
+*jump* 'chain':: Continue evaluation at the first rule in 'chain'. The current
  position in the ruleset is pushed to a call stack and evaluation will continue
  there when the new chain is entirely evaluated of a *return* verdict is issued.
 *goto* 'chain':: Similar to *jump*, but the current position is not pushed to the
@@ -31,7 +31,7 @@ filter input iif eth0 drop
 
 PAYLOAD STATEMENT
 ~~~~~~~~~~~~~~~~~
-The  payload  statement alters packet content.  It can be used for example to
+The payload statement alters packet content. It can be used for example to
 set ip DSCP (differv) header field or ipv6 flow labels.
 
 .route some packets instead of bridging
@@ -71,7 +71,7 @@ packets, such as header fields, via the kernel log (where it can be read with
 dmesg(1) or read in the syslog). If the group number is specified, the Linux
 kernel will pass the packet to nfnetlink_log which will multicast the packet
 through a netlink socket to the specified multicast group. One or more userspace
-processes may subscribe to the group to  receive the packets, see
+processes may subscribe to the group to receive the packets, see
 libnetfilter_queue documentation for details. This is a non-terminating
 statement, so the rule evaluation continues after the packet is logged.
 
@@ -84,7 +84,7 @@ Log message prefix|
 quoted string
 |level|
 Syslog level of logging |
-string: emerg, alert,  crit,  err, warn  [default], notice, info, debug
+string: emerg, alert, crit, err, warn [default], notice, info, debug
 |group|
 NFLOG group to send messages to|
 unsigned integer (16 bit)
@@ -92,7 +92,7 @@ unsigned integer (16 bit)
 Length of packet payload to include in netlink message |
 unsigned integer (32 bit)
 |queue-threshold|
-Number  of packets to queue inside the kernel before sending them to userspace |
+Number of packets to queue inside the kernel before sending them to userspace |
 unsigned integer (32 bit)
 |==================================
 
@@ -154,7 +154,7 @@ icmpx_code
 |==================
 
 For a description of the different types and a list of supported keywords refer
-to DATA TYPES section above.  The common default reject value is
+to DATA TYPES section above. The common default reject value is
 *port-unreachable*. +
 
 Note that in bridge family, reject statement is only allowed in base chains
@@ -174,7 +174,7 @@ The conntrack statement can be used to set the conntrack mark and conntrack labe
 [verse]
 *ct* {mark | event | label | zone} set 'value'
 
-The  ct  statement  sets  meta data associated with a connection.  The zone id
+The ct statement sets meta data associated with a connection. The zone id
 has to be assigned before a conntrack lookup takes place, i.e. this has to be
 done in prerouting and possibly output (if locally generated packets need to be
 placed in a distinct zone), with a hook priority of -300.
@@ -258,7 +258,7 @@ LIMIT STATEMENT
 *limit* rate [over] 'byte_number' {bytes | kbytes | mbytes} / {second | minute | hour | day | week} [burst 'byte_number' bytes]
 
 A limit statement matches at a limited rate using a token bucket filter. A rule
-using this statement will match until this  limit is  reached. It can be used in
+using this statement will match until this limit is reached. It can be used in
 combination with the log statement to give limited logging. The over keyword,
 that is optional, makes it match over the specified rate.
 
@@ -289,11 +289,11 @@ NAT STATEMENTS
 The nat statements are only valid from nat chain types. +
 
 The *snat* and *masquerade* statements specify that the source address of the
-packet should be modified. While *snat* is only valid  in the postrouting and
+packet should be modified. While *snat* is only valid in the postrouting and
 input chains, *masquerade* makes sense only in postrouting. The dnat and
 redirect statements are only valid in the prerouting and output chains, they
-specify that the destination address of the packet should be modified. You  can
-use  non-base  chains which are called from base chains of nat chain type too.
+specify that the destination address of the packet should be modified. You can
+use non-base chains which are called from base chains of nat chain type too.
 All future packets in this connection will also be mangled, and rules should
 cease being examined.
 
@@ -301,7 +301,7 @@ The *masquerade* statement is a special form of snat which always uses the
 outgoing interface's IP address to translate to. It is particularly useful on
 gateways with dynamic (public) IP addresses.
 
-The *redirect* statement  is a special form of dnat which always translates the
+The *redirect* statement is a special form of dnat which always translates the
 destination address to the local host's one. It comes in handy if one only wants
 to alter the destination port of incoming traffic on different interfaces.
 
@@ -314,7 +314,7 @@ netfilter and therefore no reverse translation will take place.
 |==================
 |Expression| Description| Type
 |address|
-Specifies that the source/destination address of the packet should be  modified.
+Specifies that the source/destination address of the packet should be modified.
 You may specify a mapping to relate a list of tuples composed of arbitrary
 expression key with address value. |
 ipv4_addr, ipv6_addr, e.g. abcd::1234, or you can use a mapping, e.g. meta mark map { 10 : 192.168.1.2, 20 : 192.168.1.3 }
@@ -332,7 +332,7 @@ Gives a client the same source-/destination-address for each connection.
 |random|
 If used then port mapping will be randomized using a random seeded MD5 hash mix using source and destination address and destination port.
 |fully-random|
-If  used then port mapping is generated based on a 32-bit pseudo-random algorithm.
+If used then port mapping is generated based on a 32-bit pseudo-random algorithm.
 |=============================
 
 .Using NAT statements
@@ -359,8 +359,8 @@ add rule nat prerouting tcp dport 22 redirect to :2222
 TPROXY STATEMENT
 ~~~~~~~~~~~~~~~~
 Tproxy redirects the packet to a local socket without changing the packet header
-in any way.  If any of the arguments is missing the data of the incoming packet
-is used as parameter.  Tproxy matching requires another rule that ensures the
+in any way. If any of the arguments is missing the data of the incoming packet
+is used as parameter. Tproxy matching requires another rule that ensures the
 presence of transport protocol header is specified.
 
 [verse]
@@ -377,7 +377,7 @@ tproxy to : 'port'
 
 This syntax can be used in *inet* tables. The *ip/ip6* parameter defines the
 family the rule will match. The *address* parameter must be of this family.
-When only *port* is defined, the address family should not be specified.  In
+When only *port* is defined, the address family should not be specified. In
 this case the rule will match for both families.
 
 .tproxy attributes
@@ -417,7 +417,7 @@ table inet x {
 FLOW OFFLOAD STATEMENT
 ~~~~~~~~~~~~~~~~~~~~~~
 A flow offload statement allows us to select what flows you want to accelerate
-forwarding through layer 3 network stack bypass.  You have to specify the
+forwarding through layer 3 network stack bypass. You have to specify the
 flowtable name where you want to offload this flow.
 
 *flow offload* @flowtable
@@ -442,19 +442,19 @@ for details.
 Sets queue number, default is 0. |
 unsigned integer (16 bit)
 |queue_number_from |
-Sets  initial  queue in the range, if fanout is used. |
+Sets initial queue in the range, if fanout is used. |
 unsigned integer (16 bit)
 |queue_number_to |
-Sets closing queue in  the  range, if fanout is used. |
+Sets closing queue in the range, if fanout is used. |
 unsigned integer (16 bit)
 |=====================
 
 .queue statement flags
 [options="header"]
 |==================
-|Flag   | Description
+|Flag | Description
 |bypass |
-Let  packets go through if userspace application cannot back off. Before using
+Let packets go through if userspace application cannot back off. Before using
 this flag, read libnetfilter_queue documentation for performance tuning recommendations.
 |fanout |
 Distribute packets between several queues.
@@ -498,7 +498,7 @@ dup to ip daddr map { 192.168.7.1 : "eth0", 192.168.7.2 : "eth1" }
 FWD STATEMENT
 ~~~~~~~~~~~~~
 The fwd statement is used to redirect a raw packet to another interface. It is
-only available in the netdev family ingress  hook.  It is similar to the dup
+only available in the netdev family ingress hook. It is similar to the dup
 statement except that no copy is made.
 
 *fwd* to 'device'
@@ -507,8 +507,8 @@ SET STATEMENT
 ~~~~~~~~~~~~~
 The set statement is used to dynamically add or update elements in a set from
 the packet path. The set setname must already exist in the given table and must
-have been created with the dynamic flag.  Furthermore, these sets must specify
-both a maximum set size  (to prevent memory exhaustion) and a timeout (so that
+have been created with the dynamic flag. Furthermore, these sets must specify
+both a maximum set size (to prevent memory exhaustion) and a timeout (so that
 number of entries in set will not grow indefinitely). The set statement can be
 used to e.g. create dynamic blacklists.
 

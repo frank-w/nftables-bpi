@@ -136,7 +136,7 @@ integer (16 bit)
 ID of echo request/response |
 integer (16 bit)
 |sequence|
-sequence   number   of   echo request/response|
+sequence number of echo request/response|
 integer (16 bit)
 |gateway|
 gateway of redirects|
@@ -543,7 +543,7 @@ Conntrack expressions refer to meta data of the connection tracking entry associ
 
 There are three types of conntrack expressions. Some conntrack expressions
 require the flow direction before the conntrack key, others must be used
-directly because they are direction agnostic.  The *packets*, *bytes* and
+directly because they are direction agnostic. The *packets*, *bytes* and
 *avgpkt* keywords can be used with or without a direction. If the direction is
 omitted, the sum of the original and the reply direction is returned. The same
 is true for the *zone*, if a direction is given, the zone is only matched if the
@@ -577,7 +577,7 @@ time
 Helper associated with the connection|
 string
 |label|
-Connection tracking label  bit  or symbolic  name  defined in connlabel.conf in the nftables include path|
+Connection tracking label bit or symbolic name defined in connlabel.conf in the nftables include path|
 ct_label
 |l3proto|
 Layer 3 protocol of the connection|
@@ -595,7 +595,7 @@ inet_proto
 Layer 4 protocol source for the given direction|
 integer (16 bit)
 |proto-dst|
-Layer  4  protocol destination for the given direction |
+Layer 4 protocol destination for the given direction |
 integer (16 bit)
 |packets|
 packet count seen in the given direction or sum of original and reply |
@@ -604,7 +604,7 @@ integer (64 bit)
 byte count seen, see description for *packets* keyword |
 integer (64 bit)
 |avgpkt|
-average  bytes per packet, see description for *packets* keyword |
+average bytes per packet, see description for *packets* keyword |
 integer (64 bit)
 |zone|
 conntrack zone |

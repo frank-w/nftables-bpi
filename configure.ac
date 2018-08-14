@@ -24,12 +24,6 @@ AC_ARG_ENABLE([man-doc],
 	      [enable_man_doc=yes]), [enable_man_doc=yes])
 AM_CONDITIONAL([BUILD_MAN], [test "x$enable_man_doc" == "xyes" ])
 
-AC_ARG_ENABLE([pdf-doc],
-	      AS_HELP_STRING([--enable-pdf-doc], [Enable PDF documentation]),
-	      AS_IF([test "x$enable_pdf_doc" = "xno"], [enable_pdf_doc=no],
-	      [enable_pdf_doc=yes]), [enable_pdf_doc=no])
-AM_CONDITIONAL([BUILD_PDF], [test "x$enable_pdf_doc" == "xyes" ])
-
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_MKDIR_P
@@ -56,15 +50,6 @@ AM_PROG_LIBTOOL
 
 AC_CHECK_PROG(A2X, [a2x], [a2x])
 AM_CONDITIONAL([BUILD_MAN], [test -n "$A2X"])
-
-AM_COND_IF([BUILD_PDF], [
-	AC_CHECK_PROG(DBLATEX, [dblatex], [found], [no])
-	AS_IF([test "$DBLATEX" == "no"],
-	      [AC_MSG_ERROR([dblatex not found])])
-	AS_IF([test -z "$A2X"],
-	      [AC_MSG_ERROR([a2x not found])])
-	[need_a2x=yes]
-])
 
 AS_IF([test "$need_a2x" = "yes"], [
        AC_CHECK_PROG(A2X, [a2x], [found], [no])
@@ -156,7 +141,6 @@ nft configuration:
   enable debugging symbols:	${with_debug}
   use mini-gmp:			${with_mini_gmp}
   enable man page:              ${enable_man_doc}
-  enable pdf documentation:	${enable_pdf_doc}
   libxtables support:		${with_libxtables}
   json output support:          ${with_json}"
 

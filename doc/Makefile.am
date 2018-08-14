@@ -2,10 +2,6 @@ if BUILD_MAN
 man_MANS = nft.8 libnftables-json.5 libnftables.3
 endif
 
-if BUILD_PDF
-pdf_DATA = nft.pdf libnftables-json.pdf libnftables.pdf
-endif
-
 ASCIIDOC_MAIN = nft.txt
 ASCIIDOC_INCLUDES = \
        data-types.txt \
@@ -15,16 +11,8 @@ ASCIIDOC_INCLUDES = \
        statements.txt
 ASCIIDOCS = ${ASCIIDOC_MAIN} ${ASCIIDOC_INCLUDES}
 
-pdfdir=${docdir}/pdf
-
 .txt.8: ${ASCIIDOCS}
 	${AM_V_GEN}${A2X} --doctype manpage --format manpage -D ${builddir} $<
-
-.txt.pdf: ${ASCIIDOCS}
-	${AM_V_GEN}${A2X} --doctype manpage --format pdf -D ${builddir} $<
-
-.adoc.pdf:
-	a2x --doctype manpage --format pdf -D ${builddir} $<
 
 .adoc.3:
 	a2x --doctype manpage --format manpage -D ${builddir} $<
@@ -35,7 +23,7 @@ pdfdir=${docdir}/pdf
 EXTRA_DIST = ${ASCIIDOCS} libnftables-json.adoc libnftables.adoc
 
 CLEANFILES = \
-	nft.pdf nft.8 \
-	libnftables-json.pdf libnftables-json.5 \
-	libnftables.pdf libnftables.3 \
+	nft.8 \
+	libnftables-json.5 \
+	libnftables.3 \
 	*~

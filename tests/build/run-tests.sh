@@ -10,7 +10,7 @@ tarball="nftables-0.8.1.tar.bz2"
 dir=../..
 cmd=./configure
 argument=( --without-cli --enable-debug --with-mini-gmp --enable-man-doc
-	    --enable-pdf-doc --with-xtables --with-json)
+	    --with-xtables --with-json)
 ok=0
 failed=0
 

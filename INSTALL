@@ -26,8 +26,6 @@ Installation instructions for nftables
 
   - optional: docbook2x: required for building man-page
 
-  - optional: docbook-utils: required for building PDF man-page
-
  Configuring and compiling
  =========================
 

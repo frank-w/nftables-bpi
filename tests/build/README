@@ -6,7 +6,6 @@ In this testsuite, automated testing is done for following nft compile options:
   enable debugging symbols
   use mini-gmp
   enable man page
-  enable pdf documentation
   libxtables support
 
 Run the test script 'run-tests.sh' as root user: ./run-tests.sh

@@ -72,13 +72,16 @@ kernel_cleanup() {
 	nft_dup_ipv4 nft_dup_ipv6 nft_dup nft_nat \
 	nft_masq_ipv4 nft_masq_ipv6 nft_masq \
 	nft_exthdr nft_payload nft_cmp nft_range \
-	nft_quota nft_queue nft_numgen \
+	nft_quota nft_queue nft_numgen nft_osf nft_socket nft_tproxy \
 	nft_meta nft_meta_bridge nft_counter nft_log nft_limit \
+	nft_fib nft_fib_ipv4 nft_fib_ipv6 \
 	nft_hash nft_ct nft_compat nft_rt nft_objref \
 	nft_set_hash nft_set_rbtree nft_set_bitmap \
 	nft_chain_nat_ipv4 nft_chain_nat_ipv6 \
-	nf_tables_inet nf_tables_bridge nf_tables_arp \
-	nf_tables_ipv4 nf_tables_ipv6 nf_tables \
+	nft_chain_route_ipv4 nft_chain_route_ipv6 \
+	nft_dup_netdev nft_fwd_netdev \
+	nft_reject nft_reject_inet \
+	nf_tables_set nf_tables \
 	nf_flow_table nf_flow_table_ipv4 nf_flow_tables_ipv6 \
 	nf_flow_table_inet nft_flow_offload
 }

@@ -29,6 +29,7 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_arp.h>
 #include <linux/netfilter_ipv4.h>
+#include <net/if.h>
 #include <linux/netfilter_bridge.h>
 
 void handle_free(struct handle *h)

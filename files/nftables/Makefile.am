@@ -13,4 +13,4 @@ dist_pkgsysconf_DATA =	all-in-one.nft		\
 			ipv6-raw.nft
 
 install-data-hook:
-	${SED} -i 's|@sbindir[@]|${sbindir}/|g' ${DESTDIR}${pkgsysconfdir}/*
+	${SED} -i 's|@sbindir[@]|${sbindir}/|g' ${DESTDIR}${pkgsysconfdir}/*.nft

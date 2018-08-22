@@ -1,1 +1,2 @@
-SUBDIRS = nftables
+SUBDIRS =	nftables \
+		osf

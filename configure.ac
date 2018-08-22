@@ -130,6 +130,7 @@ AC_CONFIG_FILES([					\
 		include/linux/netfilter_ipv6/Makefile	\
 		files/Makefile				\
 		files/nftables/Makefile			\
+		files/osf/Makefile			\
 		doc/Makefile				\
 		py/Makefile				\
 		])

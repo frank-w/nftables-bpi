@@ -1323,6 +1323,7 @@ static int do_add_set(struct netlink_ctx *ctx, const struct cmd *cmd,
 static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 {
 	uint32_t flags = excl ? NLM_F_EXCL : 0;
+	int err;
 
 	if (ctx->octx->echo) {
 		int ret;
@@ -1341,7 +1342,10 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_CHAIN:
 		return netlink_add_chain_batch(ctx, cmd, flags);
 	case CMD_OBJ_RULE:
-		return netlink_add_rule_batch(ctx, cmd, flags | NLM_F_APPEND);
+		err = netlink_add_rule_batch(ctx, cmd, flags | NLM_F_APPEND);
+		if (osf_init)
+			nfnl_osf_load_fingerprints(ctx, 0);
+		return err;
 	case CMD_OBJ_SET:
 		return do_add_set(ctx, cmd, flags);
 	case CMD_OBJ_SETELEM:

@@ -528,8 +528,8 @@ int nft_lex(void *, void *, void *);
 %destructor { handle_free(&$$); } table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec index_spec
 %type <handle>			set_spec setid_spec set_identifier flowtable_identifier obj_spec objid_spec obj_identifier
 %destructor { handle_free(&$$); } set_spec setid_spec set_identifier obj_spec objid_spec obj_identifier
-%type <val>			family_spec family_spec_explicit chain_policy prio_spec
-%type <prio_spec>		extended_prio_spec
+%type <val>			family_spec family_spec_explicit chain_policy int_num
+%type <prio_spec>		extended_prio_spec prio_spec
 
 %type <string>			dev_spec quota_unit
 %destructor { xfree($$); }	dev_spec quota_unit
@@ -1647,7 +1647,7 @@ flowtable_block_alloc	:	/* empty */
 flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 			|	flowtable_block	common_block
 			|	flowtable_block	stmt_separator
-			|	flowtable_block	HOOK		STRING	PRIORITY	extended_prio_spec	stmt_separator
+			|	flowtable_block	HOOK		STRING	prio_spec	stmt_separator
 			{
 				$$->hookstr	= chain_hookname_lookup($3);
 				if ($$->hookstr == NULL) {
@@ -1658,7 +1658,7 @@ flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 				}
 				xfree($3);
 
-				$$->priority = $5;
+				$$->priority = $4;
 			}
 			|	flowtable_block	DEVICES		'='	flowtable_expr	stmt_separator
 			{
@@ -1780,7 +1780,7 @@ type_identifier		:	STRING	{ $$ = $1; }
 			|	CLASSID { $$ = xstrdup("classid"); }
 			;
 
-hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	PRIORITY	extended_prio_spec
+hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	prio_spec
 			{
 				const char *chain_type = chain_type_name_lookup($2);
 
@@ -1803,12 +1803,19 @@ hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	PRIORITY	extended_prio_spec
 				xfree($4);
 
 				$<chain>0->dev		= $5;
-				$<chain>0->priority	= $7;
+				$<chain>0->priority	= $6;
 				$<chain>0->flags	|= CHAIN_F_BASECHAIN;
 			}
 			;
 
-extended_prio_spec	:	prio_spec
+prio_spec		:	PRIORITY extended_prio_spec
+			{
+				$$ = $2;
+				$$.loc = @$;
+			}
+			;
+
+extended_prio_spec	:	int_num
 			{
 				struct prio_spec spec = {0};
 				spec.num = $1;
@@ -1836,7 +1843,7 @@ extended_prio_spec	:	prio_spec
 			}
 			;
 
-prio_spec		:	NUM			{ $$ = $1; }
+int_num		:	NUM			{ $$ = $1; }
 			|	DASH	NUM		{ $$ = -$2; }
 			;
 

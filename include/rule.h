@@ -172,6 +172,7 @@ enum chain_flags {
 struct prio_spec {
 	const char  *str;
 	int          num;
+	struct location loc;
 };
 
 /**

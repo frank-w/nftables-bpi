@@ -3028,8 +3028,9 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 		return chain_error(ctx, ft, "invalid hook %s", ft->hookstr);
 
 	if (!evaluate_priority(&ft->priority, NFPROTO_NETDEV, ft->hooknum))
-		return chain_error(ctx, ft, "'%s' is invalid priority.",
-				   ft->priority.str);
+		return __stmt_binary_error(ctx, &ft->priority.loc, NULL,
+					   "'%s' is invalid priority.",
+					   ft->priority.str);
 
 	if (!ft->dev_expr)
 		return chain_error(ctx, ft, "Unbound flowtable not allowed (must specify devices)");
@@ -3186,9 +3187,9 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 
 		if (!evaluate_priority(&chain->priority, chain->handle.family,
 				       chain->hooknum))
-			return chain_error(ctx, chain,
-					   "'%s' is invalid priority in this context.",
-					   chain->priority.str);
+			return __stmt_binary_error(ctx, &chain->priority.loc, NULL,
+						   "'%s' is invalid priority in this context.",
+						   chain->priority.str);
 	}
 
 	list_for_each_entry(rule, &chain->rules, list) {

@@ -1,0 +1,97 @@
+#!/bin/bash
+
+set -e
+
+format_offset () {
+	i=$1
+	if ((i == 0))
+	then
+		echo ""
+	elif ((i > 0))
+	then
+		echo "+$i"
+	else
+		echo "$i"
+	fi
+}
+
+chainname () {
+	hook=$1
+	prioname=$2
+	priooffset=$3
+
+	echo "${hook}${prioname}${priooffset}" | tr "\-+" "mp"
+}
+
+gen_chains () {
+	family=$1
+	hook=$2
+	prioname=$3
+
+	for i in -11 -10 0 10 11
+	do
+		offset=`format_offset $i`
+		$NFT add chain $family x `chainname $hook $prioname $offset` "{ type filter hook $hook priority $prioname $offset; }"
+	done
+}
+
+for family in ip ip6 inet
+do
+	$NFT add table $family x
+	for hook in prerouting input forward output postrouting
+	do
+		for prioname in raw mangle filter security
+		do
+			gen_chains $family $hook $prioname
+		done
+	done
+
+	hook=prerouting
+		prioname=dstnat
+			gen_chains $family $hook $prioname
+
+	hook=postrouting
+		prioname=srcnat
+			gen_chains $family $hook $prioname
+done
+
+
+family=arp
+	$NFT add table $family x
+	for hook in input output
+	do
+		prioname=filter
+			gen_chains $family $hook $prioname
+	done
+
+
+family=netdev
+	$NFT add table $family x
+	hook=ingress
+		prioname=filter
+			for i in -11 -10 0 10 11
+			do
+				offset=`format_offset $i`
+				$NFT add chain $family x `chainname $hook $prioname $offset` "{ type filter hook $hook device lo priority $prioname $offset; }"
+			done
+
+family=bridge
+	$NFT add table $family x
+	for hook in prerouting input forward output postrouting
+	do
+		prioname=filter
+			gen_chains $family $hook $prioname
+	done
+
+	hook=prerouting
+		prioname=dstnat
+			gen_chains $family $hook $prioname
+
+	hook=output
+		prioname=out
+			gen_chains $family $hook $prioname
+
+	hook=postrouting
+		prioname=srcnat
+			gen_chains $family $hook $prioname
+

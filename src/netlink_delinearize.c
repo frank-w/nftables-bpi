@@ -1312,23 +1312,27 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 		expr_data = netlink_get_register(ctx, loc, sreg_data);
 	}
 
-	if (dstmt != NULL) {
-		stmt = meter_stmt_alloc(loc);
-		stmt->meter.set  = set_ref_expr_alloc(loc, set);
-		stmt->meter.key  = expr;
-		stmt->meter.stmt = dstmt;
-		stmt->meter.size = set->desc.size;
-	} else if (expr_data != NULL) {
+	if (expr_data != NULL) {
 		stmt = map_stmt_alloc(loc);
 		stmt->map.set	= set_ref_expr_alloc(loc, set);
 		stmt->map.key	= expr;
 		stmt->map.data	= expr_data;
+		stmt->map.stmt	= dstmt;
 		stmt->map.op	= nftnl_expr_get_u32(nle, NFTNL_EXPR_DYNSET_OP);
 	} else {
-		stmt = set_stmt_alloc(loc);
-		stmt->set.set   = set_ref_expr_alloc(loc, set);
-		stmt->set.op    = nftnl_expr_get_u32(nle, NFTNL_EXPR_DYNSET_OP);
-		stmt->set.key   = expr;
+		if (dstmt != NULL && set->flags & NFT_SET_ANONYMOUS) {
+			stmt = meter_stmt_alloc(loc);
+			stmt->meter.set  = set_ref_expr_alloc(loc, set);
+			stmt->meter.key  = expr;
+			stmt->meter.stmt = dstmt;
+			stmt->meter.size = set->desc.size;
+		} else {
+			stmt = set_stmt_alloc(loc);
+			stmt->set.set   = set_ref_expr_alloc(loc, set);
+			stmt->set.op    = nftnl_expr_get_u32(nle, NFTNL_EXPR_DYNSET_OP);
+			stmt->set.key   = expr;
+			stmt->set.stmt	= dstmt;
+		}
 	}
 
 	ctx->stmt = stmt;

@@ -336,10 +336,11 @@ static void set_print_declaration(const struct set *set,
 	const char *type;
 	uint32_t flags;
 
-	if (set->flags & (NFT_SET_MAP | NFT_SET_OBJECT))
-		type = "map";
-	else if (set->flags & NFT_SET_EVAL)
+	if ((set->flags & (NFT_SET_EVAL | NFT_SET_ANONYMOUS)) ==
+				(NFT_SET_EVAL | NFT_SET_ANONYMOUS))
 		type = "meter";
+	else if (set->flags & (NFT_SET_MAP | NFT_SET_OBJECT))
+		type = "map";
 	else
 		type = "set";
 

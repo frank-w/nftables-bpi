@@ -561,8 +561,8 @@ int nft_lex(void *, void *, void *);
 %destructor { stmt_list_free($$); xfree($$); } stmt_list
 %type <stmt>			stmt match_stmt verdict_stmt
 %destructor { stmt_free($$); }	stmt match_stmt verdict_stmt
-%type <stmt>			counter_stmt counter_stmt_alloc
-%destructor { stmt_free($$); }	counter_stmt counter_stmt_alloc
+%type <stmt>			counter_stmt counter_stmt_alloc stateful_stmt
+%destructor { stmt_free($$); }	counter_stmt counter_stmt_alloc stateful_stmt
 %type <stmt>			payload_stmt
 %destructor { stmt_free($$); }	payload_stmt
 %type <stmt>			ct_stmt
@@ -2112,16 +2112,19 @@ stmt_list		:	stmt
 			}
 			;
 
+stateful_stmt		:	counter_stmt
+			|	limit_stmt
+			|	quota_stmt
+			|	connlimit_stmt
+			;
+
 stmt			:	verdict_stmt
 			|	match_stmt
 			|	meter_stmt
-			|	connlimit_stmt
-			|	counter_stmt
 			|	payload_stmt
+			|	stateful_stmt
 			|	meta_stmt
 			|	log_stmt
-			|	limit_stmt
-			|	quota_stmt
 			|	reject_stmt
 			|	nat_stmt
 			|	tproxy_stmt
@@ -2862,6 +2865,14 @@ set_stmt		:	SET	set_stmt_op	set_elem_expr_stmt	symbol_expr
 				$$->set.key = $4;
 				$$->set.set = $2;
 			}
+			|	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	stateful_stmt	'}'
+			{
+				$$ = set_stmt_alloc(&@$);
+				$$->set.op  = $1;
+				$$->set.key = $4;
+				$$->set.set = $2;
+				$$->set.stmt = $5;
+			}
 			;
 
 set_stmt_op		:	ADD	{ $$ = NFT_DYNSET_OP_ADD; }
@@ -2874,6 +2885,15 @@ map_stmt		:	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	COLON	set_elem_expr_s
 				$$->map.op  = $1;
 				$$->map.key = $4;
 				$$->map.data = $6;
+				$$->map.set = $2;
+			}
+			|	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	stateful_stmt COLON	set_elem_expr_stmt	'}'
+			{
+				$$ = map_stmt_alloc(&@$);
+				$$->map.op  = $1;
+				$$->map.key = $4;
+				$$->map.data = $7;
+				$$->map.stmt = $5;
 				$$->map.set = $2;
 			}
 			;

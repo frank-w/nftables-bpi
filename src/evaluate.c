@@ -2708,6 +2708,13 @@ static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 	if (stmt->set.key->comment != NULL)
 		return expr_error(ctx->msgs, stmt->set.key,
 				  "Key expression comments are not supported");
+	if (stmt->set.stmt) {
+		if (stmt_evaluate(ctx, stmt->set.stmt) < 0)
+			return -1;
+		if (!(stmt->set.stmt->flags & STMT_F_STATEFUL))
+			return stmt_binary_error(ctx, stmt->set.stmt, stmt,
+						 "meter statement must be stateful");
+	}
 
 	return 0;
 }
@@ -2739,6 +2746,13 @@ static int stmt_evaluate_map(struct eval_ctx *ctx, struct stmt *stmt)
 	if (stmt->map.data->comment != NULL)
 		return expr_error(ctx->msgs, stmt->map.data,
 				  "Data expression comments are not supported");
+	if (stmt->map.stmt) {
+		if (stmt_evaluate(ctx, stmt->map.stmt) < 0)
+			return -1;
+		if (!(stmt->map.stmt->flags & STMT_F_STATEFUL))
+			return stmt_binary_error(ctx, stmt->map.stmt, stmt,
+						 "meter statement must be stateful");
+	}
 
 	return 0;
 }

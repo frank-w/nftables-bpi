@@ -1269,6 +1269,10 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set.name);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, set->handle.set_id);
 	nftnl_rule_add_expr(ctx->nlr, nle);
+
+	if (stmt->set.stmt)
+		nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
+			       netlink_gen_stmt_stateful(ctx, stmt->set.stmt), 0);
 }
 
 static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
@@ -1295,6 +1299,10 @@ static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_OP, stmt->map.op);
 	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set.name);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, set->handle.set_id);
+
+	if (stmt->map.stmt)
+		nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
+			       netlink_gen_stmt_stateful(ctx, stmt->map.stmt), 0);
 
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }

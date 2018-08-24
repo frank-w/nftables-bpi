@@ -630,6 +630,12 @@ static void set_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	expr_print(stmt->set.set, octx);
 	nft_print(octx, " { ");
 	expr_print(stmt->set.key, octx);
+	if (stmt->set.stmt) {
+		nft_print(octx, " ");
+		octx->stateless++;
+		stmt_print(stmt->set.stmt, octx);
+		octx->stateless--;
+	}
 	nft_print(octx, " }");
 }
 
@@ -658,6 +664,12 @@ static void map_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	expr_print(stmt->map.set, octx);
 	nft_print(octx, " { ");
 	expr_print(stmt->map.key, octx);
+	if (stmt->map.stmt) {
+		nft_print(octx, " ");
+		octx->stateless++;
+		stmt_print(stmt->map.stmt, octx);
+		octx->stateless--;
+	}
 	nft_print(octx, " : ");
 	expr_print(stmt->map.data, octx);
 	nft_print(octx, " }");

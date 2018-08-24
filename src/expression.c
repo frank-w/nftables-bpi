@@ -1045,13 +1045,12 @@ static void set_elem_expr_print(const struct expr *expr,
 		nft_print(octx, " expires ");
 		time_print(expr->expiration, octx);
 	}
-	if (expr->comment)
-		nft_print(octx, " comment \"%s\"", expr->comment);
-
 	if (expr->stmt) {
-		nft_print(octx, " : ");
+		nft_print(octx, " ");
 		stmt_print(expr->stmt, octx);
 	}
+	if (expr->comment)
+		nft_print(octx, " comment \"%s\"", expr->comment);
 }
 
 static void set_elem_expr_destroy(struct expr *expr)

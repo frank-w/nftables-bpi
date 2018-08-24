@@ -3119,32 +3119,32 @@ osf_expr		:	OSF	NAME
 			;
 
 shift_expr		:	primary_expr
-			|	shift_expr		LSHIFT		primary_expr
+			|	shift_expr		LSHIFT		primary_rhs_expr
 			{
 				$$ = binop_expr_alloc(&@$, OP_LSHIFT, $1, $3);
 			}
-			|	shift_expr		RSHIFT		primary_expr
+			|	shift_expr		RSHIFT		primary_rhs_expr
 			{
 				$$ = binop_expr_alloc(&@$, OP_RSHIFT, $1, $3);
 			}
 			;
 
 and_expr		:	shift_expr
-			|	and_expr		AMPERSAND	shift_expr
+			|	and_expr		AMPERSAND	shift_rhs_expr
 			{
 				$$ = binop_expr_alloc(&@$, OP_AND, $1, $3);
 			}
 			;
 
 exclusive_or_expr	:	and_expr
-			|	exclusive_or_expr	CARET		and_expr
+			|	exclusive_or_expr	CARET		and_rhs_expr
 			{
 				$$ = binop_expr_alloc(&@$, OP_XOR, $1, $3);
 			}
 			;
 
 inclusive_or_expr	:	exclusive_or_expr
-			|	inclusive_or_expr	'|'		exclusive_or_expr
+			|	inclusive_or_expr	'|'		exclusive_or_rhs_expr
 			{
 				$$ = binop_expr_alloc(&@$, OP_OR, $1, $3);
 			}
@@ -3473,10 +3473,6 @@ relational_expr		:	expr	/* implicit */	rhs_expr
 			{
 				$$ = relational_expr_alloc(&@2, $2, $1, $3);
 			}
-			|	expr	relational_op	'(' rhs_expr ')'
-			{
-				$$ = relational_expr_alloc(&@2, $2, $1, $4);
-			}
 			;
 
 list_rhs_expr		:	basic_rhs_expr		COMMA		basic_rhs_expr
@@ -3660,6 +3656,7 @@ primary_rhs_expr	:	symbol_expr		{ $$ = $1; }
 							 BYTEORDER_HOST_ENDIAN,
 							 sizeof(data) * BITS_PER_BYTE, &data);
 			}
+			|	'('	basic_rhs_expr	')'	{ $$ = $2; }
 			;
 
 relational_op		:	EQ		{ $$ = OP_EQ; }

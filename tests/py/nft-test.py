@@ -134,32 +134,29 @@ def print_info(reason, filename=None, lineno=None):
 def color_differences(rule, other, color):
     rlen = len(rule)
     olen = len(other)
+    out = ""
 
     # find equal part at start
     for i in range(rlen):
         if i >= olen or rule[i] != other[i]:
             break
-    start_idx = i
+    if i > 0:
+        out += rule[:i]
+        rule = rule[i:]
+        other = other[i:]
+        rlen = len(rule)
+        olen = len(other)
 
     # find equal part at end
-    found = False
-    for i in range(-1, start_idx -rlen - 1, -1):
-        if i < start_idx -olen:
+    for i in range(1, rlen + 1):
+        if i > olen or rule[rlen - i] != other[olen - i]:
+            i -= 1
             break
-        if rule[i] != other[i]:
-            found = True
-            break
-    end_idx = i
-    if found:
-        end_idx += 1
+    if rlen > i:
+        out += color + rule[:rlen - i] + Colors.ENDC
+        rule = rule[rlen - i:]
 
-    out = ""
-    if start_idx > 0:
-        out += rule[:start_idx]
-    out += color + rule[start_idx:end_idx] + Colors.ENDC
-    if end_idx < 0:
-        out += rule[end_idx:]
-
+    out += rule
     return out
 
 def print_differences_warning(filename, lineno, rule1, rule2, cmd):

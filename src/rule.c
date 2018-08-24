@@ -427,6 +427,11 @@ static void do_set_print(const struct set *set, struct print_fmt_options *opts,
 {
 	set_print_declaration(set, opts, octx);
 
+	if (set->flags & NFT_SET_EVAL && octx->stateless) {
+		nft_print(octx, "%s}%s", opts->tab, opts->nl);
+		return;
+	}
+
 	if (set->init != NULL && set->init->size > 0) {
 		nft_print(octx, "%s%selements = ", opts->tab, opts->tab);
 		expr_print(set->init, octx);

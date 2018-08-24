@@ -193,7 +193,8 @@ extern struct stmt *set_stmt_alloc(const struct location *loc);
 
 struct map_stmt {
 	struct expr		*set;
-	struct expr		*map;
+	struct expr		*key;
+	struct expr		*data;
 	enum nft_dynset_ops	op;
 };
 

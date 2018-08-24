@@ -657,15 +657,16 @@ static void map_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	nft_print(octx, "%s ", set_stmt_op_names[stmt->map.op]);
 	expr_print(stmt->map.set, octx);
 	nft_print(octx, " { ");
-	expr_print(stmt->map.map->map->key, octx);
+	expr_print(stmt->map.key, octx);
 	nft_print(octx, " : ");
-	expr_print(stmt->map.map->mappings, octx);
+	expr_print(stmt->map.data, octx);
 	nft_print(octx, " }");
 }
 
 static void map_stmt_destroy(struct stmt *stmt)
 {
-	expr_free(stmt->map.map);
+	expr_free(stmt->map.key);
+	expr_free(stmt->map.data);
 	expr_free(stmt->map.set);
 }
 

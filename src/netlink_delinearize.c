@@ -1321,7 +1321,8 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 	} else if (expr_data != NULL) {
 		stmt = map_stmt_alloc(loc);
 		stmt->map.set	= set_ref_expr_alloc(loc, set);
-		stmt->map.map	= map_expr_alloc(loc, expr, expr_data);
+		stmt->map.key	= expr;
+		stmt->map.data	= expr_data;
 		stmt->map.op	= nftnl_expr_get_u32(nle, NFTNL_EXPR_DYNSET_OP);
 	} else {
 		stmt = set_stmt_alloc(loc);
@@ -2507,6 +2508,10 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 			break;
 		case STMT_SET:
 			expr_postprocess(&rctx, &stmt->set.key);
+			break;
+		case STMT_MAP:
+			expr_postprocess(&rctx, &stmt->map.key);
+			expr_postprocess(&rctx, &stmt->map.data);
 			break;
 		case STMT_DUP:
 			if (stmt->dup.to != NULL)

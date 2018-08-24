@@ -2714,8 +2714,31 @@ static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 
 static int stmt_evaluate_map(struct eval_ctx *ctx, struct stmt *stmt)
 {
-	if (expr_evaluate(ctx, &stmt->map.map->map) < 0)
+	expr_set_context(&ctx->ectx, NULL, 0);
+	if (expr_evaluate(ctx, &stmt->map.set) < 0)
 		return -1;
+	if (stmt->map.set->ops->type != EXPR_SET_REF)
+		return expr_error(ctx->msgs, stmt->map.set,
+				  "Expression does not refer to a set");
+
+	if (stmt_evaluate_arg(ctx, stmt,
+			      stmt->map.set->set->key->dtype,
+			      stmt->map.set->set->key->len,
+			      stmt->map.set->set->key->byteorder,
+			      &stmt->map.key) < 0)
+		return -1;
+	if (expr_is_constant(stmt->map.key))
+		return expr_error(ctx->msgs, stmt->map.key,
+				  "Key expression can not be constant");
+	if (stmt->map.key->comment != NULL)
+		return expr_error(ctx->msgs, stmt->map.key,
+				  "Key expression comments are not supported");
+	if (expr_is_constant(stmt->map.data))
+		return expr_error(ctx->msgs, stmt->map.data,
+				  "Data expression can not be constant");
+	if (stmt->map.data->comment != NULL)
+		return expr_error(ctx->msgs, stmt->map.data,
+				  "Data expression comments are not supported");
 
 	return 0;
 }

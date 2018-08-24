@@ -1274,26 +1274,27 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
 				 const struct stmt *stmt)
 {
-	struct nftnl_expr *nle;
-	enum nft_registers sreg_key;
+	struct set *set = stmt->map.set->set;
 	enum nft_registers sreg_data;
+	enum nft_registers sreg_key;
+	struct nftnl_expr *nle;
 
-	sreg_key = get_register(ctx, stmt->map.map->map->key);
-	netlink_gen_expr(ctx, stmt->map.map->map->key, sreg_key);
+	sreg_key = get_register(ctx, stmt->map.key);
+	netlink_gen_expr(ctx, stmt->map.key, sreg_key);
 
-	sreg_data = get_register(ctx, stmt->map.map->mappings);
-	netlink_gen_expr(ctx, stmt->map.map->mappings, sreg_data);
+	sreg_data = get_register(ctx, stmt->map.data);
+	netlink_gen_expr(ctx, stmt->map.data, sreg_data);
 
-	release_register(ctx, stmt->map.map->map->key);
-	release_register(ctx, stmt->map.map->mappings);
+	release_register(ctx, stmt->map.key);
+	release_register(ctx, stmt->map.data);
 
 	nle = alloc_nft_expr("dynset");
 	netlink_put_register(nle, NFTNL_EXPR_DYNSET_SREG_KEY, sreg_key);
 	netlink_put_register(nle, NFTNL_EXPR_DYNSET_SREG_DATA, sreg_data);
 
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_OP, stmt->map.op);
-	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, stmt->map.set->identifier);
-	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, stmt->map.set->set->handle.set_id);
+	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set.name);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, set->handle.set_id);
 
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }

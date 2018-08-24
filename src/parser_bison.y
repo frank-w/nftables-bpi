@@ -2872,7 +2872,8 @@ map_stmt		:	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	COLON	set_elem_expr_s
 			{
 				$$ = map_stmt_alloc(&@$);
 				$$->map.op  = $1;
-				$$->map.map = map_expr_alloc(&@$, $4, $6);
+				$$->map.key = $4;
+				$$->map.data = $6;
 				$$->map.set = $2;
 			}
 			;

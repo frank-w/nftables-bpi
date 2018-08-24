@@ -119,6 +119,11 @@ ICMP HEADER EXPRESSION
 [verse]
 *icmp* ['ICMP' 'header' 'field']
 
+This expression refers to ICMP header fields. When using it in *inet*,
+*bridge* or *netdev* families, it will cause an implicit dependency on IPv4 to
+be created. To match on unusual cases like ICMP over IPv6, one has to add an
+explicit *meta nftproto ipv6* match to the rule.
+
 .ICMP header expression
 [options="header"]
 |==================
@@ -198,6 +203,11 @@ ICMPV6 HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
 *icmpv6* ['ICMPv6' 'header' 'field']
+
+This expression refers to ICMPv6 header fields. When using it in *inet*,
+*bridge* or *netdev* families, it will cause an implicit dependency on IPv6 to
+be created. To match on unusual cases like ICMPv6 over IPv4, one has to add an
+explicit *meta nftproto ipv4* match to the rule.
 
 .ICMPv6 header expression
 [options="header"]

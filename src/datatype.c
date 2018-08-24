@@ -614,11 +614,42 @@ const struct datatype inet_protocol_type = {
 	.parse		= inet_protocol_type_parse,
 };
 
-static void inet_service_type_print(const struct expr *expr,
-				     struct output_ctx *octx)
+static void inet_service_print(const struct expr *expr, struct output_ctx *octx)
+{
+	struct sockaddr_in sin = { .sin_family = AF_INET };
+	char buf[NI_MAXSERV];
+	uint16_t port;
+	int err;
+
+	sin.sin_port = mpz_get_be16(expr->value);
+	err = getnameinfo((struct sockaddr *)&sin, sizeof(sin), NULL, 0,
+			  buf, sizeof(buf), 0);
+	if (err != 0) {
+		nft_print(octx, "%u", ntohs(sin.sin_port));
+		return;
+	}
+	port = atoi(buf);
+	/* We got a TCP service name string, display it... */
+	if (htons(port) != sin.sin_port) {
+		nft_print(octx, "\"%s\"", buf);
+		return;
+	}
+
+	/* ...otherwise, this might be a UDP service name. */
+	err = getnameinfo((struct sockaddr *)&sin, sizeof(sin), NULL, 0,
+			  buf, sizeof(buf), NI_DGRAM);
+	if (err != 0) {
+		/* No service name, display numeric value. */
+		nft_print(octx, "%u", ntohs(sin.sin_port));
+		return;
+	}
+	nft_print(octx, "\"%s\"", buf);
+}
+
+void inet_service_type_print(const struct expr *expr, struct output_ctx *octx)
 {
 	if (octx->literal == NFT_LITERAL_PORT) {
-		symbolic_constant_print(&inet_service_tbl, expr, false, octx);
+		inet_service_print(expr, octx);
 		return;
 	}
 	integer_type_print(expr, octx);
@@ -627,10 +658,11 @@ static void inet_service_type_print(const struct expr *expr,
 static struct error_record *inet_service_type_parse(const struct expr *sym,
 						    struct expr **res)
 {
-	const struct symbolic_constant *s;
+	struct addrinfo *ai;
 	uint16_t port;
 	uintmax_t i;
 	char *end;
+	int err;
 
 	errno = 0;
 	i = strtoumax(sym->identifier, &end, 0);
@@ -640,16 +672,13 @@ static struct error_record *inet_service_type_parse(const struct expr *sym,
 
 		port = htons(i);
 	} else {
-		for (s = inet_service_tbl.symbols; s->identifier != NULL; s++) {
-			if (!strcmp(sym->identifier, s->identifier))
-				break;
-		}
+		err = getaddrinfo(NULL, sym->identifier, NULL, &ai);
+		if (err != 0)
+			return error(&sym->location, "Could not resolve service: %s",
+				     gai_strerror(err));
 
-		if (s->identifier == NULL)
-			return error(&sym->location, "Could not resolve service: "
-				     "Servname not found in nft services list");
-
-		port = s->value;
+		port = ((struct sockaddr_in *)ai->ai_addr)->sin_port;
+		freeaddrinfo(ai);
 	}
 
 	*res = constant_expr_alloc(&sym->location, &inet_service_type,
@@ -668,7 +697,6 @@ const struct datatype inet_service_type = {
 	.print		= inet_service_type_print,
 	.json		= inet_service_type_json,
 	.parse		= inet_service_type_parse,
-	.sym_tbl	= &inet_service_tbl,
 };
 
 #define RT_SYM_TAB_INITIAL_SIZE		16

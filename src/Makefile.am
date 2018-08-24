@@ -54,7 +54,6 @@ libnftables_la_SOURCES =			\
 		erec.c				\
 		mnl.c				\
 		iface.c				\
-		services.c			\
 		mergesort.c			\
 		osf.c				\
 		nfnl_osf.c			\

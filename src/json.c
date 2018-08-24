@@ -864,7 +864,7 @@ json_t *inet_service_type_json(const struct expr *expr, struct output_ctx *octx)
 	if (octx->numeric >= NFT_NUMERIC_PORT)
 		return integer_type_json(expr, octx);
 
-	return symbolic_constant_json(&inet_service_tbl, expr, octx);
+	return inet_service_type_print(expr, octx);
 }
 
 json_t *mark_type_json(const struct expr *expr, struct output_ctx *octx)

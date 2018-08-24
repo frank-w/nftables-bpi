@@ -221,7 +221,6 @@ extern void symbol_table_print(const struct symbol_table *tbl,
 extern struct symbol_table *rt_symbol_table_init(const char *filename);
 extern void rt_symbol_table_free(struct symbol_table *tbl);
 
-extern const struct symbol_table inet_service_tbl;
 extern struct symbol_table *mark_tbl;
 
 extern const struct datatype invalid_type;
@@ -245,6 +244,8 @@ extern const struct datatype icmpv6_code_type;
 extern const struct datatype icmpx_code_type;
 extern const struct datatype time_type;
 extern const struct datatype boolean_type;
+
+void inet_service_type_print(const struct expr *expr, struct output_ctx *octx);
 
 extern const struct datatype *concat_type_alloc(uint32_t type);
 extern void concat_type_destroy(const struct datatype *dtype);

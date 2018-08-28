@@ -861,10 +861,7 @@ json_t *inet_protocol_type_json(const struct expr *expr,
 
 json_t *inet_service_type_json(const struct expr *expr, struct output_ctx *octx)
 {
-	if (octx->numeric >= NFT_NUMERIC_PORT)
-		return integer_type_json(expr, octx);
-
-	return inet_service_type_print(expr, octx);
+	return json_integer(ntohs(mpz_get_be16(expr->value)));
 }
 
 json_t *mark_type_json(const struct expr *expr, struct output_ctx *octx)

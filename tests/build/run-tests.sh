@@ -1,22 +1,29 @@
 #!/bin/bash
 
 log_file="`pwd`/tests.log"
-tarball="nftables-0.8.1.tar.bz2"
 dir=../..
-cmd=./configure
 argument=( --without-cli --enable-debug --with-mini-gmp --enable-man-doc
 	    --with-xtables --with-json)
 ok=0
 failed=0
 
 [ -f $log_file ] && rm -rf $log_file
-cd $dir
+
+tmpdir=$(mktemp -d)
+if [ ! -w $tmpdir ] ; then
+        echo "Failed to create tmp file" >&2
+        exit 0
+fi
+
+git clone $dir $tmpdir >/dev/null 2>>$log_file
+cd $tmpdir
+
+autoreconf -fi >/dev/null 2>>$log_file
+./configure >/dev/null 2>>$log_file
 
 echo  "Testing build with distcheck"
 make distcheck >/dev/null 2>>$log_file
 rt=$?
-
-rm -rf $tarball
 
 if [ $rt != 0 ] ; then
 	echo "Something went wrong. Check the log for details."
@@ -40,6 +47,8 @@ for var in "${argument[@]}" ; do
 		((failed++))
 	fi
 done
+
+rm -rf $tmpdir
 
 echo "results: [OK] $ok [FAILED] $failed [TOTAL] $((ok+failed))"
 exit 0

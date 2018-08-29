@@ -582,7 +582,7 @@ int nft_lex(void *, void *, void *);
 %type <val>			nf_nat_flags nf_nat_flag offset_opt
 %type <stmt>			tproxy_stmt
 %destructor { stmt_free($$); }	tproxy_stmt
-%type <val>				tproxy_family_spec
+
 %type <stmt>			queue_stmt queue_stmt_alloc
 %destructor { stmt_free($$); }	queue_stmt queue_stmt_alloc
 %type <val>			queue_stmt_flags queue_stmt_flag
@@ -716,8 +716,6 @@ int nft_lex(void *, void *, void *);
 %type <expr>			rt_expr
 %destructor { expr_free($$); }	rt_expr
 %type <val>			rt_key
-
-%type <val>			fwd_key_proto
 
 %type <expr>			ct_expr
 %destructor { expr_free($$); }	ct_expr
@@ -2530,17 +2528,13 @@ nat_stmt_alloc		:	SNAT	{ $$ = nat_stmt_alloc(&@$, NFT_NAT_SNAT); }
 			|	DNAT	{ $$ = nat_stmt_alloc(&@$, NFT_NAT_DNAT); }
 			;
 
-tproxy_family_spec	:	IP	{ $$ = NFPROTO_IPV4; }
-			|	IP6	{ $$ = NFPROTO_IPV6; }
-			;
-
 tproxy_stmt		:	TPROXY TO stmt_expr
 			{
 				$$ = tproxy_stmt_alloc(&@$);
 				$$->tproxy.family = NFPROTO_UNSPEC;
 				$$->tproxy.addr = $3;
 			}
-			|	TPROXY tproxy_family_spec TO stmt_expr
+			|	TPROXY nf_key_proto TO stmt_expr
 			{
 				$$ = tproxy_stmt_alloc(&@$);
 				$$->tproxy.family = $2;
@@ -2559,7 +2553,7 @@ tproxy_stmt		:	TPROXY TO stmt_expr
 				$$->tproxy.addr = $3;
 				$$->tproxy.port = $5;
 			}
-			|	TPROXY tproxy_family_spec TO stmt_expr COLON stmt_expr
+			|	TPROXY nf_key_proto	TO stmt_expr COLON stmt_expr
 			{
 				$$ = tproxy_stmt_alloc(&@$);
 				$$->tproxy.family = $2;
@@ -2779,16 +2773,12 @@ dup_stmt		:	DUP	TO	stmt_expr
 			}
 			;
 
-fwd_key_proto		:	IP		{ $$ = NFPROTO_IPV4; }
-			|	IP6		{ $$ = NFPROTO_IPV6; }
-			;
-
 fwd_stmt		:	FWD	TO	stmt_expr
 			{
 				$$ = fwd_stmt_alloc(&@$);
 				$$->fwd.dev = $3;
 			}
-			|	FWD	fwd_key_proto	TO	stmt_expr	DEVICE	stmt_expr
+			|	FWD	nf_key_proto	TO	stmt_expr	DEVICE	stmt_expr
 			{
 				$$ = fwd_stmt_alloc(&@$);
 				$$->fwd.family = $2;

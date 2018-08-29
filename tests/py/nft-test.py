@@ -823,8 +823,10 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                 continue
 
             rule_output = output_clean(pre_output, chain)
+            retest_output = False
             if len(rule) == 3:
                 teoric_exit = rule[2]
+                retest_output = True
             else:
                 teoric_exit = rule[0]
 
@@ -833,6 +835,7 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                     if set_check_element(teoric_exit.rstrip(),
                                          rule_output.rstrip()) != 0:
                         warning += 1
+                        retest_output = True
                         print_differences_warning(filename, lineno,
                                                   teoric_exit.rstrip(),
                                                   rule_output, cmd)
@@ -846,12 +849,33 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                             return [ret, warning, error, unit_tests]
 
                     warning += 1
+                    retest_output = True
                     print_differences_warning(filename, lineno,
                                               teoric_exit.rstrip(),
                                               rule_output, cmd)
 
                     if not force_all_family_option:
                         return [ret, warning, error, unit_tests]
+
+            if retest_output:
+                table_flush(table, filename, lineno)
+
+                # Add rule and check return code
+                cmd = "add rule %s %s %s" % (table, chain, rule_output.rstrip())
+                ret = execute_cmd(cmd, filename, lineno, payload_log, debug="netlink")
+
+                if ret != 0:
+                    test_state = "Replaying rule failed."
+                    reason = cmd + ": " + test_state
+                    print_warning(reason, filename, lineno)
+                    ret = -1
+                    error += 1
+                    if not force_all_family_option:
+                        return [ret, warning, error, unit_tests]
+                # Check for matching payload
+                elif not payload_check(table_payload_expected,
+                                       payload_log, cmd):
+                    error += 1
 
             if not enable_json_option:
                 continue

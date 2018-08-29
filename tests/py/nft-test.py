@@ -653,6 +653,9 @@ def payload_check(payload_buffer, file, cmd):
     file.seek(0, 0)
     i = 0
 
+    if not payload_buffer:
+        return False
+
     for lineno, want_line in enumerate(payload_buffer):
         line = file.readline()
 
@@ -698,11 +701,12 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
         return [-1, warning, error, unit_tests]
 
     if rule[1].strip() == "ok":
+        payload_expected = None
         try:
             payload_log = open("%s.payload" % filename_path)
             payload_expected = payload_find_expected(payload_log, rule[0])
         except:
-            payload_expected = None
+            payload_log = None
 
         if enable_json_option:
             try:
@@ -744,7 +748,10 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                 payload_log = open("%s.payload.%s" % (filename_path, table.family))
                 table_payload_expected = payload_find_expected(payload_log, rule[0])
             except:
-                if not payload_expected:
+                if not payload_log:
+                    print_error("did not find any payload information",
+                                filename_path)
+                elif not payload_expected:
                     print_error("did not find payload information for "
                                 "rule '%s'" % rule[0], payload_log.name, 1)
             if not table_payload_expected:

@@ -22,21 +22,7 @@ libnftables-json - Supported JSON schema by libnftables
          *"list"* | *"reset"* | *"flush"* | *"rename"*
 
 'LIST_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
-'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT'
-
-'TABLE' := *{ "table":* 'TABLE_PROPERTIES' *}*
-
-'TABLE_PROPERTIES' := 'TABLE_PROPERTY' [ *,* 'TABLE_PROPERTIES' ]
-
-'TABLE_PROPERTY' := 'FAMILY' | 'NAME' | 'HANDLE'
-
-'FAMILY' := *"family":* 'FAMILY_VALUE'
-
-'FAMILY_VALUE' := *"ip"* | *"ip6"* | *"inet"* | *"bridge"* | *"arp"*
-
-'NAME' := *"name":* 'STRING'
-
-'HANDLE' := *"handle":* 'NUMBER'
+		 'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT'
 
 == DESCRIPTION
 libnftables supports JSON formatted input and output. This is implemented as an
@@ -192,11 +178,11 @@ Rename a chain. The new name is expected in a dedicated property named
 
 === TABLE
 [verse]
-*{ "table":
+*{ "table": {
 	"family":* 'STRING'*,
 	"name":* 'STRING'*,
 	"handle":* 'NUMBER'
-*}*
+*}}*
 
 This object describes a table.
 
@@ -210,7 +196,7 @@ This object describes a table.
 
 === CHAIN
 [verse]
-*{ "chain":
+*{ "chain": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
@@ -221,7 +207,7 @@ This object describes a table.
 	"prio":* 'NUMBER'*,
 	"dev":* 'STRING'*,
 	"policy":* 'STRING'
-*}*
+*}}*
 
 This object describes a chain.
 
@@ -253,7 +239,7 @@ The following properties are required for base chains:
 === RULE
 [verse]
 ____
-*{ "rule":
+*{ "rule": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"chain":* 'STRING'*,
@@ -261,7 +247,7 @@ ____
 	"handle":* 'NUMBER'*,
 	"index":* 'NUMBER'*,
 	"comment":* 'STRING'
-*}*
+*}}*
 
 'STATEMENTS' := 'STATEMENT' [*,* 'STATEMENTS' ]
 ____
@@ -291,7 +277,7 @@ each rule consists of at least a single one.
 === SET / MAP
 [verse]
 ____
-*{ "set":
+*{ "set": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
@@ -303,9 +289,9 @@ ____
 	"timeout":* 'NUMBER'*,
 	"gc-interval":* 'NUMBER'*,
 	"size":* 'NUMBER'
-*}*
+*}}*
 
-*{ "map":
+*{ "map": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
@@ -318,7 +304,7 @@ ____
 	"timeout":* 'NUMBER'*,
 	"gc-interval":* 'NUMBER'*,
 	"size":* 'NUMBER'
-*}*
+*}}*
 
 'SET_TYPE' := 'STRING' | *[* 'SET_TYPE_LIST' *]*
 'SET_TYPE_LIST' := 'STRING' [*,* 'SET_TYPE_LIST' ]
@@ -371,12 +357,12 @@ Multiple elements may be given in an array.
 === ELEMENT
 [verse]
 ____
-*{ "element":
+*{ "element": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
 	"elem":* 'SET_ELEM'
-*}*
+*}}*
 
 'SET_ELEM' := 'EXPRESSION' | *[* 'EXPRESSION_LIST' *]*
 'EXPRESSION_LIST' := 'EXPRESSION' [*,* 'EXPRESSION' ]
@@ -396,14 +382,14 @@ Manipulate element(s) in a named set.
 === FLOWTABLE
 [verse]
 ____
-*{ "flowtable":
+*{ "flowtable": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
 	"hook":* 'STRING'*,
 	"prio":* 'NUMBER'*,
 	"dev":* 'FT_INTERFACE'
-*}*
+*}}*
 
 'FT_INTERFACE' := 'STRING' | *[* 'FT_INTERFACE_LIST' *]*
 'FT_INTERFACE_LIST' := 'STRING' [*,* 'STRING' ]
@@ -426,14 +412,14 @@ This object represents a named flowtable.
 
 === COUNTER
 [verse]
-*{ "counter":
+*{ "counter": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
 	"handle":* 'NUMBER'*,
 	"packets":* 'NUMBER'*,
 	"bytes":* 'NUMBER'
-*}*
+*}}*
 
 This object represents a named counter.
 
@@ -452,7 +438,7 @@ This object represents a named counter.
 
 === QUOTA
 [verse]
-*{ "quota":
+*{ "quota": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
@@ -460,7 +446,7 @@ This object represents a named counter.
 	"bytes":* 'NUMBER'*,
 	"used":* 'NUMBER'*,
 	"inv":* 'BOOLEAN'
-*}*
+*}}*
 
 This object represents a named quota.
 
@@ -482,7 +468,7 @@ This object represents a named quota.
 === CT HELPER
 [verse]
 ____
-*{ "ct helper":
+*{ "ct helper": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
@@ -490,7 +476,7 @@ ____
 	"type":* 'STRING'*,
 	"protocol":* 'CTH_PROTO'*,
 	"l3proto":* 'STRING'
-*}*
+*}}*
 
 'CTH_PROTO' := *"tcp"* | *"udp"*
 ____
@@ -515,7 +501,7 @@ This object represents a named conntrack helper.
 === LIMIT
 [verse]
 ____
-*{ "limit":
+*{ "limit": {
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
@@ -525,7 +511,7 @@ ____
 	"burst":* 'NUMBER'*,
 	"unit":* 'LIMIT_UNIT'*,
 	"inv":* 'BOOLEAN'
-*}*
+*}}*
 
 'LIMIT_UNIT' := *"packets"* | *"bytes"*
 ____
@@ -572,11 +558,11 @@ delegates to a different one.
 
 === MATCH
 [verse]
-*{ "match":
+*{ "match": {
 	"left":* 'EXPRESSION'*,
 	"right":* 'EXPRESSION'*,
 	"op":* 'STRING'
-*}*
+*}}*
 
 Match expression on left hand side (typically a packet header or packet meta
 info) with expression on right hand side (typically a constant value). If the
@@ -610,10 +596,10 @@ Allowed operators are:
 === COUNTER
 [verse]
 ____
-*{ "counter":
+*{ "counter": {
 	"packets":* 'NUMBER'*,
 	"bytes":* 'NUMBER'
-*}*
+*}}*
 
 *{ "counter":* 'STRING' *}*
 ____
@@ -631,10 +617,10 @@ in. The second form specifies a reference to a named counter object.
 
 === MANGLE
 [verse]
-*{ "mangle":
+*{ "mangle": {
 	"left":* 'EXPRESSION'*,
 	"right":* 'EXPRESSION'
-*}*
+*}}*
 
 Change packet data or meta info.
 
@@ -646,13 +632,13 @@ Change packet data or meta info.
 === QUOTA
 [verse]
 ____
-*{ "quota":
+*{ "quota": {
 	"val":* 'NUMBER'*,
 	"val_unit":* 'STRING'*,
 	"used":* 'NUMBER'*,
 	"used_unit":* 'STRING'*,
 	"inv":* 'BOOLEAN'
-*}*
+*}}*
 
 *{ "quota":* 'STRING' *}*
 ____
@@ -675,14 +661,14 @@ The second form specifies a reference to a named quota object.
 === LIMIT
 [verse]
 ____
-*{ "limit":
+*{ "limit": {
 	"rate":* 'NUMBER'*,
 	"rate_unit":* 'STRING'*,
 	"per":* 'STRING'*,
 	"burst":* 'NUMBER'*,
 	"burst_unit":* 'STRING'*,
 	"inv":* 'BOOLEAN'
-*}*
+*}}*
 
 *{ "limit":* 'STRING' *}*
 ____
@@ -707,11 +693,11 @@ The second form specifies a reference to a named limit object.
 === FWD
 [verse]
 ____
-*{ "fwd":
+*{ "fwd": {
 	"dev":* 'EXPRESSION'*,
 	"family":* 'FWD_FAMILY'*,
 	"addr":* 'EXPRESSION'
-*}*
+*}}*
 
 'FWD_FAMILY' := *"ip"* | *"ip6"*
 ____
@@ -735,10 +721,10 @@ Disable connection tracking for the packet.
 
 === DUP
 [verse]
-*{ "dup":
+*{ "dup": {
 	"addr":* 'EXPRESSION'*,
 	"dev":* 'EXPRESSION'
-*}*
+*}}*
 
 Duplicate a packet to a different destination.
 
@@ -751,27 +737,27 @@ Duplicate a packet to a different destination.
 === NETWORK ADDRESS TRANSLATION
 [verse]
 ____
-*{ "snat":
+*{ "snat": {
 	"addr":* 'EXPRESSION'*,
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
-*}*
+*}}*
 
-*{ "dnat":
+*{ "dnat": {
 	"addr":* 'EXPRESSION'*,
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
-*}*
+*}}*
 
-*{ "masquerade":
+*{ "masquerade": {
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
-*}*
+*}}*
 
-*{ "redirect":
+*{ "redirect": {
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
-*}*
+*}}*
 
 'FLAGS' := 'FLAG' | *[* 'FLAG_LIST' *]*
 'FLAG_LIST' := 'FLAG' [*,* 'FLAG_LIST' ]
@@ -791,10 +777,10 @@ All properties are optional and default to none.
 
 === REJECT
 [verse]
-*{ "reject":
+*{ "reject": {
 	"type":* 'STRING'*,
 	"expr":* 'EXPRESSION'
-*}*
+*}}*
 
 Reject the packet and send the given error reply.
 
@@ -807,11 +793,11 @@ All properties are optional.
 
 === SET
 [verse]
-*{ "set":
+*{ "set": {
 	"op":* 'STRING'*,
 	"elem":* 'EXPRESSION'*,
 	"set":* 'STRING'
-*}*
+*}}*
 
 Dynamically add/update elements to a set.
 
@@ -825,14 +811,14 @@ Dynamically add/update elements to a set.
 === LOG
 [verse]
 ____
-*{ "log":
+*{ "log": {
 	"prefix":* 'STRING'*,
 	"group":* 'NUMBER'*,
 	"snaplen":* 'NUMBER'*,
 	"queue-threshold":* 'NUMBER'*,
 	"level":* 'LEVEL'*,
 	"flags":* 'FLAGS'
-*}*
+*}}*
 
 'LEVEL' := *"emerg"* | *"alert"* | *"crit"* | *"err"* | *"warn"* | *"notice"* |
            *"info"* | *"debug"* | *"audit"*
@@ -871,11 +857,11 @@ Enable specified conntrack helper for this packet.
 
 === METER
 [verse]
-*{ "meter":
+*{ "meter": {
 	"name":* 'STRING'*,
 	"key":* 'EXPRESSION'*,
 	"stmt":* 'STATEMENT'
-*}*
+*}}*
 
 Apply given statement using a meter.
 
@@ -889,10 +875,10 @@ Apply given statement using a meter.
 === QUEUE
 [verse]
 ____
-*{ "queue":
+*{ "queue": {
 	"num":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
-*}*
+*}}*
 
 'FLAGS' := 'FLAG' | *[* 'FLAG_LIST' *]*
 'FLAG_LIST' := 'FLAG' [*,* 'FLAG_LIST' ]
@@ -908,10 +894,10 @@ Queue the packet to userspace.
 
 === VERDICT MAP
 [verse]
-*{ "vmap":
+*{ "vmap": {
 	"left":* 'EXPRESSION'*,
 	"right":* 'EXPRESSION'
-*}*
+*}}*
 
 Apply a verdict conditionally.
 
@@ -922,10 +908,10 @@ Apply a verdict conditionally.
 
 === CT COUNT
 [verse]
-*{ "ct count":
+*{ "ct count": {
 	"val":* 'NUMBER'*,
 	"inv":* 'BOOLEAN'
-*}*
+*}}*
 
 Limit number of connections using conntrack.
 
@@ -985,10 +971,10 @@ exactly two elements is expected.
 
 === MAP
 [verse]
-*{ "map":
+*{ "map": {
 	"left":* 'EXPRESSION'*,
 	"right":* 'EXPRESSION'
-*}*
+*}}*
 
 Map a key to a value.
 
@@ -999,10 +985,10 @@ Map a key to a value.
 
 === PREFIX
 [verse]
-*{ "prefix":
+*{ "prefix": {
 	"addr":* 'EXPRESSION'*,
 	"len":* 'NUMBER'
-*}*
+*}}*
 
 Construct an IPv4 or IPv6 prefix consisting of address part in *addr* and prefix
 length in *len*.
@@ -1017,17 +1003,17 @@ the second one the upper boundary.
 === PAYLOAD
 [verse]
 ____
-*{ "payload":
+*{ "payload": {
 	"name": "raw",
 	"base":* 'BASE'*,
 	"offset":* 'NUMBER'*,
 	"len":* 'NUMBER'
-*}*
+*}}*
 
-*{ "payload":
+*{ "payload": {
 	"name":* 'STRING'*,
 	"field":* 'STRING'
-*}*
+*}}*
 
 'BASE' := *"ll"* | *"nh"* | *"th"*
 ____
@@ -1048,11 +1034,11 @@ The second form allows to reference a field by name (*field*) in a named packet 
 
 === EXTHDR
 [verse]
-*{ "exthdr":
+*{ "exthdr": {
 	"name":* 'STRING'*,
 	"field":* 'STRING'*,
 	"offset":* 'NUMBER'
-*}*
+*}}*
 
 Create a reference to a field (*field*) in an IPv6 extension header (*name*).
 *offset* is used only for *rt0* protocol.
@@ -1062,10 +1048,10 @@ existence check in a *match* statement with boolean on right hand side.
 
 === TCP OPTION
 [verse]
-*{ "tcp option":
+*{ "tcp option": {
 	"name":* 'STRING'*,
 	"field":* 'STRING'
-*}*
+*}}*
 
 Create a reference to a field (*field*) of a TCP option header (*name*).
 
@@ -1081,10 +1067,10 @@ Create a reference to packet meta data.
 === RT
 [verse]
 ____
-*{ "rt":
+*{ "rt": {
 	"key":* 'RT_KEY'*,
 	"family":* 'RT_FAMILY'
-*}*
+*}}*
 
 'RT_KEY' := *"classid"* | *"nexthop"* | *"mtu"*
 'RT_FAMILY' := *"ip"* | *"ip6"*
@@ -1097,11 +1083,11 @@ The *family* property is optional and defaults to unspecified.
 === CT
 [verse]
 ____
-*{ "ct":
+*{ "ct": {
 	"key":* 'STRING'*,
 	"family":* 'CT_FAMILY'*,
 	"dir":* 'CT_DIRECTION'
-*}*
+*}}*
 
 'CT_FAMILY' := *"ip"* | *"ip6"*
 'CT_DIRECTION' := *"original"* | *"reply"*
@@ -1115,11 +1101,11 @@ given.
 === NUMGEN
 [verse]
 ____
-*{ "numgen":
+*{ "numgen": {
 	"mode":* 'NG_MODE'*,
 	"mod":* 'NUMBER'*,
 	"offset":* 'NUMBER'
-*}*
+*}}*
 
 'NG_MODE' := *"inc"* | *"random"*
 ____
@@ -1131,17 +1117,17 @@ The *offset* property is optional and defaults to 0.
 === HASH
 [verse]
 ____
-*{ "jhash":
+*{ "jhash": {
 	"mod":* 'NUMBER'*,
 	"offset":* 'NUMBER'*,
 	"expr":* 'EXPRESSION'*,
 	"seed":* 'NUMBER'
-*}*
+*}}*
 
-*{ "symhash":
+*{ "symhash": {
 	"mod":* 'NUMBER'*,
 	"offset":* 'NUMBER'
-*}*
+*}}*
 ____
 
 Hash packet data.
@@ -1151,10 +1137,10 @@ The *offset* and *seed* properties are optional and default to 0.
 === FIB
 [verse]
 ____
-*{ "fib":
+*{ "fib": {
 	"result":* 'FIB_RESULT'*,
 	"flags":* 'FIB_FLAGS'
-*}*
+*}}*
 
 'FIB_RESULT' := *"oif"* | *"oifname"* | *"type"*
 
@@ -1194,12 +1180,12 @@ Only *jump* and *goto* verdicts expect a string denoting the target chain name.
 
 === ELEM
 [verse]
-*{ "elem":
+*{ "elem": {
 	"val":* 'EXPRESSION'*,
 	"timeout":* 'NUMBER'*,
 	"expires":* 'NUMBER'*,
 	"comment":* 'STRING'
-*}*
+*}}*
 
 Explicit set element object, in case *timeout*, *expires* or *comment* are
 desired. Otherwise may be replaced by the value of *val*.
@@ -1207,9 +1193,9 @@ desired. Otherwise may be replaced by the value of *val*.
 === SOCKET
 [verse]
 ____
-*{ "socket":
+*{ "socket": {
 	"key":* 'SOCKET_KEY'
-*}*
+*}}*
 
 'SOCKET_KEY' := *"transparent"*
 ____

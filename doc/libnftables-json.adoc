@@ -68,7 +68,8 @@ order of appearance. For instance, the following standard syntax input:
 ----
 flush ruleset
 add table inet mytable
-list ruleset
+add chain inet mytable mychain
+add rule inet mytable mychain tcp dport 22 accept
 ----
 
 translates into JSON as such:
@@ -76,8 +77,30 @@ translates into JSON as such:
 ----
 { "nftables": [
 	{ "flush": { "ruleset": null }},
-	{ "add": { "table": { "family": "inet", "name": "mytable" }}},
-	{ "list": { "ruleset": null }}
+	{ "add": { "table": {
+			"family": "inet",
+			"name": "mytable"
+	}}},
+	{ "add": { "chain": {
+			"family": "inet",
+			"table": "mytable",
+			"chain": "mychain"
+	}}}
+	{ "add": { "rule": {
+			"family": "inet",
+			"table": "mytable",
+			"chain": "mychain",
+			"expr": [
+				{ "match": {
+					"left": { "payload": {
+							"name": "tcp",
+							"field": "dport"
+					}},
+					"right": 22
+				}},
+				{ "accept": null }
+			]
+	}}}
 ]}
 ----
 

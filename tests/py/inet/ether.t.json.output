@@ -8,6 +8,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     },
@@ -19,6 +20,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "00:0f:54:0c:11:04"
         }
     },

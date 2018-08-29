@@ -7,6 +7,7 @@
                     "name": "hbh"
                 }
             },
+	    "op": "==",
             "right": true
         }
     }
@@ -21,6 +22,7 @@
                     "name": "hbh"
                 }
             },
+	    "op": "==",
             "right": false
         }
     }
@@ -35,6 +37,7 @@
                     "name": "hbh"
                 }
             },
+	    "op": "==",
             "right": true
         }
     }
@@ -49,6 +52,7 @@
                     "name": "hbh"
                 }
             },
+	    "op": "==",
             "right": false
         }
     }

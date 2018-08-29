@@ -5,6 +5,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv4"
         }
     },
@@ -16,6 +17,7 @@
                     "key": "nexthop"
                 }
             },
+	    "op": "==",
             "right": "192.168.0.1"
         }
     }

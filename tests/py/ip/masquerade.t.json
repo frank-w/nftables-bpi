@@ -8,6 +8,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -26,6 +27,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -46,6 +48,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -69,6 +72,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -93,6 +97,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -116,6 +121,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -140,6 +146,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -160,6 +167,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -183,6 +191,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -207,6 +216,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -230,6 +240,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -254,6 +265,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },
@@ -274,6 +286,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },
@@ -296,6 +309,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     1,
@@ -331,6 +345,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ "10.0.0.0", "10.2.3.4" ]
             }
@@ -344,6 +359,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -362,6 +378,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -372,6 +389,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": [
                 "established",
                 "new"

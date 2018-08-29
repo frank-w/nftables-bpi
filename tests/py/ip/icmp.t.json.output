@@ -8,6 +8,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "echo-reply",
@@ -44,6 +45,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     222,

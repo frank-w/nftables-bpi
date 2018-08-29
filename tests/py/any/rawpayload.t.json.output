@@ -5,6 +5,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     6,
@@ -23,6 +24,7 @@
                     "offset": 16
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     22,
@@ -44,6 +46,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     22,

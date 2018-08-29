@@ -8,6 +8,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip"
         }
     },
@@ -29,6 +30,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip"
         }
     },
@@ -50,6 +52,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip"
         }
     },
@@ -71,6 +74,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip"
         }
     },
@@ -89,6 +93,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip"
         }
     },
@@ -110,6 +115,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip"
         }
     },
@@ -131,6 +137,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip"
         }
     },
@@ -152,6 +159,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip6"
         }
     },
@@ -173,6 +181,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip6"
         }
     },
@@ -194,6 +203,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip6"
         }
     },
@@ -215,6 +225,7 @@
                     "protocol": "ether"
                 }
             },
+	    "op": "==",
             "right": "ip6"
         }
     },
@@ -230,6 +241,7 @@
             "left": {
                 "meta": { "key": "mark" }
             },
+	    "op": "==",
             "right": 12345
         }
     },
@@ -241,6 +253,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },

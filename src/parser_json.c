@@ -1363,24 +1363,24 @@ static struct stmt *json_parse_match_stmt(struct json_ctx *ctx,
 	const char *opstr = NULL;
 	enum ops op;
 
-	if (json_unpack_err(ctx, value, "{s:o, s:o}",
+	if (json_unpack_err(ctx, value, "{s:o, s:o, s:s}",
 			    "left", &jleft,
-			    "right", &jright))
+			    "right", &jright,
+			    "op", &opstr))
 		return NULL;
 
-	json_unpack(value, "{s:s}", "op", &opstr);
-	if (opstr) {
-		for (op = OP_INVALID; op < __OP_MAX; op++) {
-			if (expr_op_symbols[op] &&
-			    !strcmp(opstr, expr_op_symbols[op]))
-				break;
-		}
-		if (op == __OP_MAX) {
+	for (op = OP_INVALID; op < __OP_MAX; op++) {
+		if (expr_op_symbols[op] &&
+		    !strcmp(opstr, expr_op_symbols[op]))
+			break;
+	}
+	if (op == __OP_MAX) {
+		if (!strcmp(opstr, "in")) {
+			op = OP_IMPLICIT;
+		} else {
 			json_error(ctx, "Unknown relational op '%s'.", opstr);
 			return NULL;
 		}
-	} else {
-		op = OP_IMPLICIT;
 	}
 
 	left = json_parse_expr(ctx, jleft);

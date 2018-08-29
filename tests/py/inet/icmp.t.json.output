@@ -8,6 +8,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }
@@ -23,6 +24,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }

@@ -8,6 +8,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     },
@@ -38,6 +39,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     },

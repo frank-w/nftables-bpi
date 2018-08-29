@@ -7,6 +7,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": [
                 "new",
                 "established",
@@ -41,6 +42,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": {
                 "set": [
                     "new",
@@ -84,6 +86,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": "invalid"
         }
     },
@@ -101,6 +104,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": "established"
         }
     },
@@ -118,6 +122,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": 8
         }
     }
@@ -132,6 +137,7 @@
                     "key": "direction"
                 }
             },
+	    "op": "==",
             "right": "original"
         }
     }
@@ -161,6 +167,7 @@
                     "key": "direction"
                 }
             },
+	    "op": "==",
             "right": "reply"
         }
     }
@@ -190,6 +197,7 @@
                     "key": "direction"
                 }
             },
+	    "op": "in",
             "right": {
                 "set": [
                     "reply",
@@ -229,6 +237,7 @@
                     "key": "status"
                 }
             },
+	    "op": "in",
             "right": "expected"
         }
     }
@@ -258,6 +267,7 @@
                     "key": "status"
                 }
             },
+	    "op": "in",
             "right": "seen-reply"
         }
     }
@@ -287,6 +297,7 @@
                     "key": "status"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "expected",
@@ -309,6 +320,7 @@
                     "key": "status"
                 }
             },
+	    "op": "in",
             "right": [
                 "expected",
                 "seen-reply",
@@ -331,6 +343,7 @@
                     "key": "status"
                 }
             },
+	    "op": "in",
             "right": "snat"
         }
     }
@@ -345,6 +358,7 @@
                     "key": "status"
                 }
             },
+	    "op": "in",
             "right": "dnat"
         }
     }
@@ -359,6 +373,7 @@
                     "key": "mark"
                 }
             },
+	    "op": "==",
             "right": 0
         }
     }
@@ -458,6 +473,7 @@
 		    "0x23"
 		]
             },
+	    "op": "==",
             "right": "0x11"
         }
     }
@@ -492,6 +508,7 @@
                     "key": "mark"
                 }
             },
+            "op": "==",
             "right": "0x00000032"
         }
     }
@@ -521,6 +538,7 @@
                     "key": "mark"
                 }
             },
+            "op": "==",
             "right": {
                 "range": [ "0x00000032", "0x00000045" ]
             }
@@ -554,6 +572,7 @@
                     "key": "mark"
                 }
             },
+            "op": "in",
             "right": {
                 "set": [
                     "0x32",
@@ -574,6 +593,7 @@
                     "key": "mark"
                 }
             },
+            "op": "in",
             "right": {
                 "set": [
                     {
@@ -717,6 +737,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": "30s"
         }
     }
@@ -731,6 +752,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": "30000ms"
         }
     }
@@ -745,6 +767,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": {
                 "range": [ "1m", "1h" ]
             }
@@ -791,6 +814,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -824,6 +848,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": {
                 "set": [
                     33,
@@ -867,6 +892,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": {
                 "set": [
                     {
@@ -908,6 +934,7 @@
                     "key": "helper"
                 }
             },
+            "op": "==",
             "right": "ftp"
         }
     }
@@ -931,6 +958,7 @@
                     }
                 ]
             },
+            "op": "==",
             "right": {
                 "set": [
                     {
@@ -963,6 +991,7 @@
                     }
                 ]
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "concat": [ "new", "0x12345678" ] },
@@ -992,6 +1021,7 @@
                     }
                 ]
             },
+            "op": "==",
             "right": {
                 "set": [
                     {
@@ -1227,6 +1257,7 @@
                     "key": "label"
                 }
             },
+            "op": "in",
             "right": 127
         }
     }
@@ -1255,6 +1286,7 @@
                     "key": "zone"
                 }
             },
+            "op": "==",
             "right": 0
         }
     }
@@ -1269,6 +1301,7 @@
                     "key": "zone"
                 }
             },
+            "op": "==",
             "right": 23
         }
     }
@@ -1284,6 +1317,7 @@
                     "key": "zone"
                 }
             },
+            "op": "==",
             "right": 1
         }
     }
@@ -1299,6 +1333,7 @@
                     "key": "zone"
                 }
             },
+            "op": "==",
             "right": 1
         }
     }

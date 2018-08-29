@@ -577,8 +577,6 @@ processing continues with the next rule in the same chain.
 	Operator indicating the type of comparison.
 
 ==== OPERATORS
-The operator is usually optional and if omitted usually defaults to "==".
-Allowed operators are:
 
 [horizontal]
 *&*:: Binary AND
@@ -592,6 +590,17 @@ Allowed operators are:
 *>*:: Greater than
 *<=*:: Less than or equal to
 *>=*:: Greater than or equal to
+*in*:: Perform a lookup, i.e. test if bits on RHS are contained in LHS value
+
+Unlike with standard API, the operator is mandatory here. In standard API,
+missing operator may be resolved in two ways depending on the type of expression
+on RHS:
+
+- If RHS is a bitmask or a list of bitmasks, the expression resolves into a
+  binary operation with not equal operator, like this: '+LHS & RHS != 0+'.
+- In any other case, equal operator is simply inserted.
+
+For the non-trivial first case, JSON API supports *in* operator.
 
 === COUNTER
 [verse]

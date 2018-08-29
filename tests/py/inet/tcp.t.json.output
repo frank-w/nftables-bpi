@@ -8,6 +8,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     23,
@@ -32,6 +33,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 1024
         }
     },
@@ -43,6 +45,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     },
@@ -54,6 +57,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 0
         }
     }
@@ -69,6 +73,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     1022,
@@ -85,6 +90,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     },
@@ -96,6 +102,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 0
         }
     }

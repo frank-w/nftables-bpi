@@ -385,19 +385,10 @@ json_t *binop_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *relational_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
-	json_t *tmp;
-
-	tmp = json_pack("{s:o, s:o}",
-			"left", expr_print_json(expr->left, octx),
-			"right", expr_print_json(expr->right, octx));
-	/* XXX: check taken from binop_expr_print()
-	 *      if right is range, op is OP_EQ which in turn crashes nft if fed with it */
-	if (expr_op_symbols[expr->op] &&
-	    (expr->op != OP_EQ || must_print_eq_op(expr)))
-		json_object_set_new(tmp, "op",
-				    json_string(expr_op_symbols[expr->op]));
-
-	return json_pack("{s:o}", "match", tmp);
+	return json_pack("{s:{s:s, s:o, s:o}}", "match",
+			 "op", expr_op_symbols[expr->op] ? : "in",
+			 "left", expr_print_json(expr->left, octx),
+			 "right", expr_print_json(expr->right, octx));
 }
 
 json_t *range_expr_json(const struct expr *expr, struct output_ctx *octx)

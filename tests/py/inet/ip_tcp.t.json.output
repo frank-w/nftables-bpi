@@ -8,6 +8,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },
@@ -19,6 +20,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -34,6 +36,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "1.2.3.4"
         }
     },
@@ -45,6 +48,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -60,6 +64,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },
@@ -74,6 +79,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "1.2.3.4"
         }
     },
@@ -85,6 +91,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -100,6 +107,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },
@@ -114,6 +122,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }

@@ -5,6 +5,7 @@
             "left": {
                 "meta": { "key": "protocol" }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "ip",
@@ -44,6 +45,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+	    "op": "==",
             "right": "8765:4321"
         }
     }
@@ -56,6 +58,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+	    "op": "==",
             "right": "8765:4321"
         }
     }
@@ -68,6 +71,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "aaaa:bbbb",
@@ -86,6 +90,7 @@
             "left": {
                 "meta": { "key": "mark" }
             },
+	    "op": "==",
             "right": 4
         }
     }
@@ -98,6 +103,7 @@
             "left": {
                 "meta": { "key": "mark" }
             },
+	    "op": "==",
             "right": 50
         }
     }
@@ -146,6 +152,7 @@
             "left": {
                 "meta": { "key": "mark" }
             },
+	    "op": "==",
             "right": 16
         }
     }
@@ -207,6 +214,7 @@
             "left": {
                 "meta": { "key": "mark" }
             },
+	    "op": "==",
             "right": 2
         }
     }
@@ -232,6 +240,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "lo",
@@ -267,6 +276,7 @@
             "left": {
                 "meta": { "key": "oifname" }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "lo",
@@ -284,6 +294,7 @@
             "left": {
                 "meta": { "key": "skuid" }
             },
+	    "op": "==",
             "right": {
                 "set": [ 0, 1, 2 ]
             }
@@ -319,6 +330,7 @@
             "left": {
                 "meta": { "key": "skuid" }
             },
+	    "op": "==",
             "right": 0
         }
     }
@@ -344,6 +356,7 @@
             "left": {
                 "meta": { "key": "skgid" }
             },
+	    "op": "==",
             "right": {
                 "set": [ 0, 1, 2 ]
             }
@@ -379,6 +392,7 @@
             "left": {
                 "meta": { "key": "skgid" }
             },
+	    "op": "==",
             "right": 0
         }
     }
@@ -500,6 +514,7 @@
             "left": {
                 "meta": { "key": "iifgroup" }
             },
+	    "op": "==",
             "right": "default"
         }
     }
@@ -525,6 +540,7 @@
             "left": {
                 "meta": { "key": "oifgroup" }
             },
+	    "op": "==",
             "right": "default"
         }
     }
@@ -560,6 +576,7 @@
                     }
                 ]
             },
+	    "op": "==",
             "right": {
                 "set": [
                     {

@@ -8,6 +8,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": "mld-listener-done"
         }
     },
@@ -26,6 +27,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "time-exceeded",
@@ -51,6 +53,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "time-exceeded",

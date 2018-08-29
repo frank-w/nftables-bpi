@@ -5,6 +5,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -16,6 +17,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 80, 90 ]
             }
@@ -35,6 +37,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -66,6 +69,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -77,6 +81,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     23,
@@ -100,6 +105,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -135,6 +141,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -166,6 +173,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -177,6 +185,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 81
         }
     },

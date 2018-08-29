@@ -8,6 +8,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "cs7"
         }
     }
@@ -39,6 +40,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "cs0",
@@ -78,6 +80,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     }
@@ -109,6 +112,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     1,
@@ -191,6 +195,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": {
                 "prefix": {
                     "addr": "255.255.0.0",
@@ -208,6 +213,7 @@
             "left": {
                 "meta": { "key": "iif" }
             },
+	    "op": "==",
             "right": "lo"
         }
     },

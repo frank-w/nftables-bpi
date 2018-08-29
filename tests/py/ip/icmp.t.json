@@ -8,6 +8,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-reply"
         }
     },
@@ -26,6 +27,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "destination-unreachable"
         }
     },
@@ -44,6 +46,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "source-quench"
         }
     },
@@ -62,6 +65,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "redirect"
         }
     },
@@ -80,6 +84,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     },
@@ -98,6 +103,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "time-exceeded"
         }
     },
@@ -116,6 +122,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "parameter-problem"
         }
     },
@@ -134,6 +141,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "timestamp-request"
         }
     },
@@ -152,6 +160,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "timestamp-reply"
         }
     },
@@ -170,6 +179,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "info-request"
         }
     },
@@ -188,6 +198,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "info-reply"
         }
     },
@@ -206,6 +217,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "address-mask-request"
         }
     },
@@ -224,6 +236,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "address-mask-reply"
         }
     },
@@ -242,6 +255,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "router-advertisement"
         }
     },
@@ -260,6 +274,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "router-solicitation"
         }
     },
@@ -278,6 +293,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "echo-reply",
@@ -336,6 +352,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": 111
         }
     },
@@ -373,6 +390,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 33, 55 ]
             }
@@ -408,6 +426,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }
@@ -447,6 +466,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     2,
@@ -494,6 +514,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": 12343
         }
     },
@@ -531,6 +552,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 11, 343 ]
             }
@@ -572,6 +594,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 11, 343 ] }
@@ -617,6 +640,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     1111,
@@ -666,6 +690,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": 1245
         }
     },
@@ -684,6 +709,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -715,6 +741,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -750,6 +777,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }
@@ -789,6 +817,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     22,
@@ -832,6 +861,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -863,6 +893,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -898,6 +929,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     33,
@@ -943,6 +975,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }
@@ -982,6 +1015,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": 33
         }
     }
@@ -997,6 +1031,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 22, 33 ]
             }
@@ -1014,6 +1049,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 22, 33 ] }
@@ -1053,6 +1089,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -1084,6 +1121,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -1119,6 +1157,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     33,
@@ -1164,6 +1203,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }
@@ -1203,6 +1243,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -1234,6 +1275,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -1269,6 +1311,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     33,
@@ -1314,6 +1357,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }

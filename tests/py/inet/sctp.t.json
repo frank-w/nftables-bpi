@@ -8,6 +8,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": 23
         }
     }
@@ -39,6 +40,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 23, 44 ]
             }
@@ -74,6 +76,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     23,
@@ -117,6 +120,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 23, 44 ] }
@@ -156,6 +160,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": 23
         }
     }
@@ -187,6 +192,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 23, 44 ]
             }
@@ -222,6 +228,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     23,
@@ -265,6 +272,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 23, 44 ] }
@@ -304,6 +312,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": 1111
         }
     }
@@ -335,6 +344,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 21, 333 ]
             }
@@ -370,6 +380,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     22,
@@ -413,6 +424,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 22, 44 ] }
@@ -452,6 +464,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -483,6 +496,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -518,6 +532,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     33,
@@ -563,6 +578,7 @@
                     "protocol": "sctp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }

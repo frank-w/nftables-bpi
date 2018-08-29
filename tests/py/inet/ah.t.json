@@ -8,6 +8,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 11, 23 ]
             }
@@ -43,6 +44,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 11, 23 ] }
@@ -82,6 +84,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     11,
@@ -125,6 +128,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -156,6 +160,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -191,6 +196,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     23,
@@ -232,6 +238,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }
@@ -271,6 +278,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": 111
         }
     }
@@ -302,6 +310,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 111, 222 ]
             }
@@ -337,6 +346,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     111,
@@ -378,6 +388,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 111, 122 ] }
@@ -417,6 +428,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": 123
         }
     }
@@ -448,6 +460,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     23,
@@ -491,6 +504,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 23, 33 ] }
@@ -530,6 +544,7 @@
                     "protocol": "ah"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 23, 33 ]
             }

@@ -8,6 +8,7 @@
                     "protocol": "dccp"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 20, 50 ]
             }

@@ -8,6 +8,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }
@@ -20,6 +21,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": "icmp"
         }
     },
@@ -31,6 +33,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }
@@ -43,6 +46,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": "ipv6-icmp"
         }
     },
@@ -54,6 +58,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": "nd-router-advert"
         }
     }
@@ -66,6 +71,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": 58
         }
     },
@@ -77,6 +83,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": "nd-router-advert"
         }
     }
@@ -92,6 +99,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": "nd-router-advert"
         }
     }

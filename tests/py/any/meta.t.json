@@ -5,6 +5,7 @@
             "left": {
                 "meta": { "key": "length" }
             },
+            "op": "==",
             "right": 1000
         }
     }
@@ -17,6 +18,7 @@
             "left": {
                 "meta": { "key": "length" }
             },
+            "op": "==",
             "right": 22
         }
     }
@@ -42,6 +44,7 @@
             "left": {
                 "meta": { "key": "length" }
             },
+            "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -71,6 +74,7 @@
             "left": {
                 "meta": { "key": "length" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     33,
@@ -90,6 +94,7 @@
             "left": {
                 "meta": { "key": "length" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] },
@@ -107,6 +112,7 @@
             "left": {
                 "meta": { "key": "length" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 88 ] },
@@ -144,6 +150,7 @@
             "left": {
                 "meta": { "key": "length" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }
@@ -177,6 +184,7 @@
             "left": {
                 "meta": { "key": "protocol" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "ip",
@@ -216,6 +224,7 @@
             "left": {
                 "meta": { "key": "protocol" }
             },
+            "op": "==",
             "right": "ip"
         }
     }
@@ -241,6 +250,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+            "op": "==",
             "right": 22
         }
     }
@@ -266,6 +276,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+            "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -295,6 +306,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     33,
@@ -334,6 +346,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }
@@ -367,6 +380,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": "root"
         }
     }
@@ -379,6 +393,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": "none"
         }
     }
@@ -391,6 +406,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": "0x87654321"
         }
     }
@@ -403,6 +419,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": 2271560481
         }
     }
@@ -415,6 +432,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": "1:1234"
         }
     }
@@ -427,6 +445,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": "bcad:dadc"
         }
     }
@@ -439,6 +458,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": "aabb:0"
         }
     }
@@ -477,6 +497,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": {
                 "range": [ "bcad:dada", "bcad:dadc" ]
             }
@@ -506,6 +527,7 @@
             "left": {
                 "meta": { "key": "priority" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "bcad:dada",
@@ -555,6 +577,7 @@
             "left": {
                 "meta": { "key": "mark" }
             },
+            "op": "==",
             "right": "0x4"
         }
     }
@@ -567,6 +590,7 @@
             "left": {
                 "meta": { "key": "mark" }
             },
+            "op": "==",
             "right": "0x32"
         }
     }
@@ -615,6 +639,7 @@
             "left": {
                 "meta": { "key": "mark" }
             },
+            "op": "==",
             "right": "0x10"
         }
     }
@@ -681,6 +706,7 @@
 		    "0x03"
                 ]
             },
+	    "op": "==",
             "right": "0x01"
         }
     }
@@ -711,6 +737,7 @@
             "left": {
                 "meta": { "key": "iif" }
             },
+            "op": "==",
             "right": "lo"
         }
     },
@@ -742,6 +769,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+            "op": "==",
             "right": "dummy0"
         }
     }
@@ -767,6 +795,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "dummy0",
@@ -802,6 +831,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+            "op": "==",
             "right": "dummy*"
         }
     }
@@ -814,6 +844,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+            "op": "==",
             "right": "dummy\\*"
         }
     }
@@ -826,6 +857,7 @@
             "left": {
                 "meta": { "key": "iiftype" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "ether",
@@ -884,6 +916,7 @@
             "left": {
                 "meta": { "key": "iiftype" }
             },
+            "op": "==",
             "right": "ether"
         }
     }
@@ -909,6 +942,7 @@
             "left": {
                 "meta": { "key": "iiftype" }
             },
+            "op": "==",
             "right": "ppp"
         }
     }
@@ -921,6 +955,7 @@
             "left": {
                 "meta": { "key": "oif" }
             },
+            "op": "==",
             "right": "lo"
         }
     },
@@ -952,6 +987,7 @@
             "left": {
                 "meta": { "key": "oif" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "lo"
@@ -991,6 +1027,7 @@
             "left": {
                 "meta": { "key": "oifname" }
             },
+            "op": "==",
             "right": "dummy0"
         }
     }
@@ -1016,6 +1053,7 @@
             "left": {
                 "meta": { "key": "oifname" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "dummy0",
@@ -1033,6 +1071,7 @@
             "left": {
                 "meta": { "key": "oifname" }
             },
+            "op": "==",
             "right": "dummy*"
         }
     }
@@ -1045,6 +1084,7 @@
             "left": {
                 "meta": { "key": "oifname" }
             },
+            "op": "==",
             "right": "dummy\\*"
         }
     }
@@ -1057,6 +1097,7 @@
             "left": {
                 "meta": { "key": "oiftype" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "ether",
@@ -1115,6 +1156,7 @@
             "left": {
                 "meta": { "key": "oiftype" }
             },
+            "op": "==",
             "right": "ether"
         }
     }
@@ -1127,6 +1169,7 @@
             "left": {
                 "meta": { "key": "skuid" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "bin",
@@ -1170,6 +1213,7 @@
             "left": {
                 "meta": { "key": "skuid" }
             },
+            "op": "==",
             "right": "root"
         }
     }
@@ -1227,6 +1271,7 @@
             "left": {
                 "meta": { "key": "skuid" }
             },
+            "op": "==",
             "right": 3000
         }
     },
@@ -1242,6 +1287,7 @@
             "left": {
                 "meta": { "key": "skuid" }
             },
+            "op": "==",
             "right": {
                 "range": [ 3001, 3005 ]
             }
@@ -1277,6 +1323,7 @@
             "left": {
                 "meta": { "key": "skuid" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 2001, 2005 ] }
@@ -1316,6 +1363,7 @@
             "left": {
                 "meta": { "key": "skgid" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "bin",
@@ -1359,6 +1407,7 @@
             "left": {
                 "meta": { "key": "skgid" }
             },
+            "op": "==",
             "right": "root"
         }
     }
@@ -1416,6 +1465,7 @@
             "left": {
                 "meta": { "key": "skgid" }
             },
+            "op": "==",
             "right": 3000
         }
     },
@@ -1431,6 +1481,7 @@
             "left": {
                 "meta": { "key": "skgid" }
             },
+            "op": "==",
             "right": {
                 "range": [ 2001, 2005 ]
             }
@@ -1466,6 +1517,7 @@
             "left": {
                 "meta": { "key": "skgid" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 2001, 2005 ] }
@@ -1601,6 +1653,7 @@
             "left": {
                 "meta": { "key": "iif" }
             },
+            "op": "==",
             "right": "lo"
         }
     }
@@ -1613,6 +1666,7 @@
             "left": {
                 "meta": { "key": "oif" }
             },
+            "op": "==",
             "right": "lo"
         }
     }
@@ -1625,6 +1679,7 @@
             "left": {
                 "meta": { "key": "oifname" }
             },
+            "op": "==",
             "right": "dummy2"
         }
     },
@@ -1640,6 +1695,7 @@
             "left": {
                 "meta": { "key": "skuid" }
             },
+            "op": "==",
             "right": 3000
         }
     }
@@ -1652,6 +1708,7 @@
             "left": {
                 "meta": { "key": "skgid" }
             },
+            "op": "==",
             "right": 3000
         }
     }
@@ -1664,6 +1721,7 @@
             "left": {
                 "meta": { "key": "rtclassid" }
             },
+            "op": "==",
             "right": "cosmos"
         }
     }
@@ -1676,6 +1734,7 @@
             "left": {
                 "meta": { "key": "pkttype" }
             },
+            "op": "==",
             "right": "broadcast"
         }
     }
@@ -1688,6 +1747,7 @@
             "left": {
                 "meta": { "key": "pkttype" }
             },
+            "op": "==",
             "right": "host"
         }
     }
@@ -1700,6 +1760,7 @@
             "left": {
                 "meta": { "key": "pkttype" }
             },
+            "op": "==",
             "right": "multicast"
         }
     }
@@ -1751,6 +1812,7 @@
             "left": {
                 "meta": { "key": "pkttype" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "broadcast",
@@ -1771,6 +1833,7 @@
             "left": {
                 "meta": { "key": "cpu" }
             },
+            "op": "==",
             "right": 1
         }
     }
@@ -1796,6 +1859,7 @@
             "left": {
                 "meta": { "key": "cpu" }
             },
+            "op": "==",
             "right": {
                 "range": [ 1, 3 ]
             }
@@ -1825,6 +1889,7 @@
             "left": {
                 "meta": { "key": "cpu" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     2,
@@ -1842,6 +1907,7 @@
             "left": {
                 "meta": { "key": "cpu" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 2, 3 ] },
@@ -1877,6 +1943,7 @@
             "left": {
                 "meta": { "key": "iifgroup" }
             },
+            "op": "==",
             "right": 0
         }
     }
@@ -1902,6 +1969,7 @@
             "left": {
                 "meta": { "key": "iifgroup" }
             },
+            "op": "==",
             "right": "default"
         }
     }
@@ -1927,6 +1995,7 @@
             "left": {
                 "meta": { "key": "iifgroup" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "default"
@@ -1960,6 +2029,7 @@
             "left": {
                 "meta": { "key": "iifgroup" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     11,
@@ -1977,6 +2047,7 @@
             "left": {
                 "meta": { "key": "iifgroup" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 11, 33 ] }
@@ -2028,6 +2099,7 @@
             "left": {
                 "meta": { "key": "oifgroup" }
             },
+            "op": "==",
             "right": 0
         }
     }
@@ -2053,6 +2125,7 @@
             "left": {
                 "meta": { "key": "oifgroup" }
             },
+            "op": "==",
             "right": "default"
         }
     }
@@ -2078,6 +2151,7 @@
             "left": {
                 "meta": { "key": "oifgroup" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "default"
@@ -2111,6 +2185,7 @@
             "left": {
                 "meta": { "key": "oifgroup" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     11,
@@ -2128,6 +2203,7 @@
             "left": {
                 "meta": { "key": "oifgroup" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 11, 33 ] }
@@ -2179,6 +2255,7 @@
             "left": {
                 "meta": { "key": "cgroup" }
             },
+            "op": "==",
             "right": 1048577
         }
     }
@@ -2204,6 +2281,7 @@
             "left": {
                 "meta": { "key": "cgroup" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     1048577,
@@ -2239,6 +2317,7 @@
             "left": {
                 "meta": { "key": "cgroup" }
             },
+            "op": "==",
             "right": {
                 "range": [ 1048577, 1048578 ]
             }
@@ -2268,6 +2347,7 @@
             "left": {
                 "meta": { "key": "cgroup" }
             },
+            "op": "==",
             "right": {
                 "set": [
                     {
@@ -2312,6 +2392,7 @@
                     }
                 ]
             },
+            "op": "==",
             "right": {
                 "set": [
                     {
@@ -2343,6 +2424,7 @@
                     }
                 ]
             },
+            "op": "==",
             "right": {
                 "set": [
                     {
@@ -2398,6 +2480,7 @@
             "left": {
                 "meta": { "key": "random" }
             },
+            "op": "==",
             "right": 1
         }
     }

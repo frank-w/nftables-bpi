@@ -8,6 +8,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "icmp"
         }
     },
@@ -19,6 +20,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }
@@ -34,6 +36,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }
@@ -49,6 +52,7 @@
                     "protocol": "ip6"
                 }
             },
+	    "op": "==",
             "right": "icmpv6"
         }
     },
@@ -60,6 +64,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }
@@ -75,6 +80,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }
@@ -90,6 +96,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "ipv6-icmp"
         }
     },
@@ -98,6 +105,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": "ipv6-icmp"
         }
     },
@@ -109,6 +117,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     }

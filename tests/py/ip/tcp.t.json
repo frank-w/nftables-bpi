@@ -8,6 +8,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "tcp"
         }
     },
@@ -19,6 +20,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": "ssh"
         }
     },
@@ -49,6 +51,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": "ssh"
         }
     },

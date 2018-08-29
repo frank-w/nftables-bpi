@@ -8,6 +8,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": 80
         }
     },
@@ -45,6 +46,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 50, 70 ]
             }
@@ -86,6 +88,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     49,
@@ -133,6 +136,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 12, 40 ] }
@@ -172,6 +176,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": 80
         }
     },
@@ -209,6 +214,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 70, 75 ]
             }
@@ -250,6 +256,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     49,
@@ -297,6 +304,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 70, 75 ] }
@@ -342,6 +350,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": 6666
         }
     },
@@ -384,6 +393,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -415,6 +425,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 33, 45 ]
             }
@@ -450,6 +461,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     33,
@@ -495,6 +507,7 @@
                     "protocol": "udplite"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     { "range": [ 33, 55 ] }

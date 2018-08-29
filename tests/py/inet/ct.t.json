@@ -5,6 +5,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv4"
         }
     },
@@ -16,6 +17,7 @@
                     "key": "saddr"
                 }
             },
+	    "op": "==",
             "right": "1.2.3.4"
         }
     }
@@ -32,6 +34,7 @@
                     "key": "saddr"
                 }
             },
+	    "op": "==",
             "right": "::1"
         }
     }

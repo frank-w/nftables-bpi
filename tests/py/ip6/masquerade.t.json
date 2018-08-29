@@ -8,6 +8,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -26,6 +27,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -46,6 +48,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -69,6 +72,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -93,6 +97,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -116,6 +121,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -140,6 +146,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -160,6 +167,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -183,6 +191,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -207,6 +216,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -230,6 +240,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -251,6 +262,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": 6
         }
     },
@@ -268,6 +280,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": 6
         }
     },
@@ -290,6 +303,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     1,
@@ -325,6 +339,7 @@
                     "protocol": "ip6"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ "fe00::1", "fe00::200" ]
             }
@@ -338,6 +353,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -356,6 +372,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -366,6 +383,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": [
                 "established",
                 "new"

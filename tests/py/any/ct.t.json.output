@@ -7,6 +7,7 @@
                     "key": "state"
                 }
             },
+            "op": "in",
             "right": [
                 "established",
                 "related",
@@ -26,6 +27,7 @@
                     "key": "state"
                 }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "established",
@@ -69,6 +71,7 @@
                     "key": "state"
                 }
             },
+            "op": "in",
             "right": "new"
         }
     }
@@ -83,6 +86,7 @@
                     "key": "direction"
                 }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "original",
@@ -202,6 +206,7 @@
                     "key": "mark"
                 }
             },
+            "op": "==",
             "right": 50
         }
     }
@@ -231,6 +236,7 @@
                     "key": "mark"
                 }
             },
+            "op": "==",
             "right": 50
         }
     }
@@ -260,6 +266,7 @@
                     "key": "mark"
                 }
             },
+            "op": "==",
             "right": {
                 "range": [ 50, 69 ]
             }
@@ -293,6 +300,7 @@
                     "key": "mark"
                 }
             },
+            "op": "==",
             "right": {
                 "set": [
                     50,
@@ -313,6 +321,7 @@
                     "key": "mark"
                 }
             },
+            "op": "==",
             "right": {
                 "set": [
                     { "range": [ 50, 8738 ] },
@@ -409,6 +418,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": 30
         }
     }
@@ -423,6 +433,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": 30
         }
     }
@@ -437,6 +448,7 @@
                     "key": "expiration"
                 }
             },
+            "op": "==",
             "right": {
                 "range": [ 60, 3600 ]
             }
@@ -477,6 +489,7 @@
                     }
                 ]
             },
+            "op": "==",
             "right": {
                 "set": [
                     {
@@ -509,6 +522,7 @@
                     }
                 ]
             },
+            "op": "==",
             "right": {
                 "set": [
                     {
@@ -553,6 +567,7 @@
                     }
                 ]
             },
+            "op": "==",
             "right": {
                 "set": [
                     {

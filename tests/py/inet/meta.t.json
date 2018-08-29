@@ -5,6 +5,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv4"
         }
     }
@@ -17,6 +18,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv6"
         }
     }
@@ -29,6 +31,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     "ipv4",
@@ -64,6 +67,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv6"
         }
     },
@@ -75,6 +79,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -87,6 +92,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv4"
         }
     },
@@ -98,6 +104,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -110,6 +117,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv4"
         }
     },
@@ -121,6 +129,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "1.2.3.4"
         }
     }
@@ -133,6 +142,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv6"
         }
     },
@@ -141,6 +151,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": "tcp"
         }
     }
@@ -153,6 +164,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv4"
         }
     },
@@ -167,6 +179,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "1.2.3.4"
         }
     }
@@ -179,6 +192,7 @@
             "left": {
                 "meta": { "key": "secpath" }
             },
+	    "op": "==",
             "right": true
         }
     }
@@ -191,6 +205,7 @@
             "left": {
                 "meta": { "key": "secpath" }
             },
+	    "op": "==",
             "right": false
         }
     }

@@ -8,6 +8,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     }
@@ -23,6 +24,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 0
         }
     }
@@ -38,6 +40,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     },
@@ -49,6 +52,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 0
         }
     }
@@ -64,6 +68,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     },
@@ -91,6 +96,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     },
@@ -102,6 +108,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     }
@@ -117,6 +124,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     },
@@ -128,6 +136,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     },
@@ -139,6 +148,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 7
         }
     }
@@ -154,6 +164,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     },
@@ -165,6 +176,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     },
@@ -176,6 +188,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 3
         }
     }
@@ -191,6 +204,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     }
@@ -206,6 +220,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 0
         }
     }
@@ -221,6 +236,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     },
@@ -232,6 +248,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 0
         }
     }
@@ -247,6 +264,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     },
@@ -258,6 +276,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     }
@@ -273,6 +292,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 4094
         }
     },
@@ -284,6 +304,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     }
@@ -299,6 +320,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     },
@@ -310,6 +332,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "10.0.0.1"
         }
     }
@@ -325,6 +348,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     },
@@ -336,6 +360,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": {
                 "prefix": {
                     "addr": "10.0.0.0",
@@ -356,6 +381,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     },
@@ -367,6 +393,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": {
                 "prefix": {
                     "addr": "10.0.0.0",
@@ -383,6 +410,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     }
@@ -398,6 +426,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": 1
         }
     },
@@ -409,6 +438,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": {
                 "prefix": {
                     "addr": "10.0.0.0",
@@ -425,6 +455,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     }
@@ -440,6 +471,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     1,
@@ -459,6 +491,7 @@
                     "protocol": "vlan"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ 1, 3 ]
             }

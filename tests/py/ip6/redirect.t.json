@@ -15,6 +15,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 954
         }
     },
@@ -33,6 +34,7 @@
                     "protocol": "ip6"
                 }
             },
+	    "op": "==",
             "right": "fe00::cafe"
         }
     },
@@ -54,6 +56,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -74,6 +77,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -97,6 +101,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -121,6 +126,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -144,6 +150,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -168,6 +175,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -188,6 +196,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -211,6 +220,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -235,6 +245,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -258,6 +269,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -282,6 +294,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 1234
         }
     },
@@ -302,6 +315,7 @@
                     "protocol": "ip6"
                 }
             },
+	    "op": "==",
             "right": "fe00::cafe"
         }
     },
@@ -313,6 +327,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 9998
         }
     },
@@ -333,6 +348,7 @@
                     "protocol": "ip6"
                 }
             },
+	    "op": "==",
             "right": "tcp"
         }
     },
@@ -355,6 +371,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 39128
         }
     },
@@ -375,6 +392,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 9128
         }
     },
@@ -396,6 +414,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 9128
         }
     },
@@ -420,6 +439,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     1,
@@ -455,6 +475,7 @@
                     "protocol": "ip6"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ "fe00::1", "fe00::200" ]
             }
@@ -468,6 +489,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -486,6 +508,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -496,6 +519,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": [
                 "established",
                 "new"
@@ -543,6 +567,7 @@
                     "protocol": "ip6"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },

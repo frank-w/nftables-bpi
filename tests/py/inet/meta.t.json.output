@@ -8,6 +8,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "1.2.3.4"
         }
     }
@@ -20,6 +21,7 @@
             "left": {
                 "meta": { "key": "nfproto" }
             },
+	    "op": "==",
             "right": "ipv6"
         }
     },
@@ -28,6 +30,7 @@
             "left": {
                 "meta": { "key": "l4proto" }
             },
+	    "op": "==",
             "right": 6
         }
     }

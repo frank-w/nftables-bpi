@@ -8,6 +8,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -32,6 +33,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -55,6 +57,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -79,6 +82,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -102,6 +106,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -126,6 +131,7 @@
                     "protocol": "ip6"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },

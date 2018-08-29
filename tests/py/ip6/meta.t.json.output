@@ -8,6 +8,7 @@
                     "protocol": "icmpv6"
                 }
             },
+	    "op": "==",
             "right": "nd-router-advert"
         }
     }
@@ -23,6 +24,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }
@@ -38,6 +40,7 @@
                     "protocol": "icmp"
                 }
             },
+	    "op": "==",
             "right": "echo-request"
         }
     }

@@ -30,6 +30,7 @@
                     "result": "oifname"
                 }
             },
+	    "op": "==",
             "right": "lo"
         }
     }
@@ -48,6 +49,7 @@
                     "result": "type"
                 }
             },
+	    "op": "==",
             "right": "local"
         }
     }
@@ -104,6 +106,7 @@
                     "result": "oif"
                 }
             },
+	    "op": "==",
             "right": true
         }
     }
@@ -121,6 +124,7 @@
                     "result": "oif"
                 }
             },
+	    "op": "==",
             "right": false
         }
     }

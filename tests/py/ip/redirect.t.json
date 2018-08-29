@@ -8,6 +8,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -26,6 +27,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -46,6 +48,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -69,6 +72,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -93,6 +97,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -116,6 +121,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -140,6 +146,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -160,6 +167,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -183,6 +191,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -207,6 +216,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -230,6 +240,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -254,6 +265,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 22
         }
     },
@@ -274,6 +286,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 1234
         }
     },
@@ -294,6 +307,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "172.16.0.1"
         }
     },
@@ -305,6 +319,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 9998
         }
     },
@@ -325,6 +340,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 39128
         }
     },
@@ -345,6 +361,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": "tcp"
         }
     },
@@ -367,6 +384,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 9128
         }
     },
@@ -388,6 +406,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 9128
         }
     },
@@ -409,6 +428,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 9128
         }
     },
@@ -430,6 +450,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": 9128
         }
     },
@@ -454,6 +475,7 @@
                     "protocol": "tcp"
                 }
             },
+	    "op": "==",
             "right": {
                 "set": [
                     1,
@@ -489,6 +511,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": {
                 "range": [ "10.0.0.0", "10.2.3.4" ]
             }
@@ -502,6 +525,7 @@
                     "protocol": "udp"
                 }
             },
+	    "op": "==",
             "right": 53
         }
     },
@@ -520,6 +544,7 @@
             "left": {
                 "meta": { "key": "iifname" }
             },
+	    "op": "==",
             "right": "eth0"
         }
     },
@@ -530,6 +555,7 @@
                     "key": "state"
                 }
             },
+	    "op": "in",
             "right": [
                 "established",
                 "new"
@@ -577,6 +603,7 @@
                     "protocol": "ip"
                 }
             },
+	    "op": "==",
             "right": 6
         }
     },

@@ -2212,7 +2212,9 @@ static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 static struct cmd *json_parse_cmd_add_table(struct json_ctx *ctx, json_t *root,
 					    enum cmd_ops op, enum cmd_obj obj)
 {
-	struct handle h = { 0 };
+	struct handle h = {
+		.table.location = *int_loc,
+	};
 	const char *family = "";
 
 	if (json_unpack_err(ctx, root, "{s:s}",
@@ -2250,7 +2252,9 @@ static int parse_policy(const char *policy)
 static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 					    enum cmd_ops op, enum cmd_obj obj)
 {
-	struct handle h = { 0 };
+	struct handle h = {
+		.table.location = *int_loc,
+	};
 	const char *family = "", *policy = "", *type, *hookstr;
 	int prio;
 	struct chain *chain;

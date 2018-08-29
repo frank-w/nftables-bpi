@@ -278,7 +278,9 @@ def chain_create(chain, table, filename):
         print_error(reason, filename, chain.lineno)
         return -1
 
-    cmd = "add chain %s %s { %s; }" % (table, chain, chain.config)
+    cmd = "add chain %s %s" % (table, chain)
+    if chain.config:
+        cmd += " { %s; }" % chain.config
 
     ret = execute_cmd(cmd, filename, chain.lineno)
     if ret != 0:

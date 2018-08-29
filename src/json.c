@@ -642,7 +642,10 @@ json_t *verdict_expr_json(const struct expr *expr, struct output_ctx *octx)
 		BUG("Unknown verdict %d.", expr->verdict);
 		return NULL;
 	}
-	return json_pack("{s:o}", name, chain ? json_string(chain) : json_null());
+	if (chain)
+		return json_pack("{s:{s:s}}", name, "target", chain);
+	else
+		return json_pack("{s:n}", name);
 }
 
 json_t *rt_expr_json(const struct expr *expr, struct output_ctx *octx)

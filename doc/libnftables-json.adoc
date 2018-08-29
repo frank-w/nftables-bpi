@@ -548,13 +548,13 @@ single statement.
 *{ "drop": null }*
 *{ "continue": null }*
 *{ "return": null }*
-*{ "jump":* 'STRING' *}*
-*{ "goto":* 'STRING' *}*
+*{ "jump": { "target": * 'STRING' *}}*
+*{ "goto": { "target": * 'STRING' *}}*
 
 A verdict either terminates packet traversal through the current chain or
 delegates to a different one.
 
-*jump* and *goto* statements expect a target chain name as value.
+*jump* and *goto* statements expect a target chain name.
 
 === MATCH
 [verse]
@@ -1177,18 +1177,16 @@ side.
 
 === VERDICT
 [verse]
-*{ "continue": null }*
-*{ "break": null }*
-*{ "jump":* 'STRING' *}*
-*{ "goto":* 'STRING' *}*
-*{ "return": null }*
 *{ "accept": null }*
 *{ "drop": null }*
-*{ "queue": null }*
+*{ "continue": null }*
+*{ "return": null }*
+*{ "jump": { "target":* 'STRING' *}}*
+*{ "goto": { "target":* 'STRING' *}}*
 
 Same as *verdict* statement, but for use in verdict maps.
 
-Only *jump* and *goto* verdicts expect a string denoting the target chain name.
+*jump* and *goto* verdicts expect a target chain name.
 
 === ELEM
 [verse]

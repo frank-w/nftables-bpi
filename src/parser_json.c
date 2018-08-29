@@ -1031,27 +1031,25 @@ static struct expr *json_parse_verdict_expr(struct json_ctx *ctx,
 		bool chain;
 	} verdict_tbl[] = {
 		{ NFT_CONTINUE, "continue", false },
-		{ NFT_BREAK, "break", false },
 		{ NFT_JUMP, "jump", true },
 		{ NFT_GOTO, "goto", true },
 		{ NFT_RETURN, "return", false },
 		{ NF_ACCEPT, "accept", false },
 		{ NF_DROP, "drop", false },
-		{ NF_QUEUE, "queue", false },
 	};
 	const char *chain = NULL;
 	unsigned int i;
 
-	json_unpack(root, "s", &chain);
+	json_unpack(root, "{s:s}", "target", &chain);
 
 	for (i = 0; i < array_size(verdict_tbl); i++) {
 		if (strcmp(type, verdict_tbl[i].name))
 			continue;
 
-		if (verdict_tbl[i].chain && !chain) {
-			json_error(ctx, "Verdict %s needs chain argument.", type);
+		if (verdict_tbl[i].chain &&
+		    json_unpack_err(ctx, root, "{s:s}", "target", &chain))
 			return NULL;
-		}
+
 		return verdict_expr_alloc(int_loc,
 					  verdict_tbl[i].verdict, chain);
 	}

@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "cs1"
@@ -20,7 +20,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -36,7 +36,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "0x38"
@@ -51,7 +51,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -67,7 +67,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -106,7 +106,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -127,7 +127,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -160,7 +160,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 232
@@ -175,7 +175,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -191,7 +191,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -208,7 +208,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -226,7 +226,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -248,7 +248,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -271,7 +271,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -290,7 +290,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -310,7 +310,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 22
@@ -325,7 +325,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -341,7 +341,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -358,7 +358,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -376,7 +376,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -398,7 +398,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -421,7 +421,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -440,7 +440,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -460,7 +460,7 @@
             "left": {
                 "payload": {
                     "field": "frag-off",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 222
@@ -478,7 +478,7 @@
             "left": {
                 "payload": {
                     "field": "frag-off",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -494,7 +494,7 @@
             "left": {
                 "payload": {
                     "field": "frag-off",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -511,7 +511,7 @@
             "left": {
                 "payload": {
                     "field": "frag-off",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -529,7 +529,7 @@
             "left": {
                 "payload": {
                     "field": "frag-off",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -551,7 +551,7 @@
             "left": {
                 "payload": {
                     "field": "frag-off",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -574,7 +574,7 @@
             "left": {
                 "payload": {
                     "field": "frag-off",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -593,7 +593,7 @@
             "left": {
                 "payload": {
                     "field": "frag-off",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -613,7 +613,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 0
@@ -631,7 +631,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 233
@@ -646,7 +646,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -663,7 +663,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -681,7 +681,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -702,7 +702,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -724,7 +724,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -743,7 +743,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -763,7 +763,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "tcp"
@@ -778,7 +778,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -794,7 +794,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -824,7 +824,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -855,7 +855,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 255
@@ -870,7 +870,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 13172
@@ -888,7 +888,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 22
@@ -903,7 +903,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -919,7 +919,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -936,7 +936,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -954,7 +954,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -976,7 +976,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -999,7 +999,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1018,7 +1018,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -1038,7 +1038,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1058,7 +1058,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -1079,7 +1079,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "192.168.3.1"
@@ -1090,7 +1090,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "192.168.3.100"
@@ -1105,7 +1105,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -1121,7 +1121,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "1.1.1.1"
@@ -1136,7 +1136,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1153,7 +1153,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1170,7 +1170,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1187,7 +1187,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1204,7 +1204,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -1222,7 +1222,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1241,7 +1241,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -1261,7 +1261,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1285,7 +1285,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -1310,7 +1310,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1327,7 +1327,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -1345,7 +1345,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1362,7 +1362,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -1380,7 +1380,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "192.168.0.1"
@@ -1395,7 +1395,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "192.168.0.1"
@@ -1413,7 +1413,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "192.168.0.2"
@@ -1430,7 +1430,7 @@
                     {
                         "payload": {
                             "field": "saddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
                     "0xff"
@@ -1451,7 +1451,7 @@
                     {
                         "payload": {
                             "field": "saddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
                     "0.0.0.255"
@@ -1472,7 +1472,7 @@
                     {
                         "payload": {
                             "field": "saddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
 		    "0xffff0000"
@@ -1490,7 +1490,7 @@
             "left": {
                 "payload": {
                     "field": "version",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 4
@@ -1501,7 +1501,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 5
@@ -1516,7 +1516,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 0
@@ -1531,7 +1531,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 15
@@ -1546,7 +1546,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -1587,7 +1587,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "127.0.0.1"
@@ -1610,7 +1610,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 0
@@ -1633,7 +1633,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 0
@@ -1656,7 +1656,7 @@
             "left": {
                 "payload": {
                     "field": "ecn",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 1
@@ -1679,7 +1679,7 @@
             "left": {
                 "payload": {
                     "field": "ecn",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "ce"
@@ -1702,7 +1702,7 @@
             "left": {
                 "payload": {
                     "field": "ttl",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 23
@@ -1725,7 +1725,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 1
@@ -1748,7 +1748,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "af23"
@@ -1771,7 +1771,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "cs0"

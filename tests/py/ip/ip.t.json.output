@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "cs7"
@@ -20,7 +20,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -36,7 +36,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -75,7 +75,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": 6
@@ -90,7 +90,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -106,7 +106,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -136,7 +136,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "op": "!=",
@@ -169,7 +169,7 @@
                     {
                         "payload": {
                             "field": "saddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
                     "0.0.0.255"
@@ -188,7 +188,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": {
@@ -216,7 +216,7 @@
             "left": {
                 "payload": {
                     "field": "ecn",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "ect1"

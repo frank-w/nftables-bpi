@@ -467,56 +467,46 @@ static const struct proto_desc *proto_lookup_byname(const char *name)
 static struct expr *json_parse_payload_expr(struct json_ctx *ctx,
 					    const char *type, json_t *root)
 {
-	const char *name;
-	const char *field;
-	int val;
-	const struct proto_desc *proto;
+	const char *protocol, *field, *base;
+	int offset, len, val;
 
-	if (json_unpack_err(ctx, root, "{s:s}", "name", &name))
-		return NULL;
-
-	/* special treatment for raw */
-
-	if (!strcmp(name, "raw")) {
-		int offset, len, baseval;
+	if (!json_unpack(root, "{s:s, s:i, s:i}",
+			 "base", &base, "offset", &offset, "len", &len)) {
 		struct expr *expr;
-		const char *base;
 
-		if (json_unpack_err(ctx, root, "{s:s, s:i, s:i}",
-				    "base", &base,
-				    "offset", &offset,
-				    "len", &len))
-			return NULL;
 		if (!strcmp(base, "ll")) {
-			baseval = PROTO_BASE_LL_HDR;
+			val = PROTO_BASE_LL_HDR;
 		} else if (!strcmp(base, "nh")) {
-			baseval = PROTO_BASE_NETWORK_HDR;
+			val = PROTO_BASE_NETWORK_HDR;
 		} else if (!strcmp(base, "th")) {
-			baseval = PROTO_BASE_TRANSPORT_HDR;
+			val = PROTO_BASE_TRANSPORT_HDR;
 		} else {
 			json_error(ctx, "Invalid payload base '%s'.", base);
 			return NULL;
 		}
 		expr = payload_expr_alloc(int_loc, NULL, 0);
-		payload_init_raw(expr, baseval, offset, len);
+		payload_init_raw(expr, val, offset, len);
 		expr->byteorder		= BYTEORDER_BIG_ENDIAN;
 		expr->payload.is_raw	= true;
-
 		return expr;
-	}
+	} else if (!json_unpack(root, "{s:s, s:s}",
+				"protocol", &protocol, "field", &field)) {
+		const struct proto_desc *proto = proto_lookup_byname(protocol);
 
-	proto = proto_lookup_byname(name);
-	if (!proto) {
-		json_error(ctx, "Unknown payload expr name '%s'.", name);
-		return NULL;
+		if (!proto) {
+			json_error(ctx, "Unknown payload protocol '%s'.",
+				   protocol);
+			return NULL;
+		}
+		if (json_parse_payload_field(proto, field, &val)) {
+			json_error(ctx, "Unknown %s field '%s'.",
+				   protocol, field);
+			return NULL;
+		}
+		return payload_expr_alloc(int_loc, proto, val);
 	}
-	if (json_unpack_err(ctx, root, "{s:s}", "field", &field))
-		return NULL;
-	if (json_parse_payload_field(proto, field, &val)) {
-		json_error(ctx, "Unknown %s field '%s'.", name, field);
-		return NULL;
-	}
-	return payload_expr_alloc(int_loc, proto, val);
+	json_error(ctx, "Invalid payload expression properties.");
+	return NULL;
 }
 
 static struct expr *json_parse_tcp_option_expr(struct json_ctx *ctx,

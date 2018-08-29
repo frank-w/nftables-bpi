@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "tcp"
@@ -16,7 +16,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 22
@@ -31,7 +31,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "tcp"
@@ -42,7 +42,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "1.2.3.4"
@@ -53,7 +53,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 22
@@ -68,7 +68,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "tcp"
@@ -82,7 +82,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "1.2.3.4"
@@ -93,7 +93,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 22
@@ -108,7 +108,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "tcp"
@@ -122,7 +122,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 22
@@ -137,7 +137,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "ether"
+                    "protocol": "ether"
                 }
             },
             "right": "ip"
@@ -148,7 +148,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 22

@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -41,7 +41,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -65,7 +65,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",

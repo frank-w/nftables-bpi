@@ -10,7 +10,7 @@
                     "left": {
                         "payload": {
                             "field": "saddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
                     "right": {
@@ -43,7 +43,7 @@
                     "left": {
                         "payload": {
                             "field": "hdrlength",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
                     "right": {

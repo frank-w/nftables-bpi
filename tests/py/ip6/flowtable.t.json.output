@@ -13,7 +13,7 @@
                             {
                                 "payload": {
                                     "field": "saddr",
-                                    "name": "ip6"
+                                    "protocol": "ip6"
                                 }
                             }
                         ]
@@ -41,7 +41,7 @@
                             {
                                 "payload": {
                                     "field": "saddr",
-                                    "name": "ip6"
+                                    "protocol": "ip6"
                                 }
                             },
                             {

@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "@set1"
@@ -23,7 +23,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "op": "!=",

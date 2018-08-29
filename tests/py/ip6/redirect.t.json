@@ -12,7 +12,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 954
@@ -30,7 +30,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "fe00::cafe"
@@ -51,7 +51,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -71,7 +71,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -94,7 +94,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -118,7 +118,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -141,7 +141,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -165,7 +165,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -185,7 +185,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -208,7 +208,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -232,7 +232,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -255,7 +255,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -279,7 +279,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 1234
@@ -299,7 +299,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "fe00::cafe"
@@ -310,7 +310,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 9998
@@ -330,7 +330,7 @@
             "left": {
                 "payload": {
                     "field": "nexthdr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "tcp"
@@ -352,7 +352,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 39128
@@ -372,7 +372,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 9128
@@ -393,7 +393,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 9128
@@ -417,7 +417,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": {
@@ -452,7 +452,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": {
@@ -465,7 +465,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 53
@@ -507,7 +507,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": {
@@ -540,7 +540,7 @@
             "left": {
                 "payload": {
                     "field": "nexthdr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": 6
@@ -553,7 +553,7 @@
                     "left": {
                         "payload": {
                             "field": "dport",
-                            "name": "tcp"
+                            "protocol": "tcp"
                         }
                     },
                     "right": {

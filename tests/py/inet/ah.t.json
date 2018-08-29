@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -22,7 +22,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -40,7 +40,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -59,7 +59,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -79,7 +79,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -100,7 +100,7 @@
             "left": {
                 "payload": {
                     "field": "hdrlength",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -122,7 +122,7 @@
             "left": {
                 "payload": {
                     "field": "reserved",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": 22
@@ -137,7 +137,7 @@
             "left": {
                 "payload": {
                     "field": "reserved",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -153,7 +153,7 @@
             "left": {
                 "payload": {
                     "field": "reserved",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -170,7 +170,7 @@
             "left": {
                 "payload": {
                     "field": "reserved",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -188,7 +188,7 @@
             "left": {
                 "payload": {
                     "field": "reserved",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -208,7 +208,7 @@
             "left": {
                 "payload": {
                     "field": "reserved",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -229,7 +229,7 @@
             "left": {
                 "payload": {
                     "field": "reserved",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -248,7 +248,7 @@
             "left": {
                 "payload": {
                     "field": "reserved",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -268,7 +268,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": 111
@@ -283,7 +283,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -299,7 +299,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -316,7 +316,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -334,7 +334,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -354,7 +354,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -375,7 +375,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -394,7 +394,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -414,7 +414,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": 123
@@ -429,7 +429,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -445,7 +445,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -466,7 +466,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -488,7 +488,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -507,7 +507,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",
@@ -527,7 +527,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "right": {
@@ -544,7 +544,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "ah"
+                    "protocol": "ah"
                 }
             },
             "op": "!=",

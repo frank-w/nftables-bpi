@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 80
@@ -23,7 +23,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -42,7 +42,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -62,7 +62,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -83,7 +83,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -106,7 +106,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -130,7 +130,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -149,7 +149,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -169,7 +169,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 80
@@ -187,7 +187,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -206,7 +206,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -226,7 +226,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -247,7 +247,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -270,7 +270,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -294,7 +294,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -316,7 +316,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -339,7 +339,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 6666
@@ -354,7 +354,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -370,7 +370,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -390,7 +390,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -411,7 +411,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -434,7 +434,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -458,7 +458,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -477,7 +477,7 @@
             "left": {
                 "payload": {
                     "field": "length",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -497,7 +497,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 6666
@@ -515,7 +515,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -539,7 +539,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 22
@@ -554,7 +554,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -570,7 +570,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -587,7 +587,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -605,7 +605,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -627,7 +627,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -650,7 +650,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": {
@@ -669,7 +669,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "op": "!=",
@@ -697,7 +697,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 0
@@ -720,7 +720,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udp"
+                    "protocol": "udp"
                 }
             },
             "right": 65535

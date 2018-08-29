@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "echo-request"
@@ -20,7 +20,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "echo-request"
@@ -41,7 +41,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "echo-request"
@@ -62,7 +62,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "echo-request"
@@ -83,7 +83,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "echo-request"
@@ -104,7 +104,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "echo-request"

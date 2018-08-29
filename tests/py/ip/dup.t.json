@@ -26,7 +26,7 @@
                     "left": {
                         "payload": {
                             "field": "saddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
                     "right": {

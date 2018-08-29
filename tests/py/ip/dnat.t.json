@@ -13,7 +13,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": {
@@ -43,7 +43,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "op": "!=",
@@ -74,7 +74,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": {
@@ -108,7 +108,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "op": "!=",
@@ -143,7 +143,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "op": "!=",
@@ -174,7 +174,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 81
@@ -229,7 +229,7 @@
                             {
                                 "payload": {
                                     "field": "daddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             }
                         ]

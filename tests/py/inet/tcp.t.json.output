@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": {
@@ -29,7 +29,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 1024
@@ -40,7 +40,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 22
@@ -51,7 +51,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 0
@@ -66,7 +66,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": {
@@ -82,7 +82,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 22
@@ -93,7 +93,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 0
@@ -110,7 +110,7 @@
                     {
                         "payload": {
                             "field": "flags",
-                            "name": "tcp"
+                            "protocol": "tcp"
                         }
                     },
                     {

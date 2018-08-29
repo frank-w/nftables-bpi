@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "cs7"
@@ -20,7 +20,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "op": "!=",
@@ -36,7 +36,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": {
@@ -75,7 +75,7 @@
             "left": {
                 "payload": {
                     "field": "dscp",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": {
@@ -108,7 +108,7 @@
             "left": {
                 "payload": {
                     "field": "nexthdr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": {
@@ -133,7 +133,7 @@
             "left": {
                 "payload": {
                     "field": "nexthdr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": {
@@ -150,7 +150,7 @@
             "left": {
                 "payload": {
                     "field": "nexthdr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "op": "!=",
@@ -168,7 +168,7 @@
             "left": {
                 "payload": {
                     "field": "nexthdr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": 50
@@ -183,7 +183,7 @@
             "left": {
                 "payload": {
                     "field": "nexthdr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "op": "!=",
@@ -199,7 +199,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "0:1234:1234:1234:1234:1234:1234:1234"
@@ -214,7 +214,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "1234:0:1234:1234:1234:1234:1234:1234"
@@ -229,7 +229,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "1234:1234:0:1234:1234:1234:1234:1234"
@@ -244,7 +244,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "1234:1234:1234:0:1234:1234:1234:1234"
@@ -259,7 +259,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "1234:1234:1234:1234:1234:0:1234:1234"
@@ -274,7 +274,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "1234:1234:1234:1234:1234:1234:1234:0"
@@ -289,7 +289,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "::18.52.18.52"
@@ -304,7 +304,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "op": "!=",
@@ -325,7 +325,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "op": "!=",
@@ -351,7 +351,7 @@
             "left": {
                 "payload": {
                     "field": "flowlabel",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": 1048575

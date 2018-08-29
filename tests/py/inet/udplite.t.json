@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": 80
@@ -23,7 +23,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -42,7 +42,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -62,7 +62,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -83,7 +83,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -106,7 +106,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -130,7 +130,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -149,7 +149,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -169,7 +169,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": 80
@@ -187,7 +187,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -206,7 +206,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -226,7 +226,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -247,7 +247,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -270,7 +270,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -294,7 +294,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -316,7 +316,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -339,7 +339,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": 6666
@@ -357,7 +357,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -381,7 +381,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": 22
@@ -396,7 +396,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -412,7 +412,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -429,7 +429,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -447,7 +447,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -469,7 +469,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",
@@ -492,7 +492,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "right": {
@@ -511,7 +511,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "udplite"
+                    "protocol": "udplite"
                 }
             },
             "op": "!=",

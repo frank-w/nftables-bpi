@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "icmp"
@@ -16,7 +16,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "echo-request"
@@ -31,7 +31,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "echo-request"
@@ -46,7 +46,7 @@
             "left": {
                 "payload": {
                     "field": "nexthdr",
-                    "name": "ip6"
+                    "protocol": "ip6"
                 }
             },
             "right": "icmpv6"
@@ -57,7 +57,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "echo-request"
@@ -72,7 +72,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "echo-request"
@@ -87,7 +87,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "ipv6-icmp"
@@ -106,7 +106,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": 1

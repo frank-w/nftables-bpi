@@ -7,19 +7,19 @@
                     {
                         "payload": {
                             "field": "saddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
                     {
                         "payload": {
                             "field": "daddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     },
                     {
                         "payload": {
                             "field": "saddr",
-                            "name": "ether"
+                            "protocol": "ether"
                         }
                     }
                 ]

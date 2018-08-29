@@ -79,7 +79,7 @@ translates into JSON as such:
 			"expr": [
 				{ "match": {
 					"left": { "payload": {
-							"name": "tcp",
+							"protocol": "tcp",
 							"field": "dport"
 					}},
 					"right": 22
@@ -1004,14 +1004,13 @@ the second one the upper boundary.
 [verse]
 ____
 *{ "payload": {
-	"name": "raw",
 	"base":* 'BASE'*,
 	"offset":* 'NUMBER'*,
 	"len":* 'NUMBER'
 *}}*
 
 *{ "payload": {
-	"name":* 'STRING'*,
+	"protocol":* 'STRING'*,
 	"field":* 'STRING'
 *}}*
 
@@ -1030,7 +1029,8 @@ point (*base*). Following *base* values are accepted:
 *"th"*::
 	Offset is relative to Transport Layer header start offset.
 
-The second form allows to reference a field by name (*field*) in a named packet header (*name*).
+The second form allows to reference a field by name (*field*) in a named packet
+header (*protocol*).
 
 === EXTHDR
 [verse]

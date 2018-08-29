@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "ptype",
-                    "name": "arp"
+                    "protocol": "arp"
                 }
             },
             "right": "ip"
@@ -20,7 +20,7 @@
             "left": {
                 "payload": {
                     "field": "operation",
-                    "name": "arp"
+                    "protocol": "arp"
                 }
             },
             "right": {
@@ -45,7 +45,7 @@
             "left": {
                 "payload": {
                     "field": "operation",
-                    "name": "arp"
+                    "protocol": "arp"
                 }
             },
             "op": "!=",
@@ -79,7 +79,7 @@
             "left": {
                 "payload": {
                     "field": "htype",
-                    "name": "arp"
+                    "protocol": "arp"
                 }
             },
             "right": 1
@@ -90,7 +90,7 @@
             "left": {
                 "payload": {
                     "field": "ptype",
-                    "name": "arp"
+                    "protocol": "arp"
                 }
             },
             "right": "ip"
@@ -101,7 +101,7 @@
             "left": {
                 "payload": {
                     "field": "hlen",
-                    "name": "arp"
+                    "protocol": "arp"
                 }
             },
             "right": 6
@@ -112,7 +112,7 @@
             "left": {
                 "payload": {
                     "field": "plen",
-                    "name": "arp"
+                    "protocol": "arp"
                 }
             },
             "right": 4
@@ -124,7 +124,6 @@
                 "payload": {
                     "base": "nh",
                     "len": 32,
-                    "name": "raw",
                     "offset": 192
                 }
             },
@@ -137,7 +136,6 @@
                 "payload": {
                     "base": "nh",
                     "len": 48,
-                    "name": "raw",
                     "offset": 144
                 }
             },

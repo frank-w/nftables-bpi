@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {

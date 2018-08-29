@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "destination-unreachable"
@@ -23,7 +23,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "packet-too-big"
@@ -41,7 +41,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "time-exceeded"
@@ -59,7 +59,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "echo-request"
@@ -77,7 +77,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "echo-reply"
@@ -95,7 +95,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "mld-listener-query"
@@ -113,7 +113,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "mld-listener-report"
@@ -131,7 +131,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "mld-listener-done"
@@ -149,7 +149,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "mld-listener-reduction"
@@ -167,7 +167,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "nd-router-solicit"
@@ -185,7 +185,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "nd-router-advert"
@@ -203,7 +203,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "nd-neighbor-solicit"
@@ -221,7 +221,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "nd-neighbor-advert"
@@ -239,7 +239,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "nd-redirect"
@@ -257,7 +257,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "parameter-problem"
@@ -275,7 +275,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "router-renumbering"
@@ -293,7 +293,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "ind-neighbor-solicit"
@@ -311,7 +311,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "ind-neighbor-advert"
@@ -329,7 +329,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": "mld2-listener-report"
@@ -347,7 +347,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -371,7 +371,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -396,7 +396,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -420,7 +420,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -445,7 +445,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": 4
@@ -460,7 +460,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -477,7 +477,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -501,7 +501,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -526,7 +526,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -545,7 +545,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -565,7 +565,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": 2222
@@ -583,7 +583,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -602,7 +602,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -619,7 +619,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -638,7 +638,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -658,7 +658,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -679,7 +679,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -698,7 +698,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -718,7 +718,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": 22
@@ -733,7 +733,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -749,7 +749,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -766,7 +766,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -784,7 +784,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -806,7 +806,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -829,7 +829,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -848,7 +848,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -868,7 +868,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -885,7 +885,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -903,7 +903,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -925,7 +925,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -948,7 +948,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -967,7 +967,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -987,7 +987,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": 2
@@ -1002,7 +1002,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -1028,7 +1028,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -1048,7 +1048,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -1069,7 +1069,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -1086,7 +1086,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -1104,7 +1104,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "right": {
@@ -1123,7 +1123,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",

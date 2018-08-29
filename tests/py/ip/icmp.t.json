@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "echo-reply"
@@ -23,7 +23,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "destination-unreachable"
@@ -41,7 +41,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "source-quench"
@@ -59,7 +59,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "redirect"
@@ -77,7 +77,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "echo-request"
@@ -95,7 +95,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "time-exceeded"
@@ -113,7 +113,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "parameter-problem"
@@ -131,7 +131,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "timestamp-request"
@@ -149,7 +149,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "timestamp-reply"
@@ -167,7 +167,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "info-request"
@@ -185,7 +185,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "info-reply"
@@ -203,7 +203,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "address-mask-request"
@@ -221,7 +221,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "address-mask-reply"
@@ -239,7 +239,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "router-advertisement"
@@ -257,7 +257,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": "router-solicitation"
@@ -275,7 +275,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -311,7 +311,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -333,7 +333,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": 111
@@ -351,7 +351,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -370,7 +370,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -387,7 +387,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -405,7 +405,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -424,7 +424,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -444,7 +444,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -467,7 +467,7 @@
             "left": {
                 "payload": {
                     "field": "code",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -491,7 +491,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": 12343
@@ -509,7 +509,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -528,7 +528,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -548,7 +548,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -569,7 +569,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -591,7 +591,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -614,7 +614,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -638,7 +638,7 @@
             "left": {
                 "payload": {
                     "field": "checksum",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -663,7 +663,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": 1245
@@ -681,7 +681,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": 22
@@ -696,7 +696,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -712,7 +712,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -729,7 +729,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -747,7 +747,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -766,7 +766,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -786,7 +786,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -807,7 +807,7 @@
             "left": {
                 "payload": {
                     "field": "id",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -829,7 +829,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": 22
@@ -844,7 +844,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -860,7 +860,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -877,7 +877,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -895,7 +895,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -917,7 +917,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -940,7 +940,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -959,7 +959,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -979,7 +979,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": 33
@@ -994,7 +994,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -1011,7 +1011,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -1030,7 +1030,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1050,7 +1050,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": 22
@@ -1065,7 +1065,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1081,7 +1081,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -1098,7 +1098,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1116,7 +1116,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -1138,7 +1138,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1161,7 +1161,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -1180,7 +1180,7 @@
             "left": {
                 "payload": {
                     "field": "mtu",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1200,7 +1200,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": 22
@@ -1215,7 +1215,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1231,7 +1231,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -1248,7 +1248,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1266,7 +1266,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -1288,7 +1288,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1311,7 +1311,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "right": {
@@ -1330,7 +1330,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1350,7 +1350,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",
@@ -1366,7 +1366,7 @@
             "left": {
                 "payload": {
                     "field": "gateway",
-                    "name": "icmp"
+                    "protocol": "icmp"
                 }
             },
             "op": "!=",

@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -22,7 +22,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "op": "!=",
@@ -40,7 +40,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -61,7 +61,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "op": "!=",
@@ -83,7 +83,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -102,7 +102,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -119,7 +119,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -136,7 +136,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -155,7 +155,7 @@
             "left": {
                 "payload": {
                     "field": "sport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "op": "!=",
@@ -175,7 +175,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -196,7 +196,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "op": "!=",
@@ -218,7 +218,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -237,7 +237,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "op": "!=",
@@ -257,7 +257,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": {
@@ -285,7 +285,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "op": "!=",
@@ -314,7 +314,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "right": "request"
@@ -329,7 +329,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "dccp"
+                    "protocol": "dccp"
                 }
             },
             "op": "!=",

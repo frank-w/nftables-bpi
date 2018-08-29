@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "dport",
-                    "name": "tcp"
+                    "protocol": "tcp"
                 }
             },
             "right": 22
@@ -16,7 +16,7 @@
             "left": {
                 "payload": {
                     "field": "daddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "1.2.3.4"
@@ -27,7 +27,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ether"
+                    "protocol": "ether"
                 }
             },
             "right": "00:0f:54:0c:11:04"

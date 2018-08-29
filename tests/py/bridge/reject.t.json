@@ -123,7 +123,7 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "tcp"
@@ -150,7 +150,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "ether"
+                    "protocol": "ether"
                 }
             },
             "right": "ip"
@@ -168,7 +168,7 @@
             "left": {
                 "payload": {
                     "field": "type",
-                    "name": "ether"
+                    "protocol": "ether"
                 }
             },
             "right": "ip6"

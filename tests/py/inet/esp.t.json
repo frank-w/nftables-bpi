@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "right": 100
@@ -20,7 +20,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "op": "!=",
@@ -36,7 +36,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "right": {
@@ -53,7 +53,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "op": "!=",
@@ -71,7 +71,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "right": {
@@ -91,7 +91,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "op": "!=",
@@ -112,7 +112,7 @@
             "left": {
                 "payload": {
                     "field": "spi",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "right": {
@@ -131,7 +131,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "right": 22
@@ -146,7 +146,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "right": {
@@ -163,7 +163,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "op": "!=",
@@ -181,7 +181,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "right": {
@@ -201,7 +201,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "op": "!=",
@@ -222,7 +222,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "right": {
@@ -241,7 +241,7 @@
             "left": {
                 "payload": {
                     "field": "sequence",
-                    "name": "esp"
+                    "protocol": "esp"
                 }
             },
             "op": "!=",

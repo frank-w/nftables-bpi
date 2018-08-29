@@ -415,19 +415,14 @@ json_t *meta_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *payload_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
-	const struct proto_hdr_template *tmpl;
-	const struct proto_desc *desc;
 	json_t *root;
 
-	desc = expr->payload.desc;
-	tmpl = expr->payload.tmpl;
 	if (payload_is_known(expr))
 		root = json_pack("{s:s, s:s}",
-				 "name", desc->name,
-				 "field", tmpl->token);
+				 "protocol", expr->payload.desc->name,
+				 "field", expr->payload.tmpl->token);
 	else
-		root = json_pack("{s:s, s:s, s:i, s:i}",
-				 "name", "raw",
+		root = json_pack("{s:s, s:i, s:i}",
 				 "base", proto_base_tokens[expr->payload.base],
 				 "offset", expr->payload.offset,
 				 "len", expr->len);

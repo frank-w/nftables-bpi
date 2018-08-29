@@ -5,7 +5,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "192.168.1.3"
@@ -24,7 +24,7 @@
                 "left": {
                     "payload": {
                         "field": "dport",
-                        "name": "tcp"
+                        "protocol": "tcp"
                     }
                 },
                 "right": {
@@ -55,7 +55,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "192.168.1.3"
@@ -74,7 +74,7 @@
                 "left": {
                     "payload": {
                         "field": "dport",
-                        "name": "tcp"
+                        "protocol": "tcp"
                     }
                 },
                 "right": {
@@ -113,7 +113,7 @@
                 "left": {
                     "payload": {
                         "field": "dport",
-                        "name": "tcp"
+                        "protocol": "tcp"
                     }
                 },
                 "right": {
@@ -140,7 +140,7 @@
             "left": {
                 "payload": {
                     "field": "saddr",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
             "right": "192.168.1.3"
@@ -159,7 +159,7 @@
                 "left": {
                     "payload": {
                         "field": "dport",
-                        "name": "tcp"
+                        "protocol": "tcp"
                     }
                 },
                 "right": {

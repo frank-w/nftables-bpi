@@ -8,7 +8,7 @@
                     "val": {
                         "payload": {
                             "field": "saddr",
-                            "name": "ip"
+                            "protocol": "ip"
                         }
                     }
                 }

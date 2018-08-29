@@ -14,13 +14,13 @@
                             {
                                 "payload": {
                                     "field": "saddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             },
                             {
                                 "payload": {
                                     "field": "daddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             }
                         ]
@@ -49,13 +49,13 @@
                             {
                                 "payload": {
                                     "field": "saddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             },
                             {
                                 "payload": {
                                     "field": "daddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             }
                         ]
@@ -83,13 +83,13 @@
                             {
                                 "payload": {
                                     "field": "saddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             },
                             {
                                 "payload": {
                                     "field": "daddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             }
                         ]
@@ -118,13 +118,13 @@
                             {
                                 "payload": {
                                     "field": "saddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             },
                             {
                                 "payload": {
                                     "field": "daddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             }
                         ]
@@ -154,13 +154,13 @@
                             {
                                 "payload": {
                                     "field": "saddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             },
                             {
                                 "payload": {
                                     "field": "daddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             }
                         ]
@@ -184,7 +184,7 @@
                             "expr": {
                                 "payload": {
                                     "field": "saddr",
-                                    "name": "ip"
+                                    "protocol": "ip"
                                 }
                             },
                             "mod": 2,

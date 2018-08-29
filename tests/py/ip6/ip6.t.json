@@ -103,13 +103,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dscp",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "0x04",
@@ -251,13 +251,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "flowlabel",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         0,

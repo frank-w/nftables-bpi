@@ -24,14 +24,14 @@
         "dnat": {
             "addr": {
                 "map": {
-                    "left": {
+                    "key": {
                         "numgen": {
                             "mod": 2,
                             "mode": "inc",
                             "offset": 0
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 0,
@@ -55,14 +55,14 @@
         "dnat": {
             "addr": {
                 "map": {
-                    "left": {
+                    "key": {
                         "numgen": {
                             "mod": 10,
                             "mode": "inc",
                             "offset": 0
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 { "range": [ 0, 5 ] },

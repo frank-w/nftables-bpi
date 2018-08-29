@@ -2,13 +2,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "abcd::3",
@@ -26,13 +26,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234:1234:1234:1234",
@@ -50,13 +50,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "::1234:1234:1234:1234:1234:1234:1234",
@@ -74,13 +74,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234::1234:1234:1234:1234:1234:1234",
@@ -98,13 +98,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234::1234:1234:1234:1234:1234",
@@ -122,13 +122,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234::1234:1234:1234:1234",
@@ -146,13 +146,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234::1234:1234:1234",
@@ -170,13 +170,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234::1234:1234",
@@ -194,13 +194,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234:1234::1234",
@@ -218,13 +218,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234:1234:1234::",
@@ -242,13 +242,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "::1234:1234:1234:1234:1234:1234",
@@ -266,13 +266,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234::1234:1234:1234:1234:1234",
@@ -290,13 +290,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234::1234:1234:1234:1234",
@@ -314,13 +314,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234::1234:1234:1234",
@@ -338,13 +338,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234::1234:1234",
@@ -362,13 +362,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234::1234",
@@ -386,13 +386,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234:1234::",
@@ -410,13 +410,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "::1234:1234:1234:1234:1234",
@@ -434,13 +434,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234::1234:1234:1234:1234",
@@ -458,13 +458,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234::1234:1234:1234",
@@ -482,13 +482,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234::1234:1234",
@@ -506,13 +506,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234::1234",
@@ -530,13 +530,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234::",
@@ -554,13 +554,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "::1234:1234:1234:1234",
@@ -578,13 +578,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234::1234:1234:1234",
@@ -602,13 +602,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234::1234:1234",
@@ -626,13 +626,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234::1234",
@@ -650,13 +650,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234::",
@@ -674,13 +674,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "::1234:1234:1234",
@@ -698,13 +698,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234::1234:1234",
@@ -722,13 +722,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234::1234",
@@ -746,13 +746,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234::",
@@ -770,13 +770,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "::1234:1234",
@@ -794,13 +794,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234::1234",
@@ -818,13 +818,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234::",
@@ -842,13 +842,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "::1234",
@@ -866,13 +866,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234::",
@@ -890,13 +890,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         {
@@ -919,13 +919,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234:1234:aaaa::",
@@ -949,13 +949,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234:1234:aaaa::",
@@ -979,13 +979,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234:1234:aaaa::",
@@ -1009,13 +1009,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "1234:1234:1234:1234:1234:1234:aaaa::",

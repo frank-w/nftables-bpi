@@ -563,8 +563,8 @@ json_t *map_expr_json(const struct expr *expr, struct output_ctx *octx)
 		type = "vmap";
 
 	return json_pack("{s:{s:o, s:o}}", type,
-			 "left", expr_print_json(expr->map, octx),
-			 "right", expr_print_json(expr->mappings, octx));
+			 "key", expr_print_json(expr->map, octx),
+			 "data", expr_print_json(expr->mappings, octx));
 }
 
 json_t *exthdr_expr_json(const struct expr *expr, struct output_ctx *octx)

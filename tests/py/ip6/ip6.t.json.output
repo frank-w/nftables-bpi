@@ -72,13 +72,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dscp",
                     "protocol": "ip6"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         4,

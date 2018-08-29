@@ -23,13 +23,13 @@
         "dup": {
             "addr": {
                 "map": {
-                    "left": {
+                    "key": {
                         "payload": {
                             "field": "saddr",
                             "protocol": "ip6"
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 "abcd::1",

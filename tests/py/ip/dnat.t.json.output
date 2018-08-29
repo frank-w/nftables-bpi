@@ -4,12 +4,12 @@
         "dnat": {
             "addr": {
                 "map": {
-                    "left": {
+                    "key": {
                         "ct": {
                             "key": "mark"
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 20,
@@ -29,7 +29,7 @@
         "dnat": {
             "addr": {
                 "map": {
-                    "left": {
+                    "key": {
                         "concat": [
                             {
                                 "ct": {
@@ -44,7 +44,7 @@
                             }
                         ]
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 {

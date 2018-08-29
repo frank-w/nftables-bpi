@@ -504,13 +504,13 @@
     },
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dport",
                     "protocol": "tcp"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         22,
@@ -550,13 +550,13 @@
         "redirect": {
             "port": {
                 "map": {
-                    "left": {
+                    "key": {
                         "payload": {
                             "field": "dport",
                             "protocol": "tcp"
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 22,

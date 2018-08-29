@@ -895,15 +895,15 @@ Queue the packet to userspace.
 === VERDICT MAP
 [verse]
 *{ "vmap": {
-	"left":* 'EXPRESSION'*,
-	"right":* 'EXPRESSION'
+	"key":* 'EXPRESSION'*,
+	"data":* 'EXPRESSION'
 *}}*
 
 Apply a verdict conditionally.
 
-*left*::
+*key*::
 	Map key.
-*right*::
+*data*::
 	Mapping expression consisting of value/verdict pairs.
 
 === CT COUNT
@@ -972,15 +972,15 @@ exactly two elements is expected.
 === MAP
 [verse]
 *{ "map": {
-	"left":* 'EXPRESSION'*,
-	"right":* 'EXPRESSION'
+	"key":* 'EXPRESSION'*,
+	"data":* 'EXPRESSION'
 *}}*
 
 Map a key to a value.
 
-*left*::
+*key*::
 	Map key.
-*right*::
+*data*::
 	Mapping expression consisting of value/target pairs.
 
 === PREFIX

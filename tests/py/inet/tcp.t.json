@@ -176,13 +176,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dport",
                     "protocol": "tcp"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         22,
@@ -206,13 +206,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dport",
                     "protocol": "tcp"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         25,
@@ -431,13 +431,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "sport",
                     "protocol": "tcp"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         25,

@@ -1117,27 +1117,27 @@ static struct expr *json_parse_set_expr(struct json_ctx *ctx,
 static struct expr *json_parse_map_expr(struct json_ctx *ctx,
 					const char *type, json_t *root)
 {
-	json_t *jleft, *jright;
-	struct expr *left, *right;
+	json_t *jkey, *jdata;
+	struct expr *key, *data;
 
 	if (json_unpack_err(ctx, root, "{s:o, s:o}",
-			    "left", &jleft, "right", &jright))
+			    "key", &jkey, "data", &jdata))
 		return NULL;
 
-	left = json_parse_map_lhs_expr(ctx, jleft);
-	if (!left) {
-		json_error(ctx, "Illegal LHS of map expression.");
-		return NULL;
-	}
-
-	right = json_parse_rhs_expr(ctx, jright);
-	if (!right) {
-		json_error(ctx, "Illegal RHS of map expression.");
-		expr_free(left);
+	key = json_parse_map_lhs_expr(ctx, jkey);
+	if (!key) {
+		json_error(ctx, "Illegal map expression key.");
 		return NULL;
 	}
 
-	return map_expr_alloc(int_loc, left, right);
+	data = json_parse_rhs_expr(ctx, jdata);
+	if (!data) {
+		json_error(ctx, "Illegal map expression data.");
+		expr_free(key);
+		return NULL;
+	}
+
+	return map_expr_alloc(int_loc, key, data);
 }
 
 static struct expr *json_parse_set_elem_expr(struct json_ctx *ctx,

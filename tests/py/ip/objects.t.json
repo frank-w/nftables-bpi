@@ -21,13 +21,13 @@
     {
         "counter": {
             "map": {
-                "left": {
+                "key": {
                     "payload": {
                         "field": "dport",
                         "protocol": "tcp"
                     }
                 },
-                "right": {
+                "data": {
                     "set": [
                         [
                             443,
@@ -71,13 +71,13 @@
     {
         "quota": {
             "map": {
-                "left": {
+                "key": {
                     "payload": {
                         "field": "dport",
                         "protocol": "tcp"
                     }
                 },
-                "right": {
+                "data": {
                     "set": [
                         [
                             443,
@@ -110,13 +110,13 @@
     {
         "ct helper": {
             "map": {
-                "left": {
+                "key": {
                     "payload": {
                         "field": "dport",
                         "protocol": "tcp"
                     }
                 },
-                "right": {
+                "data": {
                     "set": [
                         [
                             21,
@@ -156,13 +156,13 @@
     {
         "limit": {
             "map": {
-                "left": {
+                "key": {
                     "payload": {
                         "field": "dport",
                         "protocol": "tcp"
                     }
                 },
-                "right": {
+                "data": {
                     "set": [
                         [
                             22,

@@ -7,13 +7,13 @@
             },
             "right": {
                 "map": {
-                    "left": {
+                    "key": {
                         "payload": {
                             "field": "saddr",
                             "protocol": "ip"
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 "10.2.3.1",
@@ -40,13 +40,13 @@
             },
             "right": {
                 "map": {
-                    "left": {
+                    "key": {
                         "payload": {
                             "field": "hdrlength",
                             "protocol": "ip"
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 4,

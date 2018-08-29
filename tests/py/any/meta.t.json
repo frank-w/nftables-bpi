@@ -2362,7 +2362,7 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "concat": [
                     {
                         "meta": { "key": "iif" }
@@ -2372,7 +2372,7 @@
                     }
                 ]
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         {

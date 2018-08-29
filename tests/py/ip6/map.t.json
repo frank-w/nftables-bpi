@@ -7,7 +7,7 @@
             },
             "right": {
                 "map": {
-                    "left": {
+                    "key": {
                         "&": [
                             {
                                 "payload": {
@@ -18,7 +18,7 @@
                             "::ffff"
                         ]
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 "::2",

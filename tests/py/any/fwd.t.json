@@ -13,10 +13,10 @@
         "fwd": {
             "dev": {
                 "map": {
-                    "left": {
+                    "key": {
                         "meta": { "key": "mark" }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 "0x00000001",

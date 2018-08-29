@@ -124,13 +124,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dscp",
                     "protocol": "ip"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         "cs1",
@@ -1543,13 +1543,13 @@
 [
     {
         "vmap": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "hdrlength",
                     "protocol": "ip"
                 }
             },
-            "right": {
+            "data": {
                 "set": [
                     [
                         { "range": [ 0, 4 ] },

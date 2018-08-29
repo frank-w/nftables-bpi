@@ -43,13 +43,13 @@
         "dnat": {
             "addr": {
                 "map": {
-                    "left": {
+                    "key": {
                         "numgen": {
                             "mod": 2,
                             "mode": "inc"
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 0,
@@ -73,13 +73,13 @@
         "dnat": {
             "addr": {
                 "map": {
-                    "left": {
+                    "key": {
                         "numgen": {
                             "mod": 10,
                             "mode": "inc"
                         }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 { "range": [ 0, 5 ] },

@@ -13,10 +13,10 @@
         "dup": {
             "addr": {
                 "map": {
-                    "left": {
+                    "key": {
                         "meta": { "key": "mark" }
                     },
-                    "right": {
+                    "data": {
                         "set": [
                             [ 1, "lo" ],
                             [ 2, "lo" ]

@@ -3,13 +3,13 @@
     {
         "counter": {
             "map": {
-                "left": {
+                "key": {
                     "payload": {
                         "field": "dport",
                         "protocol": "tcp"
                     }
                 },
-                "right": {
+                "data": {
                     "set": [
                         [
                             22,
@@ -35,13 +35,13 @@
     {
         "quota": {
             "map": {
-                "left": {
+                "key": {
                     "payload": {
                         "field": "dport",
                         "protocol": "tcp"
                     }
                 },
-                "right": {
+                "data": {
                     "set": [
                         [
                             22,

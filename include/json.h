@@ -40,6 +40,7 @@ json_t *hash_expr_json(const struct expr *expr, struct output_ctx *octx);
 json_t *fib_expr_json(const struct expr *expr, struct output_ctx *octx);
 json_t *constant_expr_json(const struct expr *expr, struct output_ctx *octx);
 json_t *socket_expr_json(const struct expr *expr, struct output_ctx *octx);
+json_t *osf_expr_json(const struct expr *expr, struct output_ctx *octx);
 
 json_t *integer_type_json(const struct expr *expr, struct output_ctx *octx);
 json_t *string_type_json(const struct expr *expr, struct output_ctx *octx);
@@ -118,6 +119,7 @@ EXPR_PRINT_STUB(hash_expr)
 EXPR_PRINT_STUB(fib_expr)
 EXPR_PRINT_STUB(constant_expr)
 EXPR_PRINT_STUB(socket_expr)
+EXPR_PRINT_STUB(osf_expr)
 
 EXPR_PRINT_STUB(integer_type)
 EXPR_PRINT_STUB(string_type)

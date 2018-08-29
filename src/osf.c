@@ -3,6 +3,7 @@
 #include <utils.h>
 #include <string.h>
 #include <osf.h>
+#include <json.h>
 
 static void osf_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
@@ -18,6 +19,7 @@ static const struct expr_ops osf_expr_ops = {
 	.name		= "osf",
 	.print		= osf_expr_print,
 	.clone		= osf_expr_clone,
+	.json		= osf_expr_json,
 };
 
 struct expr *osf_expr_alloc(const struct location *loc)

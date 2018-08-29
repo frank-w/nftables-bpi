@@ -1,0 +1,66 @@
+# osf name "Linux"
+[
+    {
+        "match": {
+            "left": {
+                "osf": {
+                    "key": "name"
+                }
+            },
+            "right": "Linux"
+        }
+    }
+]
+
+# osf name { "Windows", "MacOs" }
+[
+    {
+        "match": {
+            "left": {
+                "osf": {
+                    "key": "name"
+                }
+            },
+            "right": {
+                "set": [
+                    "MacOs",
+                    "Windows"
+                ]
+            }
+        }
+    }
+]
+
+# ct mark set osf name map { "Windows" : 0x00000001, "MacOs" : 0x00000002 }
+[
+    {
+        "mangle": {
+            "left": {
+                "ct": {
+                    "key": "mark"
+                }
+            },
+            "right": {
+                "map": {
+                    "left": {
+                        "osf": {
+                            "key": "name"
+                        }
+                    },
+                    "right": {
+                        "set": [
+                            [
+                                "MacOs",
+                                2
+                            ],
+                            [
+                                "Windows",
+                                1
+                            ]
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

@@ -346,12 +346,26 @@ static struct expr *json_parse_meta_expr(struct json_ctx *ctx,
 	return meta_expr_alloc(int_loc, key);
 }
 
+static struct expr *json_parse_osf_expr(struct json_ctx *ctx,
+					const char *type, json_t *root)
+{
+	const char *key;
+
+	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
+		return NULL;
+
+	if (!strcmp(key, "name"))
+		return osf_expr_alloc(int_loc);
+
+	json_error(ctx, "Invalid osf key value.");
+	return NULL;
+}
+
 static struct expr *json_parse_socket_expr(struct json_ctx *ctx,
 					   const char *type, json_t *root)
 {
 	const char *key;
 	int keyval = -1;
-
 
 	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
 		return NULL;
@@ -1181,6 +1195,7 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		{ "exthdr", json_parse_exthdr_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },
 		{ "tcp option", json_parse_tcp_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES },
 		{ "meta", json_parse_meta_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },
+		{ "osf", json_parse_osf_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_MAP },
 		{ "socket", json_parse_socket_expr, CTX_F_PRIMARY },
 		{ "rt", json_parse_rt_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },
 		{ "ct", json_parse_ct_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },

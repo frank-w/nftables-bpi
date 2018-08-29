@@ -35,7 +35,8 @@ echo "Build works. Now, testing compile options"
 
 for var in "${argument[@]}" ; do
 	echo "[EXECUTING] Testing compile option $var"
-	$cmd $var >/dev/null 2>>$log_file
+	./configure $var >/dev/null 2>>$log_file
+	make -j 8 >/dev/null 2>>$log_file
 	rt=$?
 	echo -en "\033[1A\033[K" # clean the [EXECUTING] foobar line
 

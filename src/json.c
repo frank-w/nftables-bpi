@@ -1297,6 +1297,32 @@ json_t *connlimit_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 	return json_pack("{s:o}", "ct count", root);
 }
 
+json_t *tproxy_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
+{
+	json_t *root = json_object();
+
+	if (stmt->tproxy.addr) {
+		int family;
+		json_t *tmp;
+
+		family = stmt->tproxy.table_family;
+		if (family == NFPROTO_INET)
+			family = stmt->tproxy.family;
+
+		tmp = json_string(family2str(family));
+		json_object_set_new(root, "family", tmp);
+
+		tmp = expr_print_json(stmt->tproxy.addr, octx);
+		json_object_set_new(root, "addr", tmp);
+	}
+
+	if (stmt->tproxy.port)
+		json_object_set_new(root, "port",
+				    expr_print_json(stmt->tproxy.port, octx));
+
+	return json_pack("{s:o}", "tproxy", root);
+}
+
 static json_t *table_print_json_full(struct netlink_ctx *ctx,
 				     struct table *table)
 {

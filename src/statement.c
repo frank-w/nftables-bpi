@@ -810,6 +810,7 @@ static const struct stmt_ops tproxy_stmt_ops = {
 	.type		= STMT_TPROXY,
 	.name		= "tproxy",
 	.print		= tproxy_stmt_print,
+	.json		= tproxy_stmt_json,
 	.destroy	= tproxy_stmt_destroy,
 };
 

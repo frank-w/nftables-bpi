@@ -1796,6 +1796,48 @@ static struct stmt *json_parse_nat_stmt(struct json_ctx *ctx,
 	return stmt;
 }
 
+static struct stmt *json_parse_tproxy_stmt(struct json_ctx *ctx,
+					const char *key, json_t *value)
+{
+	json_t *jaddr, *tmp;
+	const char *family;
+	struct stmt *stmt;
+	int familyval;
+
+	stmt = tproxy_stmt_alloc(int_loc);
+
+	if (json_unpack(value, "{s:s, s:o}",
+			"family", &family, "addr", &jaddr))
+		goto try_port;
+
+	familyval = parse_family(family);
+	if (familyval != NFPROTO_IPV4 &&
+	    familyval != NFPROTO_IPV6) {
+		json_error(ctx, "Invalid family '%s'.", family);
+		goto out_free;
+	}
+	stmt->tproxy.family = familyval;
+
+	stmt->tproxy.addr = json_parse_stmt_expr(ctx, jaddr);
+	if (!stmt->tproxy.addr) {
+		json_error(ctx, "Invalid addr.");
+		goto out_free;
+	}
+try_port:
+	if (!json_unpack(value, "{s:o}", "port", &tmp)) {
+		stmt->tproxy.port = json_parse_stmt_expr(ctx, tmp);
+		if (!stmt->tproxy.port) {
+			json_error(ctx, "Invalid port.");
+			goto out_free;
+		}
+	}
+	return stmt;
+
+out_free:
+	stmt_free(stmt);
+	return NULL;
+}
+
 static struct stmt *json_parse_reject_stmt(struct json_ctx *ctx,
 					  const char *key, json_t *value)
 {
@@ -2150,6 +2192,7 @@ static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 		{ "meter", json_parse_meter_stmt },
 		{ "queue", json_parse_queue_stmt },
 		{ "ct count", json_parse_connlimit_stmt },
+		{ "tproxy", json_parse_tproxy_stmt },
 	};
 	const char *type;
 	unsigned int i;

@@ -29,7 +29,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 1
         }

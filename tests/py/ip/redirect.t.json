@@ -518,7 +518,7 @@
     {
         "match": {
             "left": {
-                "meta": "iifname"
+                "meta": { "key": "iifname" }
             },
             "right": "eth0"
         }

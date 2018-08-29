@@ -206,7 +206,7 @@
     {
         "match": {
             "left": {
-                "meta": "iif"
+                "meta": { "key": "iif" }
             },
             "right": "lo"
         }

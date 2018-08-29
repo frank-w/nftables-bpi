@@ -3,7 +3,7 @@
     {
         "match": {
             "left": {
-                "meta": "protocol"
+                "meta": { "key": "protocol" }
             },
             "right": {
                 "set": [
@@ -22,7 +22,7 @@
     {
         "match": {
             "left": {
-                "meta": "protocol"
+                "meta": { "key": "protocol" }
             },
             "op": "!=",
             "right": {
@@ -42,7 +42,7 @@
     {
         "match": {
             "left": {
-                "meta": "priority"
+                "meta": { "key": "priority" }
             },
             "right": "8765:4321"
         }
@@ -54,7 +54,7 @@
     {
         "match": {
             "left": {
-                "meta": "priority"
+                "meta": { "key": "priority" }
             },
             "right": "8765:4321"
         }
@@ -66,7 +66,7 @@
     {
         "match": {
             "left": {
-                "meta": "priority"
+                "meta": { "key": "priority" }
             },
             "right": {
                 "set": [
@@ -84,7 +84,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 4
         }
@@ -96,7 +96,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 50
         }
@@ -110,7 +110,7 @@
             "left": {
                 "&": [
                     {
-                        "meta": "mark"
+                        "meta": { "key": "mark" }
                     },
                     3
                 ]
@@ -128,7 +128,7 @@
             "left": {
                 "&": [
                     {
-                        "meta": "mark"
+                        "meta": { "key": "mark" }
                     },
                     3
                 ]
@@ -144,7 +144,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 16
         }
@@ -156,7 +156,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "op": "!=",
             "right": 16
@@ -171,7 +171,7 @@
             "left": {
                 "|": [
                     {
-                        "meta": "mark"
+                        "meta": { "key": "mark" }
                     },
                     3
                 ]
@@ -189,7 +189,7 @@
             "left": {
                 "|": [
                     {
-                        "meta": "mark"
+                        "meta": { "key": "mark" }
                     },
                     3
                 ]
@@ -205,7 +205,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 2
         }
@@ -217,7 +217,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "op": "!=",
             "right": 2
@@ -230,7 +230,7 @@
     {
         "match": {
             "left": {
-                "meta": "iifname"
+                "meta": { "key": "iifname" }
             },
             "right": {
                 "set": [
@@ -247,7 +247,7 @@
     {
         "match": {
             "left": {
-                "meta": "iifname"
+                "meta": { "key": "iifname" }
             },
             "op": "!=",
             "right": {
@@ -265,7 +265,7 @@
     {
         "match": {
             "left": {
-                "meta": "oifname"
+                "meta": { "key": "oifname" }
             },
             "right": {
                 "set": [
@@ -282,7 +282,7 @@
     {
         "match": {
             "left": {
-                "meta": "skuid"
+                "meta": { "key": "skuid" }
             },
             "right": {
                 "set": [ 0, 1, 2 ]
@@ -299,7 +299,7 @@
     {
         "match": {
             "left": {
-                "meta": "skuid"
+                "meta": { "key": "skuid" }
             },
             "op": "!=",
             "right": {
@@ -317,7 +317,7 @@
     {
         "match": {
             "left": {
-                "meta": "skuid"
+                "meta": { "key": "skuid" }
             },
             "right": 0
         }
@@ -329,7 +329,7 @@
     {
         "match": {
             "left": {
-                "meta": "skuid"
+                "meta": { "key": "skuid" }
             },
             "op": "!=",
             "right": 0
@@ -342,7 +342,7 @@
     {
         "match": {
             "left": {
-                "meta": "skgid"
+                "meta": { "key": "skgid" }
             },
             "right": {
                 "set": [ 0, 1, 2 ]
@@ -359,7 +359,7 @@
     {
         "match": {
             "left": {
-                "meta": "skgid"
+                "meta": { "key": "skgid" }
             },
             "op": "!=",
             "right": {
@@ -377,7 +377,7 @@
     {
         "match": {
             "left": {
-                "meta": "skgid"
+                "meta": { "key": "skgid" }
             },
             "right": 0
         }
@@ -389,7 +389,7 @@
     {
         "match": {
             "left": {
-                "meta": "skgid"
+                "meta": { "key": "skgid" }
             },
             "op": "!=",
             "right": 0
@@ -402,7 +402,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 4294967262
         }
@@ -414,7 +414,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 22
         }
@@ -426,7 +426,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 4294967295
         }
@@ -438,7 +438,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 22
         }
@@ -450,7 +450,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 4031119326
         }
@@ -462,7 +462,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 4294967262
         }
@@ -474,7 +474,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 1048575
         }
@@ -486,7 +486,7 @@
     {
         "mangle": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 65512
         }
@@ -498,7 +498,7 @@
     {
         "match": {
             "left": {
-                "meta": "iifgroup"
+                "meta": { "key": "iifgroup" }
             },
             "right": "default"
         }
@@ -510,7 +510,7 @@
     {
         "match": {
             "left": {
-                "meta": "iifgroup"
+                "meta": { "key": "iifgroup" }
             },
             "op": "!=",
             "right": "default"
@@ -523,7 +523,7 @@
     {
         "match": {
             "left": {
-                "meta": "oifgroup"
+                "meta": { "key": "oifgroup" }
             },
             "right": "default"
         }
@@ -535,7 +535,7 @@
     {
         "match": {
             "left": {
-                "meta": "oifgroup"
+                "meta": { "key": "oifgroup" }
             },
             "op": "!=",
             "right": "default"
@@ -550,13 +550,13 @@
             "left": {
                 "concat": [
                     {
-                        "meta": "iif"
+                        "meta": { "key": "iif" }
                     },
                     {
-                        "meta": "oif"
+                        "meta": { "key": "oif" }
                     },
                     {
-                        "meta": "mark"
+                        "meta": { "key": "mark" }
                     }
                 ]
             },

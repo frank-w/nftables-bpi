@@ -3,7 +3,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv4"
         }

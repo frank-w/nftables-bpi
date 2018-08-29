@@ -14,7 +14,7 @@
             "dev": {
                 "map": {
                     "left": {
-                        "meta": "mark"
+                        "meta": { "key": "mark" }
                     },
                     "right": {
                         "set": [

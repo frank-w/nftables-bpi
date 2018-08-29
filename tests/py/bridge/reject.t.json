@@ -113,7 +113,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 12345
         }

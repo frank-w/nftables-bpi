@@ -32,7 +32,7 @@
 [
     {
         "match": {
-            "left": { "meta": "nfproto" },
+            "left": { "meta": { "key": "nfproto" } },
             "right": "ipv4"
         }
     },
@@ -53,7 +53,7 @@
 [
     {
         "match": {
-            "left": { "meta": "nfproto" },
+            "left": { "meta": { "key": "nfproto" } },
             "right": "ipv4"
         }
     },
@@ -74,7 +74,7 @@
 [
     {
         "match": {
-            "left": { "meta": "nfproto" },
+            "left": { "meta": { "key": "nfproto" } },
             "right": "ipv6"
         }
     },
@@ -95,7 +95,7 @@
 [
     {
         "match": {
-            "left": { "meta": "nfproto" },
+            "left": { "meta": { "key": "nfproto" } },
             "right": "ipv6"
         }
     },

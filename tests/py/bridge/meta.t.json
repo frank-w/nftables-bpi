@@ -3,7 +3,7 @@
     {
         "match": {
             "left": {
-                "meta": "obrname"
+                "meta": { "key": "obrname" }
             },
             "right": "br0"
         }
@@ -15,7 +15,7 @@
     {
         "match": {
             "left": {
-                "meta": "ibrname"
+                "meta": { "key": "ibrname" }
             },
             "right": "br0"
         }

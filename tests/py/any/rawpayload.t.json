@@ -3,7 +3,7 @@
     {
         "match": {
             "left": {
-                "meta": "l4proto"
+                "meta": { "key": "l4proto" }
             },
             "right": {
                 "set": [
@@ -39,7 +39,7 @@
 [
     {
         "match": {
-	    "left": { "meta": "l4proto" },
+	    "left": { "meta": { "key": "l4proto" } },
 	    "right": "tcp"
 	}
     },

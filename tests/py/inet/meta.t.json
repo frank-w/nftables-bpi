@@ -3,7 +3,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv4"
         }
@@ -15,7 +15,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv6"
         }
@@ -27,7 +27,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": {
                 "set": [
@@ -44,7 +44,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "op": "!=",
             "right": {
@@ -62,7 +62,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv6"
         }
@@ -85,7 +85,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv4"
         }
@@ -108,7 +108,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv4"
         }
@@ -131,7 +131,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv6"
         }
@@ -139,7 +139,7 @@
     {
         "match": {
             "left": {
-                "meta": "l4proto"
+                "meta": { "key": "l4proto" }
             },
             "right": "tcp"
         }
@@ -151,7 +151,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv4"
         }
@@ -177,7 +177,7 @@
     {
         "match": {
             "left": {
-                "meta": "secpath"
+                "meta": { "key": "secpath" }
             },
             "right": true
         }
@@ -189,7 +189,7 @@
     {
         "match": {
             "left": {
-                "meta": "secpath"
+                "meta": { "key": "secpath" }
             },
             "right": false
         }

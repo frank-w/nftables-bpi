@@ -80,7 +80,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": "0x80000000"
         }

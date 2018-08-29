@@ -336,7 +336,7 @@ static struct expr *json_parse_meta_expr(struct json_ctx *ctx,
 	unsigned int key;
 	const char *name;
 
-	if (json_unpack_err(ctx, root, "s", &name))
+	if (json_unpack_err(ctx, root, "{s:s}", "key", &name))
 		return NULL;
 	erec = meta_key_parse(int_loc, name, &key);
 	if (erec) {

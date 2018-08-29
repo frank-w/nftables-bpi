@@ -113,7 +113,7 @@
     {
         "match": {
             "left": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             },
             "right": 12345
         }
@@ -137,7 +137,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv4"
         }
@@ -152,7 +152,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv6"
         }
@@ -207,7 +207,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv4"
         }
@@ -225,7 +225,7 @@
     {
         "match": {
             "left": {
-                "meta": "nfproto"
+                "meta": { "key": "nfproto" }
             },
             "right": "ipv6"
         }

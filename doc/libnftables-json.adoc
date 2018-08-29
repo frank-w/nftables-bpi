@@ -1060,7 +1060,19 @@ existence check in a *match* statement with boolean on right hand side.
 
 === META
 [verse]
-*{ "meta":* 'STRING' *}*
+____
+*{ "meta": {
+	"key":* 'META_KEY'
+*}}*
+
+'META_KEY' := *"length"* | *"protocol"* | *"priority"* | *"random"* | *"mark"* |
+              *"iif"* | *"iifname"* | *"iiftype"* | *"oif"* | *"oifname"* |
+	      *"oiftype"* | *"skuid"* | *"skgid"* | *"nftrace"* |
+	      *"rtclassid"* | *"ibriport"* | *"obriport"* | *"ibridgename"* |
+	      *"obridgename"* | *"pkttype"* | *"cpu"* | *"iifgroup"* |
+	      *"oifgroup"* | *"cgroup"* | *"nfproto"* | *"l4proto"* |
+	      *"secpath"*
+____
 
 Create a reference to packet meta data.
 

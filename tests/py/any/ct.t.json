@@ -675,7 +675,7 @@
                 }
             },
             "right": {
-                "meta": "mark"
+                "meta": { "key": "mark" }
             }
         }
     }
@@ -693,7 +693,7 @@
             "right": {
                 "map": {
                     "left": {
-                        "meta": "mark"
+                        "meta": { "key": "mark" }
                     },
                     "right": {
                         "set": [
@@ -1360,7 +1360,7 @@
             "right": {
                 "map": {
                     "left": {
-                        "meta": "mark"
+                        "meta": { "key": "mark" }
                     },
                     "right": {
                         "set": [

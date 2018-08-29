@@ -409,7 +409,8 @@ json_t *range_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *meta_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
-	return json_pack("{s:s}", "meta", meta_templates[expr->meta.key].token);
+	return json_pack("{s:{s:s}}", "meta",
+			 "key", meta_templates[expr->meta.key].token);
 }
 
 json_t *payload_expr_json(const struct expr *expr, struct output_ctx *octx)
@@ -1049,7 +1050,8 @@ json_t *meta_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 {
 	json_t *root;
 
-	root = json_pack("{s:s}", "meta", meta_templates[stmt->meta.key].token);
+	root = json_pack("{s:{s:s}}", "meta",
+			 "key", meta_templates[stmt->meta.key].token);
 	root = json_pack("{s:o, s:o}",
 			 "left", root,
 			 "right", expr_print_json(stmt->meta.expr, octx));

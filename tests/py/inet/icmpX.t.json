@@ -96,7 +96,7 @@
     {
         "match": {
             "left": {
-                "meta": "l4proto"
+                "meta": { "key": "l4proto" }
             },
             "right": "ipv6-icmp"
         }

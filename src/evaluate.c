@@ -2487,12 +2487,16 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 
 static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
 {
+	const struct proto_desc *nproto;
 	const struct datatype *dtype;
 	int err, len;
 
 	switch (ctx->pctx.family) {
 	case NFPROTO_IPV4:
-	case NFPROTO_IPV6:
+	case NFPROTO_IPV6: /* fallthrough */
+		if (stmt->tproxy.family == NFPROTO_UNSPEC)
+			stmt->tproxy.family = ctx->pctx.family;
+		break;
 	case NFPROTO_INET:
 		break;
 	default:
@@ -2507,22 +2511,14 @@ static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
 	if (!stmt->tproxy.addr && !stmt->tproxy.port)
 		return stmt_error(ctx, stmt, "Either address or port must be specified!");
 
-	if (ctx->pctx.family != NFPROTO_INET) {
-		if (stmt->tproxy.family != NFPROTO_UNSPEC)
-			return stmt_error(ctx, stmt, "Family can only be specified in inet tables.");
-		stmt->tproxy.family = ctx->pctx.family;
-	}
-	else {
-		const struct proto_desc *nproto =
-			ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
-		if ((nproto == &proto_ip && stmt->tproxy.family == NFPROTO_IPV6) ||
-		    (nproto == &proto_ip6 && stmt->tproxy.family == NFPROTO_IPV4))
-			/* this prevents us from rules like
-			 * ip protocol tcp tproxy ip6 to [dead::beef]
-			 */
-			return stmt_error(ctx, stmt,
-					  "Conflicting network layer protocols.");
-	}
+	nproto = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
+	if ((nproto == &proto_ip && stmt->tproxy.family != NFPROTO_IPV4) ||
+	    (nproto == &proto_ip6 && stmt->tproxy.family != NFPROTO_IPV6))
+		/* this prevents us from rules like
+		 * ip protocol tcp tproxy ip6 to [dead::beef]
+		 */
+		return stmt_error(ctx, stmt,
+				  "Conflicting network layer protocols.");
 
 	if (stmt->tproxy.addr != NULL) {
 		if (stmt->tproxy.addr->ops->type == EXPR_RANGE)

@@ -1530,6 +1530,14 @@ static json_t *do_list_flowtables_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	return root;
 }
 
+static json_t *generate_json_metainfo(void)
+{
+	return json_pack("{s: {s:s, s:s, s:i}}", "metainfo",
+			 "version", PACKAGE_VERSION,
+			 "release_name", RELEASE_NAME,
+			 "json_schema_version", JSON_SCHEMA_VERSION);
+}
+
 int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table = NULL;
@@ -1596,10 +1604,15 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
 
-	if (json_is_array(root) && !json_array_size(root)) {
-		json_decref(root);
-		root = json_null();
+	if (!json_is_array(root)) {
+		json_t *tmp = json_array();
+
+		json_array_append_new(tmp, root);
+		root = tmp;
 	}
+
+	json_array_insert_new(root, 0, generate_json_metainfo());
+
 	root = json_pack("{s:o}", "nftables", root);
 	json_dumpf(root, ctx->octx->output_fp, 0);
 	json_decref(root);

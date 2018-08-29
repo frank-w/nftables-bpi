@@ -15,6 +15,8 @@ struct table;
 
 #ifdef HAVE_LIBJANSSON
 
+#define JSON_SCHEMA_VERSION 1
+
 #include <jansson.h>
 
 json_t *binop_expr_json(const struct expr *expr, struct output_ctx *octx);

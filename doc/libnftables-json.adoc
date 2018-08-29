@@ -16,13 +16,14 @@ libnftables-json - Supported JSON schema by libnftables
 
 'CMD_OBJECTS' := 'CMD_OBJECT' [ *,* 'CMD_OBJECTS' ]
 
-'CMD_OBJECT' := *{* 'CMD'*:* 'LIST_OBJECT' *}*
+'CMD_OBJECT' := *{* 'CMD'*:* 'LIST_OBJECT' *}* | 'METAINFO_OBJECT'
 
 'CMD' := *"add"* | *"replace"* | *"create"* | *"insert"* | *"delete"* |
          *"list"* | *"reset"* | *"flush"* | *"rename"*
 
 'LIST_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
-		 'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT'
+		 'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT' |
+		 'METAINFO_OBJECT'
 
 == DESCRIPTION
 libnftables supports JSON formatted input and output. This is implemented as an
@@ -46,6 +47,26 @@ A command is an object with a single property whose name identifies the command.
 It's value is a ruleset element - basically identical to output elements apart
 from certain properties which may be interpreted differently or are required
 when output generally omits them.
+
+== METAINFO OBJECT
+In output, the first object in *nftables* array is a special one containing
+library information. Its content is as follows:
+
+[verse]
+*{ "metainfo": {
+	"version":* 'STRING'*,
+	"release_name":* 'STRING'*,
+	"json_schema_version":* 'NUMBER'
+*}}*
+
+The values of *version* and *release_name* properties are equal to the package
+version and release name as printed by *nft -v*. The value of
+*json_schema_version* property is an integer indicating the schema version.
+
+If supplied in library input, the parser will verify *json_schema_version* value
+to not exceed the internally hardcoded one (to make sure the given schema is
+fully understood). In future, a lower number than the internal one may activate
+compatibility mode to parse outdated and incompatible JSON input.
 
 == COMMAND OBJECTS
 The structure accepts an arbitrary amount of commands which are interpreted in

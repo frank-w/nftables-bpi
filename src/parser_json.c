@@ -3118,6 +3118,22 @@ static struct cmd *json_parse_cmd(struct json_ctx *ctx, json_t *root)
 	return NULL;
 }
 
+static int json_verify_metainfo(struct json_ctx *ctx, json_t *root)
+{
+	int schema_version;
+
+	if (!json_unpack(root, "{s:i}", "json_schema_version", &schema_version))
+			return 0;
+
+	if (schema_version > JSON_SCHEMA_VERSION) {
+		json_error(ctx, "Schema version %d not supported, maximum supported version is %d\n",
+			   schema_version, JSON_SCHEMA_VERSION);
+		return 1;
+	}
+
+	return 0;
+}
+
 static int __json_parse(struct json_ctx *ctx, json_t *root)
 {
 	struct eval_ctx ectx = {
@@ -3142,11 +3158,22 @@ static int __json_parse(struct json_ctx *ctx, json_t *root)
 		/* this is more or less from parser_bison.y:716 */
 		LIST_HEAD(list);
 		struct cmd *cmd;
+		json_t *tmp2;
 
 		if (!json_is_object(value)) {
 			json_error(ctx, "Unexpected command array element of type %s, expected object.", json_typename(value));
 			return -1;
 		}
+
+		tmp2 = json_object_get(value, "metainfo");
+		if (tmp2) {
+			if (json_verify_metainfo(ctx, tmp2)) {
+				json_error(ctx, "Metainfo verification failed.");
+				return -1;
+			}
+			continue;
+		}
+
 		cmd = json_parse_cmd(ctx, value);
 
 		if (!cmd) {

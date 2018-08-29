@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [ "$(id -u)" !=  "0" ]  ; then
-        echo "Run as root user"
-        exit 1
-fi
-
 log_file="`pwd`/tests.log"
 tarball="nftables-0.8.1.tar.bz2"
 dir=../..

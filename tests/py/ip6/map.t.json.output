@@ -2,10 +2,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": {
+            "value": {
                 "map": {
                     "key": {
                         "&": [

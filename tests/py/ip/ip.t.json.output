@@ -213,13 +213,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "ecn",
                     "protocol": "ip"
                 }
             },
-            "right": "ect1"
+            "value": "ect1"
         }
     }
 ]

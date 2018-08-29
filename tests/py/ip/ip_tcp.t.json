@@ -39,10 +39,10 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": 1
+            "value": 1
         }
     },
     {

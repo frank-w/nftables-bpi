@@ -39,13 +39,13 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "tcp option": {
                     "field": "size",
                     "name": "maxseg"
                 }
             },
-            "right": {
+            "value": {
                 "rt": {
                     "key": "mtu"
                 }

@@ -2,12 +2,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "jhash": {
                     "expr": {
                         "concat": [
@@ -37,12 +37,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "jhash": {
                     "expr": {
                         "concat": [
@@ -71,12 +71,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "jhash": {
                     "expr": {
                         "concat": [
@@ -106,12 +106,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "jhash": {
                     "expr": {
                         "concat": [
@@ -142,12 +142,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "jhash": {
                     "expr": {
                         "concat": [
@@ -213,12 +213,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "symhash": {
                     "mod": 2,
                     "offset": 100

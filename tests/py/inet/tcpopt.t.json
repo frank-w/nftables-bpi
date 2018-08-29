@@ -405,13 +405,13 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "tcp option": {
                     "field": "size",
                     "name": "maxseg"
                 }
             },
-            "right": 1360
+            "value": 1360
         }
     }
 ]

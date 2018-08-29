@@ -1416,13 +1416,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "daddr",
                     "protocol": "ip6"
                 }
             },
-            "right": "::1"
+            "value": "::1"
         }
     }
 ]
@@ -1439,13 +1439,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "hoplimit",
                     "protocol": "ip6"
                 }
             },
-            "right": 1
+            "value": 1
         }
     }
 ]
@@ -1462,13 +1462,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dscp",
                     "protocol": "ip6"
                 }
             },
-            "right": "af42"
+            "value": "af42"
         }
     }
 ]
@@ -1485,13 +1485,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dscp",
                     "protocol": "ip6"
                 }
             },
-            "right": 63
+            "value": 63
         }
     }
 ]
@@ -1508,13 +1508,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "ecn",
                     "protocol": "ip6"
                 }
             },
-            "right": "ect0"
+            "value": "ect0"
         }
     }
 ]
@@ -1531,13 +1531,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "ecn",
                     "protocol": "ip6"
                 }
             },
-            "right": "ce"
+            "value": "ce"
         }
     }
 ]
@@ -1554,13 +1554,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "flowlabel",
                     "protocol": "ip6"
                 }
             },
-            "right": 0
+            "value": 0
         }
     }
 ]
@@ -1577,13 +1577,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "flowlabel",
                     "protocol": "ip6"
                 }
             },
-            "right": 12345
+            "value": 12345
         }
     }
 ]
@@ -1600,13 +1600,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "flowlabel",
                     "protocol": "ip6"
                 }
             },
-            "right": "0xfffff"
+            "value": "0xfffff"
         }
     }
 ]

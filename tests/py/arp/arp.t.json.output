@@ -132,14 +132,14 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "base": "nh",
                     "len": 48,
                     "offset": 144
                 }
             },
-            "right": 18838586676582
+            "value": 18838586676582
         }
     }
 ]

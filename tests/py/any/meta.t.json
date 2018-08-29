@@ -521,10 +521,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "priority" }
             },
-            "right": "cafe:beef"
+            "value": "cafe:beef"
         }
     }
 ]
@@ -1502,10 +1502,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": { "^": [ "0xffffffc8", "0x16" ] }
+            "value": { "^": [ "0xffffffc8", "0x16" ] }
         }
     }
 ]
@@ -1514,10 +1514,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": { "&": [ "0x16", "0x16" ] }
+            "value": { "&": [ "0x16", "0x16" ] }
         }
     }
 ]
@@ -1526,10 +1526,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": { "|": [ "0xffffffe9", "0x16" ] }
+            "value": { "|": [ "0xffffffe9", "0x16" ] }
         }
     }
 ]
@@ -1538,10 +1538,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": { "&": [ "0xffffffde", "0x16" ] }
+            "value": { "&": [ "0xffffffde", "0x16" ] }
         }
     }
 ]
@@ -1550,10 +1550,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": { "|": [ "0xf045ffde", "0x10" ] }
+            "value": { "|": [ "0xf045ffde", "0x10" ] }
         }
     }
 ]
@@ -1562,10 +1562,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": { "|": [ "0xffffffde", "0x16" ] }
+            "value": { "|": [ "0xffffffde", "0x16" ] }
         }
     }
 ]
@@ -1574,10 +1574,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": { "|": [ "0x32", "0xfffff" ] }
+            "value": { "|": [ "0x32", "0xfffff" ] }
         }
     }
 ]
@@ -1586,10 +1586,10 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "meta": { "key": "mark" }
             },
-            "right": { "^": [ "0xfffe", "0x16" ] }
+            "value": { "^": [ "0xfffe", "0x16" ] }
         }
     }
 ]

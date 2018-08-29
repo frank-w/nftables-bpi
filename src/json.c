@@ -929,15 +929,15 @@ json_t *expr_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 json_t *payload_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 {
 	return json_pack("{s: {s:o, s:o}}", "mangle",
-			 "left", expr_print_json(stmt->payload.expr, octx),
-			 "right", expr_print_json(stmt->payload.val, octx));
+			 "key", expr_print_json(stmt->payload.expr, octx),
+			 "value", expr_print_json(stmt->payload.val, octx));
 }
 
 json_t *exthdr_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 {
 	return json_pack("{s: {s:o, s:o}}", "mangle",
-			 "left", expr_print_json(stmt->exthdr.expr, octx),
-			 "right", expr_print_json(stmt->exthdr.val, octx));
+			 "key", expr_print_json(stmt->exthdr.expr, octx),
+			 "value", expr_print_json(stmt->exthdr.val, octx));
 }
 
 json_t *quota_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
@@ -973,8 +973,8 @@ json_t *ct_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 	};
 
 	return json_pack("{s:{s:o, s:o}}", "mangle",
-			 "left", ct_expr_json(&expr, octx),
-			 "right", expr_print_json(stmt->ct.expr, octx));
+			 "key", ct_expr_json(&expr, octx),
+			 "value", expr_print_json(stmt->ct.expr, octx));
 }
 
 json_t *limit_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
@@ -1051,8 +1051,8 @@ json_t *meta_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 	root = json_pack("{s:{s:s}}", "meta",
 			 "key", meta_templates[stmt->meta.key].token);
 	root = json_pack("{s:o, s:o}",
-			 "left", root,
-			 "right", expr_print_json(stmt->meta.expr, octx));
+			 "key", root,
+			 "value", expr_print_json(stmt->meta.expr, octx));
 
 	return json_pack("{s:o}", "mangle", root);
 }

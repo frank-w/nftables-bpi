@@ -164,13 +164,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "saddr",
                     "protocol": "ether"
                 }
             },
-            "right": "ff:fe:dc:ba:98:76"
+            "value": "ff:fe:dc:ba:98:76"
         }
     },
     {

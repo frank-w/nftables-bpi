@@ -1441,50 +1441,50 @@ static struct stmt *json_parse_verdict_stmt(struct json_ctx *ctx,
 }
 
 static struct stmt *json_parse_mangle_stmt(struct json_ctx *ctx,
-					const char *key, json_t *value)
+					const char *type, json_t *root)
 {
-	json_t *jleft, *jright;
-	struct expr *left, *right;
+	json_t *jkey, *jvalue;
+	struct expr *key, *value;
 	struct stmt *stmt;
 
-	if (json_unpack_err(ctx, value, "{s:o, s:o}",
-			   "left", &jleft, "right", &jright))
+	if (json_unpack_err(ctx, root, "{s:o, s:o}",
+			   "key", &jkey, "value", &jvalue))
 		return NULL;
 
-	left = json_parse_mangle_lhs_expr(ctx, jleft);
-	if (!left) {
-		json_error(ctx, "Invalid LHS of mangle statement");
+	key = json_parse_mangle_lhs_expr(ctx, jkey);
+	if (!key) {
+		json_error(ctx, "Invalid mangle statement key");
 		return NULL;
 	}
-	right = json_parse_stmt_expr(ctx, jright);
-	if (!right) {
-		json_error(ctx, "Invalid RHS of mangle statement");
-		expr_free(left);
+	value = json_parse_stmt_expr(ctx, jvalue);
+	if (!value) {
+		json_error(ctx, "Invalid mangle statement value");
+		expr_free(key);
 		return NULL;
 	}
 
-	switch (left->ops->type) {
+	switch (key->ops->type) {
 	case EXPR_EXTHDR:
-		return exthdr_stmt_alloc(int_loc, left, right);
+		return exthdr_stmt_alloc(int_loc, key, value);
 	case EXPR_PAYLOAD:
-		return payload_stmt_alloc(int_loc, left, right);
+		return payload_stmt_alloc(int_loc, key, value);
 	case EXPR_META:
-		stmt = meta_stmt_alloc(int_loc, left->meta.key, right);
-		expr_free(left);
+		stmt = meta_stmt_alloc(int_loc, key->meta.key, value);
+		expr_free(key);
 		return stmt;
 	case EXPR_CT:
-		if (left->ct.key == NFT_CT_HELPER) {
+		if (key->ct.key == NFT_CT_HELPER) {
 			stmt = objref_stmt_alloc(int_loc);
 			stmt->objref.type = NFT_OBJECT_CT_HELPER;
-			stmt->objref.expr = right;
+			stmt->objref.expr = value;
 		} else {
-			stmt = ct_stmt_alloc(int_loc, left->ct.key,
-					     left->ct.direction, right);
+			stmt = ct_stmt_alloc(int_loc, key->ct.key,
+					     key->ct.direction, value);
 		}
-		expr_free(left);
+		expr_free(key);
 		return stmt;
 	default:
-		json_error(ctx, "Invalid LHS expression type for mangle statement.");
+		json_error(ctx, "Invalid mangle statement key expression type.");
 		return NULL;
 	}
 }

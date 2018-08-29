@@ -348,12 +348,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": 4896
+            "value": 4896
         }
     }
 ]
@@ -362,12 +362,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": 17
+            "value": 17
         }
     }
 ]
@@ -376,12 +376,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": 19
+            "value": 19
         }
     }
 ]
@@ -390,12 +390,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": 17
+            "value": 17
         }
     }
 ]
@@ -608,12 +608,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "event"
                 }
             },
-            "right": "new"
+            "value": "new"
         }
     }
 ]
@@ -622,12 +622,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "event"
                 }
             },
-            "right": 0
+            "value": 0
         }
     }
 ]

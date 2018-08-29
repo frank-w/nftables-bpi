@@ -618,15 +618,16 @@ in. The second form specifies a reference to a named counter object.
 === MANGLE
 [verse]
 *{ "mangle": {
-	"left":* 'EXPRESSION'*,
-	"right":* 'EXPRESSION'
+	"key":* 'EXPRESSION'*,
+	"value":* 'EXPRESSION'
 *}}*
 
 Change packet data or meta info.
 
-*left*::
-	Packet data to be changed.
-*right*::
+*key*::
+	Packet data to be changed, given as *exthdr*, *payload*, *meta*, *ct* or
+	*ct helper* expression.
+*value*::
 	Value to change data to.
 
 === QUOTA

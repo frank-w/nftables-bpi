@@ -2,12 +2,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "numgen": {
                     "mod": 2,
                     "mode": "inc"
@@ -21,12 +21,12 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "numgen": {
                     "mod": 2,
                     "mode": "inc",

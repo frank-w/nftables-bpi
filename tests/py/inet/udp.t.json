@@ -694,13 +694,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "checksum",
                     "protocol": "udp"
                 }
             },
-            "right": 0
+            "value": 0
         }
     }
 ]
@@ -717,13 +717,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "dport",
                     "protocol": "udp"
                 }
             },
-            "right": 65535
+            "value": 65535
         }
     }
 ]

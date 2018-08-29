@@ -348,13 +348,13 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "field": "flowlabel",
                     "protocol": "ip6"
                 }
             },
-            "right": 1048575
+            "value": 1048575
         }
     }
 ]

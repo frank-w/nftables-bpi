@@ -861,14 +861,14 @@
     },
     {
         "mangle": {
-            "left": {
+            "key": {
                 "payload": {
                     "base": "nh",
                     "len": 48,
                     "offset": 144
                 }
             },
-            "right": "0x112233445566"
+            "value": "0x112233445566"
         }
     }
 ]

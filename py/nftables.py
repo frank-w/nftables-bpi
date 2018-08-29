@@ -297,7 +297,7 @@ class Nftables:
         Accepts a hash object as input.
 
         Returns a tuple (rc, output, error):
-        rc     -- reutrn code as returned by nft_run_cmd_from_buffer() function
+        rc     -- return code as returned by nft_run_cmd_from_buffer() function
         output -- a hash object containing library standard output
         error  -- a string containing output written to stderr
         """

@@ -28,7 +28,6 @@ struct expr *osf_expr_alloc(const struct location *loc)
 	const struct datatype *type = &string_type;
 	struct expr *expr;
 
-	osf_init = true;
 	expr = expr_alloc(loc, &osf_expr_ops, type,
 			  BYTEORDER_HOST_ENDIAN, len);
 

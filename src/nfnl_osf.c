@@ -43,8 +43,6 @@
 #define OSFPDEL 		':'
 #define MAXOPTSTRLEN		128
 
-bool osf_init;
-
 static struct nf_osf_opt IANA_opts[] = {
 	{ .kind = 0, .length = 1,},
 	{ .kind=1, .length=1,},

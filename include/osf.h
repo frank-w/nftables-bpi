@@ -3,7 +3,6 @@
 
 struct expr *osf_expr_alloc(const struct location *loc);
 
-extern bool osf_init;
 extern int nfnl_osf_load_fingerprints(struct netlink_ctx *ctx, int del);
 
 #endif /* NFTABLES_OSF_H */

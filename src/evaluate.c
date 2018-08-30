@@ -26,6 +26,8 @@
 
 #include <expression.h>
 #include <statement.h>
+#include <netlink.h>
+#include <time.h>
 #include <rule.h>
 #include <erec.h>
 #include <gmputil.h>
@@ -1727,6 +1729,15 @@ static int expr_evaluate_socket(struct eval_ctx *ctx, struct expr **expr)
 
 static int expr_evaluate_osf(struct eval_ctx *ctx, struct expr **expr)
 {
+	struct netlink_ctx nl_ctx = {
+		.nf_sock	= ctx->nf_sock,
+		.debug_mask	= ctx->debug_mask,
+		.octx		= ctx->octx,
+		.seqnum		= time(NULL),
+	};
+
+	nfnl_osf_load_fingerprints(&nl_ctx, 0);
+
 	return expr_evaluate_primary(ctx, expr);
 }
 

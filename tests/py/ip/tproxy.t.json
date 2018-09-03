@@ -3,8 +3,11 @@
     {
         "match": {
             "left": {
-                "meta": "l4proto"
+                "meta": {
+                    "key": "l4proto"
+                }
             },
+            "op": "==",
             "right": 17
         }
     },
@@ -21,8 +24,11 @@
     {
         "match": {
             "left": {
-                "meta": "l4proto"
+                "meta": {
+                    "key": "l4proto"
+                }
             },
+            "op": "==",
             "right": 6
         }
     },
@@ -42,9 +48,10 @@
             "left": {
                 "payload": {
                     "field": "protocol",
-                    "name": "ip"
+                    "protocol": "ip"
                 }
             },
+            "op": "==",
             "right": 6
         }
     },
@@ -60,8 +67,11 @@
     {
         "match": {
             "left": {
-                "meta": "l4proto"
+                "meta": {
+                    "key": "l4proto"
+                }
             },
+            "op": "==",
             "right": 17
         }
     },
@@ -78,8 +88,11 @@
     {
         "match": {
             "left": {
-                "meta": "l4proto"
+                "meta": {
+                    "key": "l4proto"
+                }
             },
+            "op": "==",
             "right": 6
         }
     },

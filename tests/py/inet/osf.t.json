@@ -7,6 +7,7 @@
                     "key": "name"
                 }
             },
+            "op": "==",
             "right": "Linux"
         }
     }
@@ -21,6 +22,7 @@
                     "key": "name"
                 }
             },
+            "op": "==",
             "right": {
                 "set": [
                     "MacOs",
@@ -35,19 +37,14 @@
 [
     {
         "mangle": {
-            "left": {
+            "key": {
                 "ct": {
                     "key": "mark"
                 }
             },
-            "right": {
+            "value": {
                 "map": {
-                    "left": {
-                        "osf": {
-                            "key": "name"
-                        }
-                    },
-                    "right": {
+                    "data": {
                         "set": [
                             [
                                 "MacOs",
@@ -58,6 +55,11 @@
                                 1
                             ]
                         ]
+                    },
+                    "key": {
+                        "osf": {
+                            "key": "name"
+                        }
                     }
                 }
             }

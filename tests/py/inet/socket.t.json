@@ -7,7 +7,7 @@
                     "key": "transparent"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 0
         }
     }
@@ -22,7 +22,7 @@
                     "key": "transparent"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -37,6 +37,7 @@
                     "key": "mark"
                 }
             },
+            "op": "==",
             "right": 5
         }
     }

@@ -28,10 +28,10 @@ icmpv6 type {router-renumbering, mld-listener-done, time-exceeded, nd-router-sol
 icmpv6 type {mld-listener-query, time-exceeded, nd-router-advert} accept;ok
 icmpv6 type != {mld-listener-query, time-exceeded, nd-router-advert} accept;ok
 
-icmpv6 code 4;ok
+icmpv6 code 4;ok;icmpv6 code port-unreachable
 icmpv6 code 3-66;ok
-icmpv6 code {5, 6, 7} accept;ok
-icmpv6 code != {5, 6, 7} accept;ok
+icmpv6 code {5, 6, 7} accept;ok;icmpv6 code {policy-fail, reject-route, 7} accept
+icmpv6 code != {policy-fail, reject-route, 7} accept;ok
 icmpv6 code { 3-66};ok
 icmpv6 code != { 3-66};ok
 

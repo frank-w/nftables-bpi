@@ -220,7 +220,7 @@ ip6 test-ip6 input
   [ lookup reg 1 set __set%d ]
   [ immediate reg 0 accept ]
 
-# icmpv6 code != {5, 6, 7} accept
+# icmpv6 code != {policy-fail, reject-route, 7} accept
 __set%d test-ip6 3
 __set%d test-ip6 0
 	element 00000005  : 0 [end]	element 00000006  : 0 [end]	element 00000007  : 0 [end]

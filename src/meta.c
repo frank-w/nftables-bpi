@@ -442,7 +442,7 @@ const struct meta_template meta_templates[] = {
 	[NFT_META_PRANDOM]	= META_TEMPLATE("random",    &integer_type,
 						4 * BITS_PER_BYTE,
 						BYTEORDER_BIG_ENDIAN), /* avoid conversion; doesn't have endianess */
-	[NFT_META_SECPATH]	= META_TEMPLATE("secpath", &boolean_type,
+	[NFT_META_SECPATH]	= META_TEMPLATE("ipsec", &boolean_type,
 						BITS_PER_BYTE, BYTEORDER_HOST_ENDIAN),
 };
 
@@ -664,6 +664,9 @@ struct error_record *meta_key_parse(const struct location *loc,
 		return NULL;
 	} else if (strcmp(str, "obriport") == 0) {
 		*value = NFT_META_BRI_OIFNAME;
+		return NULL;
+	} else if (strcmp(str, "secpath") == 0) {
+		*value = NFT_META_SECPATH;
 		return NULL;
 	}
 

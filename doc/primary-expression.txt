@@ -4,7 +4,7 @@ META EXPRESSIONS
 *meta* {length | nfproto | l4proto | protocol | priority}
 [meta] {mark | iif | iifname | iiftype | oif | oifname | oiftype |
 skuid | skgid | nftrace | rtclassid | ibrname | obrname | pkttype | cpu
-| iifgroup | oifgroup | cgroup | random | secpath}
+| iifgroup | oifgroup | cgroup | random | ipsec}
 
 A meta expression refers to meta data associated with a packet.
 
@@ -88,7 +88,7 @@ integer (32 bit)
 |random|
 pseudo-random number|
 integer (32 bit)
-|secpath|
+|ipsec|
 boolean|
 boolean (1 bit)
 |====================
@@ -125,7 +125,7 @@ filter output meta oif eth0
 filter output oif eth0
 
 # packed was subject to ipsec processing
-raw prerouting meta secpath exists accept
+raw prerouting meta ipsec exists accept
 -----------------------
 
 SOCKET EXPRESSION

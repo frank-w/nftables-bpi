@@ -3726,6 +3726,7 @@ meta_key_unqualified	:	MARK		{ $$ = NFT_META_MARK; }
 			|       IIFGROUP	{ $$ = NFT_META_IIFGROUP; }
 			|       OIFGROUP	{ $$ = NFT_META_OIFGROUP; }
 			|       CGROUP		{ $$ = NFT_META_CGROUP; }
+			|       IPSEC		{ $$ = NFT_META_SECPATH; }
 			;
 
 meta_stmt		:	META	meta_key	SET	stmt_expr

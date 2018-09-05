@@ -555,6 +555,15 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "exthdr"		{ return EXTHDR; }
 
 "ipsec"			{ return IPSEC; }
+"mode"			{ return MODE; }
+"reqid"			{ return REQID; }
+"spnum"			{ return SPNUM; }
+"transport"		{ return TRANSPORT; }
+"tunnel"		{ return TUNNEL; }
+
+"in"			{ return IN; }
+"out"			{ return OUT; }
+
 {addrstring}		{
 				yylval->string = xstrdup(yytext);
 				return STRING;

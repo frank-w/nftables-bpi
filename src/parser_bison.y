@@ -21,6 +21,7 @@
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
 #include <linux/netfilter/nf_nat.h>
 #include <linux/netfilter/nf_log.h>
+#include <linux/xfrm.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/icmp6.h>
 #include <libnftnl/common.h>
@@ -511,6 +512,15 @@ int nft_lex(void *, void *, void *);
 %token EXTHDR			"exthdr"
 
 %token IPSEC		"ipsec"
+%token MODE			"mode"
+%token REQID		"reqid"
+%token SPNUM		"spnum"
+%token TRANSPORT	"transport"
+%token TUNNEL		"tunnel"
+
+%token IN			"in"
+%token OUT			"out"
+
 %type <string>			identifier type_identifier string comment_spec
 %destructor { xfree($$); }	identifier type_identifier string comment_spec
 
@@ -758,6 +768,10 @@ int nft_lex(void *, void *, void *);
 
 %type <list>			timeout_states timeout_state
 %destructor { xfree($$); }	timeout_states timeout_state
+
+%type <val>			xfrm_state_key	xfrm_state_proto_key xfrm_dir	xfrm_spnum
+%type <expr>			xfrm_expr
+%destructor { expr_free($$); }	xfrm_expr
 
 %%
 
@@ -3043,6 +3057,7 @@ primary_expr		:	symbol_expr			{ $$ = $1; }
 			|	hash_expr			{ $$ = $1; }
 			|	fib_expr			{ $$ = $1; }
 			|	osf_expr			{ $$ = $1; }
+			|	xfrm_expr			{ $$ = $1; }
 			|	'('	basic_expr	')'	{ $$ = $2; }
 			;
 
@@ -3782,6 +3797,57 @@ numgen_type		:	INC		{ $$ = NFT_NG_INCREMENTAL; }
 numgen_expr		:	NUMGEN	numgen_type	MOD	NUM	offset_opt
 			{
 				$$ = numgen_expr_alloc(&@$, $2, $4, $5);
+			}
+			;
+
+xfrm_spnum		:	SPNUM	NUM { $$ = $2; }
+			|		    { $$ = 0; }
+			;
+
+xfrm_dir		:	IN	{ $$ = XFRM_POLICY_IN; }
+			|	OUT	{ $$ = XFRM_POLICY_OUT; }
+			;
+
+xfrm_state_key		:	SPI { $$ = NFT_XFRM_KEY_SPI; }
+			|	REQID { $$ = NFT_XFRM_KEY_REQID; }
+			;
+
+xfrm_state_proto_key	:	DADDR		{ $$ = NFT_XFRM_KEY_DADDR_IP4; }
+			|	SADDR		{ $$ = NFT_XFRM_KEY_SADDR_IP4; }
+			;
+
+xfrm_expr		:	IPSEC	xfrm_dir	xfrm_spnum	xfrm_state_key
+			{
+				if ($3 > 255) {
+					erec_queue(error(&@3, "value too large"), state->msgs);
+					YYERROR;
+				}
+				$$ = xfrm_expr_alloc(&@$, $2, $3, $4);
+			}
+			|	IPSEC	xfrm_dir	xfrm_spnum	nf_key_proto	xfrm_state_proto_key
+			{
+				enum nft_xfrm_keys xfrmk = $5;
+
+				switch ($4) {
+				case NFPROTO_IPV4:
+					break;
+				case NFPROTO_IPV6:
+					if ($5 == NFT_XFRM_KEY_SADDR_IP4)
+						xfrmk = NFT_XFRM_KEY_SADDR_IP6;
+					else if ($5 == NFT_XFRM_KEY_DADDR_IP4)
+						xfrmk = NFT_XFRM_KEY_DADDR_IP6;
+					break;
+				default:
+					YYERROR;
+					break;
+				}
+
+				if ($3 > 255) {
+					erec_queue(error(&@3, "value too large"), state->msgs);
+					YYERROR;
+				}
+
+				$$ = xfrm_expr_alloc(&@$, $2, $3, xfrmk);
 			}
 			;
 

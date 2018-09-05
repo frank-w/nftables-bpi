@@ -16,6 +16,8 @@
 #include <netinet/icmp6.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
+#include <linux/xfrm.h>
+
 #include <linux/netfilter.h>
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
 #include <linux/netfilter/nf_log.h>
@@ -679,12 +681,32 @@ static bool ct_key_is_dir(enum nft_ct_keys key)
 	return false;
 }
 
+static int json_parse_family(struct json_ctx *ctx, json_t *root)
+{
+	const char *family;
+
+	if (!json_unpack(root, "{s:s}", "family", &family)) {
+		int familyval = parse_family(family);
+
+		switch (familyval) {
+		case NFPROTO_IPV6:
+		case NFPROTO_IPV4:
+			return familyval;
+		default:
+			json_error(ctx, "Invalid family '%s'.", family);
+			return -1;
+		}
+	}
+
+	return NFPROTO_UNSPEC;
+}
+
 static struct expr *json_parse_ct_expr(struct json_ctx *ctx,
 				       const char *type, json_t *root)
 {
-	const char *key, *dir, *family;
+	const char *key, *dir;
 	unsigned int i;
-	int dirval = -1, familyval = NFPROTO_UNSPEC, keyval = -1;
+	int dirval = -1, familyval, keyval = -1;
 
 	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
 		return NULL;
@@ -701,14 +723,9 @@ static struct expr *json_parse_ct_expr(struct json_ctx *ctx,
 		return NULL;
 	}
 
-	if (!json_unpack(root, "{s:s}", "family", &family)) {
-		familyval = parse_family(family);
-		if (familyval != NFPROTO_IPV4 &&
-		    familyval != NFPROTO_IPV6) {
-			json_error(ctx, "Invalid CT family '%s'.", family);
-			return NULL;
-		}
-	}
+	familyval = json_parse_family(ctx, root);
+	if (familyval < 0)
+		return NULL;
 
 	if (!json_unpack(root, "{s:s}", "dir", &dir)) {
 		if (!strcmp(dir, "original")) {
@@ -716,7 +733,7 @@ static struct expr *json_parse_ct_expr(struct json_ctx *ctx,
 		} else if (!strcmp(dir, "reply")) {
 			dirval = IP_CT_DIR_REPLY;
 		} else {
-			json_error(ctx, "Invalid ct direction '%s'.", dir);
+			json_error(ctx, "Invalid direction '%s'.", dir);
 			return NULL;
 		}
 
@@ -1167,6 +1184,67 @@ static struct expr *json_parse_set_elem_expr(struct json_ctx *ctx,
 	return expr;
 }
 
+static struct expr *json_parse_xfrm_expr(struct json_ctx *ctx,
+					 const char *type, json_t *root)
+{
+	const char *key, *dir;
+	unsigned int i, spnum;
+	int dirval = -1, familyval, keyval = -1;
+
+	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
+		return NULL;
+
+	for (i = 1; i < array_size(xfrm_templates); i++) {
+		if (strcmp(key, xfrm_templates[i].token))
+			continue;
+		keyval = i;
+		break;
+	}
+
+	if (keyval == -1) {
+		json_error(ctx, "Unknown xfrm key '%s'.", key);
+		return NULL;
+	}
+
+	familyval = json_parse_family(ctx, root);
+	if (familyval < 0)
+		return NULL;
+
+	if (!json_unpack(root, "{s:s}", "dir", &dir)) {
+		if (!strcmp(dir, "in")) {
+			dirval = XFRM_POLICY_IN;
+		} else if (!strcmp(dir, "out")) {
+			dirval = XFRM_POLICY_OUT;
+		} else {
+			json_error(ctx, "Invalid direction '%s'.", dir);
+			return NULL;
+		}
+	}
+
+	spnum = 0;
+	if (!json_unpack(root, "{s:i}", "spnum", &spnum)) {
+		if (spnum > 255) {
+			json_error(ctx, "Invalid spnum'%d'.", spnum);
+			return NULL;
+		}
+	}
+
+	switch (keyval) {
+	case NFT_XFRM_KEY_SADDR_IP4:
+		if (familyval == NFPROTO_IPV6)
+			keyval = NFT_XFRM_KEY_SADDR_IP6;
+		break;
+	case NFT_XFRM_KEY_DADDR_IP4:
+		if (familyval == NFPROTO_IPV6)
+			keyval = NFT_XFRM_KEY_DADDR_IP6;
+		break;
+	default:
+		break;
+	}
+
+	return xfrm_expr_alloc(int_loc, dirval, spnum, keyval);
+}
+
 static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 {
 	const struct {
@@ -1185,6 +1263,7 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		{ "tcp option", json_parse_tcp_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES },
 		{ "meta", json_parse_meta_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },
 		{ "osf", json_parse_osf_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_MAP },
+		{ "ipsec", json_parse_xfrm_expr, CTX_F_PRIMARY | CTX_F_MAP },
 		{ "socket", json_parse_socket_expr, CTX_F_PRIMARY },
 		{ "rt", json_parse_rt_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },
 		{ "ct", json_parse_ct_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },

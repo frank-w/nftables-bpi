@@ -16,6 +16,7 @@
 #include <linux/netfilter/nf_log.h>
 #include <linux/netfilter/nf_nat.h>
 #include <linux/netfilter/nf_tables.h>
+#include <linux/xfrm.h>
 #include <pwd.h>
 #include <grp.h>
 #include <jansson.h>
@@ -811,6 +812,51 @@ json_t *socket_expr_json(const struct expr *expr, struct output_ctx *octx)
 json_t *osf_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
 	return json_pack("{s:{s:s}}", "osf", "key", "name");
+}
+
+json_t *xfrm_expr_json(const struct expr *expr, struct output_ctx *octx)
+{
+	const char *name = xfrm_templates[expr->xfrm.key].token;
+	const char *family = NULL;
+	const char *dirstr;
+	json_t *root;
+
+	switch (expr->xfrm.direction) {
+	case XFRM_POLICY_IN:
+		dirstr = "in";
+		break;
+	case XFRM_POLICY_OUT:
+		dirstr = "out";
+		break;
+	default:
+		return NULL;
+	}
+
+	switch (expr->xfrm.key) {
+	case NFT_XFRM_KEY_UNSPEC:
+	case NFT_XFRM_KEY_SPI:
+	case NFT_XFRM_KEY_REQID:
+	case __NFT_XFRM_KEY_MAX:
+		break;
+	case NFT_XFRM_KEY_DADDR_IP4:
+	case NFT_XFRM_KEY_SADDR_IP4:
+		family = "ip";
+		break;
+	case NFT_XFRM_KEY_DADDR_IP6:
+	case NFT_XFRM_KEY_SADDR_IP6:
+		family = "ip6";
+		break;
+	}
+
+	root = json_pack("{s:s}", "key", name);
+
+	if (family)
+		json_object_set_new(root, "family", json_string(family));
+
+	json_object_set_new(root, "dir", json_string(dirstr));
+	json_object_set_new(root, "spnum", json_integer(expr->xfrm.spnum));
+
+	return json_pack("{s:o}", "ipsec", root);
 }
 
 json_t *integer_type_json(const struct expr *expr, struct output_ctx *octx)

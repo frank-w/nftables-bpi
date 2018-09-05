@@ -69,6 +69,7 @@ enum expr_types {
 	EXPR_HASH,
 	EXPR_RT,
 	EXPR_FIB,
+	EXPR_XFRM,
 };
 
 enum ops {
@@ -194,6 +195,7 @@ enum expr_flags {
 #include <ct.h>
 #include <socket.h>
 #include <osf.h>
+#include <xfrm.h>
 
 /**
  * struct expr
@@ -337,6 +339,12 @@ struct expr {
 			uint32_t		flags;
 			uint32_t		result;
 		} fib;
+		struct {
+			/* EXPR_XFRM */
+			enum nft_xfrm_keys	key;
+			uint8_t		direction;
+			uint8_t		spnum;
+		} xfrm;
 	};
 };
 

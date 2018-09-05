@@ -43,6 +43,7 @@ libnftables_la_SOURCES =			\
 		rt.c				\
 		numgen.c			\
 		ct.c				\
+		xfrm.c				\
 		netlink.c			\
 		netlink_linearize.c		\
 		netlink_delinearize.c		\

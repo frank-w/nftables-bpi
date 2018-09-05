@@ -189,6 +189,25 @@ static void netlink_parse_immediate(struct netlink_parse_ctx *ctx,
 		netlink_set_register(ctx, dreg, expr);
 }
 
+static void netlink_parse_xfrm(struct netlink_parse_ctx *ctx,
+			       const struct location *loc,
+			       const struct nftnl_expr *nle)
+{
+	enum nft_registers dreg;
+	enum nft_xfrm_keys key;
+	struct expr *expr;
+	uint32_t spnum;
+	uint8_t dir;
+
+	key = nftnl_expr_get_u32(nle, NFTNL_EXPR_XFRM_KEY);
+	dir = nftnl_expr_get_u8(nle, NFTNL_EXPR_XFRM_DIR);
+	spnum = nftnl_expr_get_u32(nle, NFTNL_EXPR_XFRM_SPNUM);
+	expr = xfrm_expr_alloc(loc, dir, spnum, key);
+
+	dreg = netlink_parse_register(nle, NFTNL_EXPR_XFRM_DREG);
+	netlink_set_register(ctx, dreg, expr);
+}
+
 static enum ops netlink_parse_range_op(const struct nftnl_expr *nle)
 {
 	switch (nftnl_expr_get_u32(nle, NFTNL_EXPR_RANGE_OP)) {
@@ -1441,6 +1460,7 @@ static const struct {
 	{ .name = "fib",	.parse = netlink_parse_fib },
 	{ .name = "tcpopt",	.parse = netlink_parse_exthdr },
 	{ .name = "flow_offload", .parse = netlink_parse_flow_offload },
+	{ .name = "xfrm",	.parse = netlink_parse_xfrm },
 };
 
 static int netlink_parse_expr(const struct nftnl_expr *nle,
@@ -2106,6 +2126,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 	case EXPR_FIB:
 	case EXPR_SOCKET:
 	case EXPR_OSF:
+	case EXPR_XFRM:
 		break;
 	case EXPR_HASH:
 		if (expr->hash.expr)

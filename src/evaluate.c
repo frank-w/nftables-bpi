@@ -1751,6 +1751,23 @@ static int expr_evaluate_variable(struct eval_ctx *ctx, struct expr **exprp)
 	return expr_evaluate(ctx, exprp);
 }
 
+static int expr_evaluate_xfrm(struct eval_ctx *ctx, struct expr **exprp)
+{
+	struct expr *expr = *exprp;
+
+	switch (ctx->pctx.family) {
+	case NFPROTO_IPV4:
+	case NFPROTO_IPV6:
+	case NFPROTO_INET:
+		break;
+	default:
+		return expr_error(ctx->msgs, expr, "ipsec expression is only"
+				  " valid in ip/ip6/inet tables");
+	}
+
+	return expr_evaluate_primary(ctx, exprp);
+}
+
 static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 {
 	if (ctx->debug_mask & NFT_DEBUG_EVALUATION) {
@@ -1816,6 +1833,8 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 		return expr_evaluate_numgen(ctx, expr);
 	case EXPR_HASH:
 		return expr_evaluate_hash(ctx, expr);
+	case EXPR_XFRM:
+		return expr_evaluate_xfrm(ctx, expr);
 	default:
 		BUG("unknown expression type %s\n", (*expr)->ops->name);
 	}

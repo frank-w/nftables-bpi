@@ -285,3 +285,37 @@ ip6 filter output rt nexthop fd00::1
 inet filter output rt ip nexthop 192.168.0.1
 inet filter output rt ip6 nexthop fd00::1
 -------------------------- 
+
+IPSEC EXPRESSIONS
+~~~~~~~~~~~~~~~~~
+
+[verse]
+*ipsec* {in | out} [ spnum 'NUM' ]  {reqid | spi }
+*ipsec* {in | out} [ spnum 'NUM' ]  {ip | ip6 } { saddr | daddr }
+
+A ipsec expression refers to ipsec data associated with a packet.
+
+The 'in' or 'out' keyword needs to be used to specify if the expression should
+examine inbound or outbound policies. The 'in' keyword can be used in the
+prerouting, input and forward hooks.  The 'out' keyword applies to forward,
+output and postrouting hooks.
+The optional keyword spnum can be used to match a specific state in a chain,
+it defaults to 0.
+
+.Ipsec expression types
+[options="header"]
+|=======================
+|Keyword| Description| Type
+|reqid|
+Request ID|
+integer (32 bit)
+|spi|
+Security Parameter Index|
+integer (32 bit)
+|saddr|
+Source address of the tunnel|
+ipv4_addr/ipv6_addr
+|daddr|
+Destination address of the tunnel|
+ipv4_addr/ipv6_addr
+|=================================

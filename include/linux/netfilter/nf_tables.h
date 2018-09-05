@@ -832,6 +832,7 @@ enum nft_rt_keys {
 	NFT_RT_NEXTHOP4,
 	NFT_RT_NEXTHOP6,
 	NFT_RT_TCPMSS,
+	NFT_RT_XFRM,
 	__NFT_RT_MAX
 };
 #define NFT_RT_MAX		(__NFT_RT_MAX - 1)

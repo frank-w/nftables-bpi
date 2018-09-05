@@ -5,3 +5,5 @@
 *inet;test-inet;output
 
 rt classid "cosmos";ok
+rt ipsec exists;ok
+rt ipsec missing;ok

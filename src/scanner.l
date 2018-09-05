@@ -554,6 +554,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "exthdr"		{ return EXTHDR; }
 
+"ipsec"			{ return IPSEC; }
 {addrstring}		{
 				yylval->string = xstrdup(yytext);
 				return STRING;

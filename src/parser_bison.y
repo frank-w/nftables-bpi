@@ -510,6 +510,7 @@ int nft_lex(void *, void *, void *);
 
 %token EXTHDR			"exthdr"
 
+%token IPSEC		"ipsec"
 %type <string>			identifier type_identifier string comment_spec
 %destructor { xfree($$); }	identifier type_identifier string comment_spec
 
@@ -3830,6 +3831,7 @@ rt_expr			:	RT	rt_key
 rt_key			:	CLASSID		{ $$ = NFT_RT_CLASSID; }
 			|	NEXTHOP		{ $$ = NFT_RT_NEXTHOP4; }
 			|	MTU		{ $$ = NFT_RT_TCPMSS; }
+			|	IPSEC		{ $$ = NFT_RT_XFRM; }
 			;
 
 ct_expr			: 	CT	ct_key

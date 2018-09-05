@@ -260,6 +260,9 @@ ipv4_addr/ipv6_addr
 |mtu|
 TCP maximum segment size of route |
 integer (16 bit)
+|ipsec|
+route via ipsec tunnel or transport |
+boolean
 |=================================
 
 .Routing expression specific types
@@ -274,6 +277,7 @@ Routing Realm (32 bit number). Can be specified numerically or as symbolic name 
 --------------------------
 # IP family independent rt expression
 filter output rt classid 10
+filter output rt ipsec missing
 
 # IP family dependent rt expressions
 ip filter output rt nexthop 192.168.0.1

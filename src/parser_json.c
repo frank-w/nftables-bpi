@@ -621,6 +621,7 @@ static struct expr *json_parse_rt_expr(struct json_ctx *ctx,
 		{ "classid", NFT_RT_CLASSID },
 		{ "nexthop", NFT_RT_NEXTHOP4 },
 		{ "mtu", NFT_RT_TCPMSS },
+		{ "ipsec", NFT_RT_XFRM },
 	};
 	unsigned int i, familyval = NFPROTO_UNSPEC;
 	const char *key, *family = NULL;

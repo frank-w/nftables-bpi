@@ -648,7 +648,7 @@ static void inet_service_print(const struct expr *expr, struct output_ctx *octx)
 
 void inet_service_type_print(const struct expr *expr, struct output_ctx *octx)
 {
-	if (octx->literal == NFT_LITERAL_PORT) {
+	if (octx->literal >= NFT_LITERAL_PORT) {
 		inet_service_print(expr, octx);
 		return;
 	}

@@ -393,9 +393,15 @@ json_t *relational_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *range_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
-	return json_pack("{s:[o, o]}", "range",
+	json_t *root;
+
+	octx->numeric += NFT_NUMERIC_ALL + 1;
+	root = json_pack("{s:[o, o]}", "range",
 			 expr_print_json(expr->left, octx),
 			 expr_print_json(expr->right, octx));
+	octx->numeric -= NFT_NUMERIC_ALL + 1;
+
+	return root;
 }
 
 json_t *meta_expr_json(const struct expr *expr, struct output_ctx *octx)

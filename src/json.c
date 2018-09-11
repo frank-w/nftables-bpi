@@ -770,12 +770,13 @@ static json_t *datatype_json(const struct expr *expr, struct output_ctx *octx)
 			return symbolic_constant_json(dtype->sym_tbl,
 						      expr, octx);
 		if (dtype->print) {
-			struct output_ctx octx = { .numeric = 3 };
 			char buf[1024];
+			FILE *ofp = octx->output_fp;
 
-			octx.output_fp = fmemopen(buf, 1024, "w");
-			dtype->print(expr, &octx);
-			fclose(octx.output_fp);
+			octx->output_fp = fmemopen(buf, 1024, "w");
+			dtype->print(expr, octx);
+			fclose(octx->output_fp);
+			octx->output_fp = ofp;
 
 			if (buf[0] == '"') {
 				memmove(buf, buf + 1, strlen(buf));

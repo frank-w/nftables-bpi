@@ -480,7 +480,7 @@
     }
 ]
 
-# icmp code != { 2, 4, 54, 33, 56}
+# icmp code != { prot-unreachable, 4, 33, 54, 56}
 [
     {
         "match": {
@@ -493,7 +493,7 @@
             "op": "!=",
             "right": {
                 "set": [
-                    2,
+                    "prot-unreachable",
                     4,
                     33,
                     54,

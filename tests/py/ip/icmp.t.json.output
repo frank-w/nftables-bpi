@@ -35,6 +35,30 @@
     }
 ]
 
+# icmp code { 2, 4, 54, 33, 56}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "prot-unreachable",
+                    4,
+                    33,
+                    54,
+                    56
+                ]
+            }
+        }
+    }
+]
+
 # icmp checksum { 1111, 222, 343} accept
 [
     {

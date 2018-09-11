@@ -519,7 +519,7 @@
     }
 ]
 
-# icmpv6 code != {5, 6, 7} accept
+# icmpv6 code != {policy-fail, reject-route, 7} accept
 [
     {
         "match": {
@@ -532,8 +532,8 @@
             "op": "!=",
             "right": {
                 "set": [
-                    5,
-                    6,
+                    "policy-fail",
+                    "reject-route",
                     7
                 ]
             }

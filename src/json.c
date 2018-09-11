@@ -857,7 +857,23 @@ json_t *inet_protocol_type_json(const struct expr *expr,
 
 json_t *inet_service_type_json(const struct expr *expr, struct output_ctx *octx)
 {
-	return json_integer(ntohs(mpz_get_be16(expr->value)));
+	struct sockaddr_in sin = {
+		.sin_family = AF_INET,
+		.sin_port = mpz_get_be16(expr->value),
+	};
+	char buf[NI_MAXSERV];
+
+	if (octx->literal < NFT_LITERAL_PORT ||
+	    getnameinfo((struct sockaddr *)&sin, sizeof(sin),
+		        NULL, 0, buf, sizeof(buf), 0))
+		return json_integer(ntohs(sin.sin_port));
+
+	if (htons(atoi(buf)) == sin.sin_port ||
+	    getnameinfo((struct sockaddr *)&sin, sizeof(sin),
+			NULL, 0, buf, sizeof(buf), NI_DGRAM))
+		return json_integer(ntohs(sin.sin_port));
+
+	return json_string(buf);
 }
 
 json_t *mark_type_json(const struct expr *expr, struct output_ctx *octx)

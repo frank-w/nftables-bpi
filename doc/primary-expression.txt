@@ -112,7 +112,8 @@ Routing Realm (32 bit number). Can be specified numerically or as symbolic name 
 |devgroup_type|
 Device group (32 bit number). Can be specified numerically or as symbolic name defined in /etc/iproute2/group.
 |pkt_type|
-Packet type: Unicast (addressed to local host), Broadcast (to all), Multicast (to group).
+Packet type: *host* (addressed to local host), *broadcast* (to all),
+*multicast* (to group), *other* (addressed to another host).
 |=============================
 
 .Using meta expressions

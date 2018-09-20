@@ -2806,10 +2806,12 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 	case EXPR_SYMBOL:
 		if (expr_evaluate(ctx, &map->mappings) < 0)
 			return -1;
-		if (map->mappings->ops->type != EXPR_SET_REF ||
-		    !(map->mappings->set->flags & NFT_SET_OBJECT))
+		if (map->mappings->ops->type != EXPR_SET_REF)
 			return expr_error(ctx->msgs, map->mappings,
 					  "Expression is not a map");
+		if (!(map->mappings->set->flags & NFT_SET_OBJECT))
+			return expr_error(ctx->msgs, map->mappings,
+					  "Expression is not a map with objects");
 		break;
 	default:
 		BUG("invalid mapping expression %s\n",

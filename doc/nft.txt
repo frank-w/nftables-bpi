@@ -410,6 +410,8 @@ concurrent ruleset change happens after the translation was done: The effective
 rule index might change if a rule was inserted or deleted before the referred
 one. If the referred rule was deleted, the command is rejected by the kernel
 just as if an invalid 'handle' was given.
+The old name "position" in place of "handle" is deprecated
+and should not be used anymore.
 
 A 'comment' is a single word or a double-quoted (") multi-word string which can
 be used to make notes regarding the actual rule. *Note:* If you use bash for
@@ -418,13 +420,11 @@ servers\")
 
 [horizontal]
 *add*:: Add a new rule described by the list of statements. The
-rule is appended to the given chain unless a position is specified, in which
-case the rule is appended to the rule given by the 'handle'. The alternative
-name position is deprecated and should not be used anymore.
-*insert*:: Similar to the *add* command, but the rule is prepended to the
-beginning of the chain or before the rule with the given 'handle'.
-*replace*:: Similar to the add command, but the rule replaces the specified
-rule.
+rule is appended to the given chain unless a location is specified, in which
+case the rule is inserted after the specified rule.
+*insert*:: Same as *add* except the rule is inserted at the
+beginning of the chain or before the specified rule.
+*replace*:: Similar to *add*, but the rule replaces the specified rule.
 *delete*:: Delete the specified rule.
 
 .*add a rule to ip table input chain*

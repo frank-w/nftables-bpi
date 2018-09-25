@@ -47,51 +47,50 @@ do
 	done
 
 	hook=prerouting
-		prioname=dstnat
-			gen_chains $family $hook $prioname
+	prioname=dstnat
+	gen_chains $family $hook $prioname
 
 	hook=postrouting
-		prioname=srcnat
-			gen_chains $family $hook $prioname
+	prioname=srcnat
+	gen_chains $family $hook $prioname
 done
 
 
 family=arp
-	$NFT add table $family x
-	for hook in input output
-	do
-		prioname=filter
-			gen_chains $family $hook $prioname
-	done
+$NFT add table $family x
+for hook in input output
+do
+	prioname=filter
+	gen_chains $family $hook $prioname
+done
 
 
 family=netdev
-	$NFT add table $family x
-	hook=ingress
-		prioname=filter
-			for i in -11 -10 0 10 11
-			do
-				offset=`format_offset $i`
-				$NFT add chain $family x `chainname $hook $prioname $offset` "{ type filter hook $hook device lo priority $prioname $offset; }"
-			done
+$NFT add table $family x
+hook=ingress
+prioname=filter
+for i in -11 -10 0 10 11
+do
+	offset=`format_offset $i`
+	$NFT add chain $family x `chainname $hook $prioname $offset` "{ type filter hook $hook device lo priority $prioname $offset; }"
+done
 
 family=bridge
-	$NFT add table $family x
-	for hook in prerouting input forward output postrouting
-	do
-		prioname=filter
-			gen_chains $family $hook $prioname
-	done
+$NFT add table $family x
+for hook in prerouting input forward output postrouting
+do
+	prioname=filter
+	gen_chains $family $hook $prioname
+done
 
-	hook=prerouting
-		prioname=dstnat
-			gen_chains $family $hook $prioname
+hook=prerouting
+prioname=dstnat
+gen_chains $family $hook $prioname
 
-	hook=output
-		prioname=out
-			gen_chains $family $hook $prioname
+hook=output
+prioname=out
+gen_chains $family $hook $prioname
 
-	hook=postrouting
-		prioname=srcnat
-			gen_chains $family $hook $prioname
-
+hook=postrouting
+prioname=srcnat
+gen_chains $family $hook $prioname

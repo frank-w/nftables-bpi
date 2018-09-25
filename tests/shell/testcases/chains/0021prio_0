@@ -3,7 +3,7 @@
 set -e
 
 format_offset () {
-	i=$1
+	local i=$1
 	if ((i == 0))
 	then
 		echo ""
@@ -16,21 +16,21 @@ format_offset () {
 }
 
 chainname () {
-	hook=$1
-	prioname=$2
-	priooffset=$3
+	local hook=$1
+	local prioname=$2
+	local priooffset=$3
 
 	echo "${hook}${prioname}${priooffset}" | tr "\-+" "mp"
 }
 
 gen_chains () {
-	family=$1
-	hook=$2
-	prioname=$3
+	local family=$1
+	local hook=$2
+	local prioname=$3
 
 	for i in -11 -10 0 10 11
 	do
-		offset=`format_offset $i`
+		local offset=`format_offset $i`
 		$NFT add chain $family x `chainname $hook $prioname $offset` "{ type filter hook $hook priority $prioname $offset; }"
 	done
 }
@@ -46,13 +46,8 @@ do
 		done
 	done
 
-	hook=prerouting
-	prioname=dstnat
-	gen_chains $family $hook $prioname
-
-	hook=postrouting
-	prioname=srcnat
-	gen_chains $family $hook $prioname
+	gen_chains $family prerouting dstnat
+	gen_chains $family postrouting srcnat
 done
 
 
@@ -60,8 +55,7 @@ family=arp
 $NFT add table $family x
 for hook in input output
 do
-	prioname=filter
-	gen_chains $family $hook $prioname
+	gen_chains $family $hook filter
 done
 
 
@@ -79,18 +73,9 @@ family=bridge
 $NFT add table $family x
 for hook in prerouting input forward output postrouting
 do
-	prioname=filter
-	gen_chains $family $hook $prioname
+	gen_chains $family $hook filter
 done
 
-hook=prerouting
-prioname=dstnat
-gen_chains $family $hook $prioname
-
-hook=output
-prioname=out
-gen_chains $family $hook $prioname
-
-hook=postrouting
-prioname=srcnat
-gen_chains $family $hook $prioname
+gen_chains $family prerouting dstnat
+gen_chains $family output out
+gen_chains $family postrouting srcnat

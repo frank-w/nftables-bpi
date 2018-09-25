@@ -541,6 +541,8 @@ int nft_lex(void *, void *, void *);
 %destructor { handle_free(&$$); } set_spec setid_spec set_identifier obj_spec objid_spec obj_identifier
 %type <val>			family_spec family_spec_explicit chain_policy int_num
 %type <prio_spec>		extended_prio_spec prio_spec
+%type <string>			extended_prio_name
+%destructor { xfree($$); }	extended_prio_name
 
 %type <string>			dev_spec quota_unit
 %destructor { xfree($$); }	dev_spec quota_unit
@@ -1861,26 +1863,33 @@ prio_spec		:	PRIORITY extended_prio_spec
 			}
 			;
 
+extended_prio_name	:	OUT
+			{
+				$$ = strdup("out");
+			}
+			|	STRING
+			;
+
 extended_prio_spec	:	int_num
 			{
 				struct prio_spec spec = {0};
 				spec.num = $1;
 				$$ = spec;
 			}
-			|	STRING
+			|	extended_prio_name
 			{
 				struct prio_spec spec = {0};
 				spec.str = $1;
 				$$ = spec;
 			}
-			|	STRING PLUS NUM
+			|	extended_prio_name PLUS NUM
 			{
 				struct prio_spec spec = {0};
 				spec.num = $3;
 				spec.str = $1;
 				$$ = spec;
 			}
-			|	STRING DASH NUM
+			|	extended_prio_name DASH NUM
 			{
 				struct prio_spec spec = {0};
 				spec.num = -$3;

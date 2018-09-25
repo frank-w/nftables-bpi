@@ -32,14 +32,22 @@ gen_chains () {
 	for i in -11 -10 0 10 11
 	do
 		local offset=`format_offset $i`
-		local chainname=`chainname $hook $prioname $offset`
-		$NFT add chain $family x $chainname "{ type filter hook $hook $device priority $prioname $offset; }"
+		local cmd="add chain $family x"
+		cmd+=" `chainname $hook $prioname $offset` {"
+		cmd+=" type filter hook $hook $device"
+		cmd+=" priority $prioname $offset; }"
+		echo "$cmd"
 	done
 }
 
+tmpfile=$(mktemp)
+trap "rm $tmpfile" EXIT
+
+(
+
 for family in ip ip6 inet
 do
-	$NFT add table $family x
+	echo "add table $family x"
 	for hook in prerouting input forward output postrouting
 	do
 		for prioname in raw mangle filter security
@@ -47,24 +55,23 @@ do
 			gen_chains $family $hook $prioname
 		done
 	done
-
 	gen_chains $family prerouting dstnat
 	gen_chains $family postrouting srcnat
 done
 
 family=arp
-$NFT add table $family x
+echo "add table $family x"
 for hook in input output
 do
 	gen_chains $family $hook filter
 done
 
 family=netdev
-$NFT add table $family x
+echo "add table $family x"
 gen_chains $family ingress filter lo
 
 family=bridge
-$NFT add table $family x
+echo "add table $family x"
 for hook in prerouting input forward output postrouting
 do
 	gen_chains $family $hook filter
@@ -72,3 +79,6 @@ done
 gen_chains $family prerouting dstnat
 gen_chains $family output out
 gen_chains $family postrouting srcnat
+
+) >$tmpfile
+$NFT -f $tmpfile

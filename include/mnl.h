@@ -3,6 +3,7 @@
 
 #include <list.h>
 #include <netlink.h>
+#include <rule.h>
 #include <libmnl/libmnl.h>
 
 struct mnl_socket *netlink_open_sock(void);
@@ -42,10 +43,10 @@ int mnl_nft_chain_batch_del(struct nftnl_chain *nlc, struct nftnl_batch *batch,
 struct nftnl_chain_list *mnl_nft_chain_dump(struct netlink_ctx *ctx,
 					    int family);
 
-int mnl_nft_table_batch_add(struct nftnl_table *nlt, struct nftnl_batch *batch,
-			    unsigned int flags, uint32_t seqnum);
-int mnl_nft_table_batch_del(struct nftnl_table *nlt, struct nftnl_batch *batch,
-			    unsigned int flags, uint32_t seqnum);
+int mnl_nft_table_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		      unsigned int flags);
+int mnl_nft_table_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+
 struct nftnl_table_list *mnl_nft_table_dump(struct netlink_ctx *ctx,
 					    int family);
 

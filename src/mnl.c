@@ -468,32 +468,63 @@ err:
 /*
  * Table
  */
-int mnl_nft_table_batch_add(struct nftnl_table *nlt, struct nftnl_batch *batch,
-			    unsigned int flags, uint32_t seqnum)
+int mnl_nft_table_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		      unsigned int flags)
 {
+	struct nftnl_table *nlt;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
+	nlt = nftnl_table_alloc();
+	if (nlt == NULL)
+		memory_allocation_error();
+
+	nftnl_table_set_u32(nlt, NFTNL_TABLE_FAMILY, cmd->handle.family);
+	nftnl_table_set(nlt, NFTNL_TABLE_NAME, cmd->handle.table.name);
+	if (cmd->table)
+		nftnl_table_set_u32(nlt, NFTNL_TABLE_FLAGS, cmd->table->flags);
+	else
+		nftnl_table_set_u32(nlt, NFTNL_TABLE_FLAGS, 0);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_NEWTABLE,
-				    nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY),
-				    flags, seqnum);
+				    cmd->handle.family,
+				    flags, ctx->seqnum);
 	nftnl_table_nlmsg_build_payload(nlh, nlt);
-	mnl_nft_batch_continue(batch);
+	nftnl_table_free(nlt);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }
 
-int mnl_nft_table_batch_del(struct nftnl_table *nlt, struct nftnl_batch *batch,
-			    unsigned int flags, uint32_t seqnum)
+int mnl_nft_table_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
+	struct nftnl_table *nlt;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
+	nlt = nftnl_table_alloc();
+	if (nlt == NULL)
+		memory_allocation_error();
+
+	nftnl_table_set_u32(nlt, NFTNL_TABLE_FAMILY, cmd->handle.family);
+	if (cmd->handle.table.name)
+		nftnl_table_set(nlt, NFTNL_TABLE_NAME, cmd->handle.table.name);
+	if (cmd->handle.handle.id)
+		nftnl_table_set_u64(nlt, NFTNL_TABLE_HANDLE,
+				    cmd->handle.handle.id);
+
+	nlt = nftnl_table_alloc();
+	if (nlt == NULL)
+		memory_allocation_error();
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELTABLE,
-				    nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY),
-				    NLM_F_ACK, seqnum);
+				    cmd->handle.family,
+				    NLM_F_ACK, ctx->seqnum);
 	nftnl_table_nlmsg_build_payload(nlh, nlt);
-	mnl_nft_batch_continue(batch);
+	nftnl_table_free(nlt);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }

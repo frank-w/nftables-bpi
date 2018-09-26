@@ -111,23 +111,6 @@ void __noreturn __netlink_init_error(const char *filename, int line,
 	exit(NFT_EXIT_NONL);
 }
 
-struct nftnl_table *alloc_nftnl_table(const struct handle *h)
-{
-	struct nftnl_table *nlt;
-
-	nlt = nftnl_table_alloc();
-	if (nlt == NULL)
-		memory_allocation_error();
-
-	nftnl_table_set_u32(nlt, NFTNL_TABLE_FAMILY, h->family);
-	if (h->table.name != NULL)
-		nftnl_table_set(nlt, NFTNL_TABLE_NAME, h->table.name);
-	if (h->handle.id)
-		nftnl_table_set_u64(nlt, NFTNL_TABLE_HANDLE, h->handle.id);
-
-	return nlt;
-}
-
 struct nftnl_chain *alloc_nftnl_chain(const struct handle *h)
 {
 	struct nftnl_chain *nlc;
@@ -731,36 +714,6 @@ int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h)
 int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
 	return netlink_del_rule_batch(ctx, cmd);
-}
-
-int netlink_add_table_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
-			    uint32_t flags)
-{
-	struct nftnl_table *nlt;
-	int err;
-
-	nlt = alloc_nftnl_table(&cmd->handle);
-	if (cmd->table != NULL)
-		nftnl_table_set_u32(nlt, NFTNL_TABLE_FLAGS, cmd->table->flags);
-	else
-		nftnl_table_set_u32(nlt, NFTNL_TABLE_FLAGS, 0);
-
-	err = mnl_nft_table_batch_add(nlt, ctx->batch, flags, ctx->seqnum);
-	nftnl_table_free(nlt);
-
-	return err;
-}
-
-int netlink_delete_table_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
-{
-	struct nftnl_table *nlt;
-	int err;
-
-	nlt = alloc_nftnl_table(&cmd->handle);
-	err = mnl_nft_table_batch_del(nlt, ctx->batch, 0, ctx->seqnum);
-	nftnl_table_free(nlt);
-
-	return err;
 }
 
 struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
@@ -1650,18 +1603,6 @@ int netlink_list_flowtables(struct netlink_ctx *ctx, const struct handle *h)
 int netlink_batch_send(struct netlink_ctx *ctx, struct list_head *err_list)
 {
 	return mnl_batch_talk(ctx, err_list);
-}
-
-int netlink_flush_ruleset(struct netlink_ctx *ctx, const struct cmd *cmd)
-{
-	struct nftnl_table *nlt;
-	int err;
-
-	nlt = alloc_nftnl_table(&cmd->handle);
-	err = mnl_nft_table_batch_del(nlt, ctx->batch, 0, ctx->seqnum);
-	nftnl_table_free(nlt);
-
-	return err;
 }
 
 struct nftnl_ruleset *netlink_dump_ruleset(struct netlink_ctx *ctx,

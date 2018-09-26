@@ -57,7 +57,6 @@ struct netlink_ctx {
 	struct nft_cache	*cache;
 };
 
-extern struct nftnl_table *alloc_nftnl_table(const struct handle *h);
 extern struct nftnl_chain *alloc_nftnl_chain(const struct handle *h);
 extern struct nftnl_rule *alloc_nftnl_rule(const struct handle *h);
 extern struct nftnl_expr *alloc_nft_expr(const char *name);
@@ -130,10 +129,6 @@ extern int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd);
 extern struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 					       const struct nftnl_chain *nlc);
 
-extern int netlink_add_table_batch(struct netlink_ctx *ctx,
-				   const struct cmd *cmd, uint32_t flags);
-extern int netlink_delete_table_batch(struct netlink_ctx *ctx,
-				      const struct cmd *cmd);
 extern int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h);
 extern int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h);
 extern int netlink_flush_table(struct netlink_ctx *ctx, const struct cmd *cmd);
@@ -204,8 +199,6 @@ extern int netlink_io_error(struct netlink_ctx *ctx,
 #define netlink_init_error()	\
 	__netlink_init_error(__FILE__, __LINE__, strerror(errno));
 extern void __noreturn __netlink_init_error(const char *file, int line, const char *reason);
-
-extern int netlink_flush_ruleset(struct netlink_ctx *ctx, const struct cmd *cmd);
 
 extern struct nftnl_ruleset *netlink_dump_ruleset(struct netlink_ctx *ctx,
 						const struct handle *h,

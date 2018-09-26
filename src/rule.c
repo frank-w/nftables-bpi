@@ -21,6 +21,7 @@
 #include <utils.h>
 #include <netdb.h>
 #include <netlink.h>
+#include <mnl.h>
 #include <json.h>
 
 #include <libnftnl/common.h>
@@ -1409,7 +1410,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
-		return netlink_add_table_batch(ctx, cmd, flags);
+		return mnl_nft_table_add(ctx, cmd, flags);
 	case CMD_OBJ_CHAIN:
 		return netlink_add_chain_batch(ctx, cmd, flags);
 	case CMD_OBJ_RULE:
@@ -1492,7 +1493,7 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
-		return netlink_delete_table_batch(ctx, cmd);
+		return mnl_nft_table_del(ctx, cmd);
 	case CMD_OBJ_CHAIN:
 		return netlink_delete_chain_batch(ctx, cmd);
 	case CMD_OBJ_RULE:
@@ -2267,7 +2268,7 @@ static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_METER:
 		return netlink_flush_setelems(ctx, cmd);
 	case CMD_OBJ_RULESET:
-		return netlink_flush_ruleset(ctx, cmd);
+		return mnl_nft_table_del(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

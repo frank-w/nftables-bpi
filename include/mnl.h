@@ -36,10 +36,12 @@ int mnl_nft_rule_batch_replace(struct nftnl_rule *nlr, struct nftnl_batch *batch
 struct nftnl_rule_list *mnl_nft_rule_dump(struct netlink_ctx *ctx,
 					  int family);
 
-int mnl_nft_chain_batch_add(struct nftnl_chain *nlc, struct nftnl_batch *batch,
-			    unsigned int flags, uint32_t seqnum);
-int mnl_nft_chain_batch_del(struct nftnl_chain *nlc, struct nftnl_batch *batch,
-			    unsigned int flags, uint32_t seqnum);
+int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		      unsigned int flags);
+int mnl_nft_chain_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+int mnl_nft_chain_rename(struct netlink_ctx *ctx, const struct cmd *cmd,
+			 const struct chain *chain);
+
 struct nftnl_chain_list *mnl_nft_chain_dump(struct netlink_ctx *ctx,
 					    int family);
 

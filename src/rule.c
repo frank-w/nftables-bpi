@@ -1412,7 +1412,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_TABLE:
 		return mnl_nft_table_add(ctx, cmd, flags);
 	case CMD_OBJ_CHAIN:
-		return netlink_add_chain_batch(ctx, cmd, flags);
+		return mnl_nft_chain_add(ctx, cmd, flags);
 	case CMD_OBJ_RULE:
 		return netlink_add_rule_batch(ctx, cmd, flags | NLM_F_APPEND);
 	case CMD_OBJ_SET:
@@ -1495,7 +1495,7 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_TABLE:
 		return mnl_nft_table_del(ctx, cmd);
 	case CMD_OBJ_CHAIN:
-		return netlink_delete_chain_batch(ctx, cmd);
+		return mnl_nft_chain_del(ctx, cmd);
 	case CMD_OBJ_RULE:
 		return netlink_del_rule_batch(ctx, cmd);
 	case CMD_OBJ_SET:
@@ -2278,13 +2278,13 @@ static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 static int do_command_rename(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table = table_lookup(&cmd->handle, ctx->cache);
-	struct chain *chain;
+	const struct chain *chain;
 
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
 		chain = chain_lookup(table, &cmd->handle);
 
-		return netlink_rename_chain_batch(ctx, &chain->handle, cmd);
+		return mnl_nft_chain_rename(ctx, cmd, chain);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

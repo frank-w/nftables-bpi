@@ -387,32 +387,106 @@ err:
 /*
  * Chain
  */
-int mnl_nft_chain_batch_add(struct nftnl_chain *nlc, struct nftnl_batch *batch,
-			    unsigned int flags, uint32_t seqnum)
+int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		      unsigned int flags)
 {
+	struct nftnl_chain *nlc;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
+	nlc = nftnl_chain_alloc();
+	if (nlc == NULL)
+		memory_allocation_error();
+
+	nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FAMILY, cmd->handle.family);
+	nftnl_chain_set_str(nlc, NFTNL_CHAIN_TABLE, cmd->handle.table.name);
+	nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME, cmd->handle.chain.name);
+
+	if (cmd->chain) {
+		if (cmd->chain->flags & CHAIN_F_BASECHAIN) {
+			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_HOOKNUM,
+					    cmd->chain->hooknum);
+			nftnl_chain_set_s32(nlc, NFTNL_CHAIN_PRIO,
+					    cmd->chain->priority.num);
+			nftnl_chain_set_str(nlc, NFTNL_CHAIN_TYPE,
+					    cmd->chain->type);
+		}
+		if (cmd->chain->policy != -1)
+			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_POLICY,
+					    cmd->chain->policy);
+		if (cmd->chain->dev != NULL)
+			nftnl_chain_set_str(nlc, NFTNL_CHAIN_DEV,
+					    cmd->chain->dev);
+	}
+	netlink_dump_chain(nlc, ctx);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_NEWCHAIN,
-				    nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY),
-				    NLM_F_CREATE | flags, seqnum);
+				    cmd->handle.family,
+				    NLM_F_CREATE | flags, ctx->seqnum);
 	nftnl_chain_nlmsg_build_payload(nlh, nlc);
-	mnl_nft_batch_continue(batch);
+	nftnl_chain_free(nlc);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }
 
-int mnl_nft_chain_batch_del(struct nftnl_chain *nlc, struct nftnl_batch *batch,
-			    unsigned int flags, uint32_t seqnum)
+int mnl_nft_chain_rename(struct netlink_ctx *ctx, const struct cmd *cmd,
+			 const struct chain *chain)
 {
+	const char *name = cmd->arg;
+	struct nftnl_chain *nlc;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
-				    NFT_MSG_DELCHAIN,
-				    nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY),
-				    NLM_F_ACK, seqnum);
+	nlc = nftnl_chain_alloc();
+	if (nlc == NULL)
+		memory_allocation_error();
+
+	nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FAMILY, cmd->handle.family);
+	nftnl_chain_set_str(nlc, NFTNL_CHAIN_TABLE, cmd->handle.table.name);
+	nftnl_chain_set_u64(nlc, NFTNL_CHAIN_HANDLE, chain->handle.handle.id);
+	nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME, name);
+
+	netlink_dump_chain(nlc, ctx);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
+				    NFT_MSG_NEWCHAIN,
+				    cmd->handle.family,
+				    0, ctx->seqnum);
 	nftnl_chain_nlmsg_build_payload(nlh, nlc);
-	mnl_nft_batch_continue(batch);
+	nftnl_chain_free(nlc);
+
+	mnl_nft_batch_continue(ctx->batch);
+
+	return 0;
+}
+
+int mnl_nft_chain_del(struct netlink_ctx *ctx, const struct cmd *cmd)
+{
+	struct nftnl_chain *nlc;
+	struct nlmsghdr *nlh;
+
+	nlc = nftnl_chain_alloc();
+	if (nlc == NULL)
+		memory_allocation_error();
+
+	nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FAMILY, cmd->handle.family);
+	nftnl_chain_set_str(nlc, NFTNL_CHAIN_TABLE, cmd->handle.table.name);
+	if (cmd->handle.chain.name)
+		nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME,
+				    cmd->handle.chain.name);
+	else if (cmd->handle.handle.id)
+		nftnl_chain_set_u64(nlc, NFTNL_CHAIN_HANDLE,
+				    cmd->handle.handle.id);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
+				    NFT_MSG_DELCHAIN,
+				    cmd->handle.family,
+				    NLM_F_ACK, ctx->seqnum);
+	nftnl_chain_nlmsg_build_payload(nlh, nlc);
+	nftnl_chain_free(nlc);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }

@@ -111,24 +111,6 @@ void __noreturn __netlink_init_error(const char *filename, int line,
 	exit(NFT_EXIT_NONL);
 }
 
-struct nftnl_chain *alloc_nftnl_chain(const struct handle *h)
-{
-	struct nftnl_chain *nlc;
-
-	nlc = nftnl_chain_alloc();
-	if (nlc == NULL)
-		memory_allocation_error();
-
-	nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FAMILY, h->family);
-	nftnl_chain_set_str(nlc, NFTNL_CHAIN_TABLE, h->table.name);
-	if (h->handle.id)
-		nftnl_chain_set_u64(nlc, NFTNL_CHAIN_HANDLE, h->handle.id);
-	if (h->chain.name != NULL)
-		nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME, h->chain.name);
-
-	return nlc;
-}
-
 struct nftnl_rule *alloc_nftnl_rule(const struct handle *h)
 {
 	struct nftnl_rule *nlr;
@@ -568,67 +550,6 @@ void netlink_dump_chain(const struct nftnl_chain *nlc, struct netlink_ctx *ctx)
 
 	nftnl_chain_fprintf(fp, nlc, 0, 0);
 	fprintf(fp, "\n");
-}
-
-int netlink_add_chain_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
-			    uint32_t flags)
-{
-	struct chain *chain = cmd->chain;
-	struct nftnl_chain *nlc;
-	int err;
-
-	nlc = alloc_nftnl_chain(&cmd->handle);
-	if (chain != NULL) {
-		if (chain->flags & CHAIN_F_BASECHAIN) {
-			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_HOOKNUM,
-					    chain->hooknum);
-			nftnl_chain_set_s32(nlc, NFTNL_CHAIN_PRIO,
-					    chain->priority.num);
-			nftnl_chain_set_str(nlc, NFTNL_CHAIN_TYPE,
-					    chain->type);
-		}
-		if (chain->policy != -1)
-			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_POLICY,
-					    chain->policy);
-		if (chain->dev != NULL)
-			nftnl_chain_set_str(nlc, NFTNL_CHAIN_DEV,
-					    chain->dev);
-	}
-
-	netlink_dump_chain(nlc, ctx);
-	err = mnl_nft_chain_batch_add(nlc, ctx->batch, flags, ctx->seqnum);
-	nftnl_chain_free(nlc);
-
-	return err;
-}
-
-int netlink_rename_chain_batch(struct netlink_ctx *ctx, const struct handle *h,
-			       const struct cmd *cmd)
-{
-	const char *name = cmd->arg;
-	struct nftnl_chain *nlc;
-	int err;
-
-	nlc = alloc_nftnl_chain(h);
-	nftnl_chain_set_str(nlc, NFTNL_CHAIN_NAME, name);
-	netlink_dump_chain(nlc, ctx);
-	err = mnl_nft_chain_batch_add(nlc, ctx->batch, 0, ctx->seqnum);
-	nftnl_chain_free(nlc);
-
-	return err;
-}
-
-int netlink_delete_chain_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
-{
-	struct nftnl_chain *nlc;
-	int err;
-
-	nlc = alloc_nftnl_chain(&cmd->handle);
-	netlink_dump_chain(nlc, ctx);
-	err = mnl_nft_chain_batch_del(nlc, ctx->batch, 0, ctx->seqnum);
-	nftnl_chain_free(nlc);
-
-	return err;
 }
 
 struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,

@@ -235,7 +235,7 @@ int cache_update(struct mnl_socket *nf_sock, struct nft_cache *cache,
 
 replay:
 	ctx.seqnum = cache->seqnum++;
-	genid = netlink_genid_get(&ctx);
+	genid = mnl_genid_get(&ctx);
 	if (genid && genid == cache->genid)
 		return 0;
 	if (cache->genid)
@@ -278,7 +278,7 @@ void cache_flush(struct mnl_socket *nf_sock, struct nft_cache *cache,
 	};
 
 	__cache_flush(&cache->list);
-	cache->genid = netlink_genid_get(&ctx);
+	cache->genid = mnl_genid_get(&ctx);
 }
 
 void cache_release(struct nft_cache *cache)
@@ -1341,6 +1341,7 @@ void cmd_free(struct cmd *cmd)
 }
 
 #include <netlink.h>
+#include <mnl.h>
 
 static int __do_add_setelems(struct netlink_ctx *ctx, const struct handle *h,
 			     struct set *set, struct expr *expr, uint32_t flags)

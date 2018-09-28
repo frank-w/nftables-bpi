@@ -1,0 +1,37 @@
+#!/bin/bash
+
+RC=0
+
+check() { # (elems, expected)
+	out=$($NFT get element ip t s "{ $1 }" 2>/dev/null)
+	out=$(grep "elements =" <<< "$out")
+	out="${out#* \{ }"
+	out="${out% \}}"
+	[[ "$out" == "$2" ]] && return
+	echo "ERROR: asked for '$1', expecting '$2' but got '$out'"
+	((RC++))
+}
+
+RULESET="add table ip t
+add set ip t s { type inet_service; flags interval; }
+add element ip t s { 10, 20-30, 40, 50-60 }
+"
+
+$NFT -f - <<< "$RULESET"
+
+# simple cases, (non-)existing values and ranges
+check 10 10
+check 11 ""
+check 20-30 20-30
+check 15-18 ""
+
+# multiple single elements, ranges smaller than present
+check "10, 40" "10, 40"
+check 21-29 20-30
+
+# non-existing ranges matching elements
+check 10-40 ""
+check 10-25 ""
+check 25-55 ""
+
+exit $RC

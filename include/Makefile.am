@@ -31,4 +31,5 @@ noinst_HEADERS = 	cli.h		\
 			rule.h		\
 			rt.h		\
 			utils.h		\
+			xfrm.h		\
 			xt.h

@@ -1361,8 +1361,9 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 	nftnl_set_free(nls_out);
 	ctx->set = NULL;
 
-	if (set->flags & NFT_SET_INTERVAL)
-		get_set_decompose(table, set);
+	if (set->flags & NFT_SET_INTERVAL &&
+	    get_set_decompose(table, set) < 0)
+		return -1;
 
 	return 0;
 }

@@ -641,6 +641,42 @@ struct expr *get_set_intervals(const struct set *set, const struct expr *init)
 	return new_init;
 }
 
+static struct expr *get_set_interval_find(const struct table *table,
+					  const char *set_name,
+					  struct expr *left,
+					  struct expr *right)
+{
+	struct expr *range = NULL;
+	struct set *set;
+	mpz_t low, high;
+	struct expr *i;
+
+	set = set_lookup(table, set_name);
+	mpz_init2(low, set->key->len);
+	mpz_init2(high, set->key->len);
+
+	list_for_each_entry(i, &set->init->expressions, list) {
+		switch (i->key->ops->type) {
+		case EXPR_RANGE:
+			range_expr_value_low(low, i);
+			range_expr_value_high(high, i);
+			if (mpz_cmp(left->key->value, low) >= 0 &&
+			    mpz_cmp(right->key->value, high) <= 0)
+				range = range_expr_alloc(&internal_location,
+							 expr_clone(left->key),
+							 expr_clone(right->key));
+			break;
+		default:
+			break;
+		}
+	}
+
+	mpz_clear(low);
+	mpz_clear(high);
+
+	return range;
+}
+
 static struct expr *get_set_interval_end(const struct table *table,
 					 const char *set_name,
 					 struct expr *left)
@@ -675,7 +711,7 @@ static struct expr *get_set_interval_end(const struct table *table,
 	return left;
 }
 
-void get_set_decompose(struct table *table, struct set *set)
+int get_set_decompose(struct table *table, struct set *set)
 {
 	struct expr *i, *next, *new;
 	struct expr *left = NULL;
@@ -688,7 +724,13 @@ void get_set_decompose(struct table *table, struct set *set)
 			list_del(&left->list);
 			list_del(&i->list);
 			mpz_sub_ui(i->key->value, i->key->value, 1);
-			new = range_expr_alloc(&internal_location, left, i);
+			new = get_set_interval_find(table, set->handle.set.name,
+						    left, i);
+			if (!new) {
+				errno = ENOENT;
+				return -1;
+			}
+
 			compound_expr_add(new_init, new);
 			left = NULL;
 		} else {
@@ -707,6 +749,8 @@ void get_set_decompose(struct table *table, struct set *set)
 	}
 
 	set->init = new_init;
+
+	return 0;
 }
 
 static bool range_is_prefix(const mpz_t range)

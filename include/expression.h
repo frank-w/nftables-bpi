@@ -453,7 +453,7 @@ extern void interval_map_decompose(struct expr *set);
 extern struct expr *get_set_intervals(const struct set *set,
 				      const struct expr *init);
 struct table;
-extern void get_set_decompose(struct table *table, struct set *set);
+extern int get_set_decompose(struct table *table, struct set *set);
 
 extern struct expr *mapping_expr_alloc(const struct location *loc,
 				       struct expr *from, struct expr *to);

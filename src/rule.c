@@ -2190,17 +2190,15 @@ static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 	/* Fetch from kernel the elements that have been requested .*/
 	err = netlink_get_setelem(ctx, &cmd->handle, &cmd->location,
 				  table, new_set, init);
-	if (err < 0)
-		return err;
-
-	__do_list_set(ctx, cmd, table, new_set);
+	if (err >= 0)
+		__do_list_set(ctx, cmd, table, new_set);
 
 	if (set->flags & NFT_SET_INTERVAL)
 		expr_free(init);
 
 	set_free(new_set);
 
-	return 0;
+	return err;
 }
 
 static int do_command_get(struct netlink_ctx *ctx, struct cmd *cmd)

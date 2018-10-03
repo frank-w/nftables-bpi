@@ -681,9 +681,9 @@ static struct expr *get_set_interval_end(const struct table *table,
 					 const char *set_name,
 					 struct expr *left)
 {
+	struct expr *i, *range = NULL;
 	struct set *set;
 	mpz_t low, high;
-	struct expr *i;
 
 	set = set_lookup(table, set_name);
 	mpz_init2(low, set->key->len);
@@ -694,9 +694,9 @@ static struct expr *get_set_interval_end(const struct table *table,
 		case EXPR_RANGE:
 			range_expr_value_low(low, i);
 			if (mpz_cmp(low, left->key->value) == 0) {
-				left = range_expr_alloc(&internal_location,
-							expr_clone(left->key),
-							expr_clone(i->key->right));
+				range = range_expr_alloc(&internal_location,
+							 expr_clone(left->key),
+							 expr_clone(i->key->right));
 				break;
 			}
 			break;
@@ -708,12 +708,12 @@ static struct expr *get_set_interval_end(const struct table *table,
 	mpz_clear(low);
 	mpz_clear(high);
 
-	return left;
+	return range;
 }
 
 int get_set_decompose(struct table *table, struct set *set)
 {
-	struct expr *i, *next, *new;
+	struct expr *i, *next, *range;
 	struct expr *left = NULL;
 	struct expr *new_init;
 
@@ -724,28 +724,35 @@ int get_set_decompose(struct table *table, struct set *set)
 			list_del(&left->list);
 			list_del(&i->list);
 			mpz_sub_ui(i->key->value, i->key->value, 1);
-			new = get_set_interval_find(table, set->handle.set.name,
+			range = get_set_interval_find(table, set->handle.set.name,
 						    left, i);
-			if (!new) {
+			if (!range) {
 				errno = ENOENT;
 				return -1;
 			}
 
-			compound_expr_add(new_init, new);
+			compound_expr_add(new_init, range);
 			left = NULL;
 		} else {
 			if (left) {
-				left = get_set_interval_end(table,
-							    set->handle.set.name,
-							    left);
-				compound_expr_add(new_init, left);
+				range = get_set_interval_end(table,
+							     set->handle.set.name,
+							     left);
+				if (range)
+					compound_expr_add(new_init, range);
+				else
+					compound_expr_add(new_init,
+							  expr_clone(left));
 			}
 			left = i;
 		}
 	}
 	if (left) {
-		left = get_set_interval_end(table, set->handle.set.name, left);
-		compound_expr_add(new_init, left);
+		range = get_set_interval_end(table, set->handle.set.name, left);
+		if (range)
+			compound_expr_add(new_init, left);
+		else
+			compound_expr_add(new_init, expr_clone(left));
 	}
 
 	set->init = new_init;

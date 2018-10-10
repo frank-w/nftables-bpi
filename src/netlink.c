@@ -535,11 +535,6 @@ int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h)
 	return 0;
 }
 
-int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd)
-{
-	return mnl_nft_rule_del(ctx, cmd);
-}
-
 struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 					const struct nftnl_table *nlt)
 {

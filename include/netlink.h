@@ -108,7 +108,6 @@ extern struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 					     struct nftnl_rule *r);
 
 extern int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h);
-extern int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd);
 extern struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 					       const struct nftnl_chain *nlc);
 

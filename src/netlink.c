@@ -111,26 +111,6 @@ void __noreturn __netlink_init_error(const char *filename, int line,
 	exit(NFT_EXIT_NONL);
 }
 
-struct nftnl_rule *alloc_nftnl_rule(const struct handle *h)
-{
-	struct nftnl_rule *nlr;
-
-	nlr = nftnl_rule_alloc();
-	if (nlr == NULL)
-		memory_allocation_error();
-
-	nftnl_rule_set_u32(nlr, NFTNL_RULE_FAMILY, h->family);
-	nftnl_rule_set_str(nlr, NFTNL_RULE_TABLE, h->table.name);
-	if (h->chain.name != NULL)
-		nftnl_rule_set_str(nlr, NFTNL_RULE_CHAIN, h->chain.name);
-	if (h->handle.id)
-		nftnl_rule_set_u64(nlr, NFTNL_RULE_HANDLE, h->handle.id);
-	if (h->position.id)
-		nftnl_rule_set_u64(nlr, NFTNL_RULE_POSITION, h->position.id);
-
-	return nlr;
-}
-
 struct nftnl_expr *alloc_nft_expr(const char *name)
 {
 	struct nftnl_expr *nle;
@@ -421,58 +401,6 @@ struct expr *netlink_alloc_data(const struct location *loc,
 	}
 }
 
-int netlink_add_rule_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
-		           uint32_t flags)
-{
-	struct rule *rule = cmd->rule;
-	struct nftnl_rule *nlr;
-	int err;
-
-	nlr = alloc_nftnl_rule(&rule->handle);
-	netlink_linearize_rule(ctx, nlr, rule);
-	err = mnl_nft_rule_batch_add(nlr, ctx->batch, flags | NLM_F_EXCL,
-				     ctx->seqnum);
-	nftnl_rule_free(nlr);
-
-	return err;
-}
-
-int netlink_replace_rule_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
-{
-	struct rule *rule = cmd->rule;
-	struct nftnl_rule *nlr;
-	int err, flags = 0;
-
-	if (ctx->octx->echo) {
-		err = cache_update(ctx->nf_sock, ctx->cache,
-				   CMD_INVALID, ctx->msgs,
-				   ctx->debug_mask, ctx->octx);
-		if (err < 0)
-			return err;
-
-		flags |= NLM_F_ECHO;
-	}
-
-	nlr = alloc_nftnl_rule(&rule->handle);
-	netlink_linearize_rule(ctx, nlr, rule);
-	err = mnl_nft_rule_batch_replace(nlr, ctx->batch, flags, ctx->seqnum);
-	nftnl_rule_free(nlr);
-
-	return err;
-}
-
-int netlink_del_rule_batch(struct netlink_ctx *ctx, const struct cmd *cmd)
-{
-	struct nftnl_rule *nlr;
-	int err;
-
-	nlr = alloc_nftnl_rule(&cmd->handle);
-	err = mnl_nft_rule_batch_del(nlr, ctx->batch, 0, ctx->seqnum);
-	nftnl_rule_free(nlr);
-
-	return err;
-}
-
 void netlink_dump_rule(const struct nftnl_rule *nlr, struct netlink_ctx *ctx)
 {
 	FILE *fp = ctx->octx->output_fp;
@@ -538,7 +466,7 @@ static int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h)
 
 static int netlink_flush_rules(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
-	return netlink_del_rule_batch(ctx, cmd);
+	return mnl_nft_rule_del(ctx, cmd);
 }
 
 void netlink_dump_chain(const struct nftnl_chain *nlc, struct netlink_ctx *ctx)
@@ -634,7 +562,7 @@ int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h)
 
 int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
-	return netlink_del_rule_batch(ctx, cmd);
+	return mnl_nft_rule_del(ctx, cmd);
 }
 
 struct table *netlink_delinearize_table(struct netlink_ctx *ctx,

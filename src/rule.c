@@ -1414,7 +1414,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_CHAIN:
 		return mnl_nft_chain_add(ctx, cmd, flags);
 	case CMD_OBJ_RULE:
-		return netlink_add_rule_batch(ctx, cmd, flags | NLM_F_APPEND);
+		return mnl_nft_rule_add(ctx, cmd, flags | NLM_F_APPEND);
 	case CMD_OBJ_SET:
 		return do_add_set(ctx, cmd, flags);
 	case CMD_OBJ_SETELEM:
@@ -1437,7 +1437,7 @@ static int do_command_replace(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_RULE:
-		return netlink_replace_rule_batch(ctx, cmd);
+		return mnl_nft_rule_replace(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -1461,7 +1461,7 @@ static int do_command_insert(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_RULE:
-		return netlink_add_rule_batch(ctx, cmd, flags);
+		return mnl_nft_rule_add(ctx, cmd, flags);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -1497,7 +1497,7 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_CHAIN:
 		return mnl_nft_chain_del(ctx, cmd);
 	case CMD_OBJ_RULE:
-		return netlink_del_rule_batch(ctx, cmd);
+		return mnl_nft_rule_del(ctx, cmd);
 	case CMD_OBJ_SET:
 		return netlink_delete_set_batch(ctx, cmd);
 	case CMD_OBJ_SETELEM:

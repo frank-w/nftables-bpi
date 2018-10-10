@@ -57,7 +57,6 @@ struct netlink_ctx {
 	struct nft_cache	*cache;
 };
 
-extern struct nftnl_rule *alloc_nftnl_rule(const struct handle *h);
 extern struct nftnl_expr *alloc_nft_expr(const char *name);
 extern struct nftnl_set *alloc_nftnl_set(const struct handle *h);
 
@@ -107,14 +106,6 @@ extern void netlink_linearize_rule(struct netlink_ctx *ctx,
 				   const struct rule *rule);
 extern struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 					     struct nftnl_rule *r);
-
-extern int netlink_add_rule_batch(struct netlink_ctx *ctx,
-				  const struct cmd *cmd,
-				  uint32_t flags);
-extern int netlink_del_rule_batch(struct netlink_ctx *ctx,
-				  const struct cmd *cmd);
-extern int netlink_replace_rule_batch(struct netlink_ctx *ctx,
-				      const struct cmd *cmd);
 
 extern int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h);
 extern int netlink_flush_chain(struct netlink_ctx *ctx, const struct cmd *cmd);

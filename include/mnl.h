@@ -26,12 +26,11 @@ void mnl_batch_reset(struct nftnl_batch *batch);
 uint32_t mnl_batch_begin(struct nftnl_batch *batch, uint32_t seqnum);
 void mnl_batch_end(struct nftnl_batch *batch, uint32_t seqnum);
 int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list);
-int mnl_nft_rule_batch_add(struct nftnl_rule *nlr, struct nftnl_batch *batch,
-			   unsigned int flags, uint32_t seqnum);
-int mnl_nft_rule_batch_del(struct nftnl_rule *nlr, struct nftnl_batch *batch,
-			   unsigned int flags, uint32_t seqnum);
-int mnl_nft_rule_batch_replace(struct nftnl_rule *nlr, struct nftnl_batch *batch,
-			       unsigned int flags, uint32_t seqnum);
+
+int mnl_nft_rule_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		     unsigned int flags);
+int mnl_nft_rule_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+int mnl_nft_rule_replace(struct netlink_ctx *ctx, const struct cmd *cmd);
 
 struct nftnl_rule_list *mnl_nft_rule_dump(struct netlink_ctx *ctx,
 					  int family);

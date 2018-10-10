@@ -270,6 +270,7 @@ static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
 
 	return 0;
 err:
+	errno = EEXIST;
 	return expr_binary_error(msgs, lei->expr, new->expr,
 				 "conflicting intervals specified");
 }
@@ -371,6 +372,7 @@ static int set_overlap(struct list_head *msgs, const struct set *set,
 
 			expr_error(msgs, new_intervals[i]->expr,
 				   "interval overlaps with an existing one");
+			errno = EEXIST;
 			ret = -1;
 			goto out;
 		}

@@ -58,7 +58,7 @@ struct netlink_ctx {
 };
 
 extern struct nftnl_expr *alloc_nft_expr(const char *name);
-extern struct nftnl_set *alloc_nftnl_set(const struct handle *h);
+extern void alloc_setelem_cache(const struct expr *set, struct nftnl_set *nls);
 
 struct nft_data_linearize {
 	uint32_t	len;
@@ -118,10 +118,6 @@ extern int netlink_flush_table(struct netlink_ctx *ctx, const struct cmd *cmd);
 extern struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 					       const struct nftnl_table *nlt);
 
-extern int netlink_add_set_batch(struct netlink_ctx *ctx, const struct cmd *cmd,
-				 uint32_t flags);
-extern int netlink_delete_set_batch(struct netlink_ctx *ctx,
-				    const struct cmd *cmd);
 extern int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h);
 extern struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 					   const struct nftnl_set *nls);
@@ -130,16 +126,11 @@ extern struct stmt *netlink_parse_set_expr(const struct set *set,
 					   const struct nft_cache *cache,
 					   const struct nftnl_expr *nle);
 
-extern int netlink_add_setelems_batch(struct netlink_ctx *ctx, const struct handle *h,
-				const struct expr *expr, uint32_t flags);
-extern int netlink_delete_setelems_batch(struct netlink_ctx *ctx,
-					 const struct cmd *cmd);
 extern int netlink_list_setelems(struct netlink_ctx *ctx,
 				 const struct handle *h, struct set *set);
 extern int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 			       const struct location *loc, struct table *table,
 			       struct set *set, struct expr *init);
-extern int netlink_flush_setelems(struct netlink_ctx *ctx, const struct cmd *cmd);
 extern int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 				       const struct set *set,
 				       struct nft_cache *cache);
@@ -211,5 +202,8 @@ int netlink_markup_parse_cb(const struct nftnl_parse_ctx *ctx);
 
 int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 			    struct netlink_mon_handler *monh);
+
+enum nft_data_types dtype_map_to_kernel(const struct datatype *dtype);
+const struct datatype *dtype_map_from_kernel(enum nft_data_types type);
 
 #endif /* NFTABLES_NETLINK_H */

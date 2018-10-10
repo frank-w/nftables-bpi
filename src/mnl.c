@@ -19,6 +19,7 @@
 #include <libnftnl/object.h>
 #include <libnftnl/flowtable.h>
 #include <libnftnl/batch.h>
+#include <libnftnl/udata.h>
 
 #include <linux/netfilter/nfnetlink.h>
 #include <linux/netfilter/nf_tables.h>
@@ -710,32 +711,116 @@ err:
 /*
  * Set
  */
-int mnl_nft_set_batch_add(struct nftnl_set *nls, struct nftnl_batch *batch,
-			  unsigned int flags, uint32_t seqnum)
+int mnl_nft_set_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		    unsigned int flags)
 {
+	const struct handle *h = &cmd->handle;
+	struct nftnl_udata_buf *udbuf;
+	struct set *set = cmd->set;
+	struct nftnl_set *nls;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
+	nls = nftnl_set_alloc();
+	if (!nls)
+		memory_allocation_error();
+
+	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
+	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
+	nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
+	nftnl_set_set_u32(nls, NFTNL_SET_ID, h->set_id);
+
+	nftnl_set_set_u32(nls, NFTNL_SET_FLAGS, set->flags);
+	nftnl_set_set_u32(nls, NFTNL_SET_KEY_TYPE,
+			  dtype_map_to_kernel(set->key->dtype));
+	nftnl_set_set_u32(nls, NFTNL_SET_KEY_LEN,
+			  div_round_up(set->key->len, BITS_PER_BYTE));
+	if (set->flags & NFT_SET_MAP) {
+		nftnl_set_set_u32(nls, NFTNL_SET_DATA_TYPE,
+				  dtype_map_to_kernel(set->datatype));
+		nftnl_set_set_u32(nls, NFTNL_SET_DATA_LEN,
+				  set->datalen / BITS_PER_BYTE);
+	}
+	if (set->flags & NFT_SET_OBJECT)
+		nftnl_set_set_u32(nls, NFTNL_SET_OBJ_TYPE, set->objtype);
+
+	if (set->timeout)
+		nftnl_set_set_u64(nls, NFTNL_SET_TIMEOUT, set->timeout);
+	if (set->gc_int)
+		nftnl_set_set_u32(nls, NFTNL_SET_GC_INTERVAL, set->gc_int);
+
+	nftnl_set_set_u32(nls, NFTNL_SET_ID, set->handle.set_id);
+
+	if (!(set->flags & NFT_SET_CONSTANT)) {
+		if (set->policy != NFT_SET_POL_PERFORMANCE)
+			nftnl_set_set_u32(nls, NFTNL_SET_POLICY, set->policy);
+
+		if (set->desc.size != 0)
+			nftnl_set_set_u32(nls, NFTNL_SET_DESC_SIZE,
+					  set->desc.size);
+	} else if (set->init) {
+		nftnl_set_set_u32(nls, NFTNL_SET_DESC_SIZE, set->init->size);
+	}
+
+	udbuf = nftnl_udata_buf_alloc(NFT_USERDATA_MAXLEN);
+	if (!udbuf)
+		memory_allocation_error();
+	if (!nftnl_udata_put_u32(udbuf, UDATA_SET_KEYBYTEORDER,
+				 set->key->byteorder))
+		memory_allocation_error();
+
+	if (set->flags & NFT_SET_MAP &&
+	    !nftnl_udata_put_u32(udbuf, UDATA_SET_DATABYTEORDER,
+				 set->datatype->byteorder))
+		memory_allocation_error();
+
+	if (set->automerge &&
+	    !nftnl_udata_put_u32(udbuf, UDATA_SET_MERGE_ELEMENTS,
+				 set->automerge))
+		memory_allocation_error();
+
+	nftnl_set_set_data(nls, NFTNL_SET_USERDATA, nftnl_udata_buf_data(udbuf),
+			   nftnl_udata_buf_len(udbuf));
+	nftnl_udata_buf_free(udbuf);
+
+	netlink_dump_set(nls, ctx);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_NEWSET,
-				    nftnl_set_get_u32(nls, NFTNL_SET_FAMILY),
-				    NLM_F_CREATE | flags, seqnum);
+				    h->family,
+				    NLM_F_CREATE | flags, ctx->seqnum);
 	nftnl_set_nlmsg_build_payload(nlh, nls);
-	mnl_nft_batch_continue(batch);
+	nftnl_set_free(nls);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }
 
-int mnl_nft_set_batch_del(struct nftnl_set *nls, struct nftnl_batch *batch,
-			  unsigned int flags, uint32_t seqnum)
+int mnl_nft_set_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
+	const struct handle *h = &cmd->handle;
+	struct nftnl_set *nls;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
+	nls = nftnl_set_alloc();
+	if (!nls)
+		memory_allocation_error();
+
+	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
+	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
+	if (h->set.name)
+		nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
+	if (h->handle.id)
+		nftnl_set_set_u64(nls, NFTNL_SET_HANDLE, h->handle.id);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELSET,
-				    nftnl_set_get_u32(nls, NFTNL_SET_FAMILY),
-				    flags, seqnum);
+				    h->family,
+				    0, ctx->seqnum);
 	nftnl_set_nlmsg_build_payload(nlh, nls);
-	mnl_nft_batch_continue(batch);
+	nftnl_set_free(nls);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }
@@ -940,33 +1025,88 @@ static int mnl_nft_setelem_batch(struct nftnl_set *nls,
 	return 0;
 }
 
-int mnl_nft_setelem_batch_add(struct nftnl_set *nls, struct nftnl_batch *batch,
-			      unsigned int flags, uint32_t seqnum)
+int mnl_nft_setelem_add(struct netlink_ctx *ctx, const struct set *set,
+			const struct expr *expr, unsigned int flags)
 {
-	return mnl_nft_setelem_batch(nls, batch, NFT_MSG_NEWSETELEM, flags,
-				     seqnum);
+	const struct handle *h = &set->handle;
+	struct nftnl_set *nls;
+	int err;
+
+	nls = nftnl_set_alloc();
+	if (nls == NULL)
+		memory_allocation_error();
+
+	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
+	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
+	nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
+	if (h->set_id)
+		nftnl_set_set_u32(nls, NFTNL_SET_ID, h->set_id);
+
+	alloc_setelem_cache(expr, nls);
+	netlink_dump_set(nls, ctx);
+
+	err = mnl_nft_setelem_batch(nls, ctx->batch, NFT_MSG_NEWSETELEM, flags,
+				    ctx->seqnum);
+	nftnl_set_free(nls);
+
+	return err;
 }
 
-int mnl_nft_setelem_batch_flush(struct nftnl_set *nls, struct nftnl_batch *batch,
-				unsigned int flags, uint32_t seqnum)
+int mnl_nft_setelem_flush(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
+	const struct handle *h = &cmd->handle;
+	struct nftnl_set *nls;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
+	nls = nftnl_set_alloc();
+	if (nls == NULL)
+		memory_allocation_error();
+
+	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
+	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
+	nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
+	if (h->handle.id)
+		nftnl_set_set_u64(nls, NFTNL_SET_HANDLE, h->handle.id);
+
+	netlink_dump_set(nls, ctx);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELSETELEM,
-				    nftnl_set_get_u32(nls, NFTNL_SET_FAMILY),
-				    flags, seqnum);
+				    h->family,
+				    0, ctx->seqnum);
 	nftnl_set_elems_nlmsg_build_payload(nlh, nls);
-	mnl_nft_batch_continue(batch);
+	nftnl_set_free(nls);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }
 
-int mnl_nft_setelem_batch_del(struct nftnl_set *nls, struct nftnl_batch *batch,
-			      unsigned int flags, uint32_t seqnum)
+int mnl_nft_setelem_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
-	return mnl_nft_setelem_batch(nls, batch, NFT_MSG_DELSETELEM, flags,
-				     seqnum);
+	const struct handle *h = &cmd->handle;
+	struct nftnl_set *nls;
+	int err;
+
+	nls = nftnl_set_alloc();
+	if (nls == NULL)
+		memory_allocation_error();
+
+	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
+	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
+	nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
+	if (h->handle.id)
+		nftnl_set_set_u64(nls, NFTNL_SET_HANDLE, h->handle.id);
+
+	if (cmd->expr)
+		alloc_setelem_cache(cmd->expr, nls);
+	netlink_dump_set(nls, ctx);
+
+	err = mnl_nft_setelem_batch(nls, ctx->batch, NFT_MSG_DELSETELEM, 0,
+				    ctx->seqnum);
+	nftnl_set_free(nls);
+
+	return err;
 }
 
 struct nftnl_set *mnl_nft_setelem_get_one(struct netlink_ctx *ctx,

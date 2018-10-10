@@ -1344,11 +1344,11 @@ void cmd_free(struct cmd *cmd)
 #include <netlink.h>
 #include <mnl.h>
 
-static int __do_add_setelems(struct netlink_ctx *ctx, const struct handle *h,
-			     struct set *set, struct expr *expr, uint32_t flags)
+static int __do_add_setelems(struct netlink_ctx *ctx, struct set *set,
+			     struct expr *expr, uint32_t flags)
 {
 	expr->set_flags |= set->flags;
-	if (netlink_add_setelems_batch(ctx, h, expr, flags) < 0)
+	if (mnl_nft_setelem_add(ctx, set, expr, flags) < 0)
 		return -1;
 
 	return 0;
@@ -1370,7 +1370,7 @@ static int do_add_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 			     ctx->debug_mask, set->automerge) < 0)
 		return -1;
 
-	return __do_add_setelems(ctx, h, set, init, flags);
+	return __do_add_setelems(ctx, set, init, flags);
 }
 
 static int do_add_set(struct netlink_ctx *ctx, const struct cmd *cmd,
@@ -1384,11 +1384,10 @@ static int do_add_set(struct netlink_ctx *ctx, const struct cmd *cmd,
 				     ctx->debug_mask, set->automerge) < 0)
 			return -1;
 	}
-	if (netlink_add_set_batch(ctx, cmd, flags) < 0)
+	if (mnl_nft_set_add(ctx, cmd, flags) < 0)
 		return -1;
 	if (set->init != NULL) {
-		return __do_add_setelems(ctx, &set->handle, set, set->init,
-					 flags);
+		return __do_add_setelems(ctx, set, set->init, flags);
 	}
 	return 0;
 }
@@ -1483,7 +1482,7 @@ static int do_delete_setelems(struct netlink_ctx *ctx, struct cmd *cmd)
 			     ctx->debug_mask, set->automerge) < 0)
 		return -1;
 
-	if (netlink_delete_setelems_batch(ctx, cmd) < 0)
+	if (mnl_nft_setelem_del(ctx, cmd) < 0)
 		return -1;
 
 	return 0;
@@ -1499,7 +1498,7 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_RULE:
 		return mnl_nft_rule_del(ctx, cmd);
 	case CMD_OBJ_SET:
-		return netlink_delete_set_batch(ctx, cmd);
+		return mnl_nft_set_del(ctx, cmd);
 	case CMD_OBJ_SETELEM:
 		return do_delete_setelems(ctx, cmd);
 	case CMD_OBJ_COUNTER:
@@ -2266,7 +2265,7 @@ static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SET:
 	case CMD_OBJ_MAP:
 	case CMD_OBJ_METER:
-		return netlink_flush_setelems(ctx, cmd);
+		return mnl_nft_setelem_flush(ctx, cmd);
 	case CMD_OBJ_RULESET:
 		return mnl_nft_table_del(ctx, cmd);
 	default:

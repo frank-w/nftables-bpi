@@ -51,19 +51,17 @@ int mnl_nft_table_del(struct netlink_ctx *ctx, const struct cmd *cmd);
 struct nftnl_table_list *mnl_nft_table_dump(struct netlink_ctx *ctx,
 					    int family);
 
-int mnl_nft_set_batch_add(struct nftnl_set *nls, struct nftnl_batch *batch,
-			  unsigned int flags, uint32_t seqnum);
-int mnl_nft_set_batch_del(struct nftnl_set *nls, struct nftnl_batch *batch,
-			  unsigned int flags, uint32_t seqnum);
+int mnl_nft_set_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		    unsigned int flags);
+int mnl_nft_set_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+
 struct nftnl_set_list *mnl_nft_set_dump(struct netlink_ctx *ctx, int family,
 					const char *table);
 
-int mnl_nft_setelem_batch_add(struct nftnl_set *nls, struct nftnl_batch *batch,
-			      unsigned int flags, uint32_t seqnum);
-int mnl_nft_setelem_batch_del(struct nftnl_set *nls, struct nftnl_batch *batch,
-			      unsigned int flags, uint32_t seqnum);
-int mnl_nft_setelem_batch_flush(struct nftnl_set *nls, struct nftnl_batch *batch,
-				unsigned int flags, uint32_t seqnum);
+int mnl_nft_setelem_add(struct netlink_ctx *ctx, const struct set *set,
+			const struct expr *expr, unsigned int flags);
+int mnl_nft_setelem_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+int mnl_nft_setelem_flush(struct netlink_ctx *ctx, const struct cmd *cmd);
 int mnl_nft_setelem_get(struct netlink_ctx *ctx, struct nftnl_set *nls);
 struct nftnl_set *mnl_nft_setelem_get_one(struct netlink_ctx *ctx,
 					  struct nftnl_set *nls);

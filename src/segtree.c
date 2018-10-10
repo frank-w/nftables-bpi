@@ -753,7 +753,7 @@ int get_set_decompose(struct table *table, struct set *set)
 	if (left) {
 		range = get_set_interval_end(table, set->handle.set.name, left);
 		if (range)
-			compound_expr_add(new_init, left);
+			compound_expr_add(new_init, range);
 		else
 			compound_expr_add(new_init, expr_clone(left));
 	}

@@ -114,7 +114,6 @@ extern struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 
 extern int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h);
 extern int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h);
-extern int netlink_flush_table(struct netlink_ctx *ctx, const struct cmd *cmd);
 extern struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 					       const struct nftnl_table *nlt);
 

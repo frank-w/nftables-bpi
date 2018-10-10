@@ -2259,7 +2259,7 @@ static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
-		return netlink_flush_table(ctx, cmd);
+		return mnl_nft_rule_del(ctx, cmd);
 	case CMD_OBJ_CHAIN:
 		return netlink_flush_chain(ctx, cmd);
 	case CMD_OBJ_SET:

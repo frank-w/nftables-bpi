@@ -185,14 +185,16 @@
     }
 ]
 
-# meta secpath exists
+# meta ipsec exists
 [
     {
         "match": {
             "left": {
-                "meta": { "key": "secpath" }
+                "meta": {
+                    "key": "ipsec"
+                }
             },
-	    "op": "==",
+            "op": "==",
             "right": true
         }
     }

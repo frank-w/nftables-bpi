@@ -36,3 +36,18 @@
     }
 ]
 
+# meta secpath missing
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "ipsec"
+                }
+            },
+            "op": "==",
+            "right": false
+        }
+    }
+]
+

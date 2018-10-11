@@ -164,12 +164,6 @@ STMT_PRINT_STUB(tproxy)
 #undef EXPR_PRINT_STUB
 #undef JSON_PRINT_STUB
 
-static inline json_t *symbolic_constant_json(const struct symbol_table *tbl,
-					     const struct expr *expr)
-{
-	return NULL;
-}
-
 static inline int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	return -1;

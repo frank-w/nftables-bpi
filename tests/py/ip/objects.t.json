@@ -186,3 +186,10 @@
     }
 ]
 
+# ct timeout set "cttime1"
+[
+    {
+        "ct timeout": "cttime1"
+    }
+]
+

@@ -235,6 +235,23 @@ static json_t *proto_name_json(uint8_t proto)
 	return json_integer(proto);
 }
 
+static json_t *timeout_policy_json(uint8_t l4, const uint32_t *timeout)
+{
+	json_t *root = NULL;
+	unsigned int i;
+
+	for (i = 0; i < timeout_protocol[l4].array_size; i++) {
+		if (timeout[i] == timeout_protocol[l4].dflt_timeout[i])
+			continue;
+
+		if (!root)
+			root = json_object();
+		json_object_set(root, timeout_protocol[l4].state_to_name[i],
+				json_integer(timeout[i]));
+	}
+	return root ? : json_null();
+}
+
 static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 {
 	const char *rate_unit = NULL, *burst_unit = NULL;
@@ -270,6 +287,18 @@ static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 				"type", obj->ct_helper.name, "protocol",
 				proto_name_json(obj->ct_helper.l4proto),
 				"l3proto", family2str(obj->ct_helper.l3proto));
+		json_object_update(root, tmp);
+		json_decref(tmp);
+		break;
+	case NFT_OBJECT_CT_TIMEOUT:
+		type = "ct timeout";
+		tmp = timeout_policy_json(obj->ct_timeout.l4proto,
+					  obj->ct_timeout.timeout);
+		tmp = json_pack("{s:o, s:s, s:o}",
+				"protocol",
+				proto_name_json(obj->ct_timeout.l4proto),
+				"l3proto", family2str(obj->ct_timeout.l3proto),
+				"policy", tmp);
 		json_object_update(root, tmp);
 		json_decref(tmp);
 		break;

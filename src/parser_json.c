@@ -2106,7 +2106,22 @@ static struct stmt *json_parse_cthelper_stmt(struct json_ctx *ctx,
 	stmt->objref.type = NFT_OBJECT_CT_HELPER;
 	stmt->objref.expr = json_parse_stmt_expr(ctx, value);
 	if (!stmt->objref.expr) {
-		json_error(ctx, "Invalid cthelper reference.");
+		json_error(ctx, "Invalid ct helper reference.");
+		stmt_free(stmt);
+		return NULL;
+	}
+	return stmt;
+}
+
+static struct stmt *json_parse_cttimeout_stmt(struct json_ctx *ctx,
+					     const char *key, json_t *value)
+{
+	struct stmt *stmt = objref_stmt_alloc(int_loc);
+
+	stmt->objref.type = NFT_OBJECT_CT_TIMEOUT;
+	stmt->objref.expr = json_parse_stmt_expr(ctx, value);
+	if (!stmt->objref.expr) {
+		json_error(ctx, "Invalid ct timeout reference.");
 		stmt_free(stmt);
 		return NULL;
 	}
@@ -2257,6 +2272,7 @@ static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 		{ "set", json_parse_set_stmt },
 		{ "log", json_parse_log_stmt },
 		{ "ct helper", json_parse_cthelper_stmt },
+		{ "ct timeout", json_parse_cttimeout_stmt },
 		{ "meter", json_parse_meter_stmt },
 		{ "queue", json_parse_queue_stmt },
 		{ "ct count", json_parse_connlimit_stmt },
@@ -2737,6 +2753,39 @@ static struct cmd *json_parse_cmd_add_flowtable(struct json_ctx *ctx,
 	return cmd_alloc(op, cmd_obj, &h, int_loc, flowtable);
 }
 
+static int json_parse_ct_timeout_policy(struct json_ctx *ctx,
+					json_t *root, struct obj *obj)
+{
+	json_t *tmp, *val;
+	const char *key;
+
+	if (!json_unpack(root, "{s:o}", "policy", &tmp))
+		return 0;
+
+	if (json_is_object(tmp)) {
+		json_error(ctx, "Invalid ct timeout policy.");
+		return 1;
+	}
+
+	init_list_head(&obj->ct_timeout.timeout_list);
+	json_object_foreach(tmp, key, val) {
+		struct timeout_state *ts;
+
+		if (!json_is_integer(val)) {
+			json_error(ctx, "Invalid ct timeout policy value for '%s'.", key);
+			return 1;
+		}
+
+		ts = xzalloc(sizeof(*ts));
+		ts->timeout_str = xstrdup(key);
+		ts->timeout_value = json_integer_value(val);
+		ts->location = *int_loc;
+		init_list_head(&ts->head);
+		list_add_tail(&ts->head, &obj->ct_timeout.timeout_list);
+	}
+	return 0;
+}
+
 static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 					     json_t *root, enum cmd_ops op,
 					     enum cmd_obj cmd_obj)
@@ -2832,6 +2881,37 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 			obj->ct_helper.l3proto = family;
 		} else {
 			obj->ct_helper.l3proto = NFPROTO_IPV4;
+		}
+		break;
+	case NFT_OBJECT_CT_TIMEOUT:
+		cmd_obj = CMD_OBJ_CT_TIMEOUT;
+		obj->type = NFT_OBJECT_CT_TIMEOUT;
+		if (!json_unpack(root, "{s:s}", "protocol", &tmp)) {
+			if (!strcmp(tmp, "tcp")) {
+				obj->ct_timeout.l4proto = IPPROTO_TCP;
+			} else if (!strcmp(tmp, "udp")) {
+				obj->ct_timeout.l4proto = IPPROTO_UDP;
+			} else {
+				json_error(ctx, "Invalid ct timeout protocol '%s'.", tmp);
+				obj_free(obj);
+				return NULL;
+			}
+		}
+		if (!json_unpack(root, "{s:s}", "l3proto", &tmp)) {
+			int family = parse_family(tmp);
+
+			if (family < 0) {
+				json_error(ctx, "Invalid ct timeout l3proto '%s'.", tmp);
+				obj_free(obj);
+				return NULL;
+			}
+			obj->ct_timeout.l3proto = family;
+		} else {
+			obj->ct_timeout.l3proto = NFPROTO_IPV4;
+		}
+		if (json_parse_ct_timeout_policy(ctx, root, obj)) {
+			obj_free(obj);
+			return NULL;
 		}
 		break;
 	case CMD_OBJ_LIMIT:

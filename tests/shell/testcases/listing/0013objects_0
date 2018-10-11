@@ -15,7 +15,7 @@ EXPECTED="table ip test {
 	ct timeout cttime {
 		protocol udp;
 		l3proto ip
-		policy = {unreplied: 15, replied: 12}
+		policy = { unreplied: 15, replied: 12 }
 	}
 
 	chain input {

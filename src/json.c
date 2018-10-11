@@ -282,7 +282,6 @@ static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 		json_decref(tmp);
 		break;
 	case NFT_OBJECT_CT_HELPER:
-		type = "ct helper";
 		tmp = json_pack("{s:s, s:o, s:s}",
 				"type", obj->ct_helper.name, "protocol",
 				proto_name_json(obj->ct_helper.l4proto),
@@ -291,7 +290,6 @@ static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 		json_decref(tmp);
 		break;
 	case NFT_OBJECT_CT_TIMEOUT:
-		type = "ct timeout";
 		tmp = timeout_policy_json(obj->ct_timeout.l4proto,
 					  obj->ct_timeout.timeout);
 		tmp = json_pack("{s:o, s:s, s:o}",

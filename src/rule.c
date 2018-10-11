@@ -1661,12 +1661,13 @@ static void print_proto_name_proto(uint8_t l4, struct output_ctx *octx)
 }
 
 static void print_proto_timeout_policy(uint8_t l4, const uint32_t *timeout,
+				       struct print_fmt_options *opts,
 				       struct output_ctx *octx)
 {
 	bool comma = false;
 	unsigned int i;
 
-	nft_print(octx, "\t\tpolicy = {");
+	nft_print(octx, "%s%spolicy = { ", opts->tab, opts->tab);
 	for (i = 0; i < timeout_protocol[l4].array_size; i++) {
 		if (timeout[i] != timeout_protocol[l4].dflt_timeout[i]) {
 			if (comma)
@@ -1677,7 +1678,7 @@ static void print_proto_timeout_policy(uint8_t l4, const uint32_t *timeout,
 			comma = true;
 		}
 	}
-	nft_print(octx, "}");
+	nft_print(octx, " }%s", opts->stmt_separator);
 }
 
 static void obj_print_data(const struct obj *obj,
@@ -1694,8 +1695,8 @@ static void obj_print_data(const struct obj *obj,
 			nft_print(octx, "packets 0 bytes 0");
 			break;
 		}
-		nft_print(octx, "packets %" PRIu64 " bytes %" PRIu64 "",
-			  obj->counter.packets, obj->counter.bytes);
+		nft_print(octx, "packets %" PRIu64 " bytes %" PRIu64 "%s",
+			  obj->counter.packets, obj->counter.bytes, opts->nl);
 		break;
 	case NFT_OBJECT_QUOTA: {
 		const char *data_unit;
@@ -1714,33 +1715,37 @@ static void obj_print_data(const struct obj *obj,
 			nft_print(octx, " used %" PRIu64 " %s",
 				  bytes, data_unit);
 		}
+		nft_print(octx, "%s", opts->nl);
 		}
 		break;
 	case NFT_OBJECT_CT_HELPER:
-		nft_print(octx, "ct helper %s {", obj->handle.obj.name);
+		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (octx->handle > 0)
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
 		nft_print(octx, "%s", opts->nl);
-		nft_print(octx, "\t\ttype \"%s\" protocol ",
-			  obj->ct_helper.name);
+		nft_print(octx, "%s%stype \"%s\" protocol ",
+			  opts->tab, opts->tab, obj->ct_helper.name);
 		print_proto_name_proto(obj->ct_helper.l4proto, octx);
-		nft_print(octx, "\n");
-		nft_print(octx, "\t\tl3proto %s",
-			  family2str(obj->ct_helper.l3proto));
+		nft_print(octx, "%s", opts->stmt_separator);
+		nft_print(octx, "%s%sl3proto %s%s",
+			  opts->tab, opts->tab,
+			  family2str(obj->ct_helper.l3proto),
+			  opts->stmt_separator);
 		break;
 	case NFT_OBJECT_CT_TIMEOUT:
-		nft_print(octx, "ct timeout %s {", obj->handle.obj.name);
+		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (octx->handle > 0)
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
 		nft_print(octx, "%s", opts->nl);
-		nft_print(octx, "\t\tprotocol ");
+		nft_print(octx, "%s%sprotocol ", opts->tab, opts->tab);
 		print_proto_name_proto(obj->ct_timeout.l4proto, octx);
 		nft_print(octx, ";%s", opts->nl);
-		nft_print(octx, "\t\tl3proto %s",
-			  family2str(obj->ct_timeout.l3proto));
-		nft_print(octx, "%s", opts->nl);
+		nft_print(octx, "%s%sl3proto %s%s",
+			  opts->tab, opts->tab,
+			  family2str(obj->ct_timeout.l3proto),
+			  opts->stmt_separator);
 		print_proto_timeout_policy(obj->ct_timeout.l4proto,
-					   obj->ct_timeout.timeout, octx);
+					   obj->ct_timeout.timeout, opts, octx);
 		break;
 	case NFT_OBJECT_LIMIT: {
 		bool inv = obj->limit.flags & NFT_LIMIT_F_INV;
@@ -1775,10 +1780,11 @@ static void obj_print_data(const struct obj *obj,
 			}
 			break;
 		}
+		nft_print(octx, "%s", opts->nl);
 		}
 		break;
 	default:
-		nft_print(octx, "unknown {%s", opts->nl);
+		nft_print(octx, " unknown {%s", opts->nl);
 		break;
 	}
 }
@@ -1786,9 +1792,9 @@ static void obj_print_data(const struct obj *obj,
 static const char * const obj_type_name_array[] = {
 	[NFT_OBJECT_COUNTER]	= "counter",
 	[NFT_OBJECT_QUOTA]	= "quota",
-	[NFT_OBJECT_CT_HELPER]	= "",
+	[NFT_OBJECT_CT_HELPER]	= "ct helper",
 	[NFT_OBJECT_LIMIT]	= "limit",
-	[NFT_OBJECT_CT_TIMEOUT] = "",
+	[NFT_OBJECT_CT_TIMEOUT] = "ct timeout",
 };
 
 const char *obj_type_name(enum stmt_types type)
@@ -1827,7 +1833,7 @@ static void obj_print_declaration(const struct obj *obj,
 
 	obj_print_data(obj, opts, octx);
 
-	nft_print(octx, "%s%s}%s", opts->nl, opts->tab, opts->nl);
+	nft_print(octx, "%s}%s", opts->tab, opts->nl);
 }
 
 void obj_print(const struct obj *obj, struct output_ctx *octx)
@@ -1848,6 +1854,7 @@ void obj_print_plain(const struct obj *obj, struct output_ctx *octx)
 		.nl		= " ",
 		.table		= obj->handle.table.name,
 		.family		= family2str(obj->handle.family),
+		.stmt_separator = "; ",
 	};
 
 	obj_print_declaration(obj, &opts, octx);

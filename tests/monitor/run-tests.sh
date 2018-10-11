@@ -3,6 +3,7 @@
 cd $(dirname $0)
 nft=../../src/nft
 debug=false
+test_json=false
 
 mydiff() {
 	diff -w -I '^# ' "$@"
@@ -47,9 +48,16 @@ echo_output_append() {
 	}
 	[[ "$*" =~ ^add|replace|insert ]] && echo "$*" >>$output_file
 }
+json_output_filter() { # (filename)
+	# unify handle values
+	sed -i -e 's/\("handle":\) [0-9][0-9]*/\1 0/g' "$1"
+}
 monitor_run_test() {
 	monitor_output=$(mktemp -p $testdir)
-	$nft -nn monitor >$monitor_output &
+	monitor_args=""
+	$test_json && monitor_args="vm json"
+
+	$nft -nn monitor $monitor_args >$monitor_output &
 	monitor_pid=$!
 
 	sleep 0.5
@@ -67,6 +75,7 @@ monitor_run_test() {
 	sleep 0.5
 	kill $monitor_pid
 	wait >/dev/null 2>&1
+	$test_json && json_output_filter $monitor_output
 	if ! mydiff -q $monitor_output $output_file >/dev/null 2>&1; then
 		echo "monitor output differs!"
 		mydiff -u $output_file $monitor_output
@@ -99,7 +108,33 @@ echo_run_test() {
 	touch $output_file
 }
 
-for variant in monitor echo; do
+while [ -n "$1" ]; do
+	case "$1" in
+	-d|--debug)
+		debug=true
+		shift
+		;;
+	-j|--json)
+		test_json=true
+		shift
+		;;
+	*)
+		echo "unknown option '$1'"
+		;&
+	-h|--help)
+		echo "Usage: $(basename $0) [-j|--json] [-d|--debug]"
+		exit 1
+		;;
+	esac
+done
+
+if $test_json; then
+	variants="monitor"
+else
+	variants="monitor echo"
+fi
+
+for variant in $variants; do
 	run_test=${variant}_run_test
 	output_append=${variant}_output_append
 
@@ -124,7 +159,11 @@ for variant in monitor echo; do
 				;;
 			O)
 				input_complete=true
-				$output_append "$line"
+				$test_json || $output_append "$line"
+				;;
+			J)
+				input_complete=true
+				$test_json && $output_append "$line"
 				;;
 			'#'|'')
 				# ignore comments and empty lines

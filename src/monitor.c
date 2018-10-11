@@ -186,10 +186,7 @@ static int netlink_events_table_cb(const struct nlmsghdr *nlh, int type,
 	switch (monh->format) {
 	case NFTNL_OUTPUT_DEFAULT:
 		if (type == NFT_MSG_NEWTABLE) {
-			if (nlh->nlmsg_flags & NLM_F_EXCL)
-				nft_mon_print(monh, "update table ");
-			else
-				nft_mon_print(monh, "add table ");
+			nft_mon_print(monh, "add table ");
 		} else {
 			nft_mon_print(monh, "delete table ");
 		}
@@ -227,10 +224,7 @@ static int netlink_events_chain_cb(const struct nlmsghdr *nlh, int type,
 	case NFTNL_OUTPUT_DEFAULT:
 		switch (type) {
 		case NFT_MSG_NEWCHAIN:
-			if (nlh->nlmsg_flags & NLM_F_EXCL)
-				nft_mon_print(monh, "update ");
-			else
-				nft_mon_print(monh, "add ");
+			nft_mon_print(monh, "add ");
 
 			c = netlink_delinearize_chain(monh->ctx, nlc);
 			chain_print_plain(c, monh->ctx->octx);

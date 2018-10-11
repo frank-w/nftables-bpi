@@ -9,9 +9,11 @@ struct expr;
 struct netlink_ctx;
 struct rule;
 struct set;
+struct obj;
 struct stmt;
 struct symbol_table;
 struct table;
+struct netlink_mon_handler;
 
 #ifdef HAVE_LIBJANSSON
 
@@ -87,6 +89,19 @@ int nft_parse_json_buffer(struct nft_ctx *nft, const char *buf,
 			  struct list_head *msgs, struct list_head *cmds);
 int nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
 			    struct list_head *msgs, struct list_head *cmds);
+
+void monitor_print_table_json(struct netlink_mon_handler *monh,
+			      const char *cmd, struct table *t);
+void monitor_print_chain_json(struct netlink_mon_handler *monh,
+			      const char *cmd, struct chain *c);
+void monitor_print_set_json(struct netlink_mon_handler *monh,
+			    const char *cmd, struct set *s);
+void monitor_print_element_json(struct netlink_mon_handler *monh,
+				const char *cmd, struct set *s);
+void monitor_print_obj_json(struct netlink_mon_handler *monh,
+			    const char *cmd, struct obj *o);
+void monitor_print_rule_json(struct netlink_mon_handler *monh,
+			     const char *cmd, struct rule *r);
 
 #else /* ! HAVE_LIBJANSSON */
 
@@ -181,6 +196,42 @@ nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
 			struct list_head *msgs, struct list_head *cmds)
 {
 	return -EINVAL;
+}
+
+static inline void monitor_print_table_json(struct netlink_mon_handler *monh,
+					    const char *cmd, struct table *t)
+{
+	/* empty */
+}
+
+static inline void monitor_print_chain_json(struct netlink_mon_handler *monh,
+					    const char *cmd, struct chain *c)
+{
+	/* empty */
+}
+
+static inline void monitor_print_set_json(struct netlink_mon_handler *monh,
+					  const char *cmd, struct set *s)
+{
+	/* empty */
+}
+
+static inline void monitor_print_element_json(struct netlink_mon_handler *monh,
+					      const char *cmd, struct set *s)
+{
+	/* empty */
+}
+
+static inline void monitor_print_obj_json(struct netlink_mon_handler *monh,
+					  const char *cmd, struct obj *o)
+{
+	/* empty */
+}
+
+static inline void monitor_print_rule_json(struct netlink_mon_handler *monh,
+					   const char *cmd, struct rule *r)
+{
+	/* empty */
 }
 
 #endif /* HAVE_LIBJANSSON */

@@ -148,6 +148,19 @@ static json_t *set_print_json(struct output_ctx *octx, const struct set *set)
 	return json_pack("{s:o}", type, root);
 }
 
+/* XXX: Merge with set_print_json()? */
+static json_t *element_print_json(struct output_ctx *octx,
+				  const struct set *set)
+{
+	json_t *root = expr_print_json(set->init, octx);
+
+	return json_pack("{s: {s:s, s:s, s:s, s:o}}", "element",
+			 "family", family2str(set->handle.family),
+			 "table", set->handle.table.name,
+			 "name", set->handle.set.name,
+			 "elem", root);
+}
+
 static json_t *stmt_print_json(const struct stmt *stmt, struct output_ctx *octx)
 {
 	char buf[1024];
@@ -1713,4 +1726,48 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	json_dumpf(root, ctx->octx->output_fp, 0);
 	json_decref(root);
 	return 0;
+}
+
+static void monitor_print_json(struct netlink_mon_handler *monh,
+			       const char *cmd, json_t *obj)
+{
+	obj = json_pack("{s:o}", cmd, obj);
+	json_dumpf(obj, monh->ctx->octx->output_fp, 0);
+	json_decref(obj);
+}
+
+void monitor_print_table_json(struct netlink_mon_handler *monh,
+			      const char *cmd, struct table *t)
+{
+	monitor_print_json(monh, cmd, table_print_json(monh->ctx->octx, t));
+}
+
+void monitor_print_chain_json(struct netlink_mon_handler *monh,
+			      const char *cmd, struct chain *c)
+{
+	monitor_print_json(monh, cmd, chain_print_json(monh->ctx->octx, c));
+}
+
+void monitor_print_set_json(struct netlink_mon_handler *monh,
+			    const char *cmd, struct set *s)
+{
+	monitor_print_json(monh, cmd, set_print_json(monh->ctx->octx, s));
+}
+
+void monitor_print_element_json(struct netlink_mon_handler *monh,
+				const char *cmd, struct set *s)
+{
+	monitor_print_json(monh, cmd, element_print_json(monh->ctx->octx, s));
+}
+
+void monitor_print_obj_json(struct netlink_mon_handler *monh,
+			    const char *cmd, struct obj *o)
+{
+	monitor_print_json(monh, cmd, obj_print_json(monh->ctx->octx, o));
+}
+
+void monitor_print_rule_json(struct netlink_mon_handler *monh,
+			     const char *cmd, struct rule *r)
+{
+	monitor_print_json(monh, cmd, rule_print_json(monh->ctx->octx, r));
 }

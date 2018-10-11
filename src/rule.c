@@ -1049,8 +1049,6 @@ void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 	}
 	if (octx->handle > 0)
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
-
-	nft_print(octx, "\n");
 }
 
 struct table *table_alloc(void)

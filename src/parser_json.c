@@ -176,7 +176,7 @@ static int json_unpack_stmt(struct json_ctx *ctx, json_t *root,
 	return 1;
 }
 
-static int parse_family(const char *name)
+static int parse_family(const char *name, uint32_t *family)
 {
 	unsigned int i;
 	struct {
@@ -191,11 +191,35 @@ static int parse_family(const char *name)
 		{ "netdev", NFPROTO_NETDEV }
 	};
 
+	assert(family);
+
 	for (i = 0; i < array_size(family_tbl); i++) {
-		if (!strcmp(name, family_tbl[i].name))
-			return family_tbl[i].val;
+		if (strcmp(name, family_tbl[i].name))
+			continue;
+
+		*family = family_tbl[i].val;
+		return 0;
 	}
 	return -1;
+}
+
+static int json_parse_family(struct json_ctx *ctx, json_t *root)
+{
+	const char *family;
+
+	if (!json_unpack(root, "{s:s}", "family", &family)) {
+		uint32_t familyval;
+
+		if (parse_family(family, &familyval) ||
+		    (familyval != NFPROTO_IPV6 &&
+		     familyval != NFPROTO_IPV4)) {
+			json_error(ctx, "Invalid family '%s'.", family);
+			return -1;
+		}
+		return familyval;
+	}
+
+	return NFPROTO_UNSPEC;
 }
 
 static bool is_keyword(const char *keyword)
@@ -625,19 +649,15 @@ static struct expr *json_parse_rt_expr(struct json_ctx *ctx,
 		{ "mtu", NFT_RT_TCPMSS },
 		{ "ipsec", NFT_RT_XFRM },
 	};
-	unsigned int i, familyval = NFPROTO_UNSPEC;
-	const char *key, *family = NULL;
+	const char *key;
+	unsigned int i;
+	int familyval;
 
 	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
 		return NULL;
-	if (!json_unpack(root, "{s:s}", "family", &family)) {
-		familyval = parse_family(family);
-		if (familyval != NFPROTO_IPV4 &&
-		    familyval != NFPROTO_IPV6) {
-			json_error(ctx, "Invalid RT family '%s'.", family);
-			return NULL;
-		}
-	}
+	familyval = json_parse_family(ctx, root);
+	if (familyval < 0)
+		return NULL;
 
 	for (i = 0; i < array_size(rt_key_tbl); i++) {
 		int val = rt_key_tbl[i].val;
@@ -679,26 +699,6 @@ static bool ct_key_is_dir(enum nft_ct_keys key)
 			return true;
 	}
 	return false;
-}
-
-static int json_parse_family(struct json_ctx *ctx, json_t *root)
-{
-	const char *family;
-
-	if (!json_unpack(root, "{s:s}", "family", &family)) {
-		int familyval = parse_family(family);
-
-		switch (familyval) {
-		case NFPROTO_IPV6:
-		case NFPROTO_IPV4:
-			return familyval;
-		default:
-			json_error(ctx, "Invalid family '%s'.", family);
-			return -1;
-		}
-	}
-
-	return NFPROTO_UNSPEC;
 }
 
 static struct expr *json_parse_ct_expr(struct json_ctx *ctx,
@@ -1670,7 +1670,6 @@ static struct stmt *json_parse_fwd_stmt(struct json_ctx *ctx,
 					const char *key, json_t *value)
 {
 	json_t *jaddr, *jdev;
-	const char *family;
 	struct stmt *stmt;
 	int familyval;
 
@@ -1685,21 +1684,15 @@ static struct stmt *json_parse_fwd_stmt(struct json_ctx *ctx,
 		goto out_err;
 	}
 
-	if (json_unpack(value, "{s:s, s:o}",
-			"family", &family, "addr", &jaddr))
+	familyval = json_parse_family(ctx, value);
+	if (familyval < 0)
+		goto out_err;
+
+	if (familyval == NFPROTO_UNSPEC ||
+	    json_unpack(value, "{s:o}", "addr", &jaddr))
 		return stmt;
 
-	familyval = parse_family(family);
-	switch (familyval) {
-	case NFPROTO_IPV4:
-	case NFPROTO_IPV6:
-		stmt->fwd.family = familyval;
-		break;
-	default:
-		json_error(ctx, "Invalid fwd family value '%s'.", family);
-		goto out_err;
-	}
-
+	stmt->fwd.family = familyval;
 	stmt->fwd.addr = json_parse_stmt_expr(ctx, jaddr);
 	if (!stmt->fwd.addr) {
 		json_error(ctx, "Invalid fwd addr value.");
@@ -1868,24 +1861,20 @@ static struct stmt *json_parse_tproxy_stmt(struct json_ctx *ctx,
 					const char *key, json_t *value)
 {
 	json_t *jaddr, *tmp;
-	const char *family;
 	struct stmt *stmt;
 	int familyval;
 
 	stmt = tproxy_stmt_alloc(int_loc);
 
-	if (json_unpack(value, "{s:s, s:o}",
-			"family", &family, "addr", &jaddr))
+	familyval = json_parse_family(ctx, value);
+	if (familyval < 0)
+		goto out_free;
+
+	if (familyval == NFPROTO_UNSPEC ||
+	    json_unpack(value, "{s:o}", "addr", &jaddr))
 		goto try_port;
 
-	familyval = parse_family(family);
-	if (familyval != NFPROTO_IPV4 &&
-	    familyval != NFPROTO_IPV6) {
-		json_error(ctx, "Invalid family '%s'.", family);
-		goto out_free;
-	}
 	stmt->tproxy.family = familyval;
-
 	stmt->tproxy.addr = json_parse_stmt_expr(ctx, jaddr);
 	if (!stmt->tproxy.addr) {
 		json_error(ctx, "Invalid addr.");
@@ -2325,8 +2314,7 @@ static struct cmd *json_parse_cmd_add_table(struct json_ctx *ctx, json_t *root,
 		json_error(ctx, "Either name or handle required to delete a table.");
 		return NULL;
 	}
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
@@ -2368,8 +2356,7 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 		json_error(ctx, "Either name or handle required to delete a chain.");
 		return NULL;
 	}
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
@@ -2430,8 +2417,7 @@ static struct cmd *json_parse_cmd_add_rule(struct json_ctx *ctx, json_t *root,
 		 json_unpack_err(ctx, root, "{s:I}", "handle", &h.handle.id))
 		return NULL;
 
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
@@ -2537,8 +2523,7 @@ static struct cmd *json_parse_cmd_add_set(struct json_ctx *ctx, json_t *root,
 		return NULL;
 	}
 
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
@@ -2649,8 +2634,7 @@ static struct cmd *json_parse_cmd_add_element(struct json_ctx *ctx,
 			    "elem", &tmp))
 		return NULL;
 
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
@@ -2713,8 +2697,7 @@ static struct cmd *json_parse_cmd_add_flowtable(struct json_ctx *ctx,
 			    "name", &h.flowtable))
 		return NULL;
 
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
@@ -2791,6 +2774,7 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 					     enum cmd_obj cmd_obj)
 {
 	const char *family, *tmp, *rate_unit = "packets", *burst_unit = "bytes";
+	uint32_t l3proto = NFPROTO_IPV4;
 	struct handle h = { 0 };
 	struct obj *obj;
 	int inv = 0;
@@ -2811,8 +2795,7 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 		return NULL;
 	}
 
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
@@ -2870,18 +2853,13 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 				return NULL;
 			}
 		}
-		if (!json_unpack(root, "{s:s}", "l3proto", &tmp)) {
-			int family = parse_family(tmp);
-
-			if (family < 0) {
-				json_error(ctx, "Invalid ct helper l3proto '%s'.", tmp);
-				obj_free(obj);
-				return NULL;
-			}
-			obj->ct_helper.l3proto = family;
-		} else {
-			obj->ct_helper.l3proto = NFPROTO_IPV4;
+		if (!json_unpack(root, "{s:s}", "l3proto", &tmp) &&
+		    parse_family(tmp, &l3proto)) {
+			json_error(ctx, "Invalid ct helper l3proto '%s'.", tmp);
+			obj_free(obj);
+			return NULL;
 		}
+		obj->ct_helper.l3proto = l3proto;
 		break;
 	case NFT_OBJECT_CT_TIMEOUT:
 		cmd_obj = CMD_OBJ_CT_TIMEOUT;
@@ -2897,18 +2875,14 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 				return NULL;
 			}
 		}
-		if (!json_unpack(root, "{s:s}", "l3proto", &tmp)) {
-			int family = parse_family(tmp);
-
-			if (family < 0) {
-				json_error(ctx, "Invalid ct timeout l3proto '%s'.", tmp);
-				obj_free(obj);
-				return NULL;
-			}
-			obj->ct_timeout.l3proto = family;
-		} else {
-			obj->ct_timeout.l3proto = NFPROTO_IPV4;
+		if (!json_unpack(root, "{s:s}", "l3proto", &tmp) &&
+		    parse_family(tmp, &l3proto)) {
+			json_error(ctx, "Invalid ct timeout l3proto '%s'.", tmp);
+			obj_free(obj);
+			return NULL;
 		}
+		obj->ct_helper.l3proto = l3proto;
+
 		if (json_parse_ct_timeout_policy(ctx, root, obj)) {
 			obj_free(obj);
 			return NULL;
@@ -3024,8 +2998,7 @@ static struct cmd *json_parse_cmd_replace(struct json_ctx *ctx,
 		h.handle.id = 0;
 	}
 
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
@@ -3079,8 +3052,7 @@ static struct cmd *json_parse_cmd_list_multiple(struct json_ctx *ctx,
 	const char *tmp;
 
 	if (!json_unpack(root, "{s:s}", "family", &tmp)) {
-		h.family = parse_family(tmp);
-		if (h.family < 0) {
+		if (parse_family(tmp, &h.family)) {
 			json_error(ctx, "Unknown family '%s'.", tmp);
 			return NULL;
 		}
@@ -3235,8 +3207,7 @@ static struct cmd *json_parse_cmd_rename(struct json_ctx *ctx,
 			    "name", &h.chain.name,
 			    "newname", &newname))
 		return NULL;
-	h.family = parse_family(family);
-	if (h.family < 0) {
+	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}

@@ -1131,7 +1131,7 @@ json_t *notrack_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 
 json_t *dup_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 {
-	json_t *root = json_object();
+	json_t *root;
 
 	if (stmt->dup.to) {
 		root = json_pack("{s:o}", "addr", expr_print_json(stmt->dup.to, octx));

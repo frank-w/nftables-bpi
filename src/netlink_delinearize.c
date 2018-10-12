@@ -1227,9 +1227,11 @@ static void netlink_parse_fwd(struct netlink_parse_ctx *ctx,
 		reg2 = netlink_parse_register(nle, NFTNL_EXPR_FWD_SREG_ADDR);
 		if (reg2) {
 			addr = netlink_get_register(ctx, loc, reg2);
-			if (addr == NULL)
-				return netlink_error(ctx, loc,
-						     "fwd statement has no output expression");
+			if (addr == NULL) {
+				netlink_error(ctx, loc,
+					      "fwd statement has no output expression");
+				goto out_err;
+			}
 
 			switch (stmt->fwd.family) {
 			case AF_INET:
@@ -1241,8 +1243,9 @@ static void netlink_parse_fwd(struct netlink_parse_ctx *ctx,
 					      BYTEORDER_BIG_ENDIAN);
 				break;
 			default:
-				return netlink_error(ctx, loc,
-						     "fwd statement has no family");
+				netlink_error(ctx, loc,
+					      "fwd statement has no family");
+				goto out_err;
 			}
 			stmt->fwd.addr = addr;
 		}

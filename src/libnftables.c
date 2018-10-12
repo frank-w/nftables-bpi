@@ -420,15 +420,14 @@ static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 				    struct list_head *msgs, struct list_head *cmds)
 {
 	struct cmd *cmd;
-	void *scanner;
 	int ret;
 
 	parser_init(nft, nft->state, msgs, cmds);
-	scanner = scanner_init(nft->state);
-	if (scanner_read_file(scanner, filename, &internal_location) < 0)
+	nft->scanner = scanner_init(nft->state);
+	if (scanner_read_file(nft->scanner, filename, &internal_location) < 0)
 		return -1;
 
-	ret = nft_parse(nft, scanner, nft->state);
+	ret = nft_parse(nft, nft->scanner, nft->state);
 	if (ret != 0 || nft->state->nerrs > 0)
 		return -1;
 

@@ -149,6 +149,7 @@ int nft_lex(void *, void *, void *);
 	struct flowtable	*flowtable;
 	struct counter		*counter;
 	struct quota		*quota;
+	struct secmark		*secmark;
 	struct ct		*ct;
 	struct limit		*limit;
 	const struct datatype	*datatype;
@@ -458,6 +459,9 @@ int nft_lex(void *, void *, void *);
 %token QUOTA			"quota"
 %token USED			"used"
 
+%token SECMARK			"secmark"
+%token SECMARKS			"secmarks"
+
 %token NANOSECOND		"nanosecond"
 %token MICROSECOND		"microsecond"
 %token MILLISECOND		"millisecond"
@@ -567,7 +571,7 @@ int nft_lex(void *, void *, void *);
 %type <flowtable>		flowtable_block_alloc flowtable_block
 %destructor { flowtable_free($$); }	flowtable_block_alloc
 
-%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block limit_block
+%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block limit_block secmark_block
 %destructor { obj_free($$); }	obj_block_alloc
 
 %type <list>			stmt_list
@@ -672,8 +676,8 @@ int nft_lex(void *, void *, void *);
 %type <expr>			and_rhs_expr exclusive_or_rhs_expr inclusive_or_rhs_expr
 %destructor { expr_free($$); }	and_rhs_expr exclusive_or_rhs_expr inclusive_or_rhs_expr
 
-%type <obj>			counter_obj quota_obj ct_obj_alloc limit_obj
-%destructor { obj_free($$); }	counter_obj quota_obj ct_obj_alloc limit_obj
+%type <obj>			counter_obj quota_obj ct_obj_alloc limit_obj secmark_obj
+%destructor { obj_free($$); }	counter_obj quota_obj ct_obj_alloc limit_obj secmark_obj
 
 %type <expr>			relational_expr
 %destructor { expr_free($$); }	relational_expr
@@ -752,6 +756,8 @@ int nft_lex(void *, void *, void *);
 %destructor { xfree($$); }	quota_config
 %type <limit>			limit_config
 %destructor { xfree($$); }	limit_config
+%type <secmark>			secmark_config
+%destructor { xfree($$); }	secmark_config
 
 %type <expr>			tcp_hdr_expr
 %destructor { expr_free($$); }	tcp_hdr_expr
@@ -990,6 +996,10 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_LIMIT, &$2, &@$, $3);
 			}
+			|	SECMARK		obj_spec	secmark_obj
+			{
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SECMARK, &$2, &@$, $3);
+			}
 			;
 
 replace_cmd		:	RULE		ruleid_spec	rule
@@ -1075,6 +1085,10 @@ create_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_LIMIT, &$2, &@$, $3);
 			}
+			|	SECMARK		obj_spec	secmark_obj
+			{
+				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_SECMARK, &$2, &@$, $3);
+			}
 			;
 
 insert_cmd		:	RULE		rule_position	rule
@@ -1151,6 +1165,14 @@ delete_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_LIMIT, &$2, &@$, NULL);
 			}
+			|	SECMARK		obj_spec
+			{
+				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SECMARK, &$2, &@$, NULL);
+			}
+			| 	SECMARK		objid_spec
+			{
+				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SECMARK, &$2, &@$, NULL);
+			}
 			;
 
 get_cmd			:	ELEMENT		set_spec	set_block_expr
@@ -1222,6 +1244,18 @@ list_cmd		:	TABLE		table_spec
 			|	LIMIT		obj_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_LIMIT, &$2, &@$, NULL);
+			}
+			|	SECMARKS	ruleset_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SECMARKS, &$2, &@$, NULL);
+			}
+			|	SECMARKS	TABLE	table_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SECMARKS, &$3, &@$, NULL);
+			}
+			|	SECMARK		obj_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SECMARK, &$2, &@$, NULL);
 			}
 			|	RULESET		ruleset_spec
 			{
@@ -1518,6 +1552,17 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 				list_add_tail(&$4->list, &$1->objs);
 				$$ = $1;
 			}
+			|	table_block	SECMARK		obj_identifier
+					obj_block_alloc	'{'	secmark_block	'}'
+					stmt_separator
+			{
+				$4->location = @3;
+				$4->type = NFT_OBJECT_SECMARK;
+				handle_merge(&$4->handle, &$3);
+				handle_free(&$3);
+				list_add_tail(&$4->list, &$1->objs);
+				$$ = $1;
+			}
 			;
 
 chain_block_alloc	:	/* empty */
@@ -1647,6 +1692,15 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 			{
 				$1->key = $3;
 				$1->objtype = NFT_OBJECT_LIMIT;
+				$1->flags  |= NFT_SET_OBJECT;
+				$$ = $1;
+			}
+			|	map_block	TYPE
+						data_type_expr	COLON	SECMARK
+						stmt_separator
+			{
+				$1->key = $3;
+				$1->objtype = NFT_OBJECT_SECMARK;
 				$1->flags  |= NFT_SET_OBJECT;
 				$$ = $1;
 			}
@@ -1817,6 +1871,16 @@ limit_block		:	/* empty */	{ $$ = $<obj>-1; }
 			|       limit_block     limit_config
 			{
 				$1->limit = *$2;
+				$$ = $1;
+			}
+			;
+
+secmark_block		:	/* empty */	{ $$ = $<obj>-1; }
+			|       secmark_block     common_block
+			|       secmark_block     stmt_separator
+			|       secmark_block     secmark_config
+			{
+				$1->secmark = *$2;
 				$$ = $1;
 			}
 			;
@@ -3336,6 +3400,28 @@ quota_obj		:	quota_config
 			}
 			;
 
+secmark_config		:	string
+			{
+				int ret;
+				struct secmark *secmark;
+				secmark = xzalloc(sizeof(*secmark));
+				ret = snprintf(secmark->ctx, sizeof(secmark->ctx), "%s", $1);
+				if (ret <= 0 || ret >= (int)sizeof(secmark->ctx)) {
+					erec_queue(error(&@1, "invalid context '%s', max length is %u\n", $1, (int)sizeof(secmark->ctx)), state->msgs);
+					YYERROR;
+				}
+				$$ = secmark;
+			}
+			;
+
+secmark_obj		:	secmark_config
+			{
+				$$ = obj_alloc(&@$);
+				$$->type = NFT_OBJECT_SECMARK;
+				$$->secmark = *$1;
+			}
+			;
+
 ct_obj_type		:	HELPER		{ $$ = NFT_OBJECT_CT_HELPER; }
 			|	TIMEOUT		{ $$ = NFT_OBJECT_CT_TIMEOUT; }
 			;
@@ -3725,6 +3811,7 @@ meta_key_qualified	:	LENGTH		{ $$ = NFT_META_LEN; }
 			|	PROTOCOL	{ $$ = NFT_META_PROTOCOL; }
 			|	PRIORITY	{ $$ = NFT_META_PRIORITY; }
 			|	RANDOM		{ $$ = NFT_META_PRANDOM; }
+			|	SECMARK		{ $$ = NFT_META_SECMARK; }
 			;
 
 meta_key_unqualified	:	MARK		{ $$ = NFT_META_MARK; }
@@ -3752,7 +3839,16 @@ meta_key_unqualified	:	MARK		{ $$ = NFT_META_MARK; }
 
 meta_stmt		:	META	meta_key	SET	stmt_expr
 			{
-				$$ = meta_stmt_alloc(&@$, $2, $4);
+				switch ($2) {
+				case NFT_META_SECMARK:
+					$$ = objref_stmt_alloc(&@$);
+					$$->objref.type = NFT_OBJECT_SECMARK;
+					$$->objref.expr = $4;
+					break;
+				default:
+					$$ = meta_stmt_alloc(&@$, $2, $4);
+					break;
+				}
 			}
 			|	meta_key_unqualified	SET	stmt_expr
 			{

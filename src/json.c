@@ -294,6 +294,12 @@ static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
 		json_object_update(root, tmp);
 		json_decref(tmp);
 		break;
+	case NFT_OBJECT_SECMARK:
+		tmp = json_pack("{s:s}",
+				"context", obj->secmark.ctx);
+		json_object_update(root, tmp);
+		json_decref(tmp);
+		break;
 	case NFT_OBJECT_CT_HELPER:
 		tmp = json_pack("{s:s, s:o, s:s}",
 				"type", obj->ct_helper.name, "protocol",
@@ -1705,6 +1711,10 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_LIMIT:
 	case CMD_OBJ_LIMITS:
 		root = do_list_obj_json(ctx, cmd, NFT_OBJECT_LIMIT);
+		break;
+	case CMD_OBJ_SECMARK:
+	case CMD_OBJ_SECMARKS:
+		root = do_list_obj_json(ctx, cmd, NFT_OBJECT_SECMARK);
 		break;
 	case CMD_OBJ_FLOWTABLES:
 		root = do_list_flowtables_json(ctx, cmd);

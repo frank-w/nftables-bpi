@@ -1326,6 +1326,7 @@ void cmd_free(struct cmd *cmd)
 		case CMD_OBJ_CT_HELPER:
 		case CMD_OBJ_CT_TIMEOUT:
 		case CMD_OBJ_LIMIT:
+		case CMD_OBJ_SECMARK:
 			obj_free(cmd->object);
 			break;
 		case CMD_OBJ_FLOWTABLE:
@@ -1421,6 +1422,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_CT_HELPER:
 	case CMD_OBJ_CT_TIMEOUT:
 	case CMD_OBJ_LIMIT:
+	case CMD_OBJ_SECMARK:
 		return netlink_add_obj(ctx, cmd, flags);
 	case CMD_OBJ_FLOWTABLE:
 		return netlink_add_flowtable(ctx, cmd, flags);
@@ -1510,6 +1512,8 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 					  NFT_OBJECT_CT_TIMEOUT);
 	case CMD_OBJ_LIMIT:
 		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_LIMIT);
+	case CMD_OBJ_SECMARK:
+		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_SECMARK);
 	case CMD_OBJ_FLOWTABLE:
 		return netlink_delete_flowtable(ctx, cmd);
 	default:
@@ -1716,6 +1720,13 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, "%s", opts->nl);
 		}
 		break;
+	case NFT_OBJECT_SECMARK:
+		nft_print(octx, " %s {", obj->handle.obj.name);
+		if (octx->handle > 0)
+			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
+		nft_print(octx, "%s", obj->secmark.ctx);
+		break;
 	case NFT_OBJECT_CT_HELPER:
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (octx->handle > 0)
@@ -1793,6 +1804,7 @@ static const char * const obj_type_name_array[] = {
 	[NFT_OBJECT_CT_HELPER]	= "ct helper",
 	[NFT_OBJECT_LIMIT]	= "limit",
 	[NFT_OBJECT_CT_TIMEOUT] = "ct timeout",
+	[NFT_OBJECT_SECMARK]	= "secmark",
 };
 
 const char *obj_type_name(enum stmt_types type)
@@ -1808,6 +1820,7 @@ static uint32_t obj_type_cmd_array[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_CT_HELPER]	= CMD_OBJ_CT_HELPER,
 	[NFT_OBJECT_LIMIT]	= CMD_OBJ_LIMIT,
 	[NFT_OBJECT_CT_TIMEOUT] = CMD_OBJ_CT_TIMEOUT,
+	[NFT_OBJECT_SECMARK]	= CMD_OBJ_SECMARK,
 };
 
 uint32_t obj_type_to_cmd(uint32_t type)
@@ -2167,6 +2180,9 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_LIMIT:
 	case CMD_OBJ_LIMITS:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_LIMIT);
+	case CMD_OBJ_SECMARK:
+	case CMD_OBJ_SECMARKS:
+		return do_list_obj(ctx, cmd, NFT_OBJECT_SECMARK);
 	case CMD_OBJ_FLOWTABLES:
 		return do_list_flowtables(ctx, cmd);
 	default:

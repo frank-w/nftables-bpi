@@ -2472,6 +2472,7 @@ static int string_to_nft_object(const char *str)
 		[NFT_OBJECT_QUOTA] = "quota",
 		[NFT_OBJECT_CT_HELPER] = "ct helper",
 		[NFT_OBJECT_LIMIT] = "limit",
+		[NFT_OBJECT_SECMARK] = "secmark",
 	};
 	unsigned int i;
 
@@ -2826,6 +2827,19 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 		if (obj->quota.flags)
 			obj->quota.flags = NFT_QUOTA_F_INV;
 		break;
+	case CMD_OBJ_SECMARK:
+		obj->type = NFT_OBJECT_SECMARK;
+		if (!json_unpack(root, "{s:s}", "context", tmp)) {
+			int ret;
+			ret = snprintf(obj->secmark.ctx, sizeof(obj->secmark.ctx), "%s", tmp);
+			if (ret < 0 || ret >= (int)sizeof(obj->secmark.ctx)) {
+				json_error(ctx, "Invalid secmark context '%s', max length is %zu.",
+					   tmp, sizeof(obj->secmark.ctx));
+				obj_free(obj);
+				return NULL;
+			}
+		}
+		break;
 	case NFT_OBJECT_CT_HELPER:
 		cmd_obj = CMD_OBJ_CT_HELPER;
 		obj->type = NFT_OBJECT_CT_HELPER;
@@ -2939,7 +2953,8 @@ static struct cmd *json_parse_cmd_add(struct json_ctx *ctx,
 		{ "counter", CMD_OBJ_COUNTER, json_parse_cmd_add_object },
 		{ "quota", CMD_OBJ_QUOTA, json_parse_cmd_add_object },
 		{ "ct helper", NFT_OBJECT_CT_HELPER, json_parse_cmd_add_object },
-		{ "limit", CMD_OBJ_LIMIT, json_parse_cmd_add_object }
+		{ "limit", CMD_OBJ_LIMIT, json_parse_cmd_add_object },
+		{ "secmark", CMD_OBJ_SECMARK, json_parse_cmd_add_object }
 	};
 	unsigned int i;
 	json_t *tmp;
@@ -3103,6 +3118,8 @@ static struct cmd *json_parse_cmd_list(struct json_ctx *ctx,
 		{ "meter", CMD_OBJ_METER, json_parse_cmd_add_set },
 		{ "meters", CMD_OBJ_METERS, json_parse_cmd_list_multiple },
 		{ "flowtables", CMD_OBJ_FLOWTABLES, json_parse_cmd_list_multiple },
+		{ "secmark", CMD_OBJ_SECMARK, json_parse_cmd_add_object },
+		{ "secmarks", CMD_OBJ_SECMARKS, json_parse_cmd_list_multiple },
 	};
 	unsigned int i;
 	json_t *tmp;

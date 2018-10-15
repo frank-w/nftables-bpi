@@ -349,6 +349,10 @@ struct limit {
 	uint32_t	flags;
 };
 
+struct secmark {
+	char		ctx[NFT_SECMARK_CTX_MAXLEN];
+};
+
 /**
  * struct obj - nftables stateful object statement
  *
@@ -370,6 +374,7 @@ struct obj {
 		struct ct_helper	ct_helper;
 		struct limit		limit;
 		struct ct_timeout	ct_timeout;
+		struct secmark		secmark;
 	};
 };
 
@@ -468,6 +473,8 @@ enum cmd_ops {
  * @CMD_OBJ_LIMIT:	limit
  * @CMD_OBJ_LIMITS:	multiple limits
  * @CMD_OBJ_FLOWTABLES:	flow tables
+ * @CMD_OBJ_SECMARK:	secmark
+ * @CMD_OBJ_SECMARKS:	multiple secmarks
  */
 enum cmd_obj {
 	CMD_OBJ_INVALID,
@@ -497,6 +504,8 @@ enum cmd_obj {
 	CMD_OBJ_FLOWTABLE,
 	CMD_OBJ_FLOWTABLES,
 	CMD_OBJ_CT_TIMEOUT,
+	CMD_OBJ_SECMARK,
+	CMD_OBJ_SECMARKS,
 };
 
 struct markup {

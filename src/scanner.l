@@ -564,6 +564,9 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "in"			{ return IN; }
 "out"			{ return OUT; }
 
+"secmark"		{ return SECMARK; }
+"secmarks"		{ return SECMARKS; }
+
 {addrstring}		{
 				yylval->string = xstrdup(yytext);
 				return STRING;

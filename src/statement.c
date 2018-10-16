@@ -832,7 +832,6 @@ static void xt_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 static void xt_stmt_destroy(struct stmt *stmt)
 {
 	xfree(stmt->xt.name);
-	xfree(stmt->xt.opts);
 	xt_stmt_release(stmt);
 }
 

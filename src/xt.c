@@ -32,9 +32,7 @@ void xt_stmt_xlate(const struct stmt *stmt)
 
 	switch (stmt->xt.type) {
 	case NFT_XT_MATCH:
-		if (stmt->xt.match == NULL && stmt->xt.opts) {
-			printf("%s", stmt->xt.opts);
-		} else if (stmt->xt.match->xlate) {
+		if (stmt->xt.match->xlate) {
 			struct xt_xlate_mt_params params = {
 				.ip		= stmt->xt.entry,
 				.match		= stmt->xt.match->m,
@@ -51,9 +49,7 @@ void xt_stmt_xlate(const struct stmt *stmt)
 		break;
 	case NFT_XT_WATCHER:
 	case NFT_XT_TARGET:
-		if (stmt->xt.target == NULL && stmt->xt.opts) {
-			printf("%s", stmt->xt.opts);
-		} else if (stmt->xt.target->xlate) {
+		if (stmt->xt.target->xlate) {
 			struct xt_xlate_tg_params params = {
 				.ip		= stmt->xt.entry,
 				.target		= stmt->xt.target->t,

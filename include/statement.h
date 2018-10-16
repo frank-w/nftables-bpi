@@ -237,7 +237,6 @@ struct xt_stmt {
 		struct xtables_match	*match;
 		struct xtables_target	*target;
 	};
-	const char			*opts;
 	void				*entry;
 };
 

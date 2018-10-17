@@ -1854,7 +1854,17 @@ static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
 	if (expr_evaluate(ctx, expr) < 0)
 		return -1;
 
-	if (!datatype_equal((*expr)->dtype, dtype))
+	if ((*expr)->ops->type == EXPR_PAYLOAD &&
+	    (*expr)->dtype->type == TYPE_INTEGER &&
+	    ((*expr)->dtype->type != datatype_basetype(dtype)->type ||
+	     (*expr)->len != len))
+		return stmt_binary_error(ctx, *expr, stmt,
+					 "datatype mismatch: expected %s, "
+					 "expression has type %s with length %d",
+					 dtype->desc, (*expr)->dtype->desc,
+					 (*expr)->len);
+	else if ((*expr)->dtype->type != TYPE_INTEGER &&
+		 !datatype_equal((*expr)->dtype, dtype))
 		return stmt_binary_error(ctx, *expr, stmt,
 					 "datatype mismatch: expected %s, "
 					 "expression has type %s",

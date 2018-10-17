@@ -171,6 +171,12 @@ static inline bool datatype_equal(const struct datatype *d1,
 	return d1->type == d2->type;
 }
 
+static inline const struct datatype *
+datatype_basetype(const struct datatype *dtype)
+{
+	return dtype->basetype ? dtype->basetype : dtype;
+}
+
 /**
  * struct symbolic_constant - symbol <-> constant mapping
  *

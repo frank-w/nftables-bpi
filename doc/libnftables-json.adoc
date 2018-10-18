@@ -23,7 +23,7 @@ libnftables-json - Supported JSON schema by libnftables
 
 'LIST_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
 		 'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT' |
-		 'METAINFO_OBJECT'
+		 'METAINFO_OBJECT' | 'CT_TIMEOUT'
 
 == DESCRIPTION
 libnftables supports JSON formatted input and output. This is implemented as an
@@ -117,7 +117,8 @@ ____
 *{ "add":* 'ADD_OBJECT' *}*
 
 'ADD_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
-                'FLOWTABLE' | 'COUNTER | QUOTA' | 'CT_HELPER' | 'LIMIT'
+                'FLOWTABLE' | 'COUNTER | QUOTA' | 'CT_HELPER' | 'LIMIT' |
+		'CT_TIMEOUT'
 ____
 
 Add a new ruleset element to the kernel.
@@ -161,7 +162,7 @@ ____
 'LIST_OBJECT' := 'TABLE' | 'TABLES' | 'CHAIN' | 'CHAINS' | 'SET' | 'SETS' |
                  'MAP' | 'MAPS | COUNTER' | 'COUNTERS' | 'QUOTA' | 'QUOTAS' |
                  'CT_HELPER' | 'CT_HELPERS' | 'LIMIT' | 'LIMITS | RULESET' |
-                 'METER' | 'METERS' | 'FLOWTABLES'
+                 'METER' | 'METERS' | 'FLOWTABLES' | 'CT_TIMEOUT'
 ____
 
 List ruleset elements. The plural forms are used to list all objects of that
@@ -559,6 +560,42 @@ This object represents a named limit.
 *inv*::
 	If true, match if limit was exceeded. If omitted, defaults to *false*.
 
+=== CT TIMEOUT
+[verse]
+____
+*{ "ct timeout": {
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* 'NUMBER'*,
+	"protocol":* 'CTH_PROTO'*,
+	"state":* 'STRING'*,
+	"value:* 'NUMBER'*,
+	"l3proto":* 'STRING'
+*}}*
+
+'CTH_PROTO' := *"tcp"* | *"udp"* | *"dccp"* | *"sctp"* | *"gre"* | *"icmpv6"* | *"icmp"* | *"generic"*
+____
+
+This object represents a named conntrack timeout policy.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The ct timeout object's name.
+*handle*::
+	The ct timeout object's handle. In input, used for *delete* command only.
+*protocol*::
+	The ct timeout object's layer 4 protocol.
+*state*::
+	The connection state name, for which timeout value has to be updated, e.g. *"established"*, *"syn_sent"*, *"close"* or *"close_wait"*.
+*value*::
+	The updated timeout value for specified connection state.
+*l3proto*::
+	The ct timeout object's layer 3 protocol, e.g. *"ip"* or *"ip6"*.
+
 == STATEMENTS
 Statements are the building blocks for rules. Each rule consists of at least a
 single statement.
@@ -951,6 +988,15 @@ Limit number of connections using conntrack.
 *inv*::
 	If *true*, match if *val* was exceeded. If omitted, defaults to
 	*false*.
+
+=== CT TIMEOUT
+[verse]
+*{ "ct timeout":* 'EXPRESSION' *}*
+
+Assign connection tracking timeout policy.
+
+*ct timeout*::
+	CT timeout reference.
 
 == EXPRESSIONS
 Expressions are the building blocks of (most) statements. In their most basic

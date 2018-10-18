@@ -1,5 +1,5 @@
-CT
-~~
+CT HELPER
+~~~~~~~~~
 [verse]
 *ct* helper 'helper' {type 'type' protocol 'protocol' ; [l3proto 'family' ;] }
 
@@ -38,6 +38,61 @@ table inet myhelpers {
       tcp dport 21 ct helper set "ftp-standard"
   }
 }
+----------------------------------
+
+CT TIMEOUT
+~~~~~~~~~~
+[verse]
+*ct* timeout 'name' {protocol 'protocol' ; policy = {'state': 'value'} ;[l3proto 'family' ;] }
+
+Ct timeout is used to update connection tracking timeout values.Timeout policies are assigned
+with the *ct timeout set* statement. 'protocol' and 'policy' are
+  mandatory, l3proto is derived from the table family by default.
+
+.conntrack timeout specifications
+[options="header"]
+|=================
+|Keyword | Description | Type
+| protocol |
+layer 4 protocol of the timeout object |
+string (e.g. ip)
+|state |
+connection state name |
+string (e.g. "established")
+|value |
+timeout value for connection state |
+unsigned integer
+|l3proto |
+layer 3 protocol of the timeout object |
+address family (e.g. ip)
+|=================
+
+.defining and assigning ct timeout policy
+----------------------------------
+table ip filter {
+	ct timeout customtimeout {
+		protocol tcp;
+		l3proto ip
+		policy = { established: 120, close: 20 }
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+		ct timeout set "customtimeout"
+	}
+}
+----------------------------------
+
+.testing the updated timeout policy
+----------------------------------
+
+% conntrack -E
+
+It should display:
+
+[UPDATE] tcp      6 120 ESTABLISHED src=172.16.19.128 dst=172.16.19.1
+sport=22 dport=41360 [UNREPLIED] src=172.16.19.1 dst=172.16.19.128
+sport=41360 dport=22
 ----------------------------------
 
 COUNTER

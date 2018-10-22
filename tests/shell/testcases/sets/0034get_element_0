@@ -27,10 +27,17 @@ check 15-18 ""
 
 # multiple single elements, ranges smaller than present
 check "10, 40" "10, 40"
+check "22-24, 26-28" "20-30, 20-30"
 check 21-29 20-30
+
+# mixed single elements and ranges
+check "10, 20" "10, 20-30"
+check "10, 22" "10, 20-30"
+check "10, 22-24" "10, 20-30"
 
 # non-existing ranges matching elements
 check 10-40 ""
+check 10-20 ""
 check 10-25 ""
 check 25-55 ""
 

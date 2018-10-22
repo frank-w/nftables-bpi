@@ -45,11 +45,8 @@ void parser_init(struct nft_ctx *nft, struct parser_state *state,
 	state->msgs = msgs;
 	state->cmds = cmds;
 	state->scopes[0] = scope_init(&state->top_scope, NULL);
-	state->ectx.cache = &nft->cache;
+	state->ectx.nft = nft;
 	state->ectx.msgs = msgs;
-	state->ectx.nf_sock = nft->nf_sock;
-	state->ectx.debug_mask = nft->debug_mask;
-	state->ectx.octx = &nft->output;
 }
 
 static void yyerror(struct location *loc, struct nft_ctx *nft, void *scanner,

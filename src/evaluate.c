@@ -159,7 +159,7 @@ static struct table *table_lookup_global(struct eval_ctx *ctx)
 	if (ctx->table != NULL)
 		return ctx->table;
 
-	table = table_lookup(&ctx->cmd->handle, ctx->cache);
+	table = table_lookup(&ctx->cmd->handle, &ctx->nft->cache);
 	if (table == NULL)
 		return NULL;
 
@@ -187,8 +187,8 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 		}
 		break;
 	case SYMBOL_SET:
-		ret = cache_update(ctx->nf_sock, ctx->cache, ctx->cmd->op,
-				   ctx->msgs, ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, ctx->cmd->op,
+				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
@@ -1730,9 +1730,9 @@ static int expr_evaluate_socket(struct eval_ctx *ctx, struct expr **expr)
 static int expr_evaluate_osf(struct eval_ctx *ctx, struct expr **expr)
 {
 	struct netlink_ctx nl_ctx = {
-		.nf_sock	= ctx->nf_sock,
-		.debug_mask	= ctx->debug_mask,
-		.octx		= ctx->octx,
+		.nf_sock	= ctx->nft->nf_sock,
+		.debug_mask	= ctx->nft->debug_mask,
+		.octx		= &ctx->nft->output,
 		.seqnum		= time(NULL),
 	};
 
@@ -1770,13 +1770,13 @@ static int expr_evaluate_xfrm(struct eval_ctx *ctx, struct expr **exprp)
 
 static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 {
-	if (ctx->debug_mask & NFT_DEBUG_EVALUATION) {
+	if (ctx->nft->debug_mask & NFT_DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &(*expr)->location,
 				   "Evaluate %s", (*expr)->ops->name);
-		erec_print(ctx->octx, erec, ctx->debug_mask);
-		expr_print(*expr, ctx->octx);
-		nft_print(ctx->octx, "\n\n");
+		erec_print(&ctx->nft->output, erec, ctx->nft->debug_mask);
+		expr_print(*expr, &ctx->nft->output);
+		nft_print(&ctx->nft->output, "\n\n");
 		erec_destroy(erec);
 	}
 
@@ -2885,13 +2885,13 @@ static int stmt_evaluate_objref(struct eval_ctx *ctx, struct stmt *stmt)
 
 int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 {
-	if (ctx->debug_mask & NFT_DEBUG_EVALUATION) {
+	if (ctx->nft->debug_mask & NFT_DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &stmt->location,
 				   "Evaluate %s", stmt->ops->name);
-		erec_print(ctx->octx, erec, ctx->debug_mask);
-		stmt_print(stmt, ctx->octx);
-		nft_print(ctx->octx, "\n\n");
+		erec_print(&ctx->nft->output, erec, ctx->nft->debug_mask);
+		stmt_print(stmt, &ctx->nft->output);
+		nft_print(&ctx->nft->output, "\n\n");
 		erec_destroy(erec);
 	}
 
@@ -3086,12 +3086,12 @@ static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
 	int ret;
 
 	/* update cache with CMD_LIST so that rules are fetched, too */
-	ret = cache_update(ctx->nf_sock, ctx->cache, CMD_LIST,
-			ctx->msgs, ctx->debug_mask, ctx->octx);
+	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, CMD_LIST,
+			ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
 	if (ret < 0)
 		return ret;
 
-	table = table_lookup(&rule->handle, ctx->cache);
+	table = table_lookup(&rule->handle, &ctx->nft->cache);
 	if (!table)
 		return cmd_error(ctx, &rule->handle.table.location,
 				"Could not process rule: %s",
@@ -3122,7 +3122,7 @@ static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule)
 	struct stmt *stmt, *tstmt = NULL;
 	struct error_record *erec;
 
-	proto_ctx_init(&ctx->pctx, rule->handle.family, ctx->debug_mask);
+	proto_ctx_init(&ctx->pctx, rule->handle.family, ctx->nft->debug_mask);
 	memset(&ctx->ectx, 0, sizeof(ctx->ectx));
 
 	ctx->rule = rule;
@@ -3269,13 +3269,13 @@ static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 	struct set *set;
 	struct obj *obj;
 
-	if (table_lookup(&ctx->cmd->handle, ctx->cache) == NULL) {
+	if (table_lookup(&ctx->cmd->handle, &ctx->nft->cache) == NULL) {
 		if (table == NULL) {
 			table = table_alloc();
 			handle_merge(&table->handle, &ctx->cmd->handle);
-			table_add_hash(table, ctx->cache);
+			table_add_hash(table, &ctx->nft->cache);
 		} else {
-			table_add_hash(table_get(table), ctx->cache);
+			table_add_hash(table_get(table), &ctx->nft->cache);
 		}
 	}
 
@@ -3315,15 +3315,15 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
+				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
+				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
@@ -3333,8 +3333,8 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 		handle_merge(&cmd->rule->handle, &cmd->handle);
 		return rule_evaluate(ctx, cmd->rule);
 	case CMD_OBJ_CHAIN:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
+				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
@@ -3342,8 +3342,8 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_TABLE:
 		return table_evaluate(ctx, cmd->table);
 	case CMD_OBJ_FLOWTABLE:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
+				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
@@ -3367,8 +3367,8 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
+				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
@@ -3396,14 +3396,14 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask, ctx->octx);
+	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+			   ctx->nft->debug_mask, &ctx->nft->output);
 	if (ret < 0)
 		return ret;
 
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &ctx->cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3428,7 +3428,7 @@ static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 	if (obj_type == NFT_OBJECT_UNSPEC)
 		obj_type = NFT_OBJECT_COUNTER;
 
-	table = table_lookup(&cmd->handle, ctx->cache);
+	table = table_lookup(&cmd->handle, &ctx->nft->cache);
 	if (table == NULL)
 		return cmd_error(ctx, &cmd->handle.table.location,
 				 "Could not process rule: %s",
@@ -3446,8 +3446,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask, ctx->octx);
+	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+			   ctx->nft->debug_mask, &ctx->nft->output);
 	if (ret < 0)
 		return ret;
 
@@ -3456,14 +3456,14 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		if (cmd->handle.table.name == NULL)
 			return 0;
 
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &cmd->handle.table.location,
 					 "Could not process rule: %s",
 					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_SET:
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3475,7 +3475,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_METER:
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3487,7 +3487,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_MAP:
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3499,7 +3499,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_CHAIN:
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3530,7 +3530,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SECMARKS:
 		if (cmd->handle.table.name == NULL)
 			return 0;
-		if (table_lookup(&cmd->handle, ctx->cache) == NULL)
+		if (table_lookup(&cmd->handle, &ctx->nft->cache) == NULL)
 			return cmd_error(ctx, &cmd->handle.table.location,
 					 "Could not process rule: %s",
 					 strerror(ENOENT));
@@ -3549,8 +3549,8 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask, ctx->octx);
+	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+			   ctx->nft->debug_mask, &ctx->nft->output);
 	if (ret < 0)
 		return ret;
 
@@ -3561,7 +3561,7 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_QUOTAS:
 		if (cmd->handle.table.name == NULL)
 			return 0;
-		if (table_lookup(&cmd->handle, ctx->cache) == NULL)
+		if (table_lookup(&cmd->handle, &ctx->nft->cache) == NULL)
 			return cmd_error(ctx, &cmd->handle.table.location,
 					 "Could not process rule: %s",
 					 strerror(ENOENT));
@@ -3579,8 +3579,8 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_RULESET:
-		cache_flush(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			    ctx->debug_mask, ctx->octx);
+		cache_flush(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+			    ctx->nft->debug_mask, &ctx->nft->output);
 		break;
 	case CMD_OBJ_TABLE:
 		/* Flushing a table does not empty the sets in the table nor remove
@@ -3590,12 +3590,12 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		/* Chains don't hold sets */
 		break;
 	case CMD_OBJ_SET:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-				   ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+				   ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3607,12 +3607,12 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_MAP:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-				   ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+				   ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &ctx->cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3624,12 +3624,12 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_METER:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-				   ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+				   ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &ctx->cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3653,12 +3653,12 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
-		ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op,
-				   ctx->msgs, ctx->debug_mask, ctx->octx);
+		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
+				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
 		if (ret < 0)
 			return ret;
 
-		table = table_lookup(&ctx->cmd->handle, ctx->cache);
+		table = table_lookup(&ctx->cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return cmd_error(ctx, &ctx->cmd->handle.table.location,
 					 "Could not process rule: %s",
@@ -3753,8 +3753,8 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 	uint32_t event;
 	int ret;
 
-	ret = cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			   ctx->debug_mask, ctx->octx);
+	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+			   ctx->nft->debug_mask, &ctx->nft->output);
 	if (ret < 0)
 		return ret;
 
@@ -3779,8 +3779,8 @@ static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 		return cmd_error(ctx, &cmd->location,
 				 "this output type is not supported");
 
-	return cache_update(ctx->nf_sock, ctx->cache, cmd->op, ctx->msgs,
-			    ctx->debug_mask, ctx->octx);
+	return cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
+			    ctx->nft->debug_mask, &ctx->nft->output);
 }
 
 static int cmd_evaluate_import(struct eval_ctx *ctx, struct cmd *cmd)
@@ -3818,13 +3818,13 @@ static const char *cmd_op_to_name(enum cmd_ops op)
 
 int cmd_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 {
-	if (ctx->debug_mask & NFT_DEBUG_EVALUATION) {
+	if (ctx->nft->debug_mask & NFT_DEBUG_EVALUATION) {
 		struct error_record *erec;
 
 		erec = erec_create(EREC_INFORMATIONAL, &cmd->location,
 				   "Evaluate %s", cmd_op_to_name(cmd->op));
-		erec_print(ctx->octx, erec, ctx->debug_mask);
-		nft_print(ctx->octx, "\n\n");
+		erec_print(&ctx->nft->output, erec, ctx->nft->debug_mask);
+		nft_print(&ctx->nft->output, "\n\n");
 		erec_destroy(erec);
 	}
 

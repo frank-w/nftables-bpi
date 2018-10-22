@@ -600,16 +600,13 @@ extern void cmd_free(struct cmd *cmd);
  * @pctx:	payload context
  */
 struct eval_ctx {
-	struct mnl_socket	*nf_sock;
+	struct nft_ctx		*nft;
 	struct list_head	*msgs;
 	struct cmd		*cmd;
 	struct table		*table;
 	struct rule		*rule;
 	struct set		*set;
 	struct stmt		*stmt;
-	struct nft_cache	*cache;
-	struct output_ctx	*octx;
-	unsigned int		debug_mask;
 	struct expr_ctx		ectx;
 	struct proto_ctx	pctx;
 };

@@ -187,8 +187,7 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 		}
 		break;
 	case SYMBOL_SET:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, ctx->cmd->op,
-				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, ctx->cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -1730,9 +1729,7 @@ static int expr_evaluate_socket(struct eval_ctx *ctx, struct expr **expr)
 static int expr_evaluate_osf(struct eval_ctx *ctx, struct expr **expr)
 {
 	struct netlink_ctx nl_ctx = {
-		.nf_sock	= ctx->nft->nf_sock,
-		.debug_mask	= ctx->nft->debug_mask,
-		.octx		= &ctx->nft->output,
+		.nft		= ctx->nft,
 		.seqnum		= time(NULL),
 	};
 
@@ -3086,8 +3083,7 @@ static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
 	int ret;
 
 	/* update cache with CMD_LIST so that rules are fetched, too */
-	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, CMD_LIST,
-			ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
+	ret = cache_update(ctx->nft, CMD_LIST, ctx->msgs);
 	if (ret < 0)
 		return ret;
 
@@ -3315,15 +3311,13 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
-				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
-				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -3333,8 +3327,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 		handle_merge(&cmd->rule->handle, &cmd->handle);
 		return rule_evaluate(ctx, cmd->rule);
 	case CMD_OBJ_CHAIN:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
-				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -3342,8 +3335,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_TABLE:
 		return table_evaluate(ctx, cmd->table);
 	case CMD_OBJ_FLOWTABLE:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
-				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -3367,8 +3359,7 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
-				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -3396,8 +3387,7 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 	int ret;
 
-	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-			   ctx->nft->debug_mask, &ctx->nft->output);
+	ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 	if (ret < 0)
 		return ret;
 
@@ -3446,8 +3436,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 	int ret;
 
-	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-			   ctx->nft->debug_mask, &ctx->nft->output);
+	ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 	if (ret < 0)
 		return ret;
 
@@ -3549,8 +3538,7 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	int ret;
 
-	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-			   ctx->nft->debug_mask, &ctx->nft->output);
+	ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 	if (ret < 0)
 		return ret;
 
@@ -3579,8 +3567,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_RULESET:
-		cache_flush(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-			    ctx->nft->debug_mask, &ctx->nft->output);
+		cache_flush(ctx->nft, cmd->op, ctx->msgs);
 		break;
 	case CMD_OBJ_TABLE:
 		/* Flushing a table does not empty the sets in the table nor remove
@@ -3590,8 +3577,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		/* Chains don't hold sets */
 		break;
 	case CMD_OBJ_SET:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-				   ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -3607,8 +3593,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_MAP:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-				   ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -3624,8 +3609,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 					 strerror(ENOENT));
 		return 0;
 	case CMD_OBJ_METER:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-				   ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -3653,8 +3637,7 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
-		ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op,
-				   ctx->msgs, ctx->nft->debug_mask, &ctx->nft->output);
+		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 		if (ret < 0)
 			return ret;
 
@@ -3753,8 +3736,7 @@ static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 	uint32_t event;
 	int ret;
 
-	ret = cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-			   ctx->nft->debug_mask, &ctx->nft->output);
+	ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
 	if (ret < 0)
 		return ret;
 
@@ -3779,8 +3761,7 @@ static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 		return cmd_error(ctx, &cmd->location,
 				 "this output type is not supported");
 
-	return cache_update(ctx->nft->nf_sock, &ctx->nft->cache, cmd->op, ctx->msgs,
-			    ctx->nft->debug_mask, &ctx->nft->output);
+	return cache_update(ctx->nft, cmd->op, ctx->msgs);
 }
 
 static int cmd_evaluate_import(struct eval_ctx *ctx, struct cmd *cmd)

@@ -221,8 +221,8 @@ static int osf_load_line(char *buffer, int len, int del,
 
 	memset(&f, 0, sizeof(struct nf_osf_user_finger));
 
-	if (ctx->debug_mask & NFT_DEBUG_MNL)
-		nft_print(ctx->octx, "Loading '%s'.\n", buffer);
+	if (ctx->nft->debug_mask & NFT_DEBUG_MNL)
+		nft_print(&ctx->nft->output, "Loading '%s'.\n", buffer);
 
 	for (i = 0; i < len && buffer[i] != '\0'; ++i) {
 		if (buffer[i] == ':')
@@ -230,8 +230,8 @@ static int osf_load_line(char *buffer, int len, int del,
 	}
 
 	if (cnt != 8) {
-		if (ctx->debug_mask & NFT_DEBUG_MNL)
-			nft_print(ctx->octx, "Wrong input line '%s': cnt: %d, must be 8, i: %d, must be %d.\n", buffer, cnt, i, len);
+		if (ctx->nft->debug_mask & NFT_DEBUG_MNL)
+			nft_print(&ctx->nft->output, "Wrong input line '%s': cnt: %d, must be 8, i: %d, must be %d.\n", buffer, cnt, i, len);
 		return -EINVAL;
 	}
 
@@ -357,14 +357,14 @@ int nfnl_osf_load_fingerprints(struct netlink_ctx *ctx, int del)
 	int err = 0;
 	char buf[1024];
 
-	if (ctx->debug_mask & NFT_DEBUG_MNL)
-		nft_print(ctx->octx, "Opening OS signature file '%s'\n",
+	if (ctx->nft->debug_mask & NFT_DEBUG_MNL)
+		nft_print(&ctx->nft->output, "Opening OS signature file '%s'\n",
 			  OS_SIGNATURES);
 
 	inf = fopen(OS_SIGNATURES, "r");
 	if (!inf) {
-		if (ctx->debug_mask & NFT_DEBUG_MNL)
-			nft_print(ctx->octx, "Failed to open file '%s'\n",
+		if (ctx->nft->debug_mask & NFT_DEBUG_MNL)
+			nft_print(&ctx->nft->output, "Failed to open file '%s'\n",
 				  OS_SIGNATURES);
 
 		return -1;

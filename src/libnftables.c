@@ -40,10 +40,7 @@ static int nft_netlink(struct nft_ctx *nft,
 		ctx.msgs = msgs;
 		ctx.seqnum = cmd->seqnum = mnl_seqnum_alloc(&seqnum);
 		ctx.batch = batch;
-		ctx.octx = &nft->output;
-		ctx.nf_sock = nf_sock;
-		ctx.cache = &nft->cache;
-		ctx.debug_mask = nft->debug_mask;
+		ctx.nft = nft;
 		init_list_head(&ctx.list);
 		ret = do_command(&ctx, cmd);
 		if (ret < 0) {
@@ -480,8 +477,7 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	LIST_HEAD(cmds);
 	int rc;
 
-	rc = cache_update(nft->nf_sock, &nft->cache, CMD_INVALID, &msgs,
-			  nft->debug_mask, &nft->output);
+	rc = cache_update(nft, CMD_INVALID, &msgs);
 	if (rc < 0)
 		return -1;
 

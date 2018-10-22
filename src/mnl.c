@@ -52,13 +52,13 @@ nft_mnl_recv(struct netlink_ctx *ctx, uint32_t portid,
 	char buf[NFT_NLMSG_MAXSIZE];
 	int ret;
 
-	ret = mnl_socket_recvfrom(ctx->nf_sock, buf, sizeof(buf));
+	ret = mnl_socket_recvfrom(ctx->nft->nf_sock, buf, sizeof(buf));
 	while (ret > 0) {
 		ret = mnl_cb_run(buf, ret, ctx->seqnum, portid, cb, cb_data);
 		if (ret <= 0)
 			goto out;
 
-		ret = mnl_socket_recvfrom(ctx->nf_sock, buf, sizeof(buf));
+		ret = mnl_socket_recvfrom(ctx->nft->nf_sock, buf, sizeof(buf));
 	}
 out:
 	if (ret < 0 && errno == EAGAIN)
@@ -71,13 +71,13 @@ int
 nft_mnl_talk(struct netlink_ctx *ctx, const void *data, unsigned int len,
 	     int (*cb)(const struct nlmsghdr *nlh, void *data), void *cb_data)
 {
-	uint32_t portid = mnl_socket_get_portid(ctx->nf_sock);
+	uint32_t portid = mnl_socket_get_portid(ctx->nft->nf_sock);
 
-	if (ctx->debug_mask & NFT_DEBUG_MNL)
-		mnl_nlmsg_fprintf(ctx->octx->output_fp, data, len,
+	if (ctx->nft->debug_mask & NFT_DEBUG_MNL)
+		mnl_nlmsg_fprintf(ctx->nft->output.output_fp, data, len,
 				  sizeof(struct nfgenmsg));
 
-	if (mnl_socket_sendto(ctx->nf_sock, data, len) < 0)
+	if (mnl_socket_sendto(ctx->nft->nf_sock, data, len) < 0)
 		return -1;
 
 	return nft_mnl_recv(ctx, portid, cb, cb_data);
@@ -226,23 +226,23 @@ static ssize_t mnl_nft_socket_sendmsg(const struct netlink_ctx *ctx)
 	};
 	uint32_t i;
 
-	mnl_set_sndbuffer(ctx->nf_sock, ctx->batch);
+	mnl_set_sndbuffer(ctx->nft->nf_sock, ctx->batch);
 	nftnl_batch_iovec(ctx->batch, iov, iov_len);
 
 	for (i = 0; i < iov_len; i++) {
-		if (ctx->debug_mask & NFT_DEBUG_MNL) {
-			mnl_nlmsg_fprintf(ctx->octx->output_fp,
+		if (ctx->nft->debug_mask & NFT_DEBUG_MNL) {
+			mnl_nlmsg_fprintf(ctx->nft->output.output_fp,
 					  iov[i].iov_base, iov[i].iov_len,
 					  sizeof(struct nfgenmsg));
 		}
 	}
 
-	return sendmsg(mnl_socket_get_fd(ctx->nf_sock), &msg, 0);
+	return sendmsg(mnl_socket_get_fd(ctx->nft->nf_sock), &msg, 0);
 }
 
 int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
 {
-	struct mnl_socket *nl = ctx->nf_sock;
+	struct mnl_socket *nl = ctx->nft->nf_sock;
 	int ret, fd = mnl_socket_get_fd(nl), portid = mnl_socket_get_portid(nl);
 	char rcv_buf[MNL_SOCKET_BUFFER_SIZE];
 	fd_set readfds;
@@ -328,10 +328,8 @@ int mnl_nft_rule_replace(struct netlink_ctx *ctx, const struct cmd *cmd)
 	struct nlmsghdr *nlh;
 	int err;
 
-	if (ctx->octx->echo) {
-		err = cache_update(ctx->nf_sock, ctx->cache,
-				   CMD_INVALID, ctx->msgs,
-				   ctx->debug_mask, ctx->octx);
+	if (ctx->nft->output.echo) {
+		err = cache_update(ctx->nft, CMD_INVALID, ctx->msgs);
 		if (err < 0)
 			return err;
 

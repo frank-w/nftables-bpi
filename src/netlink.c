@@ -42,7 +42,7 @@
 #include <erec.h>
 #include <iface.h>
 
-#define nft_mon_print(monh, ...) nft_print(monh->ctx->octx, __VA_ARGS__)
+#define nft_mon_print(monh, ...) nft_print(&monh->ctx->nft->output, __VA_ARGS__)
 
 const struct input_descriptor indesc_netlink = {
 	.name	= "netlink",
@@ -387,9 +387,9 @@ struct expr *netlink_alloc_data(const struct location *loc,
 
 void netlink_dump_rule(const struct nftnl_rule *nlr, struct netlink_ctx *ctx)
 {
-	FILE *fp = ctx->octx->output_fp;
+	FILE *fp = ctx->nft->output.output_fp;
 
-	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
+	if (!(ctx->nft->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_rule_fprintf(fp, nlr, 0, 0);
@@ -450,9 +450,9 @@ static int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h)
 
 void netlink_dump_chain(const struct nftnl_chain *nlc, struct netlink_ctx *ctx)
 {
-	FILE *fp = ctx->octx->output_fp;
+	FILE *fp = ctx->nft->output.output_fp;
 
-	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
+	if (!(ctx->nft->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_chain_fprintf(fp, nlc, 0, 0);
@@ -611,9 +611,9 @@ const struct datatype *dtype_map_from_kernel(enum nft_data_types type)
 
 void netlink_dump_set(const struct nftnl_set *nls, struct netlink_ctx *ctx)
 {
-	FILE *fp = ctx->octx->output_fp;
+	FILE *fp = ctx->nft->output.output_fp;
 
-	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
+	if (!(ctx->nft->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_set_fprintf(fp, nls, 0, 0);
@@ -936,7 +936,7 @@ out:
 static int list_setelem_cb(struct nftnl_set_elem *nlse, void *arg)
 {
 	struct netlink_ctx *ctx = arg;
-	return netlink_delinearize_setelem(nlse, ctx->set, ctx->cache);
+	return netlink_delinearize_setelem(nlse, ctx->set, &ctx->nft->cache);
 }
 
 int netlink_list_setelems(struct netlink_ctx *ctx, const struct handle *h,
@@ -1024,9 +1024,9 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 
 void netlink_dump_obj(struct nftnl_obj *nln, struct netlink_ctx *ctx)
 {
-	FILE *fp = ctx->octx->output_fp;
+	FILE *fp = ctx->nft->output.output_fp;
 
-	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
+	if (!(ctx->nft->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_obj_fprintf(fp, nln, 0, 0);
@@ -1149,9 +1149,9 @@ static struct nftnl_flowtable *alloc_nftnl_flowtable(const struct handle *h,
 static void netlink_dump_flowtable(struct nftnl_flowtable *flo,
 				   struct netlink_ctx *ctx)
 {
-	FILE *fp = ctx->octx->output_fp;
+	FILE *fp = ctx->nft->output.output_fp;
 
-	if (!(ctx->debug_mask & NFT_DEBUG_NETLINK) || !fp)
+	if (!(ctx->nft->debug_mask & NFT_DEBUG_NETLINK) || !fp)
 		return;
 
 	nftnl_flowtable_fprintf(fp, flo, 0, 0);
@@ -1591,16 +1591,17 @@ int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 	case NFT_TRACETYPE_RULE:
 		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_LL_HEADER) ||
 		    nftnl_trace_is_set(nlt, NFTNL_TRACE_NETWORK_HEADER))
-			trace_print_packet(nlt, monh->ctx->octx);
+			trace_print_packet(nlt, &monh->ctx->nft->output);
 
 		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_RULE_HANDLE))
-			trace_print_rule(nlt, monh->ctx->octx, monh->cache);
+			trace_print_rule(nlt, &monh->ctx->nft->output,
+					 &monh->ctx->nft->cache);
 		break;
 	case NFT_TRACETYPE_POLICY:
-		trace_print_hdr(nlt, monh->ctx->octx);
+		trace_print_hdr(nlt, &monh->ctx->nft->output);
 
 		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_POLICY)) {
-			trace_print_policy(nlt, monh->ctx->octx);
+			trace_print_policy(nlt, &monh->ctx->nft->output);
 			nft_mon_print(monh, " ");
 		}
 
@@ -1608,14 +1609,14 @@ int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 			trace_print_expr(nlt, NFTNL_TRACE_MARK,
 					 meta_expr_alloc(&netlink_location,
 							 NFT_META_MARK),
-					 monh->ctx->octx);
+					 &monh->ctx->nft->output);
 		nft_mon_print(monh, "\n");
 		break;
 	case NFT_TRACETYPE_RETURN:
-		trace_print_hdr(nlt, monh->ctx->octx);
+		trace_print_hdr(nlt, &monh->ctx->nft->output);
 
 		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_VERDICT)) {
-			trace_print_verdict(nlt, monh->ctx->octx);
+			trace_print_verdict(nlt, &monh->ctx->nft->output);
 			nft_mon_print(monh, " ");
 		}
 
@@ -1623,7 +1624,7 @@ int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 			trace_print_expr(nlt, NFTNL_TRACE_MARK,
 					 meta_expr_alloc(&netlink_location,
 							 NFT_META_MARK),
-					 monh->ctx->octx);
+					 &monh->ctx->nft->output);
 		nft_mon_print(monh, "\n");
 		break;
 	}

@@ -2608,7 +2608,7 @@ struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 
 	memset(&_ctx, 0, sizeof(_ctx));
 	_ctx.msgs = ctx->msgs;
-	_ctx.debug_mask = ctx->debug_mask;
+	_ctx.debug_mask = ctx->nft->debug_mask;
 
 	memset(&h, 0, sizeof(h));
 	h.family = nftnl_rule_get_u32(nlr, NFTNL_RULE_FAMILY);
@@ -2620,7 +2620,7 @@ struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 		h.position.id = nftnl_rule_get_u64(nlr, NFTNL_RULE_POSITION);
 
 	pctx->rule = rule_alloc(&netlink_location, &h);
-	pctx->table = table_lookup(&h, ctx->cache);
+	pctx->table = table_lookup(&h, &ctx->nft->cache);
 	assert(pctx->table != NULL);
 
 	if (nftnl_rule_is_set(nlr, NFTNL_RULE_USERDATA)) {

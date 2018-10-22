@@ -35,26 +35,21 @@ extern const struct location netlink_location;
 /** 
  * struct netlink_ctx
  *
+ * @nft:	nftables context
  * @msgs:	message queue
  * @list:	list of parsed rules/chains/tables
  * @set:	current set
  * @data:	pointer to pass data to callback
  * @seqnum:	sequence number
- * @octx:	output context
- * @debug_mask:	display debugging information
- * @cache:	cache context
  */
 struct netlink_ctx {
-	struct mnl_socket	*nf_sock;
+	struct nft_ctx		*nft;
 	struct list_head	*msgs;
 	struct list_head	list;
 	struct set		*set;
 	const void		*data;
 	uint32_t		seqnum;
 	struct nftnl_batch	*batch;
-	unsigned int		debug_mask;
-	struct output_ctx	*octx;
-	struct nft_cache	*cache;
 };
 
 extern struct nftnl_expr *alloc_nft_expr(const char *name);

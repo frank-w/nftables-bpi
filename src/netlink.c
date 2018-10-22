@@ -73,10 +73,10 @@ void netlink_close_sock(struct mnl_socket *nf_sock)
 		mnl_socket_close(nf_sock);
 }
 
-void netlink_restart(struct mnl_socket *nf_sock)
+struct mnl_socket *netlink_restart(struct mnl_socket *nf_sock)
 {
 	netlink_close_sock(nf_sock);
-	nf_sock = netlink_open_sock();
+	return netlink_open_sock();
 }
 
 void __noreturn __netlink_abi_error(const char *file, int line,

@@ -229,7 +229,6 @@ int cache_update(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
 		.msgs		= msgs,
 		.nft		= nft,
 	};
-	struct mnl_socket *nf_sock = nft->nf_sock;
 	struct nft_cache *cache = &nft->cache;
 
 replay:
@@ -244,7 +243,7 @@ replay:
 	if (ret < 0) {
 		cache_release(cache);
 		if (errno == EINTR) {
-			netlink_restart(nf_sock);
+			nft->nf_sock = netlink_restart(nft->nf_sock);
 			goto replay;
 		}
 		return -1;

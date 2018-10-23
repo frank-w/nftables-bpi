@@ -1415,7 +1415,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_CT_TIMEOUT:
 	case CMD_OBJ_LIMIT:
 	case CMD_OBJ_SECMARK:
-		return netlink_add_obj(ctx, cmd, flags);
+		return mnl_nft_obj_add(ctx, cmd, flags);
 	case CMD_OBJ_FLOWTABLE:
 		return netlink_add_flowtable(ctx, cmd, flags);
 	default:
@@ -1493,18 +1493,17 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SETELEM:
 		return do_delete_setelems(ctx, cmd);
 	case CMD_OBJ_COUNTER:
-		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_COUNTER);
+		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_COUNTER);
 	case CMD_OBJ_QUOTA:
-		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_QUOTA);
+		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_QUOTA);
 	case CMD_OBJ_CT_HELPER:
-		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_CT_HELPER);
+		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_CT_HELPER);
 	case CMD_OBJ_CT_TIMEOUT:
-		return netlink_delete_obj(ctx, cmd,
-					  NFT_OBJECT_CT_TIMEOUT);
+		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_CT_TIMEOUT);
 	case CMD_OBJ_LIMIT:
-		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_LIMIT);
+		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_LIMIT);
 	case CMD_OBJ_SECMARK:
-		return netlink_delete_obj(ctx, cmd, NFT_OBJECT_SECMARK);
+		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_SECMARK);
 	case CMD_OBJ_FLOWTABLE:
 		return netlink_delete_flowtable(ctx, cmd);
 	default:

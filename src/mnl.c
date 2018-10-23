@@ -902,32 +902,107 @@ err:
 	return NULL;
 }
 
-int mnl_nft_obj_batch_add(struct nftnl_obj *nln, struct nftnl_batch *batch,
-			  unsigned int flags, uint32_t seqnum)
+int mnl_nft_obj_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		    unsigned int flags)
 {
+	struct obj *obj = cmd->object;
+	struct nftnl_obj *nlo;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
-				    NFT_MSG_NEWOBJ,
-				    nftnl_obj_get_u32(nln, NFTNL_OBJ_FAMILY),
-				    NLM_F_CREATE | flags, seqnum);
-	nftnl_obj_nlmsg_build_payload(nlh, nln);
-	mnl_nft_batch_continue(batch);
+	nlo = nftnl_obj_alloc();
+	if (!nlo)
+		memory_allocation_error();
+
+	nftnl_obj_set_u32(nlo, NFTNL_OBJ_FAMILY, cmd->handle.family);
+	nftnl_obj_set_str(nlo, NFTNL_OBJ_TABLE, cmd->handle.table.name);
+	nftnl_obj_set_str(nlo, NFTNL_OBJ_NAME, cmd->handle.obj.name);
+	nftnl_obj_set_u32(nlo, NFTNL_OBJ_TYPE, obj->type);
+
+	switch (obj->type) {
+	case NFT_OBJECT_COUNTER:
+		nftnl_obj_set_u64(nlo, NFTNL_OBJ_CTR_PKTS,
+				  obj->counter.packets);
+		nftnl_obj_set_u64(nlo, NFTNL_OBJ_CTR_BYTES,
+				  obj->counter.bytes);
+                break;
+	case NFT_OBJECT_QUOTA:
+		nftnl_obj_set_u64(nlo, NFTNL_OBJ_QUOTA_BYTES,
+				  obj->quota.bytes);
+		nftnl_obj_set_u64(nlo, NFTNL_OBJ_QUOTA_CONSUMED,
+				  obj->quota.used);
+		nftnl_obj_set_u32(nlo, NFTNL_OBJ_QUOTA_FLAGS,
+				  obj->quota.flags);
+		break;
+	case NFT_OBJECT_LIMIT:
+		nftnl_obj_set_u64(nlo, NFTNL_OBJ_LIMIT_RATE, obj->limit.rate);
+		nftnl_obj_set_u64(nlo, NFTNL_OBJ_LIMIT_UNIT, obj->limit.unit);
+		nftnl_obj_set_u32(nlo, NFTNL_OBJ_LIMIT_BURST, obj->limit.burst);
+		nftnl_obj_set_u32(nlo, NFTNL_OBJ_LIMIT_TYPE, obj->limit.type);
+		nftnl_obj_set_u32(nlo, NFTNL_OBJ_LIMIT_FLAGS, obj->limit.flags);
+		break;
+	case NFT_OBJECT_CT_HELPER:
+		nftnl_obj_set_str(nlo, NFTNL_OBJ_CT_HELPER_NAME,
+				  obj->ct_helper.name);
+		nftnl_obj_set_u8(nlo, NFTNL_OBJ_CT_HELPER_L4PROTO,
+				 obj->ct_helper.l4proto);
+		if (obj->ct_helper.l3proto)
+			nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_HELPER_L3PROTO,
+					  obj->ct_helper.l3proto);
+		break;
+	case NFT_OBJECT_CT_TIMEOUT:
+		nftnl_obj_set_u8(nlo, NFTNL_OBJ_CT_TIMEOUT_L4PROTO,
+				 obj->ct_timeout.l4proto);
+		if (obj->ct_timeout.l3proto)
+			nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_TIMEOUT_L3PROTO,
+					  obj->ct_timeout.l3proto);
+		nftnl_obj_set(nlo, NFTNL_OBJ_CT_TIMEOUT_ARRAY,
+			      obj->ct_timeout.timeout);
+		break;
+	case NFT_OBJECT_SECMARK:
+		nftnl_obj_set_str(nlo, NFTNL_OBJ_SECMARK_CTX,
+				  obj->secmark.ctx);
+		break;
+	default:
+		BUG("Unknown type %d\n", obj->type);
+		break;
+	}
+	netlink_dump_obj(nlo, ctx);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
+				    NFT_MSG_NEWOBJ, cmd->handle.family,
+				    NLM_F_CREATE | flags, ctx->seqnum);
+	nftnl_obj_nlmsg_build_payload(nlh, nlo);
+	nftnl_obj_free(nlo);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }
 
-int mnl_nft_obj_batch_del(struct nftnl_obj *nln, struct nftnl_batch *batch,
-			  unsigned int flags, uint32_t seqnum)
+int mnl_nft_obj_del(struct netlink_ctx *ctx, const struct cmd *cmd, int type)
 {
+	struct nftnl_obj *nlo;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
-				    NFT_MSG_DELOBJ,
-				    nftnl_obj_get_u32(nln, NFTNL_OBJ_FAMILY),
-				    flags, seqnum);
-	nftnl_obj_nlmsg_build_payload(nlh, nln);
-	mnl_nft_batch_continue(batch);
+	nlo = nftnl_obj_alloc();
+	if (!nlo)
+		memory_allocation_error();
+
+	nftnl_obj_set_u32(nlo, NFTNL_OBJ_FAMILY, cmd->handle.family);
+	nftnl_obj_set_str(nlo, NFTNL_OBJ_TABLE, cmd->handle.table.name);
+	nftnl_obj_set_u32(nlo, NFTNL_OBJ_TYPE, type);
+	if (cmd->handle.obj.name)
+		nftnl_obj_set_str(nlo, NFTNL_OBJ_NAME, cmd->handle.obj.name);
+	else if (cmd->handle.handle.id)
+		nftnl_obj_set_u64(nlo, NFTNL_OBJ_HANDLE, cmd->handle.handle.id);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
+				    NFT_MSG_DELOBJ, cmd->handle.family,
+				    0, ctx->seqnum);
+	nftnl_obj_nlmsg_build_payload(nlh, nlo);
+	nftnl_obj_free(nlo);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }

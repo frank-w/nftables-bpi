@@ -131,10 +131,6 @@ extern int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 extern int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h);
 extern int netlink_reset_objs(struct netlink_ctx *ctx, const struct cmd *cmd,
 			      uint32_t type, bool dump);
-extern int netlink_add_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
-			   uint32_t flags);
-extern int netlink_delete_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
-			      uint32_t type);
 extern struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 					   struct nftnl_obj *nlo);
 

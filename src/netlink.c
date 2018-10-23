@@ -175,84 +175,6 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 	return nlse;
 }
 
-static struct nftnl_obj *
-__alloc_nftnl_obj(const struct handle *h, uint32_t type)
-{
-	struct nftnl_obj *nlo;
-
-	nlo = nftnl_obj_alloc();
-	if (nlo == NULL)
-		memory_allocation_error();
-
-	nftnl_obj_set_u32(nlo, NFTNL_OBJ_FAMILY, h->family);
-	nftnl_obj_set_str(nlo, NFTNL_OBJ_TABLE, h->table.name);
-	if (h->obj.name != NULL)
-		nftnl_obj_set_str(nlo, NFTNL_OBJ_NAME, h->obj.name);
-
-	nftnl_obj_set_u32(nlo, NFTNL_OBJ_TYPE, type);
-	if (h->handle.id)
-		nftnl_obj_set_u64(nlo, NFTNL_OBJ_HANDLE, h->handle.id);
-
-	return nlo;
-}
-
-static struct nftnl_obj *
-alloc_nftnl_obj(const struct handle *h, struct obj *obj)
-{
-	struct nftnl_obj *nlo;
-
-	nlo = __alloc_nftnl_obj(h, obj->type);
-
-	switch (obj->type) {
-	case NFT_OBJECT_COUNTER:
-		nftnl_obj_set_u64(nlo, NFTNL_OBJ_CTR_PKTS,
-				  obj->counter.packets);
-		nftnl_obj_set_u64(nlo, NFTNL_OBJ_CTR_BYTES,
-				  obj->counter.bytes);
-		break;
-	case NFT_OBJECT_QUOTA:
-		nftnl_obj_set_u64(nlo, NFTNL_OBJ_QUOTA_BYTES,
-				  obj->quota.bytes);
-		nftnl_obj_set_u64(nlo, NFTNL_OBJ_QUOTA_CONSUMED,
-				  obj->quota.used);
-		nftnl_obj_set_u32(nlo, NFTNL_OBJ_QUOTA_FLAGS,
-				  obj->quota.flags);
-		break;
-	case NFT_OBJECT_SECMARK:
-		nftnl_obj_set_str(nlo, NFTNL_OBJ_SECMARK_CTX,
-				  obj->secmark.ctx);
-		break;
-	case NFT_OBJECT_CT_HELPER:
-		nftnl_obj_set_str(nlo, NFTNL_OBJ_CT_HELPER_NAME,
-				  obj->ct_helper.name);
-		nftnl_obj_set_u8(nlo, NFTNL_OBJ_CT_HELPER_L4PROTO,
-				  obj->ct_helper.l4proto);
-		if (obj->ct_helper.l3proto)
-			nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_HELPER_L3PROTO,
-					  obj->ct_helper.l3proto);
-		break;
-	case NFT_OBJECT_CT_TIMEOUT:
-		nftnl_obj_set_u8(nlo, NFTNL_OBJ_CT_TIMEOUT_L4PROTO,
-				  obj->ct_timeout.l4proto);
-		if (obj->ct_timeout.l3proto)
-			nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_TIMEOUT_L3PROTO,
-					  obj->ct_timeout.l3proto);
-		nftnl_obj_set(nlo, NFTNL_OBJ_CT_TIMEOUT_ARRAY, obj->ct_timeout.timeout);
-		break;
-	case NFT_OBJECT_LIMIT:
-		nftnl_obj_set_u64(nlo, NFTNL_OBJ_LIMIT_RATE, obj->limit.rate);
-		nftnl_obj_set_u64(nlo, NFTNL_OBJ_LIMIT_UNIT, obj->limit.unit);
-		nftnl_obj_set_u32(nlo, NFTNL_OBJ_LIMIT_BURST, obj->limit.burst);
-		nftnl_obj_set_u32(nlo, NFTNL_OBJ_LIMIT_TYPE, obj->limit.type);
-		nftnl_obj_set_u32(nlo, NFTNL_OBJ_LIMIT_FLAGS, obj->limit.flags);
-		break;
-	default:
-		BUG("Unknown type %d\n", obj->type);
-		break;
-	}
-	return nlo;
-}
-
 void netlink_gen_raw_data(const mpz_t value, enum byteorder byteorder,
 			  unsigned int len, struct nft_data_linearize *data)
 {
@@ -1004,36 +926,6 @@ void netlink_dump_obj(struct nftnl_obj *nln, struct netlink_ctx *ctx)
 
 	nftnl_obj_fprintf(fp, nln, 0, 0);
 	fprintf(fp, "\n");
-}
-
-int netlink_add_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
-		    uint32_t flags)
-{
-	struct nftnl_obj *nlo;
-	int err;
-
-	nlo = alloc_nftnl_obj(&cmd->handle, cmd->object);
-	netlink_dump_obj(nlo, ctx);
-
-	err = mnl_nft_obj_batch_add(nlo, ctx->batch, flags, ctx->seqnum);
-	nftnl_obj_free(nlo);
-
-	return err;
-}
-
-int netlink_delete_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
-		       uint32_t type)
-{
-	struct nftnl_obj *nlo;
-	int err;
-
-	nlo = __alloc_nftnl_obj(&cmd->handle, type);
-	netlink_dump_obj(nlo, ctx);
-
-	err = mnl_nft_obj_batch_del(nlo, ctx->batch, 0, ctx->seqnum);
-	nftnl_obj_free(nlo);
-
-	return err;
 }
 
 struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,

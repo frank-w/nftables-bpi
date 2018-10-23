@@ -70,10 +70,9 @@ struct nftnl_obj_list *mnl_nft_obj_dump(struct netlink_ctx *ctx, int family,
 					const char *table,
 					const char *name, uint32_t type,
 					bool dump, bool reset);
-int mnl_nft_obj_batch_add(struct nftnl_obj *nln, struct nftnl_batch *batch,
-			  unsigned int flags, uint32_t seqnum);
-int mnl_nft_obj_batch_del(struct nftnl_obj *nln, struct nftnl_batch *batch,
-			  unsigned int flags, uint32_t seqnum);
+int mnl_nft_obj_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+		    unsigned int flags);
+int mnl_nft_obj_del(struct netlink_ctx *ctx, const struct cmd *cmd, int type);
 
 struct nftnl_flowtable_list *
 mnl_nft_flowtable_dump(struct netlink_ctx *ctx, int family, const char *table);

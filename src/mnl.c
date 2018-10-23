@@ -660,7 +660,7 @@ int mnl_nft_table_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 	nftnl_table_set_u32(nlt, NFTNL_TABLE_FAMILY, cmd->handle.family);
 	if (cmd->handle.table.name)
 		nftnl_table_set(nlt, NFTNL_TABLE_NAME, cmd->handle.table.name);
-	if (cmd->handle.handle.id)
+	else if (cmd->handle.handle.id)
 		nftnl_table_set_u64(nlt, NFTNL_TABLE_HANDLE,
 				    cmd->handle.handle.id);
 
@@ -830,7 +830,7 @@ int mnl_nft_set_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
 	if (h->set.name)
 		nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
-	if (h->handle.id)
+	else if (h->handle.id)
 		nftnl_set_set_u64(nls, NFTNL_SET_HANDLE, h->handle.id);
 
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
@@ -1189,8 +1189,9 @@ int mnl_nft_setelem_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 
 	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
 	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
-	nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
-	if (h->handle.id)
+	if (h->set.name)
+		nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
+	else if (h->handle.id)
 		nftnl_set_set_u64(nls, NFTNL_SET_HANDLE, h->handle.id);
 
 	if (cmd->expr)

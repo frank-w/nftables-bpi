@@ -15,12 +15,14 @@
 #include <inttypes.h>
 #include <syslog.h>
 #include <netinet/ip.h>
+#include <netinet/tcp.h>
 #include <netinet/if_ether.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter/nf_tables.h>
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
 #include <linux/netfilter/nf_nat.h>
 #include <linux/netfilter/nf_log.h>
+#include <linux/netfilter/nfnetlink_osf.h>
 #include <linux/xfrm.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/icmp6.h>
@@ -740,6 +742,7 @@ int nft_lex(void *, void *, void *);
 %type <val>			fib_tuple	fib_result	fib_flag
 
 %type <expr>			osf_expr
+%type <val>			osf_ttl
 %destructor { expr_free($$); }	osf_expr
 
 %type <val>			markup_format
@@ -3173,9 +3176,27 @@ fib_tuple		:  	fib_flag	DOT	fib_tuple
 			|	fib_flag
 			;
 
-osf_expr		:	OSF	NAME
+osf_expr		:	OSF	osf_ttl		NAME
 			{
-				$$ = osf_expr_alloc(&@$);
+				$$ = osf_expr_alloc(&@$, $2);
+			}
+			;
+
+osf_ttl			:	/* empty */
+			{
+				$$ = NF_OSF_TTL_TRUE;
+			}
+			|	TTL	STRING
+			{
+				if (!strcmp($2, "loose"))
+					$$ = NF_OSF_TTL_LESS;
+				else if (!strcmp($2, "skip"))
+					$$ = NF_OSF_TTL_NOCHECK;
+				else {
+					erec_queue(error(&@2, "invalid ttl option"),
+						   state->msgs);
+					YYERROR;
+				}
 			}
 			;
 

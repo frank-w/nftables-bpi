@@ -5,6 +5,9 @@
 *inet;osfinet;osfchain
 
 osf name "Linux";ok
+osf ttl loose name "Linux";ok
+osf ttl skip name "Linux";ok
+osf ttl nottl name "Linux";fail
 osf name "morethansixteenbytes";fail
 osf name ;fail
 osf name { "Windows", "MacOs" };ok

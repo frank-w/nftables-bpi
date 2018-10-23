@@ -376,12 +376,13 @@ static struct expr *json_parse_osf_expr(struct json_ctx *ctx,
 					const char *type, json_t *root)
 {
 	const char *key;
+	uint8_t ttl;
 
-	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
+	if (json_unpack_err(ctx, root, "{s:i, s:s}", "ttl", ttl,"key", &key))
 		return NULL;
 
 	if (!strcmp(key, "name"))
-		return osf_expr_alloc(int_loc);
+		return osf_expr_alloc(int_loc, ttl);
 
 	json_error(ctx, "Invalid osf key value.");
 	return NULL;

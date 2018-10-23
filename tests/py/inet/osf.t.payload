@@ -13,19 +13,83 @@ inet osfinet osfchain
   [ osf dreg 1 ]
   [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
 
+# osf ttl loose name "Linux"
+ip osfip osfchain
+  [ osf dreg 1 ]
+  [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# osf ttl loose name "Linux"
+ip6 osfip6 osfchain
+  [ osf dreg 1 ]
+  [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# osf ttl loose name "Linux"
+inet osfinet osfchain
+  [ osf dreg 1 ]
+  [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# osf ttl skip name "Linux"
+ip osfip osfchain
+  [ osf dreg 1 ]
+  [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# osf ttl skip name "Linux"
+ip6 osfip6 osfchain
+  [ osf dreg 1 ]
+  [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# osf ttl skip name "Linux"
+inet osfinet osfchain
+  [ osf dreg 1 ]
+  [ cmp eq reg 1 0x756e694c 0x00000078 0x00000000 0x00000000 ]
+
+# osf name { "Windows", "MacOs" }
+__set%d osfip 3 size 2
+__set%d osfip 0
+	element 646e6957 0073776f 00000000 00000000  : 0 [end]	element 4f63614d 00000073 00000000 00000000  : 0 [end]
+ip osfip osfchain
+  [ osf dreg 1 ]
+  [ lookup reg 1 set __set%d ]
+
+# osf name { "Windows", "MacOs" }
+__set%d osfip6 3 size 2
+__set%d osfip6 0
+	element 646e6957 0073776f 00000000 00000000  : 0 [end]	element 4f63614d 00000073 00000000 00000000  : 0 [end]
+ip6 osfip6 osfchain
+  [ osf dreg 1 ]
+  [ lookup reg 1 set __set%d ]
+
 # osf name { "Windows", "MacOs" }
 __set%d osfinet 3 size 2
 __set%d osfinet 0
 	element 646e6957 0073776f 00000000 00000000  : 0 [end]	element 4f63614d 00000073 00000000 00000000  : 0 [end]
-inet osfinet osfchain 
+inet osfinet osfchain
   [ osf dreg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # ct mark set osf name map { "Windows" : 0x00000001, "MacOs" : 0x00000002 }
 __map%d osfip b size 2
 __map%d osfip 0
-        element 646e6957 0073776f 00000000 00000000  : 00000001 0 [end] element 4f63614d 00000073 00000000 00000000  : 00000002 0 [end]
+	element 646e6957 0073776f 00000000 00000000  : 00000001 0 [end]	element 4f63614d 00000073 00000000 00000000  : 00000002 0 [end]
 ip osfip osfchain
+  [ osf dreg 1 ]
+  [ lookup reg 1 set __map%d dreg 1 ]
+  [ ct set mark with reg 1 ]
+
+# ct mark set osf name map { "Windows" : 0x00000001, "MacOs" : 0x00000002 }
+__map%d osfip6 b size 2
+__map%d osfip6 0
+	element 646e6957 0073776f 00000000 00000000  : 00000001 0 [end]	element 4f63614d 00000073 00000000 00000000  : 00000002 0 [end]
+ip6 osfip6 osfchain
+  [ osf dreg 1 ]
+  [ lookup reg 1 set __map%d dreg 1 ]
+  [ ct set mark with reg 1 ]
+
+# ct mark set osf name map { "Windows" : 0x00000001, "MacOs" : 0x00000002 }
+__map%d osfinet b size 2
+__map%d osfinet 0
+	element 646e6957 0073776f 00000000 00000000  : 00000001 0 [end]	element 4f63614d 00000073 00000000 00000000  : 00000002 0 [end]
+inet osfinet osfchain
   [ osf dreg 1 ]
   [ lookup reg 1 set __map%d dreg 1 ]
   [ ct set mark with reg 1 ]

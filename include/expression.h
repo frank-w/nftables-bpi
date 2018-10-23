@@ -345,6 +345,10 @@ struct expr {
 			uint8_t		direction;
 			uint8_t		spnum;
 		} xfrm;
+		struct {
+			/* EXPR_OSF */
+			uint8_t			ttl;
+		} osf;
 	};
 };
 

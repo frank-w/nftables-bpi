@@ -857,7 +857,7 @@ json_t *socket_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *osf_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
-	return json_pack("{s:{s:s}}", "osf", "key", "name");
+	return json_pack("{s:{s:i, s:s}}", "osf", "ttl", expr->osf.ttl, "key", "name");
 }
 
 json_t *xfrm_expr_json(const struct expr *expr, struct output_ctx *octx)

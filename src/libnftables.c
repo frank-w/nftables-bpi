@@ -129,7 +129,7 @@ void nft_ctx_clear_include_paths(struct nft_ctx *ctx)
 
 static void nft_ctx_netlink_init(struct nft_ctx *ctx)
 {
-	ctx->nf_sock = netlink_open_sock();
+	ctx->nf_sock = nft_mnl_socket_open();
 }
 
 struct nft_ctx *nft_ctx_new(uint32_t flags)
@@ -266,7 +266,7 @@ const char *nft_ctx_get_error_buffer(struct nft_ctx *ctx)
 void nft_ctx_free(struct nft_ctx *ctx)
 {
 	if (ctx->nf_sock)
-		netlink_close_sock(ctx->nf_sock);
+		mnl_socket_close(ctx->nf_sock);
 
 	exit_cookie(&ctx->output.output_cookie);
 	exit_cookie(&ctx->output.error_cookie);

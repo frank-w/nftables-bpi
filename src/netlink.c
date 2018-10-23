@@ -10,7 +10,6 @@
  */
 
 #include <string.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <libmnl/libmnl.h>
 #include <netinet/in.h>
@@ -52,32 +51,6 @@ const struct input_descriptor indesc_netlink = {
 const struct location netlink_location = {
 	.indesc	= &indesc_netlink,
 };
-
-struct mnl_socket *netlink_open_sock(void)
-{
-	struct mnl_socket *nf_sock;
-
-	nf_sock = mnl_socket_open(NETLINK_NETFILTER);
-	if (nf_sock == NULL)
-		netlink_init_error();
-
-	if (fcntl(mnl_socket_get_fd(nf_sock), F_SETFL, O_NONBLOCK))
-		netlink_init_error();
-
-	return nf_sock;
-}
-
-void netlink_close_sock(struct mnl_socket *nf_sock)
-{
-	if (nf_sock)
-		mnl_socket_close(nf_sock);
-}
-
-struct mnl_socket *netlink_restart(struct mnl_socket *nf_sock)
-{
-	netlink_close_sock(nf_sock);
-	return netlink_open_sock();
-}
 
 void __noreturn __netlink_abi_error(const char *file, int line,
 				    const char *reason)

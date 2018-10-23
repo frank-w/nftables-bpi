@@ -28,9 +28,31 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <utils.h>
 #include <nftables.h>
+
+struct mnl_socket *nft_mnl_socket_open(void)
+{
+	struct mnl_socket *nf_sock;
+
+	nf_sock = mnl_socket_open(NETLINK_NETFILTER);
+	if (!nf_sock)
+		netlink_init_error();
+
+	if (fcntl(mnl_socket_get_fd(nf_sock), F_SETFL, O_NONBLOCK))
+		netlink_init_error();
+
+	return nf_sock;
+}
+
+struct mnl_socket *nft_mnl_socket_reopen(struct mnl_socket *nf_sock)
+{
+	mnl_socket_close(nf_sock);
+
+	return nft_mnl_socket_open();
+}
 
 uint32_t mnl_seqnum_alloc(unsigned int *seqnum)
 {

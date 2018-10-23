@@ -6,8 +6,8 @@
 #include <rule.h>
 #include <libmnl/libmnl.h>
 
-struct mnl_socket *netlink_open_sock(void);
-void netlink_close_sock(struct mnl_socket *nf_sock);
+struct mnl_socket *nft_mnl_socket_open(void);
+struct mnl_socket *nft_mnl_socket_reopen(struct mnl_socket *nf_sock);
 
 uint32_t mnl_seqnum_alloc(uint32_t *seqnum);
 uint16_t mnl_genid_get(struct netlink_ctx *ctx);

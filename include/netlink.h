@@ -157,7 +157,6 @@ extern void netlink_dump_obj(struct nftnl_obj *nlo, struct netlink_ctx *ctx);
 
 extern int netlink_batch_send(struct netlink_ctx *ctx, struct list_head *err_list);
 
-extern struct mnl_socket *netlink_restart(struct mnl_socket *nf_sock);
 #define netlink_abi_error()	\
 	__netlink_abi_error(__FILE__, __LINE__, strerror(errno));
 extern void __noreturn __netlink_abi_error(const char *file, int line, const char *reason);

@@ -1425,8 +1425,11 @@ int mnl_nft_event_listener(struct mnl_socket *nf_sock, unsigned int debug_mask,
 		 */
 		ret = setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &bufsiz,
 				 sizeof(socklen_t));
-		nft_print(octx, "# Cannot set up netlink socket buffer size to %u bytes, falling back to %u bytes\n",
-			  NFTABLES_NLEVENT_BUFSIZ, bufsiz);
+		if (ret < 0)
+			nft_print(octx, "# Cannot increase netlink socket buffer size, expect message loss\n");
+		else
+			nft_print(octx, "# Cannot set up netlink socket buffer size to %u bytes, falling back to %u bytes\n",
+				  NFTABLES_NLEVENT_BUFSIZ, bufsiz);
 	}
 
 	while (1) {

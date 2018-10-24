@@ -4,8 +4,39 @@
         "match": {
             "left": {
                 "osf": {
-                    "ttl": 0,
                     "key": "name"
+                }
+            },
+            "op": "==",
+            "right": "Linux"
+        }
+    }
+]
+
+# osf ttl loose name "Linux"
+[
+    {
+        "match": {
+            "left": {
+                "osf": {
+                    "key": "name",
+                    "ttl": "loose"
+                }
+            },
+            "op": "==",
+            "right": "Linux"
+        }
+    }
+]
+
+# osf ttl skip name "Linux"
+[
+    {
+        "match": {
+            "left": {
+                "osf": {
+                    "key": "name",
+                    "ttl": "skip"
                 }
             },
             "op": "==",
@@ -20,7 +51,6 @@
         "match": {
             "left": {
                 "osf": {
-                    "ttl": 0,
                     "key": "name"
                 }
             },
@@ -60,7 +90,6 @@
                     },
                     "key": {
                         "osf": {
-                            "ttl": 0,
                             "key": "name"
                         }
                     }

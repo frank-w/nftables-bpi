@@ -1288,3 +1288,27 @@ ____
 ____
 
 Construct a reference to packet's socket.
+
+=== OSF
+[verse]
+____
+*{ "osf": {
+	"key":* 'OSF_KEY'*,
+	"ttl":* 'OSF_TTL'
+*}}*
+
+'OSF_KEY' := *"name"*
+'OSF_TTL' := *"loose"* | *"skip"*
+____
+
+Perform OS fingerprinting. This expression is typically used in LHS of a *match*
+statement.
+
+*key*::
+	What part of the fingerprint info to match against. At this point, only
+	the OS name is supported.
+*ttl*::
+	Define how packet's TTL value is to be matched. This property is
+	optional. If omitted, TTL value has to match exactly. A value of *loose*
+	accepts TTL values less than the fingerprint one. A value of *skip*
+	omits TTL value comparison entirely.

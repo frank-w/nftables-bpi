@@ -375,14 +375,25 @@ static struct expr *json_parse_meta_expr(struct json_ctx *ctx,
 static struct expr *json_parse_osf_expr(struct json_ctx *ctx,
 					const char *type, json_t *root)
 {
-	const char *key;
-	uint8_t ttl;
+	const char *key, *ttl;
+	uint8_t ttlval = 0;
 
-	if (json_unpack_err(ctx, root, "{s:i, s:s}", "ttl", ttl,"key", &key))
+	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
 		return NULL;
 
+	if (!json_unpack(root, "{s:s}", "ttl", &ttl)) {
+		if (!strcmp(ttl, "loose")) {
+			ttlval = 1;
+		} else if (!strcmp(ttl, "skip")) {
+			ttlval = 2;
+		} else {
+			json_error(ctx, "Invalid osf ttl option '%s'.", ttl);
+			return NULL;
+		}
+	}
+
 	if (!strcmp(key, "name"))
-		return osf_expr_alloc(int_loc, ttl);
+		return osf_expr_alloc(int_loc, ttlval);
 
 	json_error(ctx, "Invalid osf key value.");
 	return NULL;

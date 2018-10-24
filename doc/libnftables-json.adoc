@@ -998,6 +998,13 @@ Assign connection tracking timeout policy.
 *ct timeout*::
 	CT timeout reference.
 
+=== XT
+[verse]
+*{ "xt": null }*
+
+This represents an xt statement from xtables compat interface. Sadly, at this
+point it is not possible to provide any further information about its content.
+
 == EXPRESSIONS
 Expressions are the building blocks of (most) statements. In their most basic
 form, they are just immediate values represented as JSON string, integer or

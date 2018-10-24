@@ -166,6 +166,12 @@ static json_t *stmt_print_json(const struct stmt *stmt, struct output_ctx *octx)
 	char buf[1024];
 	FILE *fp;
 
+	/* XXX: Can't be supported at this point:
+	 * xt_stmt_xlate() ignores output_fp.
+	 */
+	if (stmt->ops->type == STMT_XT)
+		return json_pack("{s:n}", "xt");
+
 	if (stmt->ops->json)
 		return stmt->ops->json(stmt, octx);
 

@@ -587,7 +587,7 @@ extern void cmd_free(struct cmd *cmd);
 /**
  * struct eval_ctx - evaluation context
  *
- * @nf_sock:	netlink socket (for caching)
+ * @nft:	nftables context
  * @msgs:	message queue
  * @cmd:	current command
  * @table:	current table

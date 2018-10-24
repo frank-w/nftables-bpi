@@ -1306,34 +1306,72 @@ err:
 	return NULL;
 }
 
-int mnl_nft_flowtable_batch_add(struct nftnl_flowtable *flo,
-				struct nftnl_batch *batch, unsigned int flags,
-				uint32_t seqnum)
+int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+			  unsigned int flags)
 {
+	struct nftnl_flowtable *flo;
+	const char *dev_array[8];
 	struct nlmsghdr *nlh;
+	struct expr *expr;
+	int i = 0;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
-				    NFT_MSG_NEWFLOWTABLE,
-				    nftnl_flowtable_get_u32(flo, NFTNL_FLOWTABLE_FAMILY),
-				    NLM_F_CREATE | flags, seqnum);
+	flo = nftnl_flowtable_alloc();
+	if (!flo)
+		memory_allocation_error();
+
+	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FAMILY,
+				cmd->handle.family);
+	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_TABLE,
+				cmd->handle.table.name);
+	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_NAME,
+				cmd->handle.flowtable);
+	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM,
+				cmd->flowtable->hooknum);
+	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO,
+				cmd->flowtable->priority.num);
+
+	list_for_each_entry(expr, &cmd->flowtable->dev_expr->expressions, list)
+		dev_array[i++] = expr->identifier;
+
+	dev_array[i] = NULL;
+	nftnl_flowtable_set(flo, NFTNL_FLOWTABLE_DEVICES, dev_array);
+
+	netlink_dump_flowtable(flo, ctx);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
+				    NFT_MSG_NEWFLOWTABLE, cmd->handle.family,
+				    NLM_F_CREATE | flags, ctx->seqnum);
 	nftnl_flowtable_nlmsg_build_payload(nlh, flo);
-	mnl_nft_batch_continue(batch);
+	nftnl_flowtable_free(flo);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }
 
-int mnl_nft_flowtable_batch_del(struct nftnl_flowtable *flo,
-				struct nftnl_batch *batch, unsigned int flags,
-				uint32_t seqnum)
+int mnl_nft_flowtable_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 {
+	struct nftnl_flowtable *flo;
 	struct nlmsghdr *nlh;
 
-	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(batch),
-				    NFT_MSG_DELFLOWTABLE,
-				    nftnl_flowtable_get_u32(flo, NFTNL_FLOWTABLE_FAMILY),
-				    flags, seqnum);
+	flo = nftnl_flowtable_alloc();
+	if (!flo)
+		memory_allocation_error();
+
+	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FAMILY,
+				cmd->handle.family);
+	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_TABLE,
+				cmd->handle.table.name);
+	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_NAME,
+				cmd->handle.flowtable);
+
+	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
+				    NFT_MSG_DELFLOWTABLE, cmd->handle.family,
+				    0, ctx->seqnum);
 	nftnl_flowtable_nlmsg_build_payload(nlh, flo);
-	mnl_nft_batch_continue(batch);
+	nftnl_flowtable_free(flo);
+
+	mnl_nft_batch_continue(ctx->batch);
 
 	return 0;
 }

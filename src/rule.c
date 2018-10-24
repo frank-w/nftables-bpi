@@ -1417,7 +1417,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_SECMARK:
 		return mnl_nft_obj_add(ctx, cmd, flags);
 	case CMD_OBJ_FLOWTABLE:
-		return netlink_add_flowtable(ctx, cmd, flags);
+		return mnl_nft_flowtable_add(ctx, cmd, flags);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}
@@ -1505,7 +1505,7 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SECMARK:
 		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_SECMARK);
 	case CMD_OBJ_FLOWTABLE:
-		return netlink_delete_flowtable(ctx, cmd);
+		return mnl_nft_flowtable_del(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

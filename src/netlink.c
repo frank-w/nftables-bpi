@@ -994,25 +994,8 @@ struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 	return obj;
 }
 
-static struct nftnl_flowtable *alloc_nftnl_flowtable(const struct handle *h,
-						     const struct flowtable *ft)
-{
-	struct nftnl_flowtable *flo;
-
-	flo = nftnl_flowtable_alloc();
-	if (flo == NULL)
-		memory_allocation_error();
-
-	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FAMILY, h->family);
-	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_TABLE, h->table.name);
-	if (h->flowtable != NULL)
-		nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_NAME, h->flowtable);
-
-	return flo;
-}
-
-static void netlink_dump_flowtable(struct nftnl_flowtable *flo,
-				   struct netlink_ctx *ctx)
+void netlink_dump_flowtable(struct nftnl_flowtable *flo,
+			    struct netlink_ctx *ctx)
 {
 	FILE *fp = ctx->nft->output.output_fp;
 
@@ -1021,47 +1004,6 @@ static void netlink_dump_flowtable(struct nftnl_flowtable *flo,
 
 	nftnl_flowtable_fprintf(fp, flo, 0, 0);
 	fprintf(fp, "\n");
-}
-
-int netlink_add_flowtable(struct netlink_ctx *ctx, const struct cmd *cmd,
-			  uint32_t flags)
-{
-	struct flowtable *ft = cmd->flowtable;
-	struct nftnl_flowtable *flo;
-	const char *dev_array[8];
-	struct expr *expr;
-	int i = 0, err;
-
-	flo = alloc_nftnl_flowtable(&cmd->handle, ft);
-	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM, ft->hooknum);
-	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, ft->priority.num);
-
-	list_for_each_entry(expr, &ft->dev_expr->expressions, list)
-		dev_array[i++] = expr->identifier;
-
-	dev_array[i] = NULL;
-	nftnl_flowtable_set(flo, NFTNL_FLOWTABLE_DEVICES, dev_array);
-
-	netlink_dump_flowtable(flo, ctx);
-
-	err = mnl_nft_flowtable_batch_add(flo, ctx->batch, flags, ctx->seqnum);
-	nftnl_flowtable_free(flo);
-
-	return err;
-}
-
-int netlink_delete_flowtable(struct netlink_ctx *ctx, const struct cmd *cmd)
-{
-	struct nftnl_flowtable *flo;
-	int err;
-
-	flo = alloc_nftnl_flowtable(&cmd->handle, NULL);
-	netlink_dump_flowtable(flo, ctx);
-
-	err = mnl_nft_flowtable_batch_del(flo, ctx->batch, 0, ctx->seqnum);
-	nftnl_flowtable_free(flo);
-
-	return err;
 }
 
 static int list_obj_cb(struct nftnl_obj *nls, void *arg)

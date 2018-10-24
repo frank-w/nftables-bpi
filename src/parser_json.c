@@ -3301,11 +3301,8 @@ static int json_verify_metainfo(struct json_ctx *ctx, json_t *root)
 static int __json_parse(struct json_ctx *ctx, json_t *root)
 {
 	struct eval_ctx ectx = {
-		.nf_sock = ctx->nft->nf_sock,
+		.nft = ctx->nft,
 		.msgs = ctx->msgs,
-		.cache = &ctx->nft->cache,
-		.octx = &ctx->nft->output,
-		.debug_mask = ctx->nft->debug_mask,
 	};
 	json_t *tmp, *value;
 	size_t index;

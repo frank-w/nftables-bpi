@@ -212,8 +212,7 @@ static json_t *rule_print_json(struct output_ctx *octx,
 	return json_pack("{s:o}", "rule", root);
 }
 
-static json_t *chain_print_json(const struct output_ctx *octx,
-				const struct chain *chain)
+static json_t *chain_print_json(const struct chain *chain)
 {
 	json_t *root, *tmp;
 
@@ -265,7 +264,7 @@ static json_t *timeout_policy_json(uint8_t l4, const uint32_t *timeout)
 	return root ? : json_null();
 }
 
-static json_t *obj_print_json(struct output_ctx *octx, const struct obj *obj)
+static json_t *obj_print_json(const struct obj *obj)
 {
 	const char *rate_unit = NULL, *burst_unit = NULL;
 	const char *type = obj_type_name(obj->type);
@@ -406,8 +405,7 @@ static json_t *table_flags_json(const struct table *table)
 	return root;
 }
 
-static json_t *table_print_json(const struct output_ctx *octx,
-				const struct table *table)
+static json_t *table_print_json(const struct table *table)
 {
 	json_t *root, *tmp;
 
@@ -1450,17 +1448,17 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 	struct obj *obj;
 	struct set *set;
 
-	tmp = table_print_json(ctx->octx, table);
+	tmp = table_print_json(table);
 	json_array_append_new(root, tmp);
 
 	list_for_each_entry(obj, &table->objs, list) {
-		tmp = obj_print_json(ctx->octx, obj);
+		tmp = obj_print_json(obj);
 		json_array_append_new(root, tmp);
 	}
 	list_for_each_entry(set, &table->sets, list) {
 		if (set->flags & NFT_SET_ANONYMOUS)
 			continue;
-		tmp = set_print_json(ctx->octx, set);
+		tmp = set_print_json(&ctx->nft->output, set);
 		json_array_append_new(root, tmp);
 	}
 	list_for_each_entry(flowtable, &table->flowtables, list) {
@@ -1468,11 +1466,11 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 		json_array_append_new(root, tmp);
 	}
 	list_for_each_entry(chain, &table->chains, list) {
-		tmp = chain_print_json(ctx->octx, chain);
+		tmp = chain_print_json(chain);
 		json_array_append_new(root, tmp);
 
 		list_for_each_entry(rule, &chain->rules, list) {
-			tmp = rule_print_json(ctx->octx, rule);
+			tmp = rule_print_json(&ctx->nft->output, rule);
 			json_array_append_new(root, tmp);
 		}
 	}
@@ -1486,7 +1484,7 @@ static json_t *do_list_ruleset_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	json_t *root = json_array();
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->cache->list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.list, list) {
 		if (family != NFPROTO_UNSPEC &&
 		    table->handle.family != family)
 			continue;
@@ -1503,12 +1501,12 @@ static json_t *do_list_tables_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	json_t *root = json_array();
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->cache->list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.list, list) {
 		if (family != NFPROTO_UNSPEC &&
 		    table->handle.family != family)
 			continue;
 
-		json_array_append_new(root, table_print_json(ctx->octx, table));
+		json_array_append_new(root, table_print_json(table));
 	}
 
 	return root;
@@ -1532,10 +1530,10 @@ static json_t *do_list_chain_json(struct netlink_ctx *ctx,
 		    strcmp(cmd->handle.chain.name, chain->handle.chain.name))
 			continue;
 
-		json_array_append_new(root, chain_print_json(ctx->octx, chain));
+		json_array_append_new(root, chain_print_json(chain));
 
 		list_for_each_entry(rule, &chain->rules, list) {
-			json_t *tmp = rule_print_json(ctx->octx, rule);
+			json_t *tmp = rule_print_json(&ctx->nft->output, rule);
 
 			json_array_append_new(root, tmp);
 		}
@@ -1550,13 +1548,13 @@ static json_t *do_list_chains_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct table *table;
 	struct chain *chain;
 
-	list_for_each_entry(table, &ctx->cache->list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.list, list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
 
 		list_for_each_entry(chain, &table->chains, list) {
-			json_t *tmp = chain_print_json(ctx->octx, chain);
+			json_t *tmp = chain_print_json(chain);
 
 			json_array_append_new(root, tmp);
 		}
@@ -1573,17 +1571,17 @@ static json_t *do_list_set_json(struct netlink_ctx *ctx,
 	if (set == NULL)
 		return json_null();
 
-	return json_pack("[o]", set_print_json(ctx->octx, set));
+	return json_pack("[o]", set_print_json(&ctx->nft->output, set));
 }
 
 static json_t *do_list_sets_json(struct netlink_ctx *ctx, struct cmd *cmd)
 {
-	struct output_ctx *octx = ctx->octx;
+	struct output_ctx *octx = &ctx->nft->output;
 	json_t *root = json_array();
 	struct table *table;
 	struct set *set;
 
-	list_for_each_entry(table, &ctx->cache->list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.list, list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -1613,7 +1611,7 @@ static json_t *do_list_obj_json(struct netlink_ctx *ctx,
 	struct table *table;
 	struct obj *obj;
 
-	list_for_each_entry(table, &ctx->cache->list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.list, list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -1628,8 +1626,7 @@ static json_t *do_list_obj_json(struct netlink_ctx *ctx,
 			     strcmp(cmd->handle.obj.name, obj->handle.obj.name)))
 				continue;
 
-			json_array_append_new(root,
-					      obj_print_json(ctx->octx, obj));
+			json_array_append_new(root, obj_print_json(obj));
 		}
 	}
 
@@ -1642,7 +1639,7 @@ static json_t *do_list_flowtables_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct flowtable *flowtable;
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->cache->list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.list, list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -1670,7 +1667,7 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	json_t *root;
 
 	if (cmd->handle.table.name)
-		table = table_lookup(&cmd->handle, ctx->cache);
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
@@ -1744,7 +1741,7 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	json_array_insert_new(root, 0, generate_json_metainfo());
 
 	root = json_pack("{s:o}", "nftables", root);
-	json_dumpf(root, ctx->octx->output_fp, 0);
+	json_dumpf(root, ctx->nft->output.output_fp, 0);
 	json_decref(root);
 	return 0;
 }
@@ -1753,42 +1750,48 @@ static void monitor_print_json(struct netlink_mon_handler *monh,
 			       const char *cmd, json_t *obj)
 {
 	obj = json_pack("{s:o}", cmd, obj);
-	json_dumpf(obj, monh->ctx->octx->output_fp, 0);
+	json_dumpf(obj, monh->ctx->nft->output.output_fp, 0);
 	json_decref(obj);
 }
 
 void monitor_print_table_json(struct netlink_mon_handler *monh,
 			      const char *cmd, struct table *t)
 {
-	monitor_print_json(monh, cmd, table_print_json(monh->ctx->octx, t));
+	monitor_print_json(monh, cmd, table_print_json(t));
 }
 
 void monitor_print_chain_json(struct netlink_mon_handler *monh,
 			      const char *cmd, struct chain *c)
 {
-	monitor_print_json(monh, cmd, chain_print_json(monh->ctx->octx, c));
+	monitor_print_json(monh, cmd, chain_print_json(c));
 }
 
 void monitor_print_set_json(struct netlink_mon_handler *monh,
 			    const char *cmd, struct set *s)
 {
-	monitor_print_json(monh, cmd, set_print_json(monh->ctx->octx, s));
+	struct output_ctx *octx = &monh->ctx->nft->output;
+
+	monitor_print_json(monh, cmd, set_print_json(octx, s));
 }
 
 void monitor_print_element_json(struct netlink_mon_handler *monh,
 				const char *cmd, struct set *s)
 {
-	monitor_print_json(monh, cmd, element_print_json(monh->ctx->octx, s));
+	struct output_ctx *octx = &monh->ctx->nft->output;
+
+	monitor_print_json(monh, cmd, element_print_json(octx, s));
 }
 
 void monitor_print_obj_json(struct netlink_mon_handler *monh,
 			    const char *cmd, struct obj *o)
 {
-	monitor_print_json(monh, cmd, obj_print_json(monh->ctx->octx, o));
+	monitor_print_json(monh, cmd, obj_print_json(o));
 }
 
 void monitor_print_rule_json(struct netlink_mon_handler *monh,
 			     const char *cmd, struct rule *r)
 {
-	monitor_print_json(monh, cmd, rule_print_json(monh->ctx->octx, r));
+	struct output_ctx *octx = &monh->ctx->nft->output;
+
+	monitor_print_json(monh, cmd, rule_print_json(octx, r));
 }

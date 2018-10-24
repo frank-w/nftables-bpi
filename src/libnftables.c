@@ -56,7 +56,7 @@ static int nft_netlink(struct nft_ctx *nft,
 	if (!mnl_batch_ready(batch))
 		goto out;
 
-	ret = netlink_batch_send(&ctx, &err_list);
+	ret = mnl_batch_talk(&ctx, &err_list);
 
 	list_for_each_entry_safe(err, tmp, &err_list, head) {
 		list_for_each_entry(cmd, cmds, list) {

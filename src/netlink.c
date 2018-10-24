@@ -1117,11 +1117,6 @@ int netlink_list_flowtables(struct netlink_ctx *ctx, const struct handle *h)
 	return err;
 }
 
-int netlink_batch_send(struct netlink_ctx *ctx, struct list_head *err_list)
-{
-	return mnl_batch_talk(ctx, err_list);
-}
-
 struct nftnl_ruleset *netlink_dump_ruleset(struct netlink_ctx *ctx,
 					 const struct handle *h,
 					 const struct location *loc)

@@ -35,14 +35,14 @@ enum opt_vals {
 	OPT_NUMERIC		= 'n',
 	OPT_STATELESS		= 's',
 	OPT_IP2NAME		= 'N',
-	OPT_LITERAL		= 'l',
+	OPT_SERVICE		= 'S',
 	OPT_DEBUG		= 'd',
 	OPT_HANDLE_OUTPUT	= 'a',
 	OPT_ECHO		= 'e',
 	OPT_INVALID		= '?',
 };
 
-#define OPTSTRING	"hvcf:iI:jvnsNael"
+#define OPTSTRING	"hvcf:iI:jvnsNaeS"
 
 static const struct option options[] = {
 	{
@@ -79,8 +79,8 @@ static const struct option options[] = {
 		.val		= OPT_IP2NAME,
 	},
 	{
-		.name		= "literal",
-		.val		= OPT_LITERAL,
+		.name		= "service",
+		.val		= OPT_SERVICE,
 	},
 	{
 		.name		= "includepath",
@@ -128,6 +128,7 @@ static void show_help(const char *name)
 "				Specify three times to also show protocols, user IDs, and group IDs numerically.\n"
 "  -s, --stateless		Omit stateful information of ruleset.\n"
 "  -N				Translate IP addresses to names.\n"
+"  -S, --service			Translate ports to service names as described in /etc/services.\n"
 "  -a, --handle			Output rule handle.\n"
 "  -e, --echo			Echo what has been added, inserted or replaced.\n"
 "  -I, --includepath <directory>	Add <directory> to the paths searched for include files. Default is: %s\n"
@@ -178,7 +179,7 @@ int main(int argc, char * const *argv)
 {
 	char *buf = NULL, *filename = NULL;
 	enum nft_numeric_level numeric;
-	enum nft_literal_level literal;
+	unsigned int output_flags = 0;
 	bool interactive = false;
 	unsigned int debug_mask;
 	unsigned int len;
@@ -230,22 +231,10 @@ int main(int argc, char * const *argv)
 			nft_ctx_output_set_stateless(nft, true);
 			break;
 		case OPT_IP2NAME:
-			literal = nft_ctx_output_get_literal(nft);
-			if (literal + 2 > NFT_LITERAL_ADDR) {
-				fprintf(stderr, "Cannot combine `-N' with `-l'\n");
-				exit(EXIT_FAILURE);
-			}
-			nft_ctx_output_set_literal(nft, literal + 2);
+			output_flags |= NFT_CTX_OUTPUT_REVERSEDNS;
 			break;
-		case OPT_LITERAL:
-			literal = nft_ctx_output_get_literal(nft);
-			if (literal + 1 > NFT_LITERAL_ADDR) {
-				fprintf(stderr, "Too many `-l' options or "
-						"perhaps you combined `-l' "
-						"with `-N'?\n");
-				exit(EXIT_FAILURE);
-			}
-			nft_ctx_output_set_literal(nft, literal + 1);
+		case OPT_SERVICE:
+			output_flags |= NFT_CTX_OUTPUT_SERVICE;
 			break;
 		case OPT_DEBUG:
 			debug_mask = nft_ctx_output_get_debug(nft);
@@ -289,6 +278,8 @@ int main(int argc, char * const *argv)
 			exit(EXIT_FAILURE);
 		}
 	}
+
+	nft_ctx_output_set_flags(nft, output_flags);
 
 	if (optind != argc) {
 		for (len = 0, i = optind; i < argc; i++)

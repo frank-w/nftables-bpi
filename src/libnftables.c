@@ -333,14 +333,14 @@ void nft_ctx_output_set_stateless(struct nft_ctx *ctx, bool val)
 	ctx->output.stateless = val;
 }
 
-enum nft_literal_level nft_ctx_output_get_literal(struct nft_ctx *ctx)
+unsigned int nft_ctx_output_get_flags(struct nft_ctx *ctx)
 {
-	return ctx->output.literal;
+	return ctx->output.flags;
 }
 
-void nft_ctx_output_set_literal(struct nft_ctx *ctx, enum nft_literal_level val)
+void nft_ctx_output_set_flags(struct nft_ctx *ctx, unsigned int flags)
 {
-	ctx->output.literal = val;
+	ctx->output.flags = flags;
 }
 
 unsigned int nft_ctx_output_get_debug(struct nft_ctx *ctx)

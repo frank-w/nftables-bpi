@@ -16,9 +16,9 @@ struct cookie {
 };
 
 struct output_ctx {
+	unsigned int flags;
 	unsigned int numeric;
 	unsigned int stateless;
-	unsigned int literal;
 	unsigned int handle;
 	unsigned int echo;
 	unsigned int json;
@@ -31,6 +31,16 @@ struct output_ctx {
 		struct cookie error_cookie;
 	};
 };
+
+static inline bool nft_output_reversedns(const struct output_ctx *octx)
+{
+	return octx->flags & NFT_CTX_OUTPUT_REVERSEDNS;
+}
+
+static inline bool nft_output_service(const struct output_ctx *octx)
+{
+	return octx->flags & NFT_CTX_OUTPUT_SERVICE;
+}
 
 struct nft_cache {
 	uint16_t		genid;

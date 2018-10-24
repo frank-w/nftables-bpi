@@ -18,15 +18,15 @@ void nft_ctx_free(struct nft_ctx* '\*ctx'*);
 bool nft_ctx_get_dry_run(struct nft_ctx* '\*ctx'*);
 void nft_ctx_set_dry_run(struct nft_ctx* '\*ctx'*, bool* 'dry'*);
 
+unsigned int nft_ctx_output_get_flags(struct nft_ctx* '\*ctx'*);
+void nft_ctx_output_set_flags(struct nft_ctx* '\*ctx'*, unsigned int* 'flags'*);
+
 enum nft_numeric_level nft_ctx_output_get_numeric(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_numeric(struct nft_ctx* '\*ctx'*,
 				enum nft_numeric_level* 'level'*);
 
 bool nft_ctx_output_get_stateless(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_stateless(struct nft_ctx* '\*ctx'*, bool* 'val'*);
-
-enum nft_literal_level nft_ctx_output_get_literal(struct nft_ctx* '\*ctx'*);
-void nft_ctx_output_set_literal(struct nft_ctx* '\*ctx'*, bool* 'val'*);
 
 unsigned int nft_ctx_output_get_debug(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_debug(struct nft_ctx* '\*ctx'*, unsigned int* 'mask'*);
@@ -91,6 +91,25 @@ The *nft_ctx_get_dry_run*() function returns the dry-run setting's value contain
 
 The *nft_ctx_set_dry_run*() function sets the dry-run setting in 'ctx' to the value of 'dry'.
 
+=== nft_ctx_output_get_flags() and nft_ctx_output_set_flags()
+The flags setting controls the output format.
+
+----
+enum {
+        NFT_CTX_OUTPUT_REVERSEDNS  = (1 << 0),
+        NFT_CTX_OUTPUT_SERVICE     = (1 << 1),
+};
+----
+
+NFT_CTX_OUTPUT_REVERSEDNS::
+	Reverse DNS lookups are performed for IP addresses when printing. Note that this may add significant delay to *list* commands depending on DNS resolver speed.
+NFT_CTX_OUTPUT_SERVICE::
+	Print port numbers as services as described in the /etc/services file.
+
+The *nft_ctx_output_get_flags*() function returns the output flags setting's value in 'ctx'.
+
+The *nft_ctx_output_set_flags*() function sets the output flags setting in 'ctx' to the value of 'val'.
+
 === nft_ctx_output_get_numeric() and nft_ctx_output_set_numeric()
 These functions allow control over value representation in library output.
 For instance, port numbers by default are printed by their name (as listed in '/etc/services' file), if known.
@@ -132,15 +151,6 @@ The default setting is *false*.
 The *nft_ctx_output_get_stateless*() function returns the stateless output setting's value in 'ctx'.
 
 The *nft_ctx_output_set_stateless*() function sets the stateless output setting in 'ctx' to the value of 'val'.
-
-=== nft_ctx_output_get_literal() and nft_ctx_output_set_literal()
-The literal setting controls whether reverse DNS lookups are performed for IP addresses when printing them.
-Note that this may add significant delay to *list* commands depending on DNS resolver speed.
-The default setting is *NFT_LITERAL_NONE*.
-
-The *nft_ctx_output_get_literal*() function returns the literal output setting's value in 'ctx'.
-
-The *nft_ctx_output_set_literal*() function sets the literal output setting in 'ctx' to the value of 'val'.
 
 === nft_ctx_output_get_debug() and nft_ctx_output_set_debug()
 Libnftables supports separate debugging of different parts of its internals.

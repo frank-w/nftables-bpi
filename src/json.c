@@ -444,13 +444,14 @@ json_t *relational_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *range_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
+	unsigned int flags = octx->flags;
 	json_t *root;
 
-	octx->numeric += NFT_NUMERIC_ALL + 1;
+	octx->flags &= ~NFT_CTX_OUTPUT_SERVICE;
 	root = json_pack("{s:[o, o]}", "range",
 			 expr_print_json(expr->left, octx),
 			 expr_print_json(expr->right, octx));
-	octx->numeric -= NFT_NUMERIC_ALL + 1;
+	octx->flags = flags;
 
 	return root;
 }
@@ -976,7 +977,7 @@ json_t *inet_service_type_json(const struct expr *expr, struct output_ctx *octx)
 	};
 	char buf[NI_MAXSERV];
 
-	if (octx->literal < NFT_LITERAL_PORT ||
+	if (!nft_output_service(octx) ||
 	    getnameinfo((struct sockaddr *)&sin, sizeof(sin),
 		        NULL, 0, buf, sizeof(buf), 0))
 		return json_integer(ntohs(sin.sin_port));

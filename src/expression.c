@@ -660,11 +660,13 @@ void relational_expr_pctx_update(struct proto_ctx *ctx,
 
 static void range_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	octx->numeric += NFT_NUMERIC_ALL + 1;
+	unsigned int flags = octx->flags;
+
+	octx->flags &= ~NFT_CTX_OUTPUT_SERVICE;
 	expr_print(expr->left, octx);
 	nft_print(octx, "-");
 	expr_print(expr->right, octx);
-	octx->numeric -= NFT_NUMERIC_ALL + 1;
+	octx->flags = flags;
 }
 
 static void range_expr_clone(struct expr *new, const struct expr *expr)

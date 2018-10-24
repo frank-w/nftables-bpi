@@ -9,7 +9,7 @@ nft - Administration tool of the nftables framework for packet filtering and cla
 SYNOPSIS
 --------
 [verse]
-*nft* [ *-nNscae* ] [ *-I* 'directory' ] [ *-f* 'filename' | *-i* | 'cmd' ...]
+*nft* [ *-nNscaeS* ] [ *-I* 'directory' ] [ *-f* 'filename' | *-i* | 'cmd' ...]
 *nft* *-h*
 *nft* *-v*
 
@@ -43,13 +43,14 @@ For a full summary of options, run *nft --help*.
 *--stateless*::
 	Omit stateful information of rules and stateful objects.
 
-*-l*::
-*--literal*::
-	Translate numeric to literal. When used once (the default
-	behaviour), print services (instead of numerical port numbers). Use
-	twice to perform the IP address to name lookup, this usually
-	requires network traffic for DNS lookup that slows down the
-	ruleset listing.
+*-N*::
+*--reversedns*::
+	Translate IP address to names via reverse DNS lookup. This may slow down
+	your listing since it generates network traffic.
+
+*-S*::
+*--service*::
+	Translate ports to service names as defined by /etc/services.
 
 *-c*::
 *--check*::

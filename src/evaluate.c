@@ -2733,7 +2733,7 @@ static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 			      stmt->set.set->set->key->dtype,
 			      stmt->set.set->set->key->len,
 			      stmt->set.set->set->key->byteorder,
-			      &stmt->set.key) < 0)
+			      &stmt->set.key->key) < 0)
 		return -1;
 	if (expr_is_constant(stmt->set.key))
 		return expr_error(ctx->msgs, stmt->set.key,
@@ -2765,7 +2765,7 @@ static int stmt_evaluate_map(struct eval_ctx *ctx, struct stmt *stmt)
 			      stmt->map.set->set->key->dtype,
 			      stmt->map.set->set->key->len,
 			      stmt->map.set->set->key->byteorder,
-			      &stmt->map.key) < 0)
+			      &stmt->map.key->key) < 0)
 		return -1;
 	if (expr_is_constant(stmt->map.key))
 		return expr_error(ctx->msgs, stmt->map.key,

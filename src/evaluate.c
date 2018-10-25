@@ -2773,12 +2773,20 @@ static int stmt_evaluate_map(struct eval_ctx *ctx, struct stmt *stmt)
 	if (stmt->map.key->comment != NULL)
 		return expr_error(ctx->msgs, stmt->map.key,
 				  "Key expression comments are not supported");
+
+	if (stmt_evaluate_arg(ctx, stmt,
+			      stmt->map.set->set->datatype,
+			      stmt->map.set->set->datalen,
+			      stmt->map.set->set->datatype->byteorder,
+			      &stmt->map.data->key) < 0)
+		return -1;
 	if (expr_is_constant(stmt->map.data))
 		return expr_error(ctx->msgs, stmt->map.data,
 				  "Data expression can not be constant");
 	if (stmt->map.data->comment != NULL)
 		return expr_error(ctx->msgs, stmt->map.data,
 				  "Data expression comments are not supported");
+
 	if (stmt->map.stmt) {
 		if (stmt_evaluate(ctx, stmt->map.stmt) < 0)
 			return -1;

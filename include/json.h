@@ -7,6 +7,7 @@ struct chain;
 struct cmd;
 struct expr;
 struct netlink_ctx;
+struct nlmsghdr;
 struct rule;
 struct set;
 struct obj;
@@ -102,6 +103,10 @@ void monitor_print_obj_json(struct netlink_mon_handler *monh,
 			    const char *cmd, struct obj *o);
 void monitor_print_rule_json(struct netlink_mon_handler *monh,
 			     const char *cmd, struct rule *r);
+
+int json_events_cb(const struct nlmsghdr *nlh,
+		   struct netlink_mon_handler *monh);
+void json_print_echo(struct nft_ctx *ctx);
 
 #else /* ! HAVE_LIBJANSSON */
 
@@ -230,6 +235,16 @@ static inline void monitor_print_obj_json(struct netlink_mon_handler *monh,
 
 static inline void monitor_print_rule_json(struct netlink_mon_handler *monh,
 					   const char *cmd, struct rule *r)
+{
+	/* empty */
+}
+
+static inline int json_events_cb(const struct nlmsghdr *nlh)
+{
+	return -1;
+}
+
+static inline void json_print_echo(struct nft_ctx *ctx)
 {
 	/* empty */
 }

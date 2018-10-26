@@ -53,6 +53,7 @@ struct nft_ctx {
 	uint32_t		flags;
 	struct parser_state	*state;
 	void			*scanner;
+	void			*json_root;
 };
 
 enum nftables_exit_codes {

@@ -467,6 +467,8 @@ err:
 	}
 	free(nlbuf);
 
+	if (!rc && nft->output.json && nft->output.echo)
+		json_print_echo(nft);
 	return rc;
 }
 
@@ -506,6 +508,8 @@ err:
 		nft->scanner = NULL;
 	}
 
+	if (!rc && nft->output.json && nft->output.echo)
+		json_print_echo(nft);
 	return rc;
 }
 

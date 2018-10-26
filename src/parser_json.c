@@ -25,6 +25,10 @@
 #include <linux/netfilter/nf_tables.h>
 #include <jansson.h>
 
+#include <mnl.h>
+#include <libnftnl/rule.h>
+#include <linux/netfilter/nfnetlink.h>
+
 #define CTX_F_RHS	(1 << 0)
 #define CTX_F_STMT	(1 << 1)
 #define CTX_F_PRIMARY	(1 << 2)
@@ -2333,6 +2337,9 @@ static struct cmd *json_parse_cmd_add_table(struct json_ctx *ctx, json_t *root,
 	if (h.table.name)
 		h.table.name = xstrdup(h.table.name);
 
+	if (op == CMD_ADD)
+		json_object_del(root, "handle");
+
 	return cmd_alloc(op, obj, &h, int_loc, NULL);
 }
 
@@ -2404,6 +2411,9 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 		}
 	}
 
+	if (op == CMD_ADD)
+		json_object_del(root, "handle");
+
 	handle_merge(&chain->handle, &h);
 	return cmd_alloc(op, obj, &h, int_loc, chain);
 }
@@ -2473,6 +2483,9 @@ static struct cmd *json_parse_cmd_add_rule(struct json_ctx *ctx, json_t *root,
 		rule->num_stmts++;
 		list_add_tail(&stmt->list, &rule->stmts);
 	}
+
+	if (op == CMD_ADD)
+		json_object_del(root, "handle");
 
 	return cmd_alloc(op, obj, &h, int_loc, rule);
 }
@@ -2628,6 +2641,10 @@ static struct cmd *json_parse_cmd_add_set(struct json_ctx *ctx, json_t *root,
 	json_unpack(root, "{s:i}", "size", &set->desc.size);
 
 	handle_merge(&set->handle, &h);
+
+	if (op == CMD_ADD)
+		json_object_del(root, "handle");
+
 	return cmd_alloc(op, obj, &h, int_loc, set);
 }
 
@@ -2943,6 +2960,9 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 		BUG("Invalid CMD '%d'", cmd_obj);
 	}
 
+	if (op == CMD_ADD)
+		json_object_del(root, "handle");
+
 	return cmd_alloc(op, cmd_obj, &h, int_loc, obj);
 }
 
@@ -3065,6 +3085,9 @@ static struct cmd *json_parse_cmd_replace(struct json_ctx *ctx,
 		rule->num_stmts++;
 		list_add_tail(&stmt->list, &rule->stmts);
 	}
+
+	if (op == CMD_REPLACE)
+		json_object_del(root, "handle");
 
 	return cmd_alloc(op, CMD_OBJ_RULE, &h, int_loc, rule);
 }
@@ -3298,7 +3321,7 @@ static int json_verify_metainfo(struct json_ctx *ctx, json_t *root)
 	return 0;
 }
 
-static int __json_parse(struct json_ctx *ctx, json_t *root)
+static int __json_parse(struct json_ctx *ctx)
 {
 	struct eval_ctx ectx = {
 		.nft = ctx->nft,
@@ -3307,7 +3330,8 @@ static int __json_parse(struct json_ctx *ctx, json_t *root)
 	json_t *tmp, *value;
 	size_t index;
 
-	if (json_unpack_err(ctx, root, "{s:o}", "nftables", &tmp))
+	if (json_unpack_err(ctx, ctx->nft->json_root,
+			    "{s:o}", "nftables", &tmp))
 		return -1;
 
 	if (!json_is_array(tmp)) {
@@ -3355,7 +3379,6 @@ static int __json_parse(struct json_ctx *ctx, json_t *root)
 	return 0;
 }
 
-
 int nft_parse_json_buffer(struct nft_ctx *nft, const char *buf,
 			  struct list_head *msgs, struct list_head *cmds)
 {
@@ -3368,16 +3391,18 @@ int nft_parse_json_buffer(struct nft_ctx *nft, const char *buf,
 		.msgs = msgs,
 		.cmds = cmds,
 	};
-	json_t *root;
 	int ret;
 
-	root = json_loads(buf, 0, NULL);
-	if (!root)
+	nft->json_root = json_loads(buf, 0, NULL);
+	if (!nft->json_root)
 		return -EINVAL;
 
-	ret = __json_parse(&ctx, root);
+	ret = __json_parse(&ctx);
 
-	json_decref(root);
+	if (!nft->output.echo) {
+		json_decref(nft->json_root);
+		nft->json_root = NULL;
+	}
 	return ret;
 }
 
@@ -3394,15 +3419,244 @@ int nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
 		.cmds = cmds,
 	};
 	json_error_t err;
-	json_t *root;
 	int ret;
 
-	root = json_load_file(filename, 0, &err);
-	if (!root)
+	nft->json_root = json_load_file(filename, 0, &err);
+	if (!nft->json_root)
 		return -EINVAL;
 
-	ret = __json_parse(&ctx, root);
+	ret = __json_parse(&ctx);
 
-	json_decref(root);
+	if (!nft->output.echo) {
+		json_decref(nft->json_root);
+		nft->json_root = NULL;
+	}
 	return ret;
+}
+
+static int json_echo_error(struct netlink_mon_handler *monh,
+			   const char *fmt, ...)
+{
+	struct error_record *erec;
+	va_list ap;
+
+	va_start(ap, fmt);
+	erec = erec_vcreate(EREC_ERROR, int_loc, fmt, ap);
+	va_end(ap);
+	erec_queue(erec, monh->ctx->msgs);
+
+	return MNL_CB_ERROR;
+}
+
+static int obj_prop_check(json_t *obj, const char *key, const char *value)
+{
+	const char *cmp;
+
+	if (!value)
+		return 0;
+
+	if (json_unpack(obj, "{s:s}", key, &cmp) || strcmp(value, cmp))
+		return 1;
+
+	return 0;
+}
+
+static bool obj_info_matches(json_t *obj, const char *family, const char *table,
+			     const char *chain, const char *name)
+{
+	if (obj_prop_check(obj, "family", family) ||
+	    obj_prop_check(obj, "table", table) ||
+	    obj_prop_check(obj, "chain", chain) ||
+	    obj_prop_check(obj, "name", name))
+		return false;
+
+	return true;
+}
+
+static int json_update_table(struct netlink_mon_handler *monh,
+			     json_t *array, const struct nlmsghdr *nlh)
+{
+	const char *family, *name;
+	struct nftnl_table *nlt;
+	uint64_t handle;
+	json_t *value;
+	size_t index;
+
+	nlt = netlink_table_alloc(nlh);
+	family = family2str(nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY));
+	name = nftnl_table_get_str(nlt, NFTNL_TABLE_NAME);
+	handle = nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE);
+
+	json_array_foreach(array, index, value) {
+		if (json_unpack(value, "{s:{s:o}}", "add", "table", &value) ||
+		    !obj_info_matches(value, family, NULL, NULL, name))
+			continue;
+
+		json_object_set_new(value, "handle", json_integer(handle));
+		return MNL_CB_OK;
+	}
+
+	return json_echo_error(monh, "JSON table object '%s %s' not found.\n",
+			       family, name);
+}
+
+static int json_update_chain(struct netlink_mon_handler *monh,
+			     json_t *array, const struct nlmsghdr *nlh)
+{
+	const char *family, *table, *name;
+	struct nftnl_chain *nlc;
+	uint64_t handle;
+	json_t *value;
+	size_t index;
+
+	nlc = netlink_chain_alloc(nlh);
+	family = family2str(nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY));
+	table = nftnl_chain_get_str(nlc, NFTNL_CHAIN_TABLE);
+	name = nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME);
+	handle = nftnl_chain_get_u64(nlc, NFTNL_CHAIN_HANDLE);
+
+	json_array_foreach(array, index, value) {
+		if (json_unpack(value, "{s:{s:o}}", "add", "chain", &value) ||
+		    !obj_info_matches(value, family, table, NULL, name))
+			continue;
+
+		json_object_set_new(value, "handle", json_integer(handle));
+		return MNL_CB_OK;
+	}
+	return json_echo_error(monh,
+			       "JSON chain object '%s %s %s' not found.\n",
+			       family, table, name);
+}
+
+static int json_update_rule(struct netlink_mon_handler *monh,
+			    json_t *array, const struct nlmsghdr *nlh)
+{
+	const char *family, *table, *chain;
+	struct nftnl_rule *nlr;
+	uint64_t handle;
+	json_t *value;
+	size_t index;
+
+	nlr = netlink_rule_alloc(nlh);
+	family = family2str(nftnl_rule_get_u32(nlr, NFTNL_RULE_FAMILY));
+	table = nftnl_rule_get_str(nlr, NFTNL_RULE_TABLE);
+	chain = nftnl_rule_get_str(nlr, NFTNL_RULE_CHAIN);
+	handle = nftnl_rule_get_u64(nlr, NFTNL_RULE_HANDLE);
+
+	json_array_foreach(array, index, value) {
+		if (json_unpack(value, "{s:{s:o}}", "add", "rule", &value) ||
+		    !obj_info_matches(value, family, table, chain, NULL))
+			continue;
+
+		/* this is a hack - assume rules are added in order and caller
+		 * sets the handle for each we previously returned */
+		if (json_object_get(value, "handle"))
+			continue;
+
+		json_object_set_new(value, "handle", json_integer(handle));
+		return MNL_CB_OK;
+	}
+	return json_echo_error(monh,
+			       "JSON rule object in '%s %s %s' without handle not found\n",
+			       family, table, chain);
+}
+
+static int json_update_set(struct netlink_mon_handler *monh,
+			   json_t *array, const struct nlmsghdr *nlh)
+{
+	const char *family, *table, *name;
+	struct nftnl_set *nls;
+	uint64_t handle;
+	uint32_t flags;
+	json_t *value;
+	size_t index;
+
+	nls = netlink_set_alloc(nlh);
+	flags = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
+	if (flags & NFT_SET_ANONYMOUS)
+		return MNL_CB_OK;
+
+	family = family2str(nftnl_set_get_u32(nls, NFTNL_SET_FAMILY));
+	table = nftnl_set_get_str(nls, NFTNL_SET_TABLE);
+	name = nftnl_set_get_str(nls, NFTNL_SET_NAME);
+	handle = nftnl_set_get_u64(nls, NFTNL_SET_HANDLE);
+
+	json_array_foreach(array, index, value) {
+		if (json_unpack(value, "{s:{s:o}}", "add", "set", &value) ||
+		    !obj_info_matches(value, family, table, NULL, name))
+			continue;
+
+		json_object_set_new(value, "handle", json_integer(handle));
+		return MNL_CB_OK;
+	}
+	return json_echo_error(monh, "JSON set object '%s %s %s' not found.\n",
+			       family, table, name);
+}
+
+static int json_update_obj(struct netlink_mon_handler *monh,
+			   json_t *array, const struct nlmsghdr *nlh)
+{
+	const char *family, *table, *name, *type;
+	struct nftnl_obj *nlo;
+	uint64_t handle;
+	json_t *value;
+	size_t index;
+
+	nlo = netlink_obj_alloc(nlh);
+	family = family2str(nftnl_obj_get_u32(nlo, NFTNL_OBJ_FAMILY));
+	table = nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE);
+	name = nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME);
+	type = obj_type_name(nftnl_obj_get_u32(nlo, NFTNL_OBJ_TYPE));
+	handle = nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
+
+	json_array_foreach(array, index, value) {
+		if (json_unpack(value, "{s:{s:o}}", "add", type, &value) ||
+		    !obj_info_matches(value, family, table, NULL, name))
+			continue;
+
+		json_object_set_new(value, "handle", json_integer(handle));
+		return MNL_CB_OK;
+	}
+	return json_echo_error(monh, "JSON %s object '%s %s %s' not found.\n",
+			       type, family, table, name);
+}
+
+int json_events_cb(const struct nlmsghdr *nlh, struct netlink_mon_handler *monh)
+{
+	json_t *root = monh->ctx->nft->json_root;
+	json_t *array;
+
+	if (!root)
+		return MNL_CB_OK;
+
+	if (json_unpack(root, "{s:o}", "nftables", &array)) {
+		erec_queue(error(int_loc, "Invalid JSON root element\n"),
+			   monh->ctx->msgs);
+		return MNL_CB_STOP;
+	}
+
+	switch (NFNL_MSG_TYPE(nlh->nlmsg_type)) {
+	case NFT_MSG_NEWTABLE:
+		return json_update_table(monh, array, nlh);
+	case NFT_MSG_NEWCHAIN:
+		return json_update_chain(monh, array, nlh);
+	case NFT_MSG_NEWRULE:
+		return json_update_rule(monh, array, nlh);
+	case NFT_MSG_NEWSET:
+		return json_update_set(monh, array, nlh);
+	case NFT_MSG_NEWOBJ:
+		return json_update_obj(monh, array, nlh);
+	}
+
+	return MNL_CB_OK;
+}
+
+void json_print_echo(struct nft_ctx *ctx)
+{
+	if (!ctx->json_root)
+		return;
+
+	json_dumpf(ctx->json_root, ctx->output.output_fp, JSON_PRESERVE_ORDER);
+	json_decref(ctx->json_root);
+	ctx->json_root = NULL;
 }

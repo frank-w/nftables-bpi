@@ -42,7 +42,7 @@
 
 #define nft_mon_print(monh, ...) nft_print(&monh->ctx->nft->output, __VA_ARGS__)
 
-static struct nftnl_table *netlink_table_alloc(const struct nlmsghdr *nlh)
+struct nftnl_table *netlink_table_alloc(const struct nlmsghdr *nlh)
 {
 	struct nftnl_table *nlt;
 
@@ -55,7 +55,7 @@ static struct nftnl_table *netlink_table_alloc(const struct nlmsghdr *nlh)
 	return nlt;
 }
 
-static struct nftnl_chain *netlink_chain_alloc(const struct nlmsghdr *nlh)
+struct nftnl_chain *netlink_chain_alloc(const struct nlmsghdr *nlh)
 {
 	struct nftnl_chain *nlc;
 
@@ -68,7 +68,7 @@ static struct nftnl_chain *netlink_chain_alloc(const struct nlmsghdr *nlh)
 	return nlc;
 }
 
-static struct nftnl_set *netlink_set_alloc(const struct nlmsghdr *nlh)
+struct nftnl_set *netlink_set_alloc(const struct nlmsghdr *nlh)
 {
 	struct nftnl_set *nls;
 
@@ -94,7 +94,7 @@ static struct nftnl_set *netlink_setelem_alloc(const struct nlmsghdr *nlh)
 	return nls;
 }
 
-static struct nftnl_rule *netlink_rule_alloc(const struct nlmsghdr *nlh)
+struct nftnl_rule *netlink_rule_alloc(const struct nlmsghdr *nlh)
 {
 	struct nftnl_rule *nlr;
 
@@ -107,7 +107,7 @@ static struct nftnl_rule *netlink_rule_alloc(const struct nlmsghdr *nlh)
 	return nlr;
 }
 
-static struct nftnl_obj *netlink_obj_alloc(const struct nlmsghdr *nlh)
+struct nftnl_obj *netlink_obj_alloc(const struct nlmsghdr *nlh)
 {
 	struct nftnl_obj *nlo;
 
@@ -907,6 +907,9 @@ int netlink_echo_callback(const struct nlmsghdr *nlh, void *data)
 
 	if (!echo_monh.ctx->nft->output.echo)
 		return MNL_CB_OK;
+
+	if (ctx->nft->output.json)
+		return json_events_cb(nlh, &echo_monh);
 
 	return netlink_events_cb(nlh, &echo_monh);
 }

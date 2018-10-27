@@ -342,16 +342,6 @@ void nft_ctx_output_set_debug(struct nft_ctx *ctx, unsigned int mask)
 	ctx->debug_mask = mask;
 }
 
-bool nft_ctx_output_get_handle(struct nft_ctx *ctx)
-{
-	return ctx->output.handle;
-}
-
-void nft_ctx_output_set_handle(struct nft_ctx *ctx, bool val)
-{
-	ctx->output.handle = val;
-}
-
 bool nft_ctx_output_get_echo(struct nft_ctx *ctx)
 {
 	return ctx->output.echo;

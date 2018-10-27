@@ -28,9 +28,6 @@ void nft_ctx_output_set_numeric(struct nft_ctx* '\*ctx'*,
 unsigned int nft_ctx_output_get_debug(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_debug(struct nft_ctx* '\*ctx'*, unsigned int* 'mask'*);
 
-bool nft_ctx_output_get_handle(struct nft_ctx* '\*ctx'*);
-void nft_ctx_output_set_handle(struct nft_ctx* '\*ctx'*, bool* 'val'*);
-
 bool nft_ctx_output_get_echo(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_echo(struct nft_ctx* '\*ctx'*, bool* 'val'*);
 
@@ -96,6 +93,7 @@ enum {
         NFT_CTX_OUTPUT_REVERSEDNS  = (1 << 0),
         NFT_CTX_OUTPUT_SERVICE     = (1 << 1),
         NFT_CTX_OUTPUT_STATELESS   = (1 << 2),
+        NFT_CTX_OUTPUT_HANDLE      = (1 << 3),
 };
 ----
 
@@ -106,6 +104,11 @@ NFT_CTX_OUTPUT_SERVICE::
 NFT_CTX_OUTPUT_STATELESS::
 	If stateless output has been requested then stateful data is not printed.
 Stateful data refers to those objects that carry run-time data, eg. the *counter* statement holds packet and byte counter values, making it stateful.
+NFT_CTX_OUTPUT_HANDLE::
+	Upon insertion into the ruleset, some elements are assigned a unique handle for identification purposes.
+For example, when deleting a table or chain, it may be identified either by name or handle.
+Rules on the other hand must be deleted by handle because there is no other way to uniquely identify them.
+This flag makes ruleset listings include handle values.
 
 The *nft_ctx_output_get_flags*() function returns the output flags setting's value in 'ctx'.
 
@@ -177,17 +180,6 @@ NFT_DEBUG_SEGTREE::
 The *nft_ctx_output_get_debug*() function returns the debug output setting's value in 'ctx'.
 
 The *nft_ctx_output_set_debug*() function sets the debug output setting in 'ctx' to the value of 'mask'.
-
-=== nft_ctx_output_get_handle() and nft_ctx_output_set_handle()
-Upon insertion into the ruleset, some elements are assigned a unique handle for identification purposes.
-For example, when deleting a table or chain, it may be identified either by name or handle.
-Rules on the other hand must be deleted by handle because there is no other way to uniquely identify them.
-These functions allow to control whether ruleset listings should include handles or not.
-The default setting is *false*.
-
-The *nft_ctx_output_get_handle*() function returns the handle output setting's value in 'ctx'.
-
-The *nft_ctx_output_set_handle*() function sets the handle output setting in 'ctx' to the value of 'val'.
 
 === nft_ctx_output_get_echo() and nft_ctx_output_set_echo()
 The echo setting makes libnftables print the changes once they are committed to the kernel, just like a running instance of *nft monitor* would.

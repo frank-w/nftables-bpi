@@ -214,7 +214,7 @@ static int netlink_events_table_cb(const struct nlmsghdr *nlh, int type,
 
 		nft_mon_print(monh, "%s %s", family2str(t->handle.family),
 			      t->handle.table.name);
-		if (monh->ctx->nft->output.handle > 0)
+		if (nft_output_handle(&monh->ctx->nft->output))
 			nft_mon_print(monh, " # handle %" PRIu64 "",
 				      t->handle.handle.id);
 		break;

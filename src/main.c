@@ -266,7 +266,7 @@ int main(int argc, char * const *argv)
 			nft_ctx_output_set_debug(nft, debug_mask);
 			break;
 		case OPT_HANDLE_OUTPUT:
-			nft_ctx_output_set_handle(nft, true);
+			output_flags |= NFT_CTX_OUTPUT_HANDLE;
 			break;
 		case OPT_ECHO:
 			nft_ctx_output_set_echo(nft, true);

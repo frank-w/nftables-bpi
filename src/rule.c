@@ -486,7 +486,7 @@ static void do_set_print(const struct set *set, struct print_fmt_options *opts,
 {
 	set_print_declaration(set, opts, octx);
 
-	if (set->flags & NFT_SET_EVAL && octx->stateless) {
+	if (set->flags & NFT_SET_EVAL && nft_output_stateless(octx)) {
 		nft_print(octx, "%s}%s", opts->tab, opts->nl);
 		return;
 	}
@@ -1683,7 +1683,7 @@ static void obj_print_data(const struct obj *obj,
 		if (octx->handle > 0)
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
-		if (octx->stateless) {
+		if (nft_output_stateless(octx)) {
 			nft_print(octx, "packets 0 bytes 0");
 			break;
 		}
@@ -1702,7 +1702,7 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, "%s%" PRIu64 " %s",
 			  obj->quota.flags & NFT_QUOTA_F_INV ? "over " : "",
 			  bytes, data_unit);
-		if (!octx->stateless && obj->quota.used) {
+		if (!nft_output_stateless(octx) && obj->quota.used) {
 			data_unit = get_rate(obj->quota.used, &bytes);
 			nft_print(octx, " used %" PRIu64 " %s",
 				  bytes, data_unit);

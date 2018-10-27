@@ -1043,7 +1043,7 @@ static void set_elem_expr_print(const struct expr *expr,
 		nft_print(octx, " timeout ");
 		time_print(expr->timeout, octx);
 	}
-	if (!octx->stateless && expr->expiration) {
+	if (!nft_output_stateless(octx) && expr->expiration) {
 		nft_print(octx, " expires ");
 		time_print(expr->expiration, octx);
 	}

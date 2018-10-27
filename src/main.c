@@ -228,7 +228,7 @@ int main(int argc, char * const *argv)
 			nft_ctx_output_set_numeric(nft, numeric + 1);
 			break;
 		case OPT_STATELESS:
-			nft_ctx_output_set_stateless(nft, true);
+			output_flags |= NFT_CTX_OUTPUT_STATELESS;
 			break;
 		case OPT_IP2NAME:
 			output_flags |= NFT_CTX_OUTPUT_REVERSEDNS;

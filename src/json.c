@@ -1075,7 +1075,7 @@ json_t *quota_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 
 	if (stmt->quota.flags & NFT_QUOTA_F_INV)
 		json_object_set_new(root, "inv", json_true());
-	if (!octx->stateless && stmt->quota.used) {
+	if (!nft_output_stateless(octx) && stmt->quota.used) {
 		data_unit = get_rate(stmt->quota.used, &bytes);
 		json_object_set_new(root, "used", json_integer(bytes));
 		json_object_set_new(root, "used_unit", json_string(data_unit));
@@ -1324,7 +1324,7 @@ json_t *reject_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 
 json_t *counter_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 {
-	if (octx->stateless)
+	if (nft_output_stateless(octx))
 		return json_pack("{s:n}", "counter");
 
 	return json_pack("{s:{s:I, s:I}}", "counter",
@@ -1354,11 +1354,12 @@ json_t *objref_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 
 json_t *meter_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 {
+	unsigned int flags = octx->flags;
 	json_t *root, *tmp;
 
-	octx->stateless++;
+	octx->flags |= NFT_CTX_OUTPUT_STATELESS;
 	tmp = stmt_print_json(stmt->meter.stmt, octx);
-	octx->stateless--;
+	octx->flags = flags;
 
 	root = json_pack("{s:o, s:o, s:i}",
 			 "key", expr_print_json(stmt->meter.key, octx),

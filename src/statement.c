@@ -112,6 +112,8 @@ struct stmt *verdict_stmt_alloc(const struct location *loc, struct expr *expr)
 
 static void meter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
+	unsigned int flags = octx->flags;
+
 	nft_print(octx, "meter ");
 	if (stmt->meter.set) {
 		expr_print(stmt->meter.set, octx);
@@ -121,9 +123,9 @@ static void meter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	expr_print(stmt->meter.key, octx);
 	nft_print(octx, " ");
 
-	octx->stateless++;
+	octx->flags |= NFT_CTX_OUTPUT_STATELESS;
 	stmt_print(stmt->meter.stmt, octx);
-	octx->stateless--;
+	octx->flags = flags;
 
 	nft_print(octx, "} ");
 
@@ -175,7 +177,7 @@ static void counter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	nft_print(octx, "counter");
 
-	if (octx->stateless)
+	if (nft_output_stateless(octx))
 		return;
 
 	nft_print(octx, " packets %" PRIu64 " bytes %" PRIu64,
@@ -463,7 +465,7 @@ static void quota_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	nft_print(octx, "quota %s%" PRIu64 " %s",
 		  inv ? "over " : "", bytes, data_unit);
 
-	if (!octx->stateless && stmt->quota.used) {
+	if (!nft_output_stateless(octx) && stmt->quota.used) {
 		data_unit = get_rate(stmt->quota.used, &used);
 		nft_print(octx, " used %" PRIu64 " %s", used, data_unit);
 	}
@@ -631,15 +633,17 @@ const char * const set_stmt_op_names[] = {
 
 static void set_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
+	unsigned int flags = octx->flags;
+
 	nft_print(octx, "%s ", set_stmt_op_names[stmt->set.op]);
 	expr_print(stmt->set.set, octx);
 	nft_print(octx, " { ");
 	expr_print(stmt->set.key, octx);
 	if (stmt->set.stmt) {
 		nft_print(octx, " ");
-		octx->stateless++;
+		octx->flags |= NFT_CTX_OUTPUT_STATELESS;
 		stmt_print(stmt->set.stmt, octx);
-		octx->stateless--;
+		octx->flags = flags;
 	}
 	nft_print(octx, " }");
 }
@@ -665,15 +669,17 @@ struct stmt *set_stmt_alloc(const struct location *loc)
 
 static void map_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
+	unsigned int flags = octx->flags;
+
 	nft_print(octx, "%s ", set_stmt_op_names[stmt->map.op]);
 	expr_print(stmt->map.set, octx);
 	nft_print(octx, " { ");
 	expr_print(stmt->map.key, octx);
 	if (stmt->map.stmt) {
 		nft_print(octx, " ");
-		octx->stateless++;
+		octx->flags |= NFT_CTX_OUTPUT_STATELESS;
 		stmt_print(stmt->map.stmt, octx);
-		octx->stateless--;
+		octx->flags = flags;
 	}
 	nft_print(octx, " : ");
 	expr_print(stmt->map.data, octx);

@@ -323,16 +323,6 @@ void nft_ctx_output_set_numeric(struct nft_ctx *ctx,
 	ctx->output.numeric = level;
 }
 
-bool nft_ctx_output_get_stateless(struct nft_ctx *ctx)
-{
-	return ctx->output.stateless;
-}
-
-void nft_ctx_output_set_stateless(struct nft_ctx *ctx, bool val)
-{
-	ctx->output.stateless = val;
-}
-
 unsigned int nft_ctx_output_get_flags(struct nft_ctx *ctx)
 {
 	return ctx->output.flags;

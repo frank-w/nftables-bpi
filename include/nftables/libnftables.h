@@ -47,6 +47,7 @@ void nft_ctx_set_dry_run(struct nft_ctx *ctx, bool dry);
 enum {
 	NFT_CTX_OUTPUT_REVERSEDNS	= (1 << 0),
 	NFT_CTX_OUTPUT_SERVICE		= (1 << 1),
+	NFT_CTX_OUTPUT_STATELESS	= (1 << 2),
 };
 
 unsigned int nft_ctx_output_get_flags(struct nft_ctx *ctx);
@@ -54,8 +55,6 @@ void nft_ctx_output_set_flags(struct nft_ctx *ctx, unsigned int flags);
 
 enum nft_numeric_level nft_ctx_output_get_numeric(struct nft_ctx *ctx);
 void nft_ctx_output_set_numeric(struct nft_ctx *ctx, enum nft_numeric_level level);
-bool nft_ctx_output_get_stateless(struct nft_ctx *ctx);
-void nft_ctx_output_set_stateless(struct nft_ctx *ctx, bool val);
 unsigned int nft_ctx_output_get_debug(struct nft_ctx *ctx);
 void nft_ctx_output_set_debug(struct nft_ctx *ctx, unsigned int mask);
 bool nft_ctx_output_get_handle(struct nft_ctx *ctx);

@@ -25,9 +25,6 @@ enum nft_numeric_level nft_ctx_output_get_numeric(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_numeric(struct nft_ctx* '\*ctx'*,
 				enum nft_numeric_level* 'level'*);
 
-bool nft_ctx_output_get_stateless(struct nft_ctx* '\*ctx'*);
-void nft_ctx_output_set_stateless(struct nft_ctx* '\*ctx'*, bool* 'val'*);
-
 unsigned int nft_ctx_output_get_debug(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_debug(struct nft_ctx* '\*ctx'*, unsigned int* 'mask'*);
 
@@ -98,6 +95,7 @@ The flags setting controls the output format.
 enum {
         NFT_CTX_OUTPUT_REVERSEDNS  = (1 << 0),
         NFT_CTX_OUTPUT_SERVICE     = (1 << 1),
+        NFT_CTX_OUTPUT_STATELESS   = (1 << 2),
 };
 ----
 
@@ -105,6 +103,9 @@ NFT_CTX_OUTPUT_REVERSEDNS::
 	Reverse DNS lookups are performed for IP addresses when printing. Note that this may add significant delay to *list* commands depending on DNS resolver speed.
 NFT_CTX_OUTPUT_SERVICE::
 	Print port numbers as services as described in the /etc/services file.
+NFT_CTX_OUTPUT_STATELESS::
+	If stateless output has been requested then stateful data is not printed.
+Stateful data refers to those objects that carry run-time data, eg. the *counter* statement holds packet and byte counter values, making it stateful.
 
 The *nft_ctx_output_get_flags*() function returns the output flags setting's value in 'ctx'.
 
@@ -140,17 +141,6 @@ The default numeric level is *NFT_NUMERIC_NONE*.
 The *nft_ctx_output_get_numeric*() function returns the numeric output setting's value contained in 'ctx'.
 
 The *nft_ctx_output_set_numeric*() function sets the numeric output setting in 'ctx' to the value of 'level'.
-
-=== nft_ctx_output_get_stateless() and nft_ctx_output_set_stateless()
-In nftables, there are stateful objects, i.e. ruleset elements which carry run-time data.
-For example the *counter* statement holds packet and byte counter values, making it stateful.
-If stateless output has been requested, this data is omitted when printing ruleset elements.
-The default setting is *false*.
-
-
-The *nft_ctx_output_get_stateless*() function returns the stateless output setting's value in 'ctx'.
-
-The *nft_ctx_output_set_stateless*() function sets the stateless output setting in 'ctx' to the value of 'val'.
 
 === nft_ctx_output_get_debug() and nft_ctx_output_set_debug()
 Libnftables supports separate debugging of different parts of its internals.

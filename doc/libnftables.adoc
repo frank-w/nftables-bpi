@@ -31,9 +31,6 @@ void nft_ctx_output_set_debug(struct nft_ctx* '\*ctx'*, unsigned int* 'mask'*);
 bool nft_ctx_output_get_echo(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_echo(struct nft_ctx* '\*ctx'*, bool* 'val'*);
 
-bool nft_ctx_output_get_json(struct nft_ctx* '\*ctx'*);
-void nft_ctx_output_set_json(struct nft_ctx* '\*ctx'*, bool* 'val'*);
-
 FILE *nft_ctx_set_output(struct nft_ctx* '\*ctx'*, FILE* '\*fp'*);
 int nft_ctx_buffer_output(struct nft_ctx* '\*ctx'*);
 int nft_ctx_unbuffer_output(struct nft_ctx* '\*ctx'*);
@@ -94,6 +91,7 @@ enum {
         NFT_CTX_OUTPUT_SERVICE     = (1 << 1),
         NFT_CTX_OUTPUT_STATELESS   = (1 << 2),
         NFT_CTX_OUTPUT_HANDLE      = (1 << 3),
+        NFT_CTX_OUTPUT_JSON        = (1 << 4),
 };
 ----
 
@@ -109,6 +107,10 @@ NFT_CTX_OUTPUT_HANDLE::
 For example, when deleting a table or chain, it may be identified either by name or handle.
 Rules on the other hand must be deleted by handle because there is no other way to uniquely identify them.
 This flag makes ruleset listings include handle values.
+NFT_CTX_OUTPUT_JSON::
+	If enabled at compile-time, libnftables accepts input in JSON format and is able to print output in JSON format as well.
+See *libnftables-json*(5) for a description of the supported schema.
+This flag controls JSON output format, input is auto-detected.
 
 The *nft_ctx_output_get_flags*() function returns the output flags setting's value in 'ctx'.
 
@@ -189,16 +191,6 @@ The default setting is *false*.
 The *nft_ctx_output_get_echo*() function returns the echo output setting's value in 'ctx'.
 
 The *nft_ctx_output_set_echo*() function sets the echo output setting in 'ctx' to the value of 'val'.
-
-=== nft_ctx_output_get_json() and nft_ctx_output_set_json()
-If enabled at compile-time, libnftables accepts input in JSON format and is able to print output in JSON format as well.
-See *libnftables-json*(5) for a description of the supported schema.
-These functions control JSON output format, input is auto-detected.
-The default setting is *false*.
-
-The *nft_ctx_output_get_json*() function returns the JSON output setting's value in 'ctx'.
-
-The *nft_ctx_output_set_json*() function sets the JSON output setting in 'ctx' to the value of 'val'.
 
 === Controlling library standard and error output
 By default, any output from the library (e.g., after a *list* command) is written to 'stdout' and any error messages are written to 'stderr'.

@@ -908,7 +908,7 @@ int netlink_echo_callback(const struct nlmsghdr *nlh, void *data)
 	if (!echo_monh.ctx->nft->output.echo)
 		return MNL_CB_OK;
 
-	if (ctx->nft->output.json)
+	if (nft_output_json(&ctx->nft->output))
 		return json_events_cb(nlh, &echo_monh);
 
 	return netlink_events_cb(nlh, &echo_monh);

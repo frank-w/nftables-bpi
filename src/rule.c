@@ -2127,7 +2127,7 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table = NULL;
 
-	if (ctx->nft->output.json)
+	if (nft_output_json(&ctx->nft->output))
 		return do_command_list_json(ctx, cmd);
 
 	if (cmd->handle.table.name != NULL)

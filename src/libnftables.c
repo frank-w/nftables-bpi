@@ -352,22 +352,6 @@ void nft_ctx_output_set_echo(struct nft_ctx *ctx, bool val)
 	ctx->output.echo = val;
 }
 
-bool nft_ctx_output_get_json(struct nft_ctx *ctx)
-{
-#ifdef HAVE_LIBJANSSON
-	return ctx->output.json;
-#else
-	return false;
-#endif
-}
-
-void nft_ctx_output_set_json(struct nft_ctx *ctx, bool val)
-{
-#ifdef HAVE_LIBJANSSON
-	ctx->output.json = val;
-#endif
-}
-
 static const struct input_descriptor indesc_cmdline = {
 	.type	= INDESC_BUFFER,
 	.name	= "<cmdline>",
@@ -425,7 +409,7 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, const char *buf)
 	nlbuf = xzalloc(strlen(buf) + 2);
 	sprintf(nlbuf, "%s\n", buf);
 
-	if (nft->output.json)
+	if (nft_output_json(&nft->output))
 		rc = nft_parse_json_buffer(nft, nlbuf, &msgs, &cmds);
 	if (rc == -EINVAL)
 		rc = nft_parse_bison_buffer(nft, nlbuf, &msgs, &cmds);
@@ -447,7 +431,7 @@ err:
 	}
 	free(nlbuf);
 
-	if (!rc && nft->output.json && nft->output.echo)
+	if (!rc && nft_output_json(&nft->output) && nft->output.echo)
 		json_print_echo(nft);
 	return rc;
 }
@@ -467,7 +451,7 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 		filename = "/dev/stdin";
 
 	rc = -EINVAL;
-	if (nft->output.json)
+	if (nft_output_json(&nft->output))
 		rc = nft_parse_json_filename(nft, filename, &msgs, &cmds);
 	if (rc == -EINVAL)
 		rc = nft_parse_bison_filename(nft, filename, &msgs, &cmds);
@@ -488,7 +472,7 @@ err:
 		nft->scanner = NULL;
 	}
 
-	if (!rc && nft->output.json && nft->output.echo)
+	if (!rc && nft_output_json(&nft->output) && nft->output.echo)
 		json_print_echo(nft);
 	return rc;
 }

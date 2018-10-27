@@ -64,16 +64,26 @@ LOG STATEMENT
 [verse]
 *log* [prefix 'quoted_string'] [level 'syslog-level'] [flags 'log-flags']
 *log* group 'nflog_group' [prefix 'quoted_string'] [queue-threshold 'value'] [snaplen 'size']
+*log* level audit
 
 The log statement enables logging of matching packets. When this statement is
 used from a rule, the Linux kernel will print some information on all matching
 packets, such as header fields, via the kernel log (where it can be read with
-dmesg(1) or read in the syslog). If the group number is specified, the Linux
+dmesg(1) or read in the syslog).
+
+In the second form of invocation (if 'nflog_group' is specified), the Linux
 kernel will pass the packet to nfnetlink_log which will multicast the packet
 through a netlink socket to the specified multicast group. One or more userspace
 processes may subscribe to the group to receive the packets, see
-libnetfilter_queue documentation for details. This is a non-terminating
-statement, so the rule evaluation continues after the packet is logged.
+libnetfilter_queue documentation for details.
+
+In the third form of invocation (if level audit is specified), the Linux
+kernel writes a message into the audit buffer suitably formatted for reading
+with auditd. Therefore no further formatting options (such as prefix or flags)
+are allowed in this mode.
+
+This is a non-terminating statement, so the rule evaluation continues after
+the packet is logged.
 
 .log statement options
 [options="header"]
@@ -84,7 +94,7 @@ Log message prefix|
 quoted string
 |level|
 Syslog level of logging |
-string: emerg, alert, crit, err, warn [default], notice, info, debug
+string: emerg, alert, crit, err, warn [default], notice, info, debug, audit
 |group|
 NFLOG group to send messages to|
 unsigned integer (16 bit)

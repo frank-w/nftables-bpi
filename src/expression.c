@@ -662,8 +662,10 @@ static void range_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	unsigned int flags = octx->flags;
 
-	octx->flags &= ~NFT_CTX_OUTPUT_SERVICE;
-	octx->flags |= NFT_CTX_OUTPUT_NUMERIC_PROTO;
+	octx->flags &= ~(NFT_CTX_OUTPUT_SERVICE |
+			 NFT_CTX_OUTPUT_REVERSEDNS |
+			 NFT_CTX_OUTPUT_GUID);
+	octx->flags |= NFT_CTX_OUTPUT_NUMERIC_ALL;
 	expr_print(expr->left, octx);
 	nft_print(octx, "-");
 	expr_print(expr->right, octx);

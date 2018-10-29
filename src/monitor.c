@@ -905,7 +905,7 @@ int netlink_echo_callback(const struct nlmsghdr *nlh, void *data)
 		.cache_needed = true,
 	};
 
-	if (!echo_monh.ctx->nft->output.echo)
+	if (!nft_output_echo(&echo_monh.ctx->nft->output))
 		return MNL_CB_OK;
 
 	if (nft_output_json(&ctx->nft->output))

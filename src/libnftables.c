@@ -342,16 +342,6 @@ void nft_ctx_output_set_debug(struct nft_ctx *ctx, unsigned int mask)
 	ctx->debug_mask = mask;
 }
 
-bool nft_ctx_output_get_echo(struct nft_ctx *ctx)
-{
-	return ctx->output.echo;
-}
-
-void nft_ctx_output_set_echo(struct nft_ctx *ctx, bool val)
-{
-	ctx->output.echo = val;
-}
-
 static const struct input_descriptor indesc_cmdline = {
 	.type	= INDESC_BUFFER,
 	.name	= "<cmdline>",
@@ -431,7 +421,9 @@ err:
 	}
 	free(nlbuf);
 
-	if (!rc && nft_output_json(&nft->output) && nft->output.echo)
+	if (!rc &&
+	    nft_output_json(&nft->output) &&
+	    nft_output_echo(&nft->output))
 		json_print_echo(nft);
 	return rc;
 }
@@ -472,7 +464,9 @@ err:
 		nft->scanner = NULL;
 	}
 
-	if (!rc && nft_output_json(&nft->output) && nft->output.echo)
+	if (!rc &&
+	    nft_output_json(&nft->output) &&
+	    nft_output_echo(&nft->output))
 		json_print_echo(nft);
 	return rc;
 }

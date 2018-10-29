@@ -269,7 +269,7 @@ int main(int argc, char * const *argv)
 			output_flags |= NFT_CTX_OUTPUT_HANDLE;
 			break;
 		case OPT_ECHO:
-			nft_ctx_output_set_echo(nft, true);
+			output_flags |= NFT_CTX_OUTPUT_ECHO;
 			break;
 		case OPT_JSON:
 #ifdef HAVE_LIBJANSSON

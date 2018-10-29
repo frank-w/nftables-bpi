@@ -350,7 +350,7 @@ int mnl_nft_rule_replace(struct netlink_ctx *ctx, const struct cmd *cmd)
 	struct nlmsghdr *nlh;
 	int err;
 
-	if (ctx->nft->output.echo) {
+	if (nft_output_echo(&ctx->nft->output)) {
 		err = cache_update(ctx->nft, CMD_INVALID, ctx->msgs);
 		if (err < 0)
 			return err;

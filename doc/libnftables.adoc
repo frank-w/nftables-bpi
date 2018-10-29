@@ -28,9 +28,6 @@ void nft_ctx_output_set_numeric(struct nft_ctx* '\*ctx'*,
 unsigned int nft_ctx_output_get_debug(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_debug(struct nft_ctx* '\*ctx'*, unsigned int* 'mask'*);
 
-bool nft_ctx_output_get_echo(struct nft_ctx* '\*ctx'*);
-void nft_ctx_output_set_echo(struct nft_ctx* '\*ctx'*, bool* 'val'*);
-
 FILE *nft_ctx_set_output(struct nft_ctx* '\*ctx'*, FILE* '\*fp'*);
 int nft_ctx_buffer_output(struct nft_ctx* '\*ctx'*);
 int nft_ctx_unbuffer_output(struct nft_ctx* '\*ctx'*);
@@ -92,6 +89,7 @@ enum {
         NFT_CTX_OUTPUT_STATELESS   = (1 << 2),
         NFT_CTX_OUTPUT_HANDLE      = (1 << 3),
         NFT_CTX_OUTPUT_JSON        = (1 << 4),
+        NFT_CTX_OUTPUT_ECHO        = (1 << 5),
 };
 ----
 
@@ -111,6 +109,9 @@ NFT_CTX_OUTPUT_JSON::
 	If enabled at compile-time, libnftables accepts input in JSON format and is able to print output in JSON format as well.
 See *libnftables-json*(5) for a description of the supported schema.
 This flag controls JSON output format, input is auto-detected.
+NFT_CTX_OUTPUT_ECHO::
+	The echo setting makes libnftables print the changes once they are committed to the kernel, just like a running instance of *nft monitor* would.
+Amongst other things, this allows to retrieve an added rule's handle atomically.
 
 The *nft_ctx_output_get_flags*() function returns the output flags setting's value in 'ctx'.
 
@@ -182,15 +183,6 @@ NFT_DEBUG_SEGTREE::
 The *nft_ctx_output_get_debug*() function returns the debug output setting's value in 'ctx'.
 
 The *nft_ctx_output_set_debug*() function sets the debug output setting in 'ctx' to the value of 'mask'.
-
-=== nft_ctx_output_get_echo() and nft_ctx_output_set_echo()
-The echo setting makes libnftables print the changes once they are committed to the kernel, just like a running instance of *nft monitor* would.
-Amongst other things, this allows to retrieve an added rule's handle atomically.
-The default setting is *false*.
-
-The *nft_ctx_output_get_echo*() function returns the echo output setting's value in 'ctx'.
-
-The *nft_ctx_output_set_echo*() function sets the echo output setting in 'ctx' to the value of 'val'.
 
 === Controlling library standard and error output
 By default, any output from the library (e.g., after a *list* command) is written to 'stdout' and any error messages are written to 'stderr'.

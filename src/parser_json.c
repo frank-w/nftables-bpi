@@ -3399,7 +3399,7 @@ int nft_parse_json_buffer(struct nft_ctx *nft, const char *buf,
 
 	ret = __json_parse(&ctx);
 
-	if (!nft->output.echo) {
+	if (!nft_output_echo(&nft->output)) {
 		json_decref(nft->json_root);
 		nft->json_root = NULL;
 	}
@@ -3427,7 +3427,7 @@ int nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
 
 	ret = __json_parse(&ctx);
 
-	if (!nft->output.echo) {
+	if (!nft_output_echo(&nft->output)) {
 		json_decref(nft->json_root);
 		nft->json_root = NULL;
 	}

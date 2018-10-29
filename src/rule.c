@@ -1388,7 +1388,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 {
 	uint32_t flags = excl ? NLM_F_EXCL : 0;
 
-	if (ctx->nft->output.echo) {
+	if (nft_output_echo(&ctx->nft->output)) {
 		int ret;
 
 		ret = cache_update(ctx->nft, cmd->obj, ctx->msgs);
@@ -1439,7 +1439,7 @@ static int do_command_insert(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	uint32_t flags = 0;
 
-	if (ctx->nft->output.echo) {
+	if (nft_output_echo(&ctx->nft->output)) {
 		int ret;
 
 		ret = cache_update(ctx->nft, cmd->obj, ctx->msgs);

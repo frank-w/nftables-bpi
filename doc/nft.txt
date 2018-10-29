@@ -50,15 +50,15 @@ For a full summary of options, run *nft --help*.
 	Translate ports to service names as defined by /etc/services.
 
 *-u*::
-*--guid**::
+*--guid*::
 	Translate numeric UID/GID to names as defined by /etc/passwd and /etc/group.
 
 *-p*::
-*--numeric-protocol**::
+*--numeric-protocol*::
 	Display layer 4 protocol numerically.
 
 *-y*::
-*--numeric-priority**::
+*--numeric-priority*::
 	Display base chain priority numerically.
 
 *-c*::

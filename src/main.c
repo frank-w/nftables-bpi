@@ -41,9 +41,10 @@ enum opt_vals {
 	OPT_ECHO		= 'e',
 	OPT_GUID		= 'u',
 	OPT_NUMERIC_PRIO	= 'y',
+	OPT_NUMERIC_PROTO	= 'p',
 	OPT_INVALID		= '?',
 };
-#define OPTSTRING	"hvcf:iI:jvnsNaeSupy"
+#define OPTSTRING	"hvcf:iI:jvnsNaeSupyp"
 
 static const struct option options[] = {
 	{
@@ -137,6 +138,7 @@ static void show_help(const char *name)
 "  -u, --guid			Print UID/GID as defined in /etc/passwd and /etc/group.\n"
 "  -N				Translate IP addresses to names.\n"
 "  -S, --service			Translate ports to service names as described in /etc/services.\n"
+"  -p, --numeric-protocol	Print layer 4 protocols numerically.\n"
 "  -y, --numeric-priority	Print chain priority numerically.\n"
 "  -a, --handle			Output rule handle.\n"
 "  -e, --echo			Echo what has been added, inserted or replaced.\n"
@@ -282,6 +284,9 @@ int main(int argc, char * const *argv)
 			break;
 		case OPT_NUMERIC_PRIO:
 			output_flags |= NFT_CTX_OUTPUT_NUMERIC_PRIO;
+			break;
+		case OPT_NUMERIC_PROTO:
+			output_flags |= NFT_CTX_OUTPUT_NUMERIC_PROTO;
 			break;
 		case OPT_INVALID:
 			exit(EXIT_FAILURE);

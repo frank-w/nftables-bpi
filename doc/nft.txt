@@ -9,7 +9,7 @@ nft - Administration tool of the nftables framework for packet filtering and cla
 SYNOPSIS
 --------
 [verse]
-*nft* [ *-nNscaeS* ] [ *-I* 'directory' ] [ *-f* 'filename' | *-i* | 'cmd' ...]
+*nft* [ *-nNscaeSupy* ] [ *-I* 'directory' ] [ *-f* 'filename' | *-i* | 'cmd' ...]
 *nft* *-h*
 *nft* *-v*
 
@@ -52,6 +52,10 @@ For a full summary of options, run *nft --help*.
 *-u*::
 *--guid**::
 	Translate numeric UID/GID to names as defined by /etc/passwd and /etc/group.
+
+*-p*::
+*--numeric-protocol**::
+	Display layer 4 protocol numerically.
 
 *-y*::
 *--numeric-priority**::

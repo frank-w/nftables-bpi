@@ -40,10 +40,10 @@ enum opt_vals {
 	OPT_HANDLE_OUTPUT	= 'a',
 	OPT_ECHO		= 'e',
 	OPT_GUID		= 'u',
+	OPT_NUMERIC_PRIO	= 'y',
 	OPT_INVALID		= '?',
 };
-
-#define OPTSTRING	"hvcf:iI:jvnsNaeSu"
+#define OPTSTRING	"hvcf:iI:jvnsNaeSupy"
 
 static const struct option options[] = {
 	{
@@ -110,6 +110,10 @@ static const struct option options[] = {
 		.val		= OPT_GUID,
 	},
 	{
+		.name		= "numeric-priority",
+		.val		= OPT_NUMERIC_PRIO,
+	},
+	{
 		.name		= NULL
 	}
 };
@@ -135,6 +139,7 @@ static void show_help(const char *name)
 "  -u, --guid			Print UID/GID as defined in /etc/passwd and /etc/group.\n"
 "  -N				Translate IP addresses to names.\n"
 "  -S, --service			Translate ports to service names as described in /etc/services.\n"
+"  -y, --numeric-priority	Print chain priority numerically.\n"
 "  -a, --handle			Output rule handle.\n"
 "  -e, --echo			Echo what has been added, inserted or replaced.\n"
 "  -I, --includepath <directory>	Add <directory> to the paths searched for include files. Default is: %s\n"
@@ -284,6 +289,9 @@ int main(int argc, char * const *argv)
 			break;
 		case OPT_GUID:
 			output_flags |= NFT_CTX_OUTPUT_GUID;
+			break;
+		case OPT_NUMERIC_PRIO:
+			output_flags |= NFT_CTX_OUTPUT_NUMERIC_PRIO;
 			break;
 		case OPT_INVALID:
 			exit(EXIT_FAILURE);

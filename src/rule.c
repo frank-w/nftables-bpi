@@ -946,8 +946,9 @@ int std_prio_lookup(const char *std_prio_name, int family, int hook)
 	return NF_IP_PRI_LAST;
 }
 
-static const char *prio2str(char *buf, size_t bufsize, int family, int hook,
-			    int prio, int numeric)
+static const char *prio2str(const struct output_ctx *octx,
+			    char *buf, size_t bufsize, int family, int hook,
+			    int prio)
 {
 	const struct prio_tag *prio_arr;
 	const char *std_prio_str;
@@ -963,7 +964,7 @@ static const char *prio2str(char *buf, size_t bufsize, int family, int hook,
 		arr_size = array_size(std_prios);
 	}
 
-	if (numeric != NFT_NUMERIC_ALL) {
+	if (!nft_output_numeric_prio(octx)) {
 		for (i = 0; i < arr_size; ++i) {
 			std_prio = prio_arr[i].val;
 			std_prio_str = prio_arr[i].str;
@@ -1004,9 +1005,9 @@ static void chain_print_declaration(const struct chain *chain,
 		if (chain->dev != NULL)
 			nft_print(octx, " device %s", chain->dev);
 		nft_print(octx, " priority %s; policy %s;\n",
-			  prio2str(priobuf, sizeof(priobuf),
+			  prio2str(octx, priobuf, sizeof(priobuf),
 				   chain->handle.family, chain->hooknum,
-				   chain->priority.num, octx->numeric),
+				   chain->priority.num),
 			  chain_policy2str(chain->policy));
 	}
 }
@@ -1035,9 +1036,9 @@ void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 	if (chain->flags & CHAIN_F_BASECHAIN) {
 		nft_print(octx, " { type %s hook %s priority %s; policy %s; }",
 			  chain->type, chain->hookstr,
-			  prio2str(priobuf, sizeof(priobuf),
+			  prio2str(octx, priobuf, sizeof(priobuf),
 				   chain->handle.family, chain->hooknum,
-				   chain->priority.num, octx->numeric),
+				   chain->priority.num),
 			  chain_policy2str(chain->policy));
 	}
 	if (nft_output_handle(octx))
@@ -1950,9 +1951,8 @@ static void flowtable_print_declaration(const struct flowtable *flowtable,
 	nft_print(octx, "%s%shook %s priority %s%s",
 		  opts->tab, opts->tab,
 		  hooknum2str(NFPROTO_NETDEV, flowtable->hooknum),
-		  prio2str(priobuf, sizeof(priobuf), NFPROTO_NETDEV,
-			   flowtable->hooknum, flowtable->priority.num,
-			   octx->numeric),
+		  prio2str(octx, priobuf, sizeof(priobuf), NFPROTO_NETDEV,
+			   flowtable->hooknum, flowtable->priority.num),
 		  opts->stmt_separator);
 
 	nft_print(octx, "%s%sdevices = { ", opts->tab, opts->tab);

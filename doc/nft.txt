@@ -56,6 +56,10 @@ For a full summary of options, run *nft --help*.
 *--guid**::
 	Translate numeric UID/GID to names as defined by /etc/passwd and /etc/group.
 
+*-y*::
+*--numeric-priority**::
+	Display base chain priority numerically.
+
 *-c*::
 *--check*::
 	Check commands validity without actually applying the changes.

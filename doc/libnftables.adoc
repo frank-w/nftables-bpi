@@ -91,6 +91,7 @@ enum {
         NFT_CTX_OUTPUT_JSON        = (1 << 4),
         NFT_CTX_OUTPUT_ECHO        = (1 << 5),
         NFT_CTX_OUTPUT_GUID        = (1 << 6),
+        NFT_CTX_OUTPUT_NUMERIC_PROTO = (1 << 7),
 };
 ----
 
@@ -119,6 +120,8 @@ NFT_CTX_OUTPUT_GUID::
 The *nft_ctx_output_get_flags*() function returns the output flags setting's value in 'ctx'.
 
 The *nft_ctx_output_set_flags*() function sets the output flags setting in 'ctx' to the value of 'val'.
+NFT_CTX_OUTPUT_NUMERIC_PROTO::
+	Display layer 4 protocol numerically.
 
 === nft_ctx_output_get_numeric() and nft_ctx_output_set_numeric()
 These functions allow control over value representation in library output.

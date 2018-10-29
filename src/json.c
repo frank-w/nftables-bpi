@@ -448,6 +448,7 @@ json_t *range_expr_json(const struct expr *expr, struct output_ctx *octx)
 	json_t *root;
 
 	octx->flags &= ~NFT_CTX_OUTPUT_SERVICE;
+	octx->flags |= NFT_CTX_OUTPUT_NUMERIC_PROTO;
 	root = json_pack("{s:[o, o]}", "range",
 			 expr_print_json(expr->left, octx),
 			 expr_print_json(expr->right, octx));
@@ -961,7 +962,7 @@ json_t *inet_protocol_type_json(const struct expr *expr,
 {
 	struct protoent *p;
 
-	if (octx->numeric < NFT_NUMERIC_ALL) {
+	if (!nft_output_numeric_proto(octx)) {
 		p = getprotobynumber(mpz_get_uint8(expr->value));
 		if (p != NULL)
 			return json_string(p->p_name);

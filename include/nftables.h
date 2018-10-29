@@ -63,6 +63,11 @@ static inline bool nft_output_guid(const struct output_ctx *octx)
 	return octx->flags & NFT_CTX_OUTPUT_GUID;
 }
 
+static inline bool nft_output_numeric_proto(const struct output_ctx *octx)
+{
+	return octx->flags & NFT_CTX_OUTPUT_NUMERIC_PROTO;
+}
+
 struct nft_cache {
 	uint16_t		genid;
 	struct list_head	list;

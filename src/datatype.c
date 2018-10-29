@@ -564,7 +564,7 @@ static void inet_protocol_type_print(const struct expr *expr,
 {
 	struct protoent *p;
 
-	if (octx->numeric < NFT_NUMERIC_ALL) {
+	if (!nft_output_numeric_proto(octx)) {
 		p = getprotobynumber(mpz_get_uint8(expr->value));
 		if (p != NULL) {
 			nft_print(octx, "%s", p->p_name);

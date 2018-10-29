@@ -207,7 +207,7 @@ static void uid_type_print(const struct expr *expr, struct output_ctx *octx)
 {
 	struct passwd *pw;
 
-	if (octx->numeric < NFT_NUMERIC_ALL) {
+	if (nft_output_guid(octx)) {
 		uint32_t uid = mpz_get_uint32(expr->value);
 
 		pw = getpwuid(uid);
@@ -260,7 +260,7 @@ static void gid_type_print(const struct expr *expr, struct output_ctx *octx)
 {
 	struct group *gr;
 
-	if (octx->numeric < NFT_NUMERIC_ALL) {
+	if (nft_output_guid(octx)) {
 		uint32_t gid = mpz_get_uint32(expr->value);
 
 		gr = getgrgid(gid);

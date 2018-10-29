@@ -90,6 +90,7 @@ enum {
         NFT_CTX_OUTPUT_HANDLE      = (1 << 3),
         NFT_CTX_OUTPUT_JSON        = (1 << 4),
         NFT_CTX_OUTPUT_ECHO        = (1 << 5),
+        NFT_CTX_OUTPUT_GUID        = (1 << 6),
 };
 ----
 
@@ -112,6 +113,8 @@ This flag controls JSON output format, input is auto-detected.
 NFT_CTX_OUTPUT_ECHO::
 	The echo setting makes libnftables print the changes once they are committed to the kernel, just like a running instance of *nft monitor* would.
 Amongst other things, this allows to retrieve an added rule's handle atomically.
+NFT_CTX_OUTPUT_GUID::
+	Display UID and GID as described in the /etc/passwd and /etc/group files.
 
 The *nft_ctx_output_get_flags*() function returns the output flags setting's value in 'ctx'.
 

@@ -52,6 +52,10 @@ For a full summary of options, run *nft --help*.
 *--service*::
 	Translate ports to service names as defined by /etc/services.
 
+*-u*::
+*--guid**::
+	Translate numeric UID/GID to names as defined by /etc/passwd and /etc/group.
+
 *-c*::
 *--check*::
 	Check commands validity without actually applying the changes.

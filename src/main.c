@@ -39,10 +39,11 @@ enum opt_vals {
 	OPT_DEBUG		= 'd',
 	OPT_HANDLE_OUTPUT	= 'a',
 	OPT_ECHO		= 'e',
+	OPT_GUID		= 'u',
 	OPT_INVALID		= '?',
 };
 
-#define OPTSTRING	"hvcf:iI:jvnsNaeS"
+#define OPTSTRING	"hvcf:iI:jvnsNaeSu"
 
 static const struct option options[] = {
 	{
@@ -105,6 +106,10 @@ static const struct option options[] = {
 		.val		= OPT_JSON,
 	},
 	{
+		.name		= "guid",
+		.val		= OPT_GUID,
+	},
+	{
 		.name		= NULL
 	}
 };
@@ -127,6 +132,7 @@ static void show_help(const char *name)
 "  				Specify twice to also show Internet services (port numbers) numerically.\n"
 "				Specify three times to also show protocols, user IDs, and group IDs numerically.\n"
 "  -s, --stateless		Omit stateful information of ruleset.\n"
+"  -u, --guid			Print UID/GID as defined in /etc/passwd and /etc/group.\n"
 "  -N				Translate IP addresses to names.\n"
 "  -S, --service			Translate ports to service names as described in /etc/services.\n"
 "  -a, --handle			Output rule handle.\n"
@@ -275,6 +281,9 @@ int main(int argc, char * const *argv)
 #ifdef HAVE_LIBJANSSON
 			output_flags |= NFT_CTX_OUTPUT_JSON;
 #endif
+			break;
+		case OPT_GUID:
+			output_flags |= NFT_CTX_OUTPUT_GUID;
 			break;
 		case OPT_INVALID:
 			exit(EXIT_FAILURE);

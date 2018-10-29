@@ -51,6 +51,7 @@ enum {
 	NFT_CTX_OUTPUT_HANDLE		= (1 << 3),
 	NFT_CTX_OUTPUT_JSON		= (1 << 4),
 	NFT_CTX_OUTPUT_ECHO		= (1 << 5),
+	NFT_CTX_OUTPUT_GUID		= (1 << 6),
 };
 
 unsigned int nft_ctx_output_get_flags(struct nft_ctx *ctx);

@@ -1021,7 +1021,7 @@ json_t *uid_type_json(const struct expr *expr, struct output_ctx *octx)
 {
 	uint32_t uid = mpz_get_uint32(expr->value);
 
-	if (octx->numeric < NFT_NUMERIC_ALL) {
+	if (nft_output_guid(octx)) {
 		struct passwd *pw = getpwuid(uid);
 
 		if (pw)
@@ -1034,7 +1034,7 @@ json_t *gid_type_json(const struct expr *expr, struct output_ctx *octx)
 {
 	uint32_t gid = mpz_get_uint32(expr->value);
 
-	if (octx->numeric < NFT_NUMERIC_ALL) {
+	if (nft_output_guid(octx)) {
 		struct group *gr = getgrgid(gid);
 
 		if (gr)

@@ -196,7 +196,7 @@ void symbolic_constant_print(const struct symbol_table *tbl,
 	if (quotes)
 		nft_print(octx, "\"");
 
-	if (octx->numeric > NFT_NUMERIC_ALL)
+	if (nft_output_numeric_symbol(octx))
 		nft_print(octx, "%" PRIu64 "", val);
 	else
 		nft_print(octx, "%s", s->identifier);

@@ -312,17 +312,6 @@ void nft_ctx_set_dry_run(struct nft_ctx *ctx, bool dry)
 	ctx->check = dry;
 }
 
-enum nft_numeric_level nft_ctx_output_get_numeric(struct nft_ctx *ctx)
-{
-	return ctx->output.numeric;
-}
-
-void nft_ctx_output_set_numeric(struct nft_ctx *ctx,
-				enum nft_numeric_level level)
-{
-	ctx->output.numeric = level;
-}
-
 unsigned int nft_ctx_output_get_flags(struct nft_ctx *ctx)
 {
 	return ctx->output.flags;

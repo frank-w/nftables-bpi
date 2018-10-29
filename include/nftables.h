@@ -17,7 +17,6 @@ struct cookie {
 
 struct output_ctx {
 	unsigned int flags;
-	unsigned int numeric;
 	union {
 		FILE *output_fp;
 		struct cookie output_cookie;
@@ -71,6 +70,11 @@ static inline bool nft_output_numeric_proto(const struct output_ctx *octx)
 static inline bool nft_output_numeric_prio(const struct output_ctx *octx)
 {
 	return octx->flags & NFT_CTX_OUTPUT_NUMERIC_PRIO;
+}
+
+static inline bool nft_output_numeric_symbol(const struct output_ctx *octx)
+{
+	return octx->flags & NFT_CTX_OUTPUT_NUMERIC_SYMBOL;
 }
 
 struct nft_cache {

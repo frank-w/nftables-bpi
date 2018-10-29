@@ -132,9 +132,7 @@ static void show_help(const char *name)
 "  -i, --interactive		Read input from interactive CLI\n"
 "\n"
 "  -j, --json			Format output in JSON\n"
-"  -n, --numeric			When specified once, show network addresses numerically (default behaviour).\n"
-"  				Specify twice to also show Internet services (port numbers) numerically.\n"
-"				Specify three times to also show protocols, user IDs, and group IDs numerically.\n"
+"  -n, --numeric			Print fully numerical output.\n"
 "  -s, --stateless		Omit stateful information of ruleset.\n"
 "  -u, --guid			Print UID/GID as defined in /etc/passwd and /etc/group.\n"
 "  -N				Translate IP addresses to names.\n"
@@ -189,7 +187,6 @@ static const struct {
 int main(int argc, char * const *argv)
 {
 	char *buf = NULL, *filename = NULL;
-	enum nft_numeric_level numeric;
 	unsigned int output_flags = 0;
 	bool interactive = false;
 	unsigned int debug_mask;
@@ -229,14 +226,7 @@ int main(int argc, char * const *argv)
 			}
 			break;
 		case OPT_NUMERIC:
-			numeric = nft_ctx_output_get_numeric(nft);
-			if (numeric == NFT_NUMERIC_ALL) {
-				fprintf(stderr, "Too many numeric options "
-						"used, max. %u\n",
-					NFT_NUMERIC_ALL);
-				exit(EXIT_FAILURE);
-			}
-			nft_ctx_output_set_numeric(nft, numeric + 1);
+			output_flags |= NFT_CTX_OUTPUT_NUMERIC_ALL;
 			break;
 		case OPT_STATELESS:
 			output_flags |= NFT_CTX_OUTPUT_STATELESS;

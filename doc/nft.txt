@@ -34,10 +34,7 @@ For a full summary of options, run *nft --help*.
 
 *-n*::
 *--numeric*::
-	Show data numerically. When used once (the default behaviour), skip
-	lookup of addresses to symbolic names. Use twice to also show Internet
-	services (port numbers) numerically. Use three times to also show
-	protocols, UIDs/GIDs and priorities numerically.
+	Print fully numerical output.
 
 *-s*::
 *--stateless*::

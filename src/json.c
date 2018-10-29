@@ -812,7 +812,7 @@ static json_t *symbolic_constant_json(const struct symbol_table *tbl,
 	if (!s->identifier)
 		return expr_basetype(expr)->json(expr, octx);
 
-	if (octx->numeric > NFT_NUMERIC_ALL)
+	if (nft_output_numeric_symbol(octx))
 		return json_integer(val);
 	else
 		return json_string(s->identifier);

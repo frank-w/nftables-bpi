@@ -26,13 +26,6 @@ enum nft_debug_level {
 	NFT_DEBUG_SEGTREE		= 0x40,
 };
 
-enum nft_numeric_level {
-	NFT_NUMERIC_NONE,
-	NFT_NUMERIC_ADDR,
-	NFT_NUMERIC_PORT,
-	NFT_NUMERIC_ALL,
-};
-
 /**
  * Possible flags to pass to nft_ctx_new()
  */
@@ -54,13 +47,15 @@ enum {
 	NFT_CTX_OUTPUT_GUID		= (1 << 6),
 	NFT_CTX_OUTPUT_NUMERIC_PROTO	= (1 << 7),
 	NFT_CTX_OUTPUT_NUMERIC_PRIO     = (1 << 8),
+	NFT_CTX_OUTPUT_NUMERIC_SYMBOL	= (1 << 9),
+	NFT_CTX_OUTPUT_NUMERIC_ALL	= (NFT_CTX_OUTPUT_NUMERIC_PROTO |
+					   NFT_CTX_OUTPUT_NUMERIC_PRIO |
+					   NFT_CTX_OUTPUT_NUMERIC_SYMBOL),
 };
 
 unsigned int nft_ctx_output_get_flags(struct nft_ctx *ctx);
 void nft_ctx_output_set_flags(struct nft_ctx *ctx, unsigned int flags);
 
-enum nft_numeric_level nft_ctx_output_get_numeric(struct nft_ctx *ctx);
-void nft_ctx_output_set_numeric(struct nft_ctx *ctx, enum nft_numeric_level level);
 unsigned int nft_ctx_output_get_debug(struct nft_ctx *ctx);
 void nft_ctx_output_set_debug(struct nft_ctx *ctx, unsigned int mask);
 

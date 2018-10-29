@@ -835,11 +835,9 @@ static int netlink_events_newgen_cb(const struct nlmsghdr *nlh, int type,
 	}
 	if (genid >= 0) {
 		nft_mon_print(monh, "# new generation %d", genid);
-		if (pid >= 0) {
-			nft_mon_print(monh, " by process %d", pid);
-			if (!monh->ctx->nft->output.numeric)
-				nft_mon_print(monh, " (%s)", name);
-		}
+		if (pid >= 0)
+			nft_mon_print(monh, " by process %d (%s)", pid, name);
+
 		nft_mon_print(monh, "\n");
 	}
 

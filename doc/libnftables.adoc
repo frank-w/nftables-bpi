@@ -21,10 +21,6 @@ void nft_ctx_set_dry_run(struct nft_ctx* '\*ctx'*, bool* 'dry'*);
 unsigned int nft_ctx_output_get_flags(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_flags(struct nft_ctx* '\*ctx'*, unsigned int* 'flags'*);
 
-enum nft_numeric_level nft_ctx_output_get_numeric(struct nft_ctx* '\*ctx'*);
-void nft_ctx_output_set_numeric(struct nft_ctx* '\*ctx'*,
-				enum nft_numeric_level* 'level'*);
-
 unsigned int nft_ctx_output_get_debug(struct nft_ctx* '\*ctx'*);
 void nft_ctx_output_set_debug(struct nft_ctx* '\*ctx'*, unsigned int* 'mask'*);
 
@@ -125,37 +121,10 @@ NFT_CTX_OUTPUT_NUMERIC_PROTO::
 	Display layer 4 protocol numerically.
 NFT_CTX_OUTPUT_NUMERIC_PRIO::
 	Display base chain priority numerically.
-
-=== nft_ctx_output_get_numeric() and nft_ctx_output_set_numeric()
-These functions allow control over value representation in library output.
-For instance, port numbers by default are printed by their name (as listed in '/etc/services' file), if known.
-In libnftables, numeric output is leveled, defined as such:
-
-----
-enum nft_numeric_level {
-        NFT_NUMERIC_NONE,
-        NFT_NUMERIC_ADDR,
-        NFT_NUMERIC_PORT,
-        NFT_NUMERIC_ALL,
-};
-----
-
-Each numeric level includes all previous ones:
-
-NFT_NUMERIC_NONE::
-	No conversion into numeric format happens, this is the default.
-NFT_NUMERIC_ADDR::
-	Network addresses are always converted into numeric format.
-NFT_NUMERIC_PORT::
-	Network services are always converted into numeric format.
-NFT_NUMERIC_ALL::
-	Everything is converted into numeric format.
-
-The default numeric level is *NFT_NUMERIC_NONE*.
-
-The *nft_ctx_output_get_numeric*() function returns the numeric output setting's value contained in 'ctx'.
-
-The *nft_ctx_output_set_numeric*() function sets the numeric output setting in 'ctx' to the value of 'level'.
+NFT_CTX_OUTPUT_NUMERIC_SYMBOL::
+	Display expression datatype as numeric value.
+NFT_CTX_OUTPUT_NUMERIC_ALL::
+	Display all numerically.
 
 === nft_ctx_output_get_debug() and nft_ctx_output_set_debug()
 Libnftables supports separate debugging of different parts of its internals.

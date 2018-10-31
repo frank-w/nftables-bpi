@@ -239,7 +239,8 @@ static inline void monitor_print_rule_json(struct netlink_mon_handler *monh,
 	/* empty */
 }
 
-static inline int json_events_cb(const struct nlmsghdr *nlh)
+static inline int json_events_cb(const struct nlmsghdr *nlh,
+                                 struct netlink_mon_handler *monh)
 {
 	return -1;
 }

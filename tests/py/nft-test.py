@@ -176,7 +176,7 @@ def table_exist(table, filename, lineno):
     Exists a table.
     '''
     cmd = "list table %s" % table
-    ret = execute_cmd(cmd, filename, lineno, numeric="all")
+    ret = execute_cmd(cmd, filename, lineno)
 
     return True if (ret == 0) else False
 
@@ -263,7 +263,7 @@ def chain_exist(chain, table, filename):
     Checks a chain
     '''
     cmd = "list chain %s %s" % (table, chain)
-    ret = execute_cmd(cmd, filename, chain.lineno, numeric="all")
+    ret = execute_cmd(cmd, filename, chain.lineno)
 
     return True if (ret == 0) else False
 
@@ -466,7 +466,7 @@ def set_exist(set_name, table, filename, lineno):
     Check if the set exists.
     '''
     cmd = "list set %s %s" % (table, set_name)
-    ret = execute_cmd(cmd, filename, lineno, numeric="all")
+    ret = execute_cmd(cmd, filename, lineno)
 
     return True if (ret == 0) else False
 
@@ -476,7 +476,7 @@ def _set_exist(s, filename, lineno):
     Check if the set exists.
     '''
     cmd = "list set %s %s %s" % (s.family, s.table, s.name)
-    ret = execute_cmd(cmd, filename, lineno, numeric="all")
+    ret = execute_cmd(cmd, filename, lineno)
 
     return True if (ret == 0) else False
 
@@ -584,7 +584,7 @@ def obj_exist(o, table, filename, lineno):
     Check if the object exists.
     '''
     cmd = "list %s %s %s" % (o.type, table, o.name)
-    ret = execute_cmd(cmd, filename, lineno, numeric="all")
+    ret = execute_cmd(cmd, filename, lineno)
 
     return True if (ret == 0) else False
 
@@ -594,7 +594,7 @@ def _obj_exist(o, filename, lineno):
     Check if the object exists.
     '''
     cmd = "list %s %s %s %s" % (o.type, o.family, o.table, o.name)
-    ret = execute_cmd(cmd, filename, lineno, numeric="all")
+    ret = execute_cmd(cmd, filename, lineno)
 
     return True if (ret == 0) else False
 
@@ -805,11 +805,11 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                               gotf.name, 1)
 
             # Check for matching ruleset listing
-            numeric_old = nftables.set_numeric_output("all")
+            numeric_proto_old = nftables.set_numeric_proto_output(True)
             stateless_old = nftables.set_stateless_output(True)
             list_cmd = 'list table %s' % table
             rc, pre_output, err = nftables.cmd(list_cmd)
-            nftables.set_numeric_output(numeric_old)
+            nftables.set_numeric_proto_output(numeric_proto_old)
             nftables.set_stateless_output(stateless_old)
 
             output = pre_output.split(";")
@@ -937,12 +937,12 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
                               gotf.name, 1)
 
             # Check for matching ruleset listing
-            numeric_old = nftables.set_numeric_output("all")
+            numeric_proto_old = nftables.set_numeric_proto_output(True)
             stateless_old = nftables.set_stateless_output(True)
             json_old = nftables.set_json_output(True)
             rc, json_output, err = nftables.cmd(list_cmd)
             nftables.set_json_output(json_old)
-            nftables.set_numeric_output(numeric_old)
+            nftables.set_numeric_proto_output(numeric_proto_old)
             nftables.set_stateless_output(stateless_old)
 
             json_output = json.loads(json_output)
@@ -990,8 +990,7 @@ def signal_handler(signal, frame):
     signal_received = 1
 
 
-def execute_cmd(cmd, filename, lineno,
-                stdout_log=False, numeric=False, debug=False):
+def execute_cmd(cmd, filename, lineno, stdout_log=False, debug=False):
     '''
     Executes a command, checks for segfaults and returns the command exit
     code.
@@ -1000,7 +999,6 @@ def execute_cmd(cmd, filename, lineno,
     :param filename: name of the file tested (used for print_error purposes)
     :param lineno: line number being tested (used for print_error purposes)
     :param stdout_log: redirect stdout to this file instead of global log_file
-    :param numeric: turn numeric output temporarily on
     :param debug: temporarily set these debug flags
     '''
     global log_file
@@ -1008,9 +1006,6 @@ def execute_cmd(cmd, filename, lineno,
     if debug_option:
         print cmd
 
-    if numeric:
-        numeric_old = nftables.get_numeric_output()
-        nftables.set_numeric_output(numeric)
     if debug:
         debug_old = nftables.get_debug()
         nftables.set_debug(debug)
@@ -1025,8 +1020,6 @@ def execute_cmd(cmd, filename, lineno,
     log_file.write(err)
     log_file.flush()
 
-    if numeric:
-        nftables.set_numeric_output(numeric_old)
     if debug:
         nftables.set_debug(debug_old)
 

@@ -33,11 +33,17 @@ class Nftables:
         "segtree":   0x40,
     }
 
-    numeric_levels = {
-        "none": 0,
-        "addr": 1,
-        "port": 2,
-        "all":  3,
+    output_flags = {
+        "reversedns":     (1 << 0),
+        "service":        (1 << 1),
+        "stateless":      (1 << 2),
+        "handle":         (1 << 3),
+        "json":           (1 << 4),
+        "echo":           (1 << 5),
+        "guid":           (1 << 6),
+        "numeric_proto":  (1 << 7),
+        "numeric_prio":   (1 << 8),
+        "numeric_symbol": (1 << 9),
     }
 
     def __init__(self, sofile="libnftables.so"):
@@ -58,40 +64,12 @@ class Nftables:
         self.nft_ctx_new.restype = c_void_p
         self.nft_ctx_new.argtypes = [c_int]
 
-        self.nft_ctx_output_get_handle = lib.nft_ctx_output_get_handle
-        self.nft_ctx_output_get_handle.restype = c_bool
-        self.nft_ctx_output_get_handle.argtypes = [c_void_p]
+        self.nft_ctx_output_get_flags = lib.nft_ctx_output_get_flags
+        self.nft_ctx_output_get_flags.restype = c_uint
+        self.nft_ctx_output_get_flags.argtypes = [c_void_p]
 
-        self.nft_ctx_output_set_handle = lib.nft_ctx_output_set_handle
-        self.nft_ctx_output_set_handle.argtypes = [c_void_p, c_bool]
-
-        self.nft_ctx_output_get_echo = lib.nft_ctx_output_get_echo
-        self.nft_ctx_output_get_echo.restype = c_bool
-        self.nft_ctx_output_get_echo.argtypes = [c_void_p]
-
-        self.nft_ctx_output_set_echo = lib.nft_ctx_output_set_echo
-        self.nft_ctx_output_set_echo.argtypes = [c_void_p, c_bool]
-
-        self.nft_ctx_output_get_numeric = lib.nft_ctx_output_get_numeric
-        self.nft_ctx_output_get_numeric.restype = c_int
-        self.nft_ctx_output_get_numeric.argtypes = [c_void_p]
-
-        self.nft_ctx_output_set_numeric = lib.nft_ctx_output_set_numeric
-        self.nft_ctx_output_set_numeric.argtypes = [c_void_p, c_int]
-
-        self.nft_ctx_output_get_stateless = lib.nft_ctx_output_get_stateless
-        self.nft_ctx_output_get_stateless.restype = c_bool
-        self.nft_ctx_output_get_stateless.argtypes = [c_void_p]
-
-        self.nft_ctx_output_set_stateless = lib.nft_ctx_output_set_stateless
-        self.nft_ctx_output_set_stateless.argtypes = [c_void_p, c_bool]
-
-        self.nft_ctx_output_get_json = lib.nft_ctx_output_get_json
-        self.nft_ctx_output_get_json.restype = c_bool
-        self.nft_ctx_output_get_json.argtypes = [c_void_p]
-
-        self.nft_ctx_output_set_json = lib.nft_ctx_output_set_json
-        self.nft_ctx_output_set_json.argtypes = [c_void_p, c_bool]
+        self.nft_ctx_output_set_flags = lib.nft_ctx_output_set_flags
+        self.nft_ctx_output_set_flags.argtypes = [c_void_p, c_uint]
 
         self.nft_ctx_output_get_debug = lib.nft_ctx_output_get_debug
         self.nft_ctx_output_get_debug.restype = c_int
@@ -128,70 +106,61 @@ class Nftables:
         self.nft_ctx_buffer_output(self.__ctx)
         self.nft_ctx_buffer_error(self.__ctx)
 
-    def get_handle_output(self):
-        """Get the current state of handle output.
+    def __get_output_flag(self, name):
+        flag = self.output_flags[name]
+        return self.nft_ctx_output_get_flags(self.__ctx) & flag
 
-        Returns a boolean indicating whether handle output is active or not.
+    def __set_output_flag(self, name, val):
+        flag = self.output_flags[name]
+        flags = self.nft_ctx_output_get_flags(self.__ctx)
+        if val:
+            new_flags = flags | flag
+        else:
+            new_flags = flags & ~flag
+        self.nft_ctx_output_set_flags(self.__ctx, new_flags)
+        return flags & flag
+
+    def get_reversedns_output(self):
+        """Get the current state of reverse DNS output.
+
+        Returns a boolean indicating whether reverse DNS lookups are performed
+        for IP addresses in output.
         """
-        return self.nft_ctx_output_get_handle(self.__ctx)
+        return self.__get_output_flag("reversedns")
 
-    def set_handle_output(self, val):
-        """Enable or disable handle output.
+    def set_reversedns_output(self, val):
+        """Enable or disable reverse DNS output.
 
-        Accepts a boolean turning handle output on or off.
+        Accepts a boolean turning reverse DNS lookups in output on or off.
 
         Returns the previous value.
         """
-        old = self.get_handle_output()
-        self.nft_ctx_output_set_handle(self.__ctx, val)
-        return old
+        return self.__set_output_flag("reversedns", val)
 
-    def get_echo_output(self):
-        """Get the current state of echo output.
+    def get_service_output(self):
+        """Get the current state of service name output.
 
-        Returns a boolean indicating whether echo output is active or not.
+        Returns a boolean indicating whether service names are used for port
+        numbers in output or not.
         """
-        return self.nft_ctx_output_get_echo(self.__ctx)
+        return self.__get_output_flag("service")
 
-    def set_echo_output(self, val):
-        """Enable or disable echo output.
+    def set_service_output(self, val):
+        """Enable or disable service name output.
 
-        Accepts a boolean turning echo output on or off.
+        Accepts a boolean turning service names for port numbers in output on
+        or off.
 
         Returns the previous value.
         """
-        old = self.get_echo_output()
-        self.nft_ctx_output_set_echo(self.__ctx, val)
-        return old
-
-    def get_numeric_output(self):
-        """Get the current state of numeric output.
-
-        Returns a boolean indicating whether boolean output is active or not.
-        """
-        return self.nft_ctx_output_get_numeric(self.__ctx)
-
-    def set_numeric_output(self, val):
-        """Enable or disable numeric output.
-
-        Accepts a boolean turning numeric output on or off.
-
-        Returns the previous value.
-        """
-        old = self.get_numeric_output()
-
-        if type(val) is str:
-            val = self.numeric_levels[val]
-        self.nft_ctx_output_set_numeric(self.__ctx, val)
-
-        return old
+        return self.__set_output_flag("service", val)
 
     def get_stateless_output(self):
         """Get the current state of stateless output.
 
         Returns a boolean indicating whether stateless output is active or not.
         """
-        return self.nft_ctx_output_get_stateless(self.__ctx)
+        return self.__get_output_flag("stateless")
 
     def set_stateless_output(self, val):
         """Enable or disable stateless output.
@@ -200,16 +169,30 @@ class Nftables:
 
         Returns the previous value.
         """
-        old = self.get_stateless_output()
-        self.nft_ctx_output_set_stateless(self.__ctx, val)
-        return old
+        return self.__set_output_flag("stateless", val)
+
+    def get_handle_output(self):
+        """Get the current state of handle output.
+
+        Returns a boolean indicating whether handle output is active or not.
+        """
+        return self.__get_output_flag("handle")
+
+    def set_handle_output(self, val):
+        """Enable or disable handle output.
+
+        Accepts a boolean turning handle output on or off.
+
+        Returns the previous value.
+        """
+        return self.__set_output_flag("handle", val)
 
     def get_json_output(self):
         """Get the current state of JSON output.
 
         Returns a boolean indicating whether JSON output is active or not.
         """
-        return self.nft_ctx_output_get_json(self.__ctx)
+        return self.__get_output_flag("json")
 
     def set_json_output(self, val):
         """Enable or disable JSON output.
@@ -218,9 +201,90 @@ class Nftables:
 
         Returns the previous value.
         """
-        old = self.get_json_output()
-        self.nft_ctx_output_set_json(self.__ctx, val)
-        return old
+        return self.__set_output_flag("json", val)
+
+    def get_echo_output(self):
+        """Get the current state of echo output.
+
+        Returns a boolean indicating whether echo output is active or not.
+        """
+        return self.__get_output_flag("echo")
+
+    def set_echo_output(self, val):
+        """Enable or disable echo output.
+
+        Accepts a boolean turning echo output on or off.
+
+        Returns the previous value.
+        """
+        return self.__set_output_flag("echo", val)
+
+    def get_guid_output(self):
+        """Get the current state of GID/UID output.
+
+        Returns a boolean indicating whether names for group/user IDs are used
+        in output or not.
+        """
+        return self.__get_output_flag("guid")
+
+    def set_guid_output(self, val):
+        """Enable or disable GID/UID output.
+
+        Accepts a boolean turning names for group/user IDs on or off.
+
+        Returns the previous value.
+        """
+        return self.__set_output_flag("guid", val)
+
+    def get_numeric_proto_output(self):
+        """Get current status of numeric protocol output flag.
+
+        Returns a boolean value indicating the status.
+        """
+        return self.__get_output_flag("numeric_proto")
+
+    def set_numeric_proto_output(self, val):
+        """Set numeric protocol output flag.
+
+        Accepts a boolean turning numeric protocol output either on or off.
+
+        Returns the previous value.
+        """
+        return self.__set_output_flag("numeric_proto", val)
+
+    def get_numeric_prio_output(self):
+        """Get current status of numeric chain priority output flag.
+
+        Returns a boolean value indicating the status.
+        """
+        return self.__get_output_flag("numeric_prio")
+
+    def set_numeric_prio_output(self, val):
+        """Set numeric chain priority output flag.
+
+        Accepts a boolean turning numeric chain priority output either on or
+        off.
+
+        Returns the previous value.
+        """
+        return self.__set_output_flag("numeric_prio", val)
+
+    def get_numeric_symbol_output(self):
+        """Get current status of numeric symbols output flag.
+
+        Returns a boolean value indicating the status.
+        """
+        return self.__get_output_flag("numeric_symbol")
+
+    def set_numeric_symbol_output(self, val):
+        """Set numeric symbols output flag.
+
+        Accepts a boolean turning numeric representation of symbolic constants
+        in output either on or off.
+
+        Returns the previous value.
+        """
+        return self.__set_output_flag("numeric_symbol", val)
 
     def get_debug(self):
         """Get currently active debug flags.

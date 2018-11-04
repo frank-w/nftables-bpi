@@ -15,6 +15,29 @@ directly or as qualified meta expressions. Meta l4proto is useful to match a
 particular transport protocol that is part of either an IPv4 or IPv6 packet. It
 will also skip any IPv6 extension headers present in an IPv6 packet.
 
+meta iif, oif, iifname and oifname are used to match the interface a packet
+arrived on or is about to be sent out on.
+
+iif and oif are used to match on the interface index, whereas iifname and
+oifname are used to match on the interface name.
+This is not the same -- assuming the rule
+
+  filter input meta iif "foo"
+
+Then this rule can only be added if the interface "foo" exists.
+Also, the rule will continue to match even if the
+interface "foo" is renamed to "bar".
+
+This is because internally the interface index is used.
+In case of dynamically created interfaces, such as tun/tap or dialup
+interfaces (ppp for example), it might be better to use iifname or oifname
+instead.
+
+In these cases, the name is used so the interface doesn't have to exist to
+add such a rule, it will stop matching if the interface gets renamed and it
+will match again in case interface gets deleted and later a new interface
+with the same name is created.
+
 .Meta expression types
 [options="header"]
 |==================
@@ -124,7 +147,7 @@ filter output meta oif eth0
 # unqualified meta expression
 filter output oif eth0
 
-# packed was subject to ipsec processing
+# packet was subject to ipsec processing
 raw prerouting meta ipsec exists accept
 -----------------------
 

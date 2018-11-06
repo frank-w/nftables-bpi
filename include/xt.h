@@ -8,7 +8,6 @@ struct rule_pp_ctx;
 struct rule;
 struct output_ctx;
 
-#ifdef HAVE_LIBXTABLES
 void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx);
 void xt_stmt_release(const struct stmt *stmt);
 
@@ -18,20 +17,10 @@ void netlink_parse_target(struct netlink_parse_ctx *ctx,
 void netlink_parse_match(struct netlink_parse_ctx *ctx,
 			 const struct location *loc,
 			 const struct nftnl_expr *nle);
+#ifdef HAVE_LIBXTABLES
 void stmt_xt_postprocess(struct rule_pp_ctx *rctx, struct stmt *stmt,
 			 struct rule *rule);
 #else
-static inline void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx) {}
-static inline void xt_stmt_release(const struct stmt *stmt) {}
-
-#include <erec.h>
-
-static inline void netlink_parse_target(struct netlink_parse_ctx *ctx,
-					const struct location *loc,
-					const struct nftnl_expr *nle) {}
-static inline void netlink_parse_match(struct netlink_parse_ctx *ctx,
-				       const struct location *loc,
-				       const struct nftnl_expr *nle) {}
 static inline void stmt_xt_postprocess(struct rule_pp_ctx *rctx,
 				       struct stmt *stmt, struct rule *rule) {}
 

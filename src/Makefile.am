@@ -83,8 +83,8 @@ libminigmp_la_CFLAGS = ${AM_CFLAGS} -Wno-sign-compare
 libnftables_la_LIBADD += libminigmp.la
 endif
 
-if BUILD_XTABLES
 libnftables_la_SOURCES += xt.c
+if BUILD_XTABLES
 libnftables_la_LIBADD += ${XTABLES_LIBS}
 endif
 

@@ -28,6 +28,7 @@
 
 void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx)
 {
+#ifdef HAVE_LIBXTABLES
 	struct xt_xlate *xl = xt_xlate_alloc(10240);
 
 	switch (stmt->xt.type) {
@@ -68,6 +69,9 @@ void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx)
 	}
 
 	xt_xlate_free(xl);
+#else
+	nft_print(octx, "# xt_%s", stmt->xt.name);
+#endif
 }
 
 void xt_stmt_release(const struct stmt *stmt)
@@ -94,6 +98,7 @@ void xt_stmt_release(const struct stmt *stmt)
 	xfree(stmt->xt.entry);
 }
 
+#ifdef HAVE_LIBXTABLES
 static void *xt_entry_alloc(struct xt_stmt *xt, uint32_t af)
 {
 	union nft_entry {
@@ -179,6 +184,7 @@ static struct xtables_match *xt_match_clone(struct xtables_match *m)
 	memcpy(clone, m, sizeof(struct xtables_match));
 	return clone;
 }
+#endif
 
 /*
  * Delinearization
@@ -190,6 +196,7 @@ void netlink_parse_match(struct netlink_parse_ctx *ctx,
 {
 	struct stmt *stmt;
 	const char *name;
+#ifdef HAVE_LIBXTABLES
 	struct xtables_match *mt;
 	const char *mtinfo;
 	struct xt_entry_match *m;
@@ -217,7 +224,13 @@ void netlink_parse_match(struct netlink_parse_ctx *ctx,
 	stmt->xt.type = NFT_XT_MATCH;
 	stmt->xt.match = xt_match_clone(mt);
 	stmt->xt.match->m = m;
+#else
+	name = nftnl_expr_get_str(nle, NFTNL_EXPR_MT_NAME);
 
+	stmt = xt_stmt_alloc(loc);
+	stmt->xt.name = strdup(name);
+	stmt->xt.type = NFT_XT_MATCH;
+#endif
 	list_add_tail(&stmt->list, &ctx->rule->stmts);
 }
 
@@ -227,6 +240,7 @@ void netlink_parse_target(struct netlink_parse_ctx *ctx,
 {
 	struct stmt *stmt;
 	const char *name;
+#ifdef HAVE_LIBXTABLES
 	struct xtables_target *tg;
 	const void *tginfo;
 	struct xt_entry_target *t;
@@ -255,10 +269,17 @@ void netlink_parse_target(struct netlink_parse_ctx *ctx,
 	stmt->xt.type = NFT_XT_TARGET;
 	stmt->xt.target = xt_target_clone(tg);
 	stmt->xt.target->t = t;
+#else
+	name = nftnl_expr_get_str(nle, NFTNL_EXPR_TG_NAME);
 
+	stmt = xt_stmt_alloc(loc);
+	stmt->xt.name = strdup(name);
+	stmt->xt.type = NFT_XT_TARGET;
+#endif
 	list_add_tail(&stmt->list, &ctx->rule->stmts);
 }
 
+#ifdef HAVE_LIBXTABLES
 static bool is_watcher(uint32_t family, struct stmt *stmt)
 {
 	if (family != NFPROTO_BRIDGE ||
@@ -370,3 +391,4 @@ void xt_init(void)
 	/* Default to IPv4, but this changes in runtime */
 	xtables_init_all(&xt_nft_globals, NFPROTO_IPV4);
 }
+#endif

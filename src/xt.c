@@ -26,7 +26,7 @@
 #include <linux/netfilter_arp/arp_tables.h>
 #include <linux/netfilter_bridge/ebtables.h>
 
-void xt_stmt_xlate(const struct stmt *stmt)
+void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx)
 {
 	struct xt_xlate *xl = xt_xlate_alloc(10240);
 
@@ -40,7 +40,7 @@ void xt_stmt_xlate(const struct stmt *stmt)
 			};
 
 			stmt->xt.match->xlate(xl, &params);
-			printf("%s", xt_xlate_get(xl));
+			nft_print(octx, "%s", xt_xlate_get(xl));
 		} else if (stmt->xt.match->print) {
 			printf("#");
 			stmt->xt.match->print(&stmt->xt.entry,
@@ -57,7 +57,7 @@ void xt_stmt_xlate(const struct stmt *stmt)
 			};
 
 			stmt->xt.target->xlate(xl, &params);
-			printf("%s", xt_xlate_get(xl));
+			nft_print(octx, "%s", xt_xlate_get(xl));
 		} else if (stmt->xt.target->print) {
 			printf("#");
 			stmt->xt.target->print(NULL, stmt->xt.target->t, 0);

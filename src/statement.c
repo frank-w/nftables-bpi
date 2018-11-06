@@ -832,7 +832,7 @@ struct stmt *tproxy_stmt_alloc(const struct location *loc)
 
 static void xt_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
-	xt_stmt_xlate(stmt);
+	xt_stmt_xlate(stmt, octx);
 }
 
 static void xt_stmt_destroy(struct stmt *stmt)

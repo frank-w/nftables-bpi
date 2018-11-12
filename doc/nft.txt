@@ -404,7 +404,7 @@ values are *accept* (which is the default) or *drop*.
 RULES
 -----
 [verse]
-{add | insert} *rule* ['family'] 'table' 'chain' [ {handle | position} 'handle' | index 'index' ] 'statement' ... [ comment 'comment' ]
+{add | insert} *rule* ['family'] 'table' 'chain' [ handle 'handle' | index 'index' ] 'statement' ... [ comment 'comment' ]
 replace *rule* ['family'] 'table' 'chain' handle 'handle' 'statement' ... [ comment 'comment' ]
 delete *rule* ['family'] 'table' 'chain' handle 'handle'
 
@@ -413,15 +413,13 @@ ip family is used. Rules are constructed from two kinds of components according
 to a set of grammatical rules: expressions and statements.
 
 The add and insert commands support an optional location specifier, which is
-either a 'handle' of an existing rule or an 'index' (starting at zero).
+either a 'handle' or the 'index' (starting at zero) of an existing rule.
 Internally, rule locations are always identified by 'handle' and the translation
 from 'index' happens in userspace. This has two potential implications in case a
 concurrent ruleset change happens after the translation was done: The effective
 rule index might change if a rule was inserted or deleted before the referred
 one. If the referred rule was deleted, the command is rejected by the kernel
 just as if an invalid 'handle' was given.
-The old name "position" in place of "handle" is deprecated
-and should not be used anymore.
 
 A 'comment' is a single word or a double-quoted (") multi-word string which can
 be used to make notes regarding the actual rule. *Note:* If you use bash for

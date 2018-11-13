@@ -392,9 +392,9 @@ the others. See the following tables that describe the values and compatibility.
 | srcnat | 300 | postrouting
 |==================
 
-Basic arithmetic expressions (addition and substraction) can also be achieved
+Basic arithmetic expressions (addition and subtraction) can also be achieved
 with these standard names to ease relative prioritizing, eg. *mangle - 5* stands
-for *-155*.  Values will also be printed like this untill the value is not
+for *-155*.  Values will also be printed like this until the value is not
 further than 10 form the standard value.
 
 Base chains also allow to set the chain's *policy*, i.e.  what happens to
@@ -592,7 +592,7 @@ address family is a dummy family which is used to create hybrid IPv4/IPv6
 tables. When no address family is specified, ip is used by default.
 
 The *priority* can be a signed integer or *filter* which stands for 0. Addition
-and substraction can be used to set relative priority eg. filter + 5 equals to
+and subtraction can be used to set relative priority eg. filter + 5 equals to
 5.
 
 [horizontal]

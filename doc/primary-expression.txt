@@ -328,7 +328,7 @@ IPSEC EXPRESSIONS
 *ipsec* {in | out} [ spnum 'NUM' ]  {reqid | spi }
 *ipsec* {in | out} [ spnum 'NUM' ]  {ip | ip6 } { saddr | daddr }
 
-A ipsec expression refers to ipsec data associated with a packet.
+An ipsec expression refers to ipsec data associated with a packet.
 
 The 'in' or 'out' keyword needs to be used to specify if the expression should
 examine inbound or outbound policies. The 'in' keyword can be used in the

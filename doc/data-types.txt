@@ -136,7 +136,7 @@ boolean |
 integer
 |===================
 
-The boolean type is a syntactical helper type in userspace. It's use is in the
+The boolean type is a syntactical helper type in userspace. Its use is in the
 right-hand side of a (typically implicit) relational expression to change the
 expression on the left-hand side into a boolean check (usually for existence). +
 

@@ -46,7 +46,7 @@ ____
 
 == DESCRIPTION
 This library was designed with nftables integration into applications in mind.
-It's API is therefore kept as simple as possible, which somewhat limits its flexibility.
+Its API is therefore kept as simple as possible, which somewhat limits its flexibility.
 Due to support for JSON markup of input and output though, convenience in constructing and parsing of input and output data may be achieved by using a third-party library such as *libjansson*.
 
 At the very basic level, one has to allocate a new object of type *struct nft_ctx* using *nft_ctx_new*() function, then pass commands via *nft_run_cmd_from_buffer*() or *nft_run_cmd_from_filename*() functions.

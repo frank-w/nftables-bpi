@@ -40,11 +40,11 @@ library standard output into JSON format. Error output remains unaffected.
 
 == GLOBAL STRUCTURE
 In general, any JSON input or output is enclosed in an object with a single
-property named 'nftables'. It's value is an array containing commands (for
+property named 'nftables'. Its value is an array containing commands (for
 input) or ruleset elements (for output).
 
 A command is an object with a single property whose name identifies the command.
-It's value is a ruleset element - basically identical to output elements apart
+Its value is a ruleset element - basically identical to output elements apart
 from certain properties which may be interpreted differently or are required
 when output generally omits them.
 

@@ -152,7 +152,7 @@ except Exception as e:
     exit_dump(e, out)
 
 # adjust names and add items again
-# Note: Add second chain to same table, otherwise it's handle will be the same
+# Note: Add second chain to same table, otherwise its handle will be the same
 # as before. Same for the set and the rule. Bug?
 
 table_out["add"]["table"]["name"] = "t2"

@@ -151,7 +151,7 @@ filter input iif $int_ifs accept
 ADDRESS FAMILIES
 ----------------
 Address families determine the type of packets which are processed. For each
-address family the kernel contains so called hooks at specific stages of the
+address family, the kernel contains so called hooks at specific stages of the
 packet processing paths, which invoke nftables if rules for these hooks exist.
 
 [horizontal]
@@ -236,7 +236,7 @@ currently in place in kernel. The following *ruleset* commands exist:
 [horizontal]
 *list*:: Print the ruleset in human-readable format.
 
-*flush*:: Clear the whole ruleset. Note that unlike iptables, this will remove
+*flush*:: Clear the whole ruleset. Note that, unlike iptables, this will remove
 all tables and whatever they contain, effectively leading to an empty ruleset -
 no packet filtering will happen anymore, so the kernel accepts any valid packet
 it receives.
@@ -349,10 +349,10 @@ Apart from the special cases illustrated above (e.g. *nat* type not supporting
 *forward* hook or *route* type only supporting *output* hook), there are two
 further quirks worth noticing:
 
-* netdev family supports merely a single combination, namely *filter* type and
+* The netdev family supports merely a single combination, namely *filter* type and
   *ingress* hook. Base chains in this family also require the *device* parameter
   to be present since they exist per incoming interface only.
-* arp family supports only *input* and *output* hooks, both in chains of type
+* The arp family supports only the *input* and *output* hooks, both in chains of type
   *filter*.
 
 The *priority* parameter accepts a signed integer value or a standard priority
@@ -393,7 +393,7 @@ the others. See the following tables that describe the values and compatibility.
 |==================
 
 Basic arithmetic expressions (addition and subtraction) can also be achieved
-with these standard names to ease relative prioritizing, eg. *mangle - 5* stands
+with these standard names to ease relative prioritizing, e.g. *mangle - 5* stands
 for *-155*.  Values will also be printed like this until the value is not
 further than 10 form the standard value.
 
@@ -423,8 +423,8 @@ just as if an invalid 'handle' was given.
 
 A 'comment' is a single word or a double-quoted (") multi-word string which can
 be used to make notes regarding the actual rule. *Note:* If you use bash for
-adding rules, you have to escape the quotation marks (eg. \"enable ssh for
-servers\")
+adding rules, you have to escape the quotation marks, e.g. \"enable ssh for
+servers\".
 
 [horizontal]
 *add*:: Add a new rule described by the list of statements. The
@@ -539,7 +539,7 @@ add *map* ['family'] 'table' 'map' { type 'type' [flags 'flags' ;] [elements = {
 {delete | list | flush} *map* ['family'] 'table' 'map'
 {add | delete} *element* ['family'] 'table' 'map' { elements = { 'elements'[,...] } ; }
 
-Maps store data based on some specific key used as input, they are uniquely identified by a user-defined name and attached to tables.
+Maps store data based on some specific key used as input. They are uniquely identified by a user-defined name and attached to tables.
 
 [horizontal]
 *add*:: Add a new map in the specified table.
@@ -584,15 +584,15 @@ protocols. Each entry also caches the destination interface and the gateway
 address - to update the destination link-layer address - to forward packets.
 The ttl and hoplimit fields are also decremented. Hence, flowtables provides an
 alternative path that allow packets to bypass the classic forwarding path.
-Flowtables reside in the ingress hook, that is located before the prerouting
-hook. You can select what flows you want to offload through the flow offload
+Flowtables reside in the ingress hook that is located before the prerouting
+hook. You can select which flows you want to offload through the flow offload
 expression from the forward chain. Flowtables are identified by their address
-family and their name. The address family must be one of ip, ip6, inet. The inet
+family and their name. The address family must be one of ip, ip6, or inet. The inet
 address family is a dummy family which is used to create hybrid IPv4/IPv6
 tables. When no address family is specified, ip is used by default.
 
 The *priority* can be a signed integer or *filter* which stands for 0. Addition
-and subtraction can be used to set relative priority eg. filter + 5 equals to
+and subtraction can be used to set relative priority, e.g. filter + 5 equals to
 5.
 
 [horizontal]
@@ -622,7 +622,7 @@ include::stateful-objects.txt[]
 EXPRESSIONS
 ------------
 Expressions represent values, either constants like network addresses, port
-numbers etc. or data gathered from the packet during ruleset evaluation.
+numbers, etc., or data gathered from the packet during ruleset evaluation.
 Expressions can be combined using binary, logical, relational and other types of
 expressions to form complex or relational (match) expressions. They are also
 used as arguments to certain types of operations, like NAT, packet marking etc.
@@ -666,7 +666,7 @@ Types may be derived from lower order types, f.i. the IPv4 address type is
 derived from the integer type, meaning an IPv4 address can also be specified as
 an integer value. +
 
-In certain contexts (set and map definitions) it is necessary to explicitly
+In certain contexts (set and map definitions), it is necessary to explicitly
 specify a data type. Each type has a name which is used for this.
 
 include::data-types.txt[]
@@ -750,7 +750,7 @@ parts using carets (^). If the error results from the combination of two
 expressions or statements, the part imposing the constraints which are violated
 is marked using tildes (~). +
 
-For errors returned by the kernel, nft can't detect which parts of the input
+For errors returned by the kernel, nft cannot detect which parts of the input
 caused the error and the entire command is marked.
 
 .Error caused by single incorrect expression

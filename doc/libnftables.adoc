@@ -64,7 +64,7 @@ The *nft_ctx_new*() function allocates and returns a new context object.
 The parameter 'flags' is unused at this point and should be set to zero.
 For convenience, the macro *NFT_CTX_DEFAULT* is defined to that value.
 
-The *nft_ctx_free*() function frees the context object pointed to by 'ctx' including any caches or buffers it may hold.
+The *nft_ctx_free*() function frees the context object pointed to by 'ctx', including any caches or buffers it may hold.
 
 === nft_ctx_get_dry_run() and nft_ctx_set_dry_run()
 Dry-run setting controls whether ruleset changes are actually committed on kernel side or not.
@@ -99,12 +99,12 @@ NFT_CTX_OUTPUT_REVERSEDNS::
 NFT_CTX_OUTPUT_SERVICE::
 	Print port numbers as services as described in the /etc/services file.
 NFT_CTX_OUTPUT_STATELESS::
-	If stateless output has been requested then stateful data is not printed.
+	If stateless output has been requested, then stateful data is not printed.
 	Stateful data refers to those objects that carry run-time data, e.g. the *counter* statement holds packet and byte counter values, making it stateful.
 NFT_CTX_OUTPUT_HANDLE::
 	Upon insertion into the ruleset, some elements are assigned a unique handle for identification purposes.
 	For example, when deleting a table or chain, it may be identified either by name or handle.
-	Rules on the other hand must be deleted by handle because there is no other way to uniquely identify them.
+	Rules on the other hand must be deleted by handle, because there is no other way to uniquely identify them.
 	This flag makes ruleset listings include handle values.
 NFT_CTX_OUTPUT_JSON::
 	If enabled at compile-time, libnftables accepts input in JSON format and is able to print output in JSON format as well.
@@ -181,7 +181,7 @@ The functions return zero on success, non-zero otherwise.
 This may happen if the internal call to *fopencookie*() failed.
 
 The *nft_ctx_unbuffer_output*() and *nft_ctx_unbuffer_error*() functions disable library standard  or error output buffering.
-On failure, the functions return non-zero which may only happen if buffering wasn't enabled at the time the function was called.
+On failure, the functions return non-zero which may only happen if buffering was not enabled at the time the function was called.
 
 The *nft_ctx_get_output_buffer*() and *nft_ctx_get_error_buffer*() functions return a pointer to the buffered output (which may be empty).
 
@@ -191,7 +191,7 @@ The include path defines where these files are searched for.
 Libnftables allows to have a list of those paths which are searched in order.
 The default include path list contains a single compile-time defined entry (typically '/etc/').
 
-The *nft_ctx_add_include_path*() function extends the list of include paths in 'ctx' by the one pointed to in 'path'.
+The *nft_ctx_add_include_path*() function extends the list of include paths in 'ctx' by the one given in 'path'.
 The function returns zero on success or non-zero if memory allocation failed.
 
 The *nft_ctx_clear_include_paths*() function removes all include paths, even the built-in default one.

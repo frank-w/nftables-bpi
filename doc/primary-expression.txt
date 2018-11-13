@@ -44,7 +44,7 @@ with the same name is created.
 |Keyword | Description | Type
 |length|
 Length of the packet in bytes|
-integer (32 bit)
+integer (32-bit)
 |nfproto|
 real hook protocol family, useful only in inet table|
 integer (32 bit)

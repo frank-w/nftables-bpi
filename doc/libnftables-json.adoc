@@ -28,14 +28,14 @@ libnftables-json - Supported JSON schema by libnftables
 == DESCRIPTION
 libnftables supports JSON formatted input and output. This is implemented as an
 alternative frontend to the standard CLI syntax parser, therefore basic
-behaviour is identical and for (almost) any operation available in standard
-syntax there should be an equivalent one in JSON.
+behaviour is identical and, for (almost) any operation available in standard
+syntax, there should be an equivalent one in JSON.
 
 JSON input may be provided in a single string as parameter to
 *nft_run_cmd_from_buffer()* or in a file identified by the 'filename' parameter
-of *nft_run_cmd_from_filename()* function.
+of the *nft_run_cmd_from_filename()* function.
 
-JSON output has to be enabled via *nft_ctx_output_set_json()* function, turning
+JSON output has to be enabled via the *nft_ctx_output_set_json()* function, turning
 library standard output into JSON format. Error output remains unaffected.
 
 == GLOBAL STRUCTURE
@@ -44,12 +44,12 @@ property named 'nftables'. Its value is an array containing commands (for
 input) or ruleset elements (for output).
 
 A command is an object with a single property whose name identifies the command.
-Its value is a ruleset element - basically identical to output elements apart
+Its value is a ruleset element - basically identical to output elements, apart
 from certain properties which may be interpreted differently or are required
 when output generally omits them.
 
 == METAINFO OBJECT
-In output, the first object in *nftables* array is a special one containing
+In output, the first object in an *nftables* array is a special one containing
 library information. Its content is as follows:
 
 [verse]
@@ -60,10 +60,10 @@ library information. Its content is as follows:
 *}}*
 
 The values of *version* and *release_name* properties are equal to the package
-version and release name as printed by *nft -v*. The value of
+version and release name as printed by *nft -v*. The value of the
 *json_schema_version* property is an integer indicating the schema version.
 
-If supplied in library input, the parser will verify *json_schema_version* value
+If supplied in library input, the parser will verify the *json_schema_version* value
 to not exceed the internally hardcoded one (to make sure the given schema is
 fully understood). In future, a lower number than the internal one may activate
 compatibility mode to parse outdated and incompatible JSON input.
@@ -127,7 +127,7 @@ Add a new ruleset element to the kernel.
 [verse]
 *{ "replace":* 'RULE' *}*
 
-Replace a rule. In 'RULE', *handle* property is mandatory and identifies the
+Replace a rule. In 'RULE', the *handle* property is mandatory and identifies the
 rule to be replaced.
 
 === CREATE
@@ -151,7 +151,7 @@ properties.
 
 Delete an object from the ruleset. Only the minimal number of properties
 required to uniquely identify an object is generally needed in 'ADD_OBJECT'. For
-most ruleset elements this is *family* and *table* plus either *handle* or
+most ruleset elements, this is *family* and *table* plus either *handle* or
 *name* (except rules since they don't have a name).
 
 === LIST
@@ -213,7 +213,7 @@ This object describes a table.
 *name*::
 	The table's name.
 *handle*::
-	The table's handle. In input, used only in *delete* command as
+	The table's handle. In input, it is used only in *delete* command as
 	alternative to *name*.
 
 === CHAIN
@@ -240,10 +240,10 @@ This object describes a chain.
 *name*::
 	The chain's name.
 *handle*::
-	The chain's handle. In input, used only in *delete* command as
+	The chain's handle. In input, it is used only in *delete* command as
 	alternative to *name*.
 *newname*::
-	A new name for the chain, only relevant in *rename* command.
+	A new name for the chain, only relevant in the *rename* command.
 
 The following properties are required for base chains:
 
@@ -254,7 +254,7 @@ The following properties are required for base chains:
 *prio*::
 	The chain's priority.
 *dev*::
-	The chain's bound interface (if in netdev family).
+	The chain's bound interface (if in the netdev family).
 *policy*::
 	The chain's policy.
 
@@ -274,8 +274,8 @@ ____
 'STATEMENTS' := 'STATEMENT' [*,* 'STATEMENTS' ]
 ____
 
-This object describes a rule. Basic building blocks of rules are statements,
-each rule consists of at least a single one.
+This object describes a rule. Basic building blocks of rules are statements.
+Each rule consists of at least one.
 
 *family*::
 	The table's family.
@@ -284,14 +284,14 @@ each rule consists of at least a single one.
 *chain*::
 	The chain's name.
 *expr*::
-	An array of statements this rule consists of. In input, used in
+	An array of statements this rule consists of. In input, it is used in
 	*add*/*insert*/*replace* commands only.
 *handle*::
-	The rule's handle. In *delete*/*replace* commands, serves as identifier
-	of the rule to delete/replace. In *add*/*insert* commands, serves as
-	identifier of an existing rule to append/prepend the rule to.
+	The rule's handle. In *delete*/*replace* commands, it serves as an identifier
+	of the rule to delete/replace. In *add*/*insert* commands, it serves as
+	an identifier of an existing rule to append/prepend the rule to.
 *index*::
-	The rule's position for *add*/*insert* commands. Used as alternative to
+	The rule's position for *add*/*insert* commands. It is used as an alternative to
 	*handle* then.
 *comment*::
 	Optional rule comment.
@@ -347,7 +347,7 @@ that they translate a unique key to a value.
 *name*::
 	The set's name.
 *handle*::
-	The set's handle. For input, used in *delete* command only.
+	The set's handle. For input, it is used in the *delete* command only.
 *type*::
 	The set's datatype, see below.
 *map*::
@@ -452,7 +452,7 @@ This object represents a named counter.
 *name*::
 	The counter's name.
 *handle*::
-	The counter's handle. In input, used for *delete* command only.
+	The counter's handle. In input, it is used by the *delete* command only.
 *packets*::
 	Packet counter value.
 *bytes*::
@@ -479,13 +479,13 @@ This object represents a named quota.
 *name*::
 	The quota's name.
 *handle*::
-	The quota's handle. In input, used for *delete* command only.
+	The quota's handle. In input, it is used by the *delete* command only.
 *bytes*::
 	Quota threshold.
 *used*::
 	Quota used so far.
 *inv*::
-	If true, match if quota exceeded.
+	If true, match if the quota has been exceeded.
 
 === CT HELPER
 [verse]
@@ -512,7 +512,7 @@ This object represents a named conntrack helper.
 *name*::
 	The ct helper's name.
 *handle*::
-	The ct helper's handle. In input, used for *delete* command only.
+	The ct helper's handle. In input, it is used by the *delete* command only.
 *type*::
 	The ct helper type name, e.g. *"ftp"* or *"tftp"*.
 *protocol*::
@@ -547,7 +547,7 @@ This object represents a named limit.
 *name*::
 	The limit's name.
 *handle*::
-	The limit's handle. In input, used for *delete* command only.
+	The limit's handle. In input, it is used by the *delete* command only.
 *rate*::
 	The limit's rate value.
 *per*::
@@ -586,19 +586,20 @@ This object represents a named conntrack timeout policy.
 *name*::
 	The ct timeout object's name.
 *handle*::
-	The ct timeout object's handle. In input, used for *delete* command only.
+	The ct timeout object's handle. In input, it is used by *delete* command only.
 *protocol*::
 	The ct timeout object's layer 4 protocol.
 *state*::
-	The connection state name, for which timeout value has to be updated, e.g. *"established"*, *"syn_sent"*, *"close"* or *"close_wait"*.
+	The connection state name, e.g. *"established"*, *"syn_sent"*, *"close"* or
+	*"close_wait"*, for which the timeout value has to be updated.
 *value*::
-	The updated timeout value for specified connection state.
+	The updated timeout value for the specified connection state.
 *l3proto*::
 	The ct timeout object's layer 3 protocol, e.g. *"ip"* or *"ip6"*.
 
 == STATEMENTS
-Statements are the building blocks for rules. Each rule consists of at least a
-single statement.
+Statements are the building blocks for rules. Each rule consists of at least
+one.
 
 === VERDICT
 [verse]
@@ -622,9 +623,9 @@ delegates to a different one.
 	"op":* 'STRING'
 *}}*
 
-Match expression on left hand side (typically a packet header or packet meta
-info) with expression on right hand side (typically a constant value). If the
-statement evaluates true, the next statement in this rule is considered. If not,
+This matches the expression on left hand side (typically a packet header or packet meta
+info) with the expression on right hand side (typically a constant value). If the
+statement evaluates to true, the next statement in this rule is considered. If not,
 processing continues with the next rule in the same chain.
 
 *left*::
@@ -650,15 +651,15 @@ processing continues with the next rule in the same chain.
 *>=*:: Greater than or equal to
 *in*:: Perform a lookup, i.e. test if bits on RHS are contained in LHS value
 
-Unlike with standard API, the operator is mandatory here. In standard API,
-missing operator may be resolved in two ways depending on the type of expression
-on RHS:
+Unlike with the standard API, the operator is mandatory here. In the standard API,
+a missing operator may be resolved in two ways, depending on the type of expression
+on the RHS:
 
-- If RHS is a bitmask or a list of bitmasks, the expression resolves into a
-  binary operation with not equal operator, like this: '+LHS & RHS != 0+'.
-- In any other case, equal operator is simply inserted.
+- If the RHS is a bitmask or a list of bitmasks, the expression resolves into a
+  binary operation with the inequality operator, like this: '+LHS & RHS != 0+'.
+- In any other case, the equality operator is simply inserted.
 
-For the non-trivial first case, JSON API supports *in* operator.
+For the non-trivial first case, the JSON API supports the *in* operator.
 
 === COUNTER
 [verse]
@@ -671,7 +672,7 @@ ____
 *{ "counter":* 'STRING' *}*
 ____
 
-This object represents a byte/packet counter. In Input, no properties are
+This object represents a byte/packet counter. In input, no properties are
 required. If given, they act as initial values for the counter.
 
 The first form creates an anonymous counter which lives in the rule it appears
@@ -689,10 +690,10 @@ in. The second form specifies a reference to a named counter object.
 	"value":* 'EXPRESSION'
 *}}*
 
-Change packet data or meta info.
+This changes the packet data or meta info.
 
 *key*::
-	Packet data to be changed, given as *exthdr*, *payload*, *meta*, *ct* or
+	The packet data to be changed, given as an *exthdr*, *payload*, *meta*, *ct* or
 	*ct helper* expression.
 *value*::
 	Value to change data to.
@@ -756,7 +757,7 @@ The second form specifies a reference to a named limit object.
 	Unit of *burst*, ignored if *rate_unit* is *"packets"*. Defaults to
 	*"bytes"*.
 *inv*::
-	If *true*, matches if limit was exceeded. Defaults to *false*.
+	If *true*, matches if the limit was exceeded. Defaults to *false*.
 
 === FWD
 [verse]
@@ -773,13 +774,13 @@ ____
 Forward a packet to a different destination.
 
 *dev*::
-	Interface to forward packet to.
+	Interface to forward the packet on.
 *family*::
 	Family of *addr*.
 *addr*::
 	IP(v6) address to forward the packet to.
 
-Both *family* and *addr* are optional, but if given both need to be present.
+Both *family* and *addr* are optional, but if at least one is given, both must be present.
 
 === NOTRACK
 [verse]
@@ -799,7 +800,7 @@ Duplicate a packet to a different destination.
 *addr*::
 	Address to duplicate packet to.
 *dev*::
-	Interface to duplicate packet to. May be omitted to not specify an
+	Interface to duplicate packet on. May be omitted to not specify an
 	interface explicitly.
 
 === NETWORK ADDRESS TRANSLATION
@@ -918,7 +919,7 @@ All properties are optional.
 [verse]
 *{ "ct helper":* 'EXPRESSION' *}*
 
-Enable specified conntrack helper for this packet.
+Enable the specified conntrack helper for this packet.
 
 *ct helper*::
 	CT helper reference.
@@ -931,7 +932,7 @@ Enable specified conntrack helper for this packet.
 	"stmt":* 'STATEMENT'
 *}}*
 
-Apply given statement using a meter.
+Apply a given statement using a meter.
 
 *name*::
 	Meter name.
@@ -981,7 +982,7 @@ Apply a verdict conditionally.
 	"inv":* 'BOOLEAN'
 *}}*
 
-Limit number of connections using conntrack.
+Limit the number of connections using conntrack.
 
 *val*::
 	Connection count threshold.
@@ -1003,12 +1004,12 @@ Assign connection tracking timeout policy.
 *{ "xt": null }*
 
 This represents an xt statement from xtables compat interface. Sadly, at this
-point it is not possible to provide any further information about its content.
+point, it is not possible to provide any further information about its content.
 
 == EXPRESSIONS
 Expressions are the building blocks of (most) statements. In their most basic
-form, they are just immediate values represented as JSON string, integer or
-boolean types.
+form, they are just immediate values represented as a JSON string, integer or
+boolean type.
 
 === IMMEDIATES
 [verse]
@@ -1104,14 +1105,14 @@ ____
 Construct a payload expression, i.e. a reference to a certain part of packet
 data. The first form creates a raw payload expression to point at a random
 number (*len*) of bytes at a certain offset (*offset*) from a given reference
-point (*base*). Following *base* values are accepted:
+point (*base*). The following *base* values are accepted:
 
 *"ll"*::
-	Offset is relative to Link Layer header start offset.
+	The offset is relative to Link Layer header start offset.
 *"nh"*::
-	Offset is relative to Network Layer header start offset.
+	The offset is relative to Network Layer header start offset.
 *"th"*::
-	Offset is relative to Transport Layer header start offset.
+	The offset is relative to Transport Layer header start offset.
 
 The second form allows to reference a field by name (*field*) in a named packet
 header (*protocol*).
@@ -1127,8 +1128,8 @@ header (*protocol*).
 Create a reference to a field (*field*) in an IPv6 extension header (*name*).
 *offset* is used only for *rt0* protocol.
 
-If *field* property is not given, expression is to be used as header
-existence check in a *match* statement with boolean on right hand side.
+If the *field* property is not given, the expression is to be used as a header
+existence check in a *match* statement with a boolean on the right hand side.
 
 === TCP OPTION
 [verse]
@@ -1139,8 +1140,8 @@ existence check in a *match* statement with boolean on right hand side.
 
 Create a reference to a field (*field*) of a TCP option header (*name*).
 
-If *field* property is not given, expression is to be used as TCP option
-existence check in a *match* statement with boolean on right hand side.
+If the *field* property is not given, the expression is to be used as a TCP option
+existence check in a *match* statement with a boolean on the right hand side.
 
 === META
 [verse]
@@ -1191,7 +1192,7 @@ ____
 
 Create a reference to packet conntrack data.
 
-Some CT keys don't support a direction. In this case *dir* must not be
+Some CT keys do not support a direction. In this case, *dir* must not be
 given.
 
 === NUMGEN
@@ -1255,7 +1256,7 @@ Perform kernel Forwarding Information Base lookups.
 *{ "+<<+": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
 *{ ">>": [* 'EXPRESSION'*,* 'EXPRESSION' *] }*
 
-All binary operations expect an array of exactly two expressions of which the
+All binary operations expect an array of exactly two expressions, of which the
 first element denotes the left hand side and the second one the right hand
 side.
 
@@ -1268,7 +1269,7 @@ side.
 *{ "jump": { "target":* 'STRING' *}}*
 *{ "goto": { "target":* 'STRING' *}}*
 
-Same as *verdict* statement, but for use in verdict maps.
+Same as the *verdict* statement, but for use in verdict maps.
 
 *jump* and *goto* verdicts expect a target chain name.
 
@@ -1281,8 +1282,8 @@ Same as *verdict* statement, but for use in verdict maps.
 	"comment":* 'STRING'
 *}}*
 
-Explicit set element object, in case *timeout*, *expires* or *comment* are
-desired. Otherwise may be replaced by the value of *val*.
+Explicitly set element object, in case *timeout*, *expires* or *comment* are
+desired. Otherwise, it may be replaced by the value of *val*.
 
 === SOCKET
 [verse]
@@ -1308,14 +1309,14 @@ ____
 'OSF_TTL' := *"loose"* | *"skip"*
 ____
 
-Perform OS fingerprinting. This expression is typically used in LHS of a *match*
+Perform OS fingerprinting. This expression is typically used in the LHS of a *match*
 statement.
 
 *key*::
-	What part of the fingerprint info to match against. At this point, only
+	Which part of the fingerprint info to match against. At this point, only
 	the OS name is supported.
 *ttl*::
-	Define how packet's TTL value is to be matched. This property is
-	optional. If omitted, TTL value has to match exactly. A value of *loose*
+	Define how the packet's TTL value is to be matched. This property is
+	optional. If omitted, the TTL value has to match exactly. A value of *loose*
 	accepts TTL values less than the fingerprint one. A value of *skip*
 	omits TTL value comparison entirely.

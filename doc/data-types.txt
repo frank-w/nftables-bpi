@@ -9,8 +9,8 @@ variable |
 -
 |===================
 
-The integer type is used for numeric values. It may be specified as decimal,
-hexadecimal or octal number. The integer type doesn't have a fixed size, its
+The integer type is used for numeric values. It may be specified as a decimal,
+hexadecimal or octal number. The integer type does not have a fixed size, its
 size is determined by the expression for which it is used.
 
 BITMASK TYPE
@@ -39,7 +39,7 @@ variable |
 
 The string type is used for character strings. A string begins with an
 alphabetic character (a-zA-Z) followed by zero or more alphanumeric characters
-or the characters /, -, _ and .. In addition anything enclosed in double
+or the characters /, -, _ and .. In addition, anything enclosed in double
 quotes (") is recognized as a string.
 
 .String specification

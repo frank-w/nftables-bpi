@@ -350,6 +350,24 @@ struct set *set_lookup(const struct table *table, const char *name)
 	return NULL;
 }
 
+struct set *set_lookup_fuzzy(const char *set_name,
+			     const struct nft_cache *cache,
+			     const struct table **t)
+{
+	struct table *table;
+	struct set *set;
+
+	list_for_each_entry(table, &cache->list, list) {
+		list_for_each_entry(set, &table->sets, list) {
+			if (!strcmp(set->handle.set.name, set_name)) {
+				*t = table;
+				return set;
+			}
+		}
+	}
+	return NULL;
+}
+
 struct set *set_lookup_global(uint32_t family, const char *table,
 			      const char *name, struct nft_cache *cache)
 {

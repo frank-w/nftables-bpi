@@ -166,6 +166,21 @@ static struct table *table_lookup_global(struct eval_ctx *ctx)
 	return table;
 }
 
+static int table_not_found(struct eval_ctx *ctx)
+{
+	struct table *table;
+
+	table = table_lookup_fuzzy(&ctx->cmd->handle, &ctx->nft->cache);
+	if (table == NULL)
+		return cmd_error(ctx, &ctx->cmd->handle.table.location,
+				 "%s", strerror(ENOENT));
+
+	return cmd_error(ctx, &ctx->cmd->handle.table.location,
+			 "%s; did you mean table ‘%s’ in family %s?",
+			 strerror(ENOENT), table->handle.table.name,
+			 family2str(table->handle.family));
+}
+
 /*
  * Symbol expression: parse symbol and evaluate resulting expression.
  */
@@ -193,15 +208,14 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 
 		table = table_lookup_global(ctx);
 		if (table == NULL)
-			return cmd_error(ctx, &ctx->cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
 
 		set = set_lookup(table, (*expr)->identifier);
 		if (set == NULL)
 			return expr_error(ctx->msgs, *expr,
 					  "Set '%s' does not exist",
 					  (*expr)->identifier);
+
 		new = set_ref_expr_alloc(&(*expr)->location, set);
 		break;
 	}
@@ -2954,9 +2968,7 @@ static int setelem_evaluate(struct eval_ctx *ctx, struct expr **expr)
 
 	table = table_lookup_global(ctx);
 	if (table == NULL)
-		return cmd_error(ctx, &ctx->cmd->handle.table.location,
-				 "Could not process rule: %s",
-				 strerror(ENOENT));
+		return table_not_found(ctx);
 
 	set = set_lookup(table, ctx->cmd->handle.set.name);
 	if (set == NULL)
@@ -2979,9 +2991,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 
 	table = table_lookup_global(ctx);
 	if (table == NULL)
-		return cmd_error(ctx, &ctx->cmd->handle.table.location,
-				 "Could not process rule: %s",
-				 strerror(ENOENT));
+		return table_not_found(ctx);
 
 	if (!(set->flags & NFT_SET_INTERVAL) && set->automerge)
 		return set_error(ctx, set, "auto-merge only works with interval sets");
@@ -3062,9 +3072,7 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 
 	table = table_lookup_global(ctx);
 	if (table == NULL)
-		return cmd_error(ctx, &ctx->cmd->handle.table.location,
-				 "Could not process rule: %s",
-				 strerror(ENOENT));
+		return table_not_found(ctx);
 
 	ft->hooknum = str2hooknum(NFPROTO_NETDEV, ft->hookstr);
 	if (ft->hooknum == NF_INET_NUMHOOKS)
@@ -3097,9 +3105,7 @@ static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
 
 	table = table_lookup(&rule->handle, &ctx->nft->cache);
 	if (!table)
-		return cmd_error(ctx, &rule->handle.table.location,
-				"Could not process rule: %s",
-				strerror(ENOENT));
+		return table_not_found(ctx);
 
 	chain = chain_lookup(table, &rule->handle);
 	if (!chain)
@@ -3204,9 +3210,7 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 
 	table = table_lookup_global(ctx);
 	if (table == NULL)
-		return cmd_error(ctx, &ctx->cmd->handle.table.location,
-				 "Could not process rule: %s",
-				 strerror(ENOENT));
+		return table_not_found(ctx);
 
 	if (chain == NULL) {
 		if (chain_lookup(table, &ctx->cmd->handle) == NULL) {
@@ -3403,9 +3407,8 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SETELEM:
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &ctx->cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || set->flags & (NFT_SET_MAP | NFT_SET_EVAL))
 			return cmd_error(ctx, &ctx->cmd->handle.set.location,
@@ -3428,9 +3431,8 @@ static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 
 	table = table_lookup(&cmd->handle, &ctx->nft->cache);
 	if (table == NULL)
-		return cmd_error(ctx, &cmd->handle.table.location,
-				 "Could not process rule: %s",
-				 strerror(ENOENT));
+		return table_not_found(ctx);
+
 	if (obj_lookup(table, cmd->handle.obj.name, obj_type) == NULL)
 		return cmd_error(ctx, &cmd->handle.obj.location,
 				 "Could not process rule: %s",
@@ -3455,16 +3457,14 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		return 0;
 	case CMD_OBJ_SET:
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || set->flags & (NFT_SET_MAP | NFT_SET_EVAL))
 			return cmd_error(ctx, &cmd->handle.set.location,
@@ -3474,9 +3474,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_METER:
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || !(set->flags & NFT_SET_EVAL))
 			return cmd_error(ctx, &cmd->handle.set.location,
@@ -3486,9 +3485,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_MAP:
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || !(set->flags & NFT_SET_MAP))
 			return cmd_error(ctx, &cmd->handle.set.location,
@@ -3498,9 +3496,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_CHAIN:
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		if (chain_lookup(table, &cmd->handle) == NULL)
 			return cmd_error(ctx, &cmd->handle.chain.location,
 					 "Could not process rule: %s",
@@ -3528,9 +3525,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		if (cmd->handle.table.name == NULL)
 			return 0;
 		if (table_lookup(&cmd->handle, &ctx->nft->cache) == NULL)
-			return cmd_error(ctx, &cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		return 0;
 	case CMD_OBJ_CHAINS:
 	case CMD_OBJ_RULESET:
@@ -3558,9 +3554,8 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 		if (cmd->handle.table.name == NULL)
 			return 0;
 		if (table_lookup(&cmd->handle, &ctx->nft->cache) == NULL)
-			return cmd_error(ctx, &cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		return 0;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
@@ -3591,9 +3586,8 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || set->flags & (NFT_SET_MAP | NFT_SET_EVAL))
 			return cmd_error(ctx, &cmd->handle.set.location,
@@ -3607,9 +3601,8 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &ctx->cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || !(set->flags & NFT_SET_MAP))
 			return cmd_error(ctx, &ctx->cmd->handle.set.location,
@@ -3623,9 +3616,8 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &ctx->cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		set = set_lookup(table, cmd->handle.set.name);
 		if (set == NULL || !(set->flags & NFT_SET_EVAL))
 			return cmd_error(ctx, &ctx->cmd->handle.set.location,
@@ -3651,9 +3643,8 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 
 		table = table_lookup(&ctx->cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
-			return cmd_error(ctx, &ctx->cmd->handle.table.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return table_not_found(ctx);
+
 		if (chain_lookup(table, &ctx->cmd->handle) == NULL)
 			return cmd_error(ctx, &ctx->cmd->handle.chain.location,
 					 "Could not process rule: %s",

@@ -153,6 +153,8 @@ extern void table_free(struct table *table);
 extern void table_add_hash(struct table *table, struct nft_cache *cache);
 extern struct table *table_lookup(const struct handle *h,
 				  const struct nft_cache *cache);
+extern struct table *table_lookup_fuzzy(const struct handle *h,
+					const struct nft_cache *cache);
 
 /**
  * enum chain_flags - chain flags

@@ -1103,6 +1103,18 @@ struct table *table_lookup(const struct handle *h,
 	return NULL;
 }
 
+struct table *table_lookup_fuzzy(const struct handle *h,
+				 const struct nft_cache *cache)
+{
+	struct table *table;
+
+	list_for_each_entry(table, &cache->list, list) {
+		if (!strcmp(table->handle.table.name, h->table.name))
+			return table;
+	}
+	return NULL;
+}
+
 const char *table_flags_name[TABLE_FLAGS_MAX] = {
 	"dormant",
 };

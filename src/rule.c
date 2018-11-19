@@ -762,6 +762,24 @@ struct chain *chain_lookup(const struct table *table, const struct handle *h)
 	return NULL;
 }
 
+struct chain *chain_lookup_fuzzy(const struct handle *h,
+				 const struct nft_cache *cache,
+				 const struct table **t)
+{
+	struct table *table;
+	struct chain *chain;
+
+	list_for_each_entry(table, &cache->list, list) {
+		list_for_each_entry(chain, &table->chains, list) {
+			if (!strcmp(chain->handle.chain.name, h->chain.name)) {
+				*t = table;
+				return chain;
+			}
+		}
+	}
+	return NULL;
+}
+
 const char *family2str(unsigned int family)
 {
 	switch (family) {

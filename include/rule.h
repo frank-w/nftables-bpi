@@ -221,6 +221,9 @@ extern void chain_free(struct chain *chain);
 extern void chain_add_hash(struct chain *chain, struct table *table);
 extern struct chain *chain_lookup(const struct table *table,
 				  const struct handle *h);
+extern struct chain *chain_lookup_fuzzy(const struct handle *h,
+					const struct nft_cache *cache,
+					const struct table **table);
 
 extern const char *family2str(unsigned int family);
 extern const char *hooknum2str(unsigned int family, unsigned int hooknum);

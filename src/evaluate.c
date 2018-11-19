@@ -181,6 +181,23 @@ static int table_not_found(struct eval_ctx *ctx)
 			 family2str(table->handle.family));
 }
 
+static int chain_not_found(struct eval_ctx *ctx)
+{
+	const struct table *table;
+	struct chain *chain;
+
+	chain = chain_lookup_fuzzy(&ctx->cmd->handle, &ctx->nft->cache, &table);
+	if (chain == NULL)
+		return cmd_error(ctx, &ctx->cmd->handle.chain.location,
+				 "%s", strerror(ENOENT));
+
+	return cmd_error(ctx, &ctx->cmd->handle.chain.location,
+			 "%s; did you mean chain ‘%s’ in table %s ‘%s’?",
+			 strerror(ENOENT), chain->handle.chain.name,
+			 family2str(chain->handle.family),
+			 table->handle.table.name);
+}
+
 /*
  * Symbol expression: parse symbol and evaluate resulting expression.
  */
@@ -3109,9 +3126,7 @@ static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
 
 	chain = chain_lookup(table, &rule->handle);
 	if (!chain)
-		return cmd_error(ctx, &rule->handle.chain.location,
-				"Could not process rule: %s",
-				strerror(ENOENT));
+		return chain_not_found(ctx);
 
 	list_for_each_entry(r, &chain->rules, list) {
 		if (++index < rule->handle.index.id)
@@ -3499,9 +3514,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		if (chain_lookup(table, &cmd->handle) == NULL)
-			return cmd_error(ctx, &cmd->handle.chain.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return chain_not_found(ctx);
+
 		return 0;
 	case CMD_OBJ_QUOTA:
 		return cmd_evaluate_list_obj(ctx, cmd, NFT_OBJECT_QUOTA);
@@ -3646,9 +3660,8 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		if (chain_lookup(table, &ctx->cmd->handle) == NULL)
-			return cmd_error(ctx, &ctx->cmd->handle.chain.location,
-					 "Could not process rule: %s",
-					 strerror(ENOENT));
+			return chain_not_found(ctx);
+
 		break;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);

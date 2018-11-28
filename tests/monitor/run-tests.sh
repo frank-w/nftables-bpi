@@ -17,7 +17,7 @@ fi
 testdir=$(mktemp -d)
 if [ ! -d $testdir ]; then
 	echo "Failed to create test directory" >&2
-	exit 0
+	exit 1
 fi
 trap "rm -rf $testdir; $nft flush ruleset" EXIT
 

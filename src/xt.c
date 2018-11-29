@@ -10,7 +10,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <net/if.h>
+#ifdef HAVE_LIBXTABLES
 #include <xtables.h>
+#endif
 #include <getopt.h>
 #include <ctype.h>	/* for isspace */
 #include <statement.h>
@@ -76,6 +79,7 @@ void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx)
 
 void xt_stmt_release(const struct stmt *stmt)
 {
+#ifdef HAVE_LIBXTABLES
 	switch (stmt->xt.type) {
 	case NFT_XT_MATCH:
 		if (!stmt->xt.match)
@@ -95,6 +99,7 @@ void xt_stmt_release(const struct stmt *stmt)
 	default:
 		break;
 	}
+#endif
 	xfree(stmt->xt.entry);
 }
 

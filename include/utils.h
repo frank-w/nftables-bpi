@@ -61,17 +61,11 @@
 #define div_round_up(n, d)	(((n) + (d) - 1) / (d))
 #define round_up(n, b)		(div_round_up(n, b) * b)
 
-#define min(x, y) ({				\
-	typeof(x) _min1 = (x);			\
-	typeof(y) _min2 = (y);			\
-	(void) (&_min1 == &_min2);		\
-	_min1 < _min2 ? _min1 : _min2; })
+#define min(_x, _y) ({				\
+	_x < _y ? _x : _y; })
 
-#define max(x, y) ({				\
-	typeof(x) _max1 = (x);			\
-	typeof(y) _max2 = (y);			\
-	(void) (&_max1 == &_max2);		\
-	_max1 > _max2 ? _max1 : _max2; })
+#define max(_x, _y) ({				\
+	_x > _y ? _x : _y; })
 
 #define SNPRINTF_BUFFER_SIZE(ret, size, len, offset)	\
 	if (ret < 0)					\

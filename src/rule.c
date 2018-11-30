@@ -22,6 +22,7 @@
 #include <netdb.h>
 #include <netlink.h>
 #include <mnl.h>
+#include <misspell.h>
 #include <json.h>
 
 #include <libnftnl/common.h>
@@ -354,8 +355,11 @@ struct set *set_lookup_fuzzy(const char *set_name,
 			     const struct nft_cache *cache,
 			     const struct table **t)
 {
+	struct string_misspell_state st;
 	struct table *table;
 	struct set *set;
+
+	string_misspell_init(&st);
 
 	list_for_each_entry(table, &cache->list, list) {
 		list_for_each_entry(set, &table->sets, list) {
@@ -363,9 +367,12 @@ struct set *set_lookup_fuzzy(const char *set_name,
 				*t = table;
 				return set;
 			}
+			if (string_misspell_update(set->handle.set.name,
+						   set_name, set, &st))
+				*t = table;
 		}
 	}
-	return NULL;
+	return st.obj;
 }
 
 struct set *set_lookup_global(uint32_t family, const char *table,
@@ -784,8 +791,11 @@ struct chain *chain_lookup_fuzzy(const struct handle *h,
 				 const struct nft_cache *cache,
 				 const struct table **t)
 {
+	struct string_misspell_state st;
 	struct table *table;
 	struct chain *chain;
+
+	string_misspell_init(&st);
 
 	list_for_each_entry(table, &cache->list, list) {
 		list_for_each_entry(chain, &table->chains, list) {
@@ -793,9 +803,12 @@ struct chain *chain_lookup_fuzzy(const struct handle *h,
 				*t = table;
 				return chain;
 			}
+			if (string_misspell_update(chain->handle.chain.name,
+						   h->chain.name, chain, &st))
+				*t = table;
 		}
 	}
-	return NULL;
+	return st.obj;
 }
 
 const char *family2str(unsigned int family)
@@ -1142,13 +1155,19 @@ struct table *table_lookup(const struct handle *h,
 struct table *table_lookup_fuzzy(const struct handle *h,
 				 const struct nft_cache *cache)
 {
+	struct string_misspell_state st;
 	struct table *table;
+
+	string_misspell_init(&st);
 
 	list_for_each_entry(table, &cache->list, list) {
 		if (!strcmp(table->handle.table.name, h->table.name))
 			return table;
+
+		string_misspell_update(table->handle.table.name,
+				       h->table.name, table, &st);
 	}
-	return NULL;
+	return st.obj;
 }
 
 const char *table_flags_name[TABLE_FLAGS_MAX] = {

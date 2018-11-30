@@ -78,11 +78,26 @@ void string_misspell_init(struct string_misspell_state *st)
 int string_misspell_update(const char *a, const char *b,
 			   void *obj, struct string_misspell_state *st)
 {
-	unsigned int distance;
+	unsigned int len_a, len_b, max_len, min_len, distance, threshold;
+
+	len_a = strlen(a);
+	len_b = strlen(b);
+
+	max_len = max(len_a, len_b);
+	min_len = min(len_a, len_b);
+
+	if (max_len <= 1)
+		return 0;
+
+	if (max_len - min_len <= 1)
+		threshold = max(div_round_up(max_len, 3), 1);
+	else
+		threshold = div_round_up(max_len + 2, 3);
 
 	distance = string_distance(a, b);
-
-	if (distance < st->min_distance) {
+	if (distance > threshold)
+		return 0;
+	else if (distance < st->min_distance) {
 		st->min_distance = distance;
 		st->obj = obj;
 		return 1;

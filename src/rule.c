@@ -692,6 +692,24 @@ struct symbol *symbol_lookup(const struct scope *scope, const char *identifier)
 	return NULL;
 }
 
+struct symbol *symbol_lookup_fuzzy(const struct scope *scope,
+				   const char *identifier)
+{
+	struct string_misspell_state st;
+	struct symbol *sym;
+
+	string_misspell_init(&st);
+
+	while (scope != NULL) {
+		list_for_each_entry(sym, &scope->symbols, list)
+			string_misspell_update(sym->identifier, identifier,
+					       sym, &st);
+
+		scope = scope->parent;
+	}
+	return st.obj;
+}
+
 static const char * const chain_type_str_array[] = {
 	"filter",
 	"nat",

@@ -112,6 +112,8 @@ extern void symbol_bind(struct scope *scope, const char *identifier,
 extern int symbol_unbind(const struct scope *scope, const char *identifier);
 extern struct symbol *symbol_lookup(const struct scope *scope,
 				    const char *identifier);
+struct symbol *symbol_lookup_fuzzy(const struct scope *scope,
+				   const char *identifier);
 struct symbol *symbol_get(const struct scope *scope, const char *identifier);
 
 enum table_flags {

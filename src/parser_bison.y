@@ -3078,8 +3078,16 @@ variable_expr		:	'$'	identifier
 
 				sym = symbol_get(scope, $2);
 				if (!sym) {
-					erec_queue(error(&@2, "unknown identifier '%s'", $2),
-						   state->msgs);
+					sym = symbol_lookup_fuzzy(scope, $2);
+					if (sym) {
+						erec_queue(error(&@2, "unknown identifier '%s'; "
+								      "did you mean identifier ‘%s’?",
+								      $2, sym->identifier),
+							   state->msgs);
+					} else {
+						erec_queue(error(&@2, "unknown identifier '%s'", $2),
+							   state->msgs);
+					}
 					xfree($2);
 					YYERROR;
 				}

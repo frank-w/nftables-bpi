@@ -392,6 +392,9 @@ void obj_free(struct obj *obj);
 void obj_add_hash(struct obj *obj, struct table *table);
 struct obj *obj_lookup(const struct table *table, const char *name,
 		       uint32_t type);
+struct obj *obj_lookup_fuzzy(const char *obj_name,
+			     const struct nft_cache *cache,
+			     const struct table **t);
 void obj_print(const struct obj *n, struct output_ctx *octx);
 void obj_print_plain(const struct obj *obj, struct output_ctx *octx);
 const char *obj_type_name(uint32_t type);

@@ -3450,6 +3450,23 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 	}
 }
 
+static int obj_not_found(struct eval_ctx *ctx, const struct location *loc,
+			 const char *obj_name)
+{
+	const struct table *table;
+	struct obj *obj;
+
+	obj = obj_lookup_fuzzy(obj_name, &ctx->nft->cache, &table);
+	if (obj == NULL)
+		return cmd_error(ctx, loc, "%s", strerror(ENOENT));
+
+	return cmd_error(ctx, loc,
+			 "%s; did you mean obj ‘%s’ in table %s ‘%s’?",
+			 strerror(ENOENT), obj->handle.obj.name,
+				 family2str(obj->handle.family),
+				 table->handle.table.name);
+}
+
 static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 				 uint32_t obj_type)
 {
@@ -3463,9 +3480,9 @@ static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 		return table_not_found(ctx);
 
 	if (obj_lookup(table, cmd->handle.obj.name, obj_type) == NULL)
-		return cmd_error(ctx, &cmd->handle.obj.location,
-				 "Could not process rule: %s",
-				 strerror(ENOENT));
+		return obj_not_found(ctx, &cmd->handle.obj.location,
+				     cmd->handle.obj.name);
+
 	return 0;
 }
 

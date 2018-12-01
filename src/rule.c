@@ -1710,6 +1710,30 @@ struct obj *obj_lookup(const struct table *table, const char *name,
 	return NULL;
 }
 
+struct obj *obj_lookup_fuzzy(const char *obj_name,
+			     const struct nft_cache *cache,
+			     const struct table **t)
+{
+	struct string_misspell_state st;
+	struct table *table;
+	struct obj *obj;
+
+	string_misspell_init(&st);
+
+	list_for_each_entry(table, &cache->list, list) {
+		list_for_each_entry(obj, &table->objs, list) {
+			if (!strcmp(obj->handle.obj.name, obj_name)) {
+				*t = table;
+				return obj;
+			}
+			if (string_misspell_update(obj->handle.obj.name,
+						   obj_name, obj, &st))
+				*t = table;
+		}
+	}
+	return st.obj;
+}
+
 static void print_proto_name_proto(uint8_t l4, struct output_ctx *octx)
 {
 	const struct protoent *p = getprotobynumber(l4);

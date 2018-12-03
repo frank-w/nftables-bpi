@@ -14,6 +14,7 @@ limit rate 400/hour;ok
 limit rate 40/day;ok
 limit rate 400/week;ok
 limit rate 1023/second burst 10 packets;ok
+limit rate 1023/second burst 10 bytes;fail
 
 limit rate 1 kbytes/second;ok
 limit rate 2 kbytes/second;ok
@@ -21,6 +22,7 @@ limit rate 1025 kbytes/second;ok
 limit rate 1023 mbytes/second;ok
 limit rate 10230 mbytes/second;ok
 limit rate 1023000 mbytes/second;ok
+limit rate 512 kbytes/second burst 5 packets;fail
 
 limit rate 1025 bytes/second burst 512 bytes;ok
 limit rate 1025 kbytes/second burst 1023 kbytes;ok

@@ -590,7 +590,7 @@ int nft_lex(void *, void *, void *);
 %type <val>			level_type log_flags log_flags_tcp log_flag_tcp
 %type <stmt>			limit_stmt quota_stmt connlimit_stmt
 %destructor { stmt_free($$); }	limit_stmt quota_stmt connlimit_stmt
-%type <val>			limit_burst limit_mode time_unit quota_mode
+%type <val>			limit_burst_pkts limit_burst_bytes limit_mode time_unit quota_mode
 %type <stmt>			reject_stmt reject_stmt_alloc
 %destructor { stmt_free($$); }	reject_stmt reject_stmt_alloc
 %type <stmt>			nat_stmt nat_stmt_alloc masq_stmt masq_stmt_alloc redir_stmt redir_stmt_alloc
@@ -2475,7 +2475,7 @@ log_flag_tcp		:	SEQUENCE
 			}
 			;
 
-limit_stmt		:	LIMIT	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst
+limit_stmt		:	LIMIT	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst_pkts
 	    		{
 				$$ = limit_stmt_alloc(&@$);
 				$$->limit.rate	= $4;
@@ -2484,7 +2484,7 @@ limit_stmt		:	LIMIT	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst
 				$$->limit.type	= NFT_LIMIT_PKTS;
 				$$->limit.flags = $3;
 			}
-			|	LIMIT	RATE	limit_mode	NUM	STRING	limit_burst
+			|	LIMIT	RATE	limit_mode	NUM	STRING	limit_burst_bytes
 			{
 				struct error_record *erec;
 				uint64_t rate, unit;
@@ -2565,8 +2565,11 @@ limit_mode		:	OVER				{ $$ = NFT_LIMIT_F_INV; }
 			|	/* empty */			{ $$ = 0; }
 			;
 
-limit_burst		:	/* empty */			{ $$ = 0; }
+limit_burst_pkts	:	/* empty */			{ $$ = 0; }
 			|	BURST	NUM	PACKETS		{ $$ = $2; }
+			;
+
+limit_burst_bytes	:	/* empty */			{ $$ = 0; }
 			|	BURST	NUM	BYTES		{ $$ = $2; }
 			|	BURST	NUM	STRING
 			{
@@ -3532,7 +3535,7 @@ ct_obj_alloc		:
 			}
 			;
 
-limit_config		:	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst
+limit_config		:	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst_pkts
 			{
 				struct limit *limit;
 				limit = xzalloc(sizeof(*limit));
@@ -3543,7 +3546,7 @@ limit_config		:	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst
 				limit->flags	= $2;
 				$$ = limit;
 			}
-			|	RATE	limit_mode	NUM	STRING	limit_burst
+			|	RATE	limit_mode	NUM	STRING	limit_burst_bytes
 			{
 				struct limit *limit;
 				struct error_record *erec;

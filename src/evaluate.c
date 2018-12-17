@@ -3803,6 +3803,9 @@ static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 	if (cmd->markup->format == __NFT_OUTPUT_NOTSUPP)
 		return cmd_error(ctx, &cmd->location,
 				 "this output type is not supported");
+	else if (cmd->markup->format == NFTNL_OUTPUT_JSON)
+		return cmd_error(ctx, &cmd->location,
+				 "JSON export is no longer supported, use 'nft -j list ruleset' instead");
 
 	return cache_update(ctx->nft, cmd->op, ctx->msgs);
 }

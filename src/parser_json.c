@@ -3301,8 +3301,8 @@ static struct cmd *json_parse_cmd(struct json_ctx *ctx, json_t *root)
 
 		return parse_cb_table[i].cb(ctx, tmp, parse_cb_table[i].op);
 	}
-	json_error(ctx, "Unknown command object.");
-	return NULL;
+	/* to accept 'list ruleset' output 1:1, try add command */
+	return json_parse_cmd_add(ctx, root, CMD_ADD);
 }
 
 static int json_verify_metainfo(struct json_ctx *ctx, json_t *root)

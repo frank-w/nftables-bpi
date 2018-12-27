@@ -81,8 +81,6 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 			  unsigned int flags);
 int mnl_nft_flowtable_del(struct netlink_ctx *ctx, const struct cmd *cmd);
 
-struct nftnl_ruleset *mnl_nft_ruleset_dump(struct netlink_ctx *ctx,
-					   uint32_t family);
 int mnl_nft_event_listener(struct mnl_socket *nf_sock, unsigned int debug_mask,
 			   struct output_ctx *octx,
 			   int (*cb)(const struct nlmsghdr *nlh, void *data),

@@ -1377,66 +1377,6 @@ int mnl_nft_flowtable_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 }
 
 /*
- * ruleset
- */
-struct nftnl_ruleset *mnl_nft_ruleset_dump(struct netlink_ctx *ctx,
-					   uint32_t family)
-{
-	struct nftnl_ruleset *rs;
-	struct nftnl_table_list *t;
-	struct nftnl_chain_list *c;
-	struct nftnl_set_list *sl;
-	struct nftnl_set_list_iter *i;
-	struct nftnl_set *s;
-	struct nftnl_rule_list *r;
-	int ret = 0;
-
-	rs = nftnl_ruleset_alloc();
-	if (rs == NULL)
-		memory_allocation_error();
-
-	t = mnl_nft_table_dump(ctx, family);
-	if (t == NULL)
-		goto err;
-
-	nftnl_ruleset_set(rs, NFTNL_RULESET_TABLELIST, t);
-
-	c = mnl_nft_chain_dump(ctx, family);
-	if (c == NULL)
-		goto err;
-
-	nftnl_ruleset_set(rs, NFTNL_RULESET_CHAINLIST, c);
-
-	sl = mnl_nft_set_dump(ctx, family, NULL);
-	if (sl == NULL)
-		goto err;
-
-	i = nftnl_set_list_iter_create(sl);
-	s = nftnl_set_list_iter_next(i);
-	while (s != NULL) {
-		ret = mnl_nft_setelem_get(ctx, s);
-		if (ret < 0)
-			goto err;
-
-		s = nftnl_set_list_iter_next(i);
-	}
-	nftnl_set_list_iter_destroy(i);
-
-	nftnl_ruleset_set(rs, NFTNL_RULESET_SETLIST, sl);
-
-	r = mnl_nft_rule_dump(ctx, family);
-	if (r == NULL)
-		goto err;
-
-	nftnl_ruleset_set(rs, NFTNL_RULESET_RULELIST, r);
-
-	return rs;
-err:
-	nftnl_ruleset_free(rs);
-	return NULL;
-}
-
-/*
  * events
  */
 #define NFTABLES_NLEVENT_BUFSIZ	(1 << 24)

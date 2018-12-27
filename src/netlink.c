@@ -1117,13 +1117,6 @@ int netlink_list_flowtables(struct netlink_ctx *ctx, const struct handle *h)
 	return err;
 }
 
-struct nftnl_ruleset *netlink_dump_ruleset(struct netlink_ctx *ctx,
-					 const struct handle *h,
-					 const struct location *loc)
-{
-	return mnl_nft_ruleset_dump(ctx, h->family);
-}
-
 static void trace_print_hdr(const struct nftnl_trace *nlt,
 			    struct output_ctx *octx)
 {
@@ -1433,10 +1426,4 @@ int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 
 	nftnl_trace_free(nlt);
 	return MNL_CB_OK;
-}
-
-int netlink_markup_parse_cb(const struct nftnl_parse_ctx *ctx)
-{
-	errno = EOPNOTSUPP;
-	return -1;
 }

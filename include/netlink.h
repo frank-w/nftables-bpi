@@ -163,9 +163,6 @@ extern int netlink_io_error(struct netlink_ctx *ctx,
 	__netlink_init_error(__FILE__, __LINE__, strerror(errno));
 extern void __noreturn __netlink_init_error(const char *file, int line, const char *reason);
 
-extern struct nftnl_ruleset *netlink_dump_ruleset(struct netlink_ctx *ctx,
-						const struct handle *h,
-						const struct location *loc);
 struct netlink_mon_handler {
 	uint32_t		monitor_flags;
 	uint32_t		format;
@@ -186,8 +183,6 @@ struct ruleset_parse {
 };
 
 struct nftnl_parse_ctx;
-
-int netlink_markup_parse_cb(const struct nftnl_parse_ctx *ctx);
 
 int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 			    struct netlink_mon_handler *monh);

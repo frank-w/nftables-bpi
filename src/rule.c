@@ -1597,47 +1597,6 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 	}
 }
 
-static int do_command_export(struct netlink_ctx *ctx, struct cmd *cmd)
-{
-	struct nftnl_ruleset *rs;
-	FILE *fp = ctx->nft->output.output_fp;
-
-	do {
-		rs = netlink_dump_ruleset(ctx, &cmd->handle, &cmd->location);
-		if (rs == NULL && errno != EINTR)
-			return -1;
-	} while (rs == NULL);
-
-	nftnl_ruleset_fprintf(fp, rs, cmd->markup->format, NFTNL_OF_EVENT_NEW);
-
-	nft_print(&ctx->nft->output, "\n");
-
-	nftnl_ruleset_free(rs);
-	return 0;
-}
-
-static int do_command_import(struct netlink_ctx *ctx, struct cmd *cmd)
-{
-	int ret;
-	struct nftnl_parse_err *err;
-	struct ruleset_parse rp = {
-		.nl_ctx = ctx,
-		.cmd    = cmd
-	};
-
-	err = nftnl_parse_err_alloc();
-	if (err == NULL)
-		return -1;
-
-	ret = nftnl_ruleset_parse_file_cb(cmd->markup->format, stdin, err, &rp,
-					  netlink_markup_parse_cb);
-	if (ret < 0)
-		nftnl_parse_perror("unable to import: parsing failed", err);
-
-	nftnl_parse_err_free(err);
-	return ret;
-}
-
 static int do_list_table(struct netlink_ctx *ctx, struct cmd *cmd,
 			 struct table *table)
 {
@@ -2527,9 +2486,9 @@ int do_command(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_RENAME:
 		return do_command_rename(ctx, cmd);
 	case CMD_IMPORT:
-		return do_command_import(ctx, cmd);
 	case CMD_EXPORT:
-		return do_command_export(ctx, cmd);
+		errno = EOPNOTSUPP;
+		return -1;
 	case CMD_MONITOR:
 		return do_command_monitor(ctx, cmd);
 	case CMD_DESCRIBE:

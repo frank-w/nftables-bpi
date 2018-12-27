@@ -1422,7 +1422,7 @@ monitor_format		:	/* empty */	{ $$ = NFTNL_OUTPUT_DEFAULT; }
 			;
 
 markup_format		: 	XML 		{ $$ = __NFT_OUTPUT_NOTSUPP; }
-			|	JSON		{ $$ = __NFT_OUTPUT_NOTSUPP; }
+			|	JSON		{ $$ = NFTNL_OUTPUT_JSON; }
 			|	VM JSON		{ $$ = NFTNL_OUTPUT_JSON; }
 			;
 

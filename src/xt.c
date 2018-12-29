@@ -11,9 +11,6 @@
 #include <time.h>
 #include <string.h>
 #include <net/if.h>
-#ifdef HAVE_LIBXTABLES
-#include <xtables.h>
-#endif
 #include <getopt.h>
 #include <ctype.h>	/* for isspace */
 #include <statement.h>
@@ -28,6 +25,10 @@
 #include <linux/netfilter_ipv6/ip6_tables.h>
 #include <linux/netfilter_arp/arp_tables.h>
 #include <linux/netfilter_bridge/ebtables.h>
+
+#ifdef HAVE_LIBXTABLES
+#include <xtables.h>
+#endif
 
 void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx)
 {

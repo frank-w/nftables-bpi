@@ -1946,12 +1946,15 @@ static int do_list_obj(struct netlink_ctx *ctx, struct cmd *cmd, uint32_t type)
 			continue;
 
 		if (cmd->handle.table.name != NULL &&
-		    !strcmp(cmd->handle.table.name, table->handle.table.name)) {
-			nft_print(&ctx->nft->output, "table %s %s {\n",
-				  family2str(table->handle.family),
-				  cmd->handle.table.name);
-		} else
+		    strcmp(cmd->handle.table.name, table->handle.table.name))
 			continue;
+
+		if (list_empty(&table->objs))
+			continue;
+
+		nft_print(&ctx->nft->output, "table %s %s {\n",
+			  family2str(table->handle.family),
+			  table->handle.table.name);
 
 		list_for_each_entry(obj, &table->objs, list) {
 			if (obj->type != type ||

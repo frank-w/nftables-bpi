@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Configuration
-TESTDIR="./$(dirname $0)/"
-RETURNCODE_SEPARATOR="_"
+TESTDIR="./$(dirname $0)/testcases"
 SRC_NFT="$(dirname $0)/../../src/nft"
 DIFF=$(which diff)
 
@@ -55,12 +54,8 @@ if [ "$1" == "-g" ] ; then
 fi
 
 for arg in "$@"; do
-	if grep ^.*${RETURNCODE_SEPARATOR}[0-9]\\+$ <<< $arg >/dev/null ; then
-		SINGLE+=" $arg"
-		VERBOSE=y
-	else
-		msg_error "unknown parameter '$arg'"
-	fi
+	SINGLE+=" $arg"
+	VERBOSE=y
 done
 
 kernel_cleanup() {
@@ -90,8 +85,7 @@ find_tests() {
 		echo $SINGLE
 		return
 	fi
-	${FIND} ${TESTDIR} -executable -regex \
-		.*${RETURNCODE_SEPARATOR}[0-9]+ | sort
+	${FIND} ${TESTDIR} -type f -executable | sort
 }
 
 echo ""

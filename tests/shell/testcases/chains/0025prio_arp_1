@@ -10,8 +10,8 @@ family=arp
 			if (($? == 0))
 			then
 				echo "E: $prioname should not be a valid priority name for arp family chains." >&2
-				exit 0
+				exit 1
 			fi
 		done
 	done
-exit 1
+exit 0

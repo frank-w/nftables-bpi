@@ -14,4 +14,5 @@ table ip t {
 	}
 }"
 
-$NFT -f - <<< "$RULESET"
+$NFT -f - <<< "$RULESET" && exit 1
+exit 0

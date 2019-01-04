@@ -26,8 +26,6 @@ RULESET1="include \"$tmpdir/non_existent_file.nft\""
 
 echo "$RULESET1" > $tmpfile1
 
-$NFT -f $tmpfile1
-if [ $? -eq 0 ] ; then
-        echo "E: Failed to catch a missing include directory/file" >&2
-        exit 1
-fi
+$NFT -f $tmpfile1 || exit 0
+echo "E: Failed to catch a missing include directory/file" >&2
+exit 1

@@ -30,3 +30,5 @@ if [ "$EXPECTED" != "$GET" ] ; then
         [ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
         exit 1
 fi
+
+exit 0

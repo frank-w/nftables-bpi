@@ -7,5 +7,7 @@ set -e
 $NFT add table t
 $NFT add chain t c
 # kernel should return ENOENT
-$NFT replace rule t c handle 2 drop 2>/dev/null
+
+$NFT replace rule t c handle 2 drop 2>/dev/null || exit 0
 echo "E: missing kernel ENOENT" >&2
+exit 1

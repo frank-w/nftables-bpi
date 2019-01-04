@@ -4,7 +4,6 @@
 TESTDIR="./$(dirname $0)/"
 RETURNCODE_SEPARATOR="_"
 SRC_NFT="$(dirname $0)/../../src/nft"
-POSITIVE_RET=0
 DIFF=$(which diff)
 
 msg_error() {
@@ -102,29 +101,27 @@ for testfile in $(find_tests)
 do
 	kernel_cleanup
 
-	rc_spec=$(awk -F${RETURNCODE_SEPARATOR} '{print $NF}' <<< $testfile)
-
 	msg_info "[EXECUTING]	$testfile"
 	test_output=$(NFT=$NFT ${testfile} 2>&1)
 	rc_got=$?
 	echo -en "\033[1A\033[K" # clean the [EXECUTING] foobar line
 
-	if [ "$rc_got" == "$rc_spec" ] ; then
+	if [ "$rc_got" -eq 0 ] ; then
 		# check nft dump only for positive tests
-		rc_spec="${POSITIVE_RET}"
 		dumppath="$(dirname ${testfile})/dumps"
 		dumpfile="${dumppath}/$(basename ${testfile}).nft"
-		if [ "$rc_got" == "${POSITIVE_RET}" ] && [ -f ${dumpfile} ]; then
+		rc_spec=0
+		if [ "$rc_got" -eq 0 ] && [ -f ${dumpfile} ]; then
 			test_output=$(${DIFF} ${dumpfile} <($NFT list ruleset) 2>&1)
 			rc_spec=$?
 		fi
 
-		if [ "$rc_spec" == "${POSITIVE_RET}" ]; then
+		if [ "$rc_spec" -eq 0 ]; then
 			msg_info "[OK]		$testfile"
 			[ "$VERBOSE" == "y" ] && [ ! -z "$test_output" ] && echo "$test_output"
 			((ok++))
 
-			if [ "$DUMPGEN" == "y" ] && [ "$rc_got" == "${POSITIVE_RET}" ] && [ ! -f "${dumpfile}" ]; then
+			if [ "$DUMPGEN" == "y" ] && [ "$rc_got" == 0 ] && [ ! -f "${dumpfile}" ]; then
 				mkdir -p "${dumppath}"
 				nft list ruleset > "${dumpfile}"
 			fi
@@ -140,7 +137,7 @@ do
 	else
 		((failed++))
 		if [ "$VERBOSE" == "y" ] ; then
-			msg_warn "[FAILED]	$testfile: expected $rc_spec but got $rc_got"
+			msg_warn "[FAILED]	$testfile: got $rc_got"
 			[ ! -z "$test_output" ] && echo "$test_output"
 		else
 			msg_warn "[FAILED]	$testfile"

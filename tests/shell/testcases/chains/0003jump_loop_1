@@ -17,5 +17,6 @@ do
 done
 
 # this last jump should fail: loop
-$NFT add rule t c${MAX_JUMPS} jump c1 2>/dev/null
+$NFT add rule t c${MAX_JUMPS} jump c1 2>/dev/null || exit 0
 echo "E: loop of jumps ignored?" >&2
+exit 1

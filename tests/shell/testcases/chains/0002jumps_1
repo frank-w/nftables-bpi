@@ -20,5 +20,7 @@ done
 
 # this last jump should fail: too many links
 $NFT add chain t c$((MAX_JUMPS + 1))
-$NFT add rule t c${MAX_JUMPS} jump c$((MAX_JUMPS + 1)) 2>/dev/null
+
+$NFT add rule t c${MAX_JUMPS} jump c$((MAX_JUMPS + 1)) 2>/dev/null || exit 0
 echo "E: max jumps ignored?" >&2
+exit 1

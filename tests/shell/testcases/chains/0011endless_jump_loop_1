@@ -10,5 +10,6 @@ $NFT add element t m {2 : jump c2}
 $NFT add rule t c1 tcp dport vmap @m
 
 # kernel should return ELOOP
-$NFT add element t m {1 : jump c1} 2>/dev/null
+$NFT add element t m {1 : jump c1} 2>/dev/null || exit 0
 echo "E: accepted endless jump loop in a vmap" >&2
+exit 1

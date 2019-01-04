@@ -17,7 +17,7 @@ for cmd in add insert; do
 		$NFT $cmd rule t c $keyword 5 drop 2>/dev/null || continue
 
 		echo "E: invalid $keyword value allowed in $cmd command" >&2
-		exit 0
+		exit 1
 	done
 done
-exit 1
+exit 0

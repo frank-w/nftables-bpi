@@ -41,9 +41,6 @@ echo "$RULESET1" > $tmpfile1
 echo "$RULESET2" > $tmpfile2
 echo "$RULESET3" > $tmpfile3
 
-$NFT -f $tmpfile3
-
-if [ $? -eq 0 ] ; then
-        echo "E: didn't catch a broken file in directory" >&2
-        exit 1
-fi
+$NFT -f $tmpfile3 || exit 0
+echo "E: didn't catch a broken file in directory" >&2
+exit 1

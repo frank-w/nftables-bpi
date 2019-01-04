@@ -7,18 +7,18 @@ table ip x {
         chain y {
                 define unused = 4.4.4.4
                 define address = { 1.1.1.1, 2.2.2.2 }
-                ip saddr $address
+                ip saddr \$address
                 redefine address = { 3.3.3.3 }
-                ip saddr $address
+                ip saddr \$address
                 undefine unused
         }
 }"
 
 EXPECTED="table ip x {
-        chain y {
-                ip saddr { 1.1.1.1, 2.2.2.2 }
-                ip saddr { 3.3.3.3 }
-        }
+	chain y {
+		ip saddr { 1.1.1.1, 2.2.2.2 }
+		ip saddr { 3.3.3.3 }
+	}
 }"
 
 $NFT -f - <<< "$RULESET"

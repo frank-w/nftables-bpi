@@ -4,7 +4,7 @@ table inet t {
 		iifname { "whatever" } iif { "lo" } meta mark 0x0000007b
 		ct state established,related,new
 		ct state != established | related | new
-		ip saddr 10.0.0.0 ip saddr 10.0.0.0 ip daddr 10.0.0.2
+		ip saddr 10.0.0.0 ip daddr 10.0.0.2 ip saddr 10.0.0.0
 		ip6 daddr fe0::1 ip6 saddr fe0::2
 		ip saddr vmap { 10.0.0.0 : drop, 10.0.0.2 : accept }
 		ip6 daddr vmap { fe0::1 : drop, fe0::2 : accept }

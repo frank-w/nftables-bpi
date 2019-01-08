@@ -721,7 +721,33 @@ bool payload_can_merge(const struct expr *e1, const struct expr *e2)
 	if (total < e1->len || total > (NFT_REG_SIZE * BITS_PER_BYTE))
 		return false;
 
-	return true;
+	/* could return true after this, the expressions are mergeable.
+	 *
+	 * However, there are some caveats.
+	 *
+	 * Loading anything <= sizeof(u32) with base >= network header
+	 * is fast, because its handled directly from eval loop in the
+	 * kernel.
+	 *
+	 * We thus restrict merging a bit more.
+	 */
+
+	/* can still be handled by fastpath after merge */
+	if (total <= NFT_REG32_SIZE * BITS_PER_BYTE)
+		return true;
+
+	/* Linklayer base is not handled in fastpath, merge */
+	if (e1->payload.base == PROTO_BASE_LL_HDR)
+		return true;
+
+	/* Also merge if at least one expression is already
+	 * above REG32 size, in this case merging is faster.
+	 */
+	if (e1->len > (NFT_REG32_SIZE * BITS_PER_BYTE) ||
+	    e2->len > (NFT_REG32_SIZE * BITS_PER_BYTE))
+		return true;
+
+	return false;
 }
 
 /**

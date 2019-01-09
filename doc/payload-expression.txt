@@ -151,6 +151,34 @@ MTU of path MTU discovery|
 integer (16 bit)
 |============================
 
+IGMP HEADER EXPRESSION
+~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+*igmp* ['IGMP' 'header' 'field']
+
+This expression refers to IGMP header fields. When using it in *inet*,
+*bridge* or *netdev* families, it will cause an implicit dependency on IPv4 to
+be created. To match on unusual cases like IGMP over IPv6, one has to add an
+explicit *meta protocol ip6* match to the rule.
+
+.IGMP header expression
+[options="header"]
+|==================
+|Keyword|Description| Type
+|type|
+IGMP type field |
+igmp_type
+|mrt|
+IGMP maximum response time field |
+integer (8 bit)
+|checksum|
+ICMP checksum field |
+integer (16 bit)
+|group|
+Group address|
+integer (32 bit)
+|============================
+
 IPV6 HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]

@@ -314,6 +314,9 @@ int nft_lex(void *, void *, void *);
 %token GATEWAY			"gateway"
 %token MTU			"mtu"
 
+%token IGMP			"igmp"
+%token MRT			"mrt"
+
 %token OPTIONS			"options"
 
 %token IP6			"ip6"
@@ -691,9 +694,9 @@ int nft_lex(void *, void *, void *);
 %type <expr>			arp_hdr_expr
 %destructor { expr_free($$); }	arp_hdr_expr
 %type <val>			arp_hdr_field
-%type <expr>			ip_hdr_expr	icmp_hdr_expr		numgen_expr	hash_expr
-%destructor { expr_free($$); }	ip_hdr_expr	icmp_hdr_expr		numgen_expr	hash_expr
-%type <val>			ip_hdr_field	icmp_hdr_field
+%type <expr>			ip_hdr_expr	icmp_hdr_expr		igmp_hdr_expr numgen_expr	hash_expr
+%destructor { expr_free($$); }	ip_hdr_expr	icmp_hdr_expr		igmp_hdr_expr numgen_expr	hash_expr
+%type <val>			ip_hdr_field	icmp_hdr_field		igmp_hdr_field
 %type <expr>			ip6_hdr_expr    icmp6_hdr_expr
 %destructor { expr_free($$); }	ip6_hdr_expr	icmp6_hdr_expr
 %type <val>			ip6_hdr_field   icmp6_hdr_field
@@ -3736,6 +3739,13 @@ primary_rhs_expr	:	symbol_expr		{ $$ = $1; }
 							 BYTEORDER_HOST_ENDIAN,
 							 sizeof(data) * BITS_PER_BYTE, &data);
 			}
+			|	IGMP
+			{
+				uint8_t data = IPPROTO_IGMP;
+				$$ = constant_expr_alloc(&@$, &inet_protocol_type,
+							 BYTEORDER_HOST_ENDIAN,
+							 sizeof(data) * BITS_PER_BYTE, &data);
+			}
 			|	ICMP6
 			{
 				uint8_t data = IPPROTO_ICMPV6;
@@ -4144,6 +4154,7 @@ payload_expr		:	payload_raw_expr
 			|	arp_hdr_expr
 			|	ip_hdr_expr
 			|	icmp_hdr_expr
+			|	igmp_hdr_expr
 			|	ip6_hdr_expr
 			|	icmp6_hdr_expr
 			|	auth_hdr_expr
@@ -4239,6 +4250,18 @@ icmp_hdr_field		:	TYPE		{ $$ = ICMPHDR_TYPE; }
 			|	SEQUENCE	{ $$ = ICMPHDR_SEQ; }
 			|	GATEWAY		{ $$ = ICMPHDR_GATEWAY; }
 			|	MTU		{ $$ = ICMPHDR_MTU; }
+			;
+
+igmp_hdr_expr		:	IGMP	igmp_hdr_field
+			{
+				$$ = payload_expr_alloc(&@$, &proto_igmp, $2);
+			}
+			;
+
+igmp_hdr_field		:	TYPE		{ $$ = IGMPHDR_TYPE; }
+			|	CHECKSUM	{ $$ = IGMPHDR_CHECKSUM; }
+			|	MRT		{ $$ = IGMPHDR_MRT; }
+			|	GROUP		{ $$ = IGMPHDR_GROUP; }
 			;
 
 ip6_hdr_expr		:	IP6	ip6_hdr_field

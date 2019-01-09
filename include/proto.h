@@ -211,6 +211,14 @@ enum icmp_hdr_fields {
 	ICMPHDR_MTU,
 };
 
+enum igmp_hdr_fields {
+	IGMPHDR_INVALID,
+	IGMPHDR_TYPE,
+	IGMPHDR_CHECKSUM,
+	IGMPHDR_MRT,
+	IGMPHDR_GROUP,
+};
+
 enum icmp6_hdr_fields {
 	ICMP6HDR_INVALID,
 	ICMP6HDR_TYPE,
@@ -299,6 +307,7 @@ enum sctp_hdr_fields {
 };
 
 extern const struct proto_desc proto_icmp;
+extern const struct proto_desc proto_igmp;
 extern const struct proto_desc proto_ah;
 extern const struct proto_desc proto_esp;
 extern const struct proto_desc proto_comp;

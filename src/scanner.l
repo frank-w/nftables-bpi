@@ -426,6 +426,9 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "gateway"		{ return GATEWAY; }
 "mtu"			{ return MTU; }
 
+"igmp"			{ return IGMP; }
+"mrt"			{ return MRT; }
+
 "ip6"			{ return IP6; }
 "priority"		{ return PRIORITY; }
 "flowlabel"		{ return FLOWLABEL; }

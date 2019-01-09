@@ -357,6 +357,55 @@ const struct proto_desc proto_icmp = {
 };
 
 /*
+ * IGMP
+ */
+
+#include <netinet/igmp.h>
+
+#ifndef IGMP_V3_MEMBERSHIP_REPORT
+#define IGMP_V3_MEMBERSHIP_REPORT	0x22
+#endif
+
+static const struct symbol_table igmp_type_tbl = {
+	.base		= BASE_DECIMAL,
+	.symbols	= {
+		SYMBOL("membership-query",		IGMP_MEMBERSHIP_QUERY),
+		SYMBOL("membership-report-v1",		IGMP_V1_MEMBERSHIP_REPORT),
+		SYMBOL("membership-report-v2",		IGMP_V2_MEMBERSHIP_REPORT),
+		SYMBOL("membership-report-v3",		IGMP_V3_MEMBERSHIP_REPORT),
+		SYMBOL("leave-group",			IGMP_V2_LEAVE_GROUP),
+		SYMBOL_LIST_END
+	},
+};
+
+const struct datatype igmp_type_type = {
+	.type		= TYPE_IGMP_TYPE,
+	.name		= "igmp_type",
+	.desc		= "IGMP type",
+	.byteorder	= BYTEORDER_BIG_ENDIAN,
+	.size		= BITS_PER_BYTE,
+	.basetype	= &integer_type,
+	.sym_tbl	= &igmp_type_tbl,
+};
+
+#define IGMPHDR_FIELD(__name, __member) \
+	HDR_FIELD(__name, struct igmp, __member)
+#define IGMPHDR_TYPE(__name, __type, __member) \
+	HDR_TYPE(__name, __type, struct igmp, __member)
+
+const struct proto_desc proto_igmp = {
+	.name		= "igmp",
+	.base		= PROTO_BASE_TRANSPORT_HDR,
+	.checksum_key	= IGMPHDR_CHECKSUM,
+	.templates	= {
+		[IGMPHDR_TYPE]		= IGMPHDR_TYPE("type", &igmp_type_type, igmp_type),
+		[IGMPHDR_MRT]		= IGMPHDR_FIELD("mrt", igmp_code),
+		[IGMPHDR_CHECKSUM]	= IGMPHDR_FIELD("checksum", igmp_cksum),
+		[IGMPHDR_GROUP]		= IGMPHDR_FIELD("group", igmp_group),
+	},
+};
+
+/*
  * UDP/UDP-Lite
  */
 
@@ -591,6 +640,7 @@ const struct proto_desc proto_ip = {
 	.checksum_key	= IPHDR_CHECKSUM,
 	.protocols	= {
 		PROTO_LINK(IPPROTO_ICMP,	&proto_icmp),
+		PROTO_LINK(IPPROTO_IGMP,	&proto_igmp),
 		PROTO_LINK(IPPROTO_ICMPV6,	&proto_icmp6),
 		PROTO_LINK(IPPROTO_ESP,		&proto_esp),
 		PROTO_LINK(IPPROTO_AH,		&proto_ah),
@@ -720,6 +770,7 @@ const struct proto_desc proto_ip6 = {
 		PROTO_LINK(IPPROTO_DCCP,	&proto_dccp),
 		PROTO_LINK(IPPROTO_SCTP,	&proto_sctp),
 		PROTO_LINK(IPPROTO_ICMP,	&proto_icmp),
+		PROTO_LINK(IPPROTO_IGMP,	&proto_igmp),
 		PROTO_LINK(IPPROTO_ICMPV6,	&proto_icmp6),
 	},
 	.templates	= {
@@ -784,6 +835,7 @@ const struct proto_desc proto_inet_service = {
 		PROTO_LINK(IPPROTO_DCCP,	&proto_dccp),
 		PROTO_LINK(IPPROTO_SCTP,	&proto_sctp),
 		PROTO_LINK(IPPROTO_ICMP,	&proto_icmp),
+		PROTO_LINK(IPPROTO_IGMP,	&proto_igmp),
 		PROTO_LINK(IPPROTO_ICMPV6,	&proto_icmp6),
 	},
 	.templates	= {

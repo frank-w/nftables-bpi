@@ -44,6 +44,7 @@
  * @TYPE_DEVGROUP:	devgroup code (integer subtype)
  * @TYPE_DSCP:		Differentiated Services Code Point (integer subtype)
  * @TYPE_IFNAME:	interface name (string subtype)
+ * @TYPE_IGMP:		IGMP type (integer subtype)
  */
 enum datatypes {
 	TYPE_INVALID,
@@ -88,6 +89,7 @@ enum datatypes {
 	TYPE_BOOLEAN,
 	TYPE_CT_EVENTBIT,
 	TYPE_IFNAME,
+	TYPE_IGMP_TYPE,
 	__TYPE_MAX
 };
 #define TYPE_MAX		(__TYPE_MAX - 1)
@@ -248,6 +250,7 @@ extern const struct datatype icmp_type_type;
 extern const struct datatype icmp_code_type;
 extern const struct datatype icmpv6_code_type;
 extern const struct datatype icmpx_code_type;
+extern const struct datatype igmp_type_type;
 extern const struct datatype time_type;
 extern const struct datatype boolean_type;
 

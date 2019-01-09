@@ -269,7 +269,8 @@ payload_gen_special_dependency(struct eval_ctx *ctx, const struct expr *expr)
 		return payload_get_get_ll_hdr(ctx);
 	case PROTO_BASE_TRANSPORT_HDR:
 		if (expr->payload.desc == &proto_icmp ||
-		    expr->payload.desc == &proto_icmp6) {
+		    expr->payload.desc == &proto_icmp6 ||
+		    expr->payload.desc == &proto_igmp) {
 			const struct proto_desc *desc, *desc_upper;
 			struct stmt *nstmt;
 
@@ -281,7 +282,8 @@ payload_gen_special_dependency(struct eval_ctx *ctx, const struct expr *expr)
 			}
 
 			desc_upper = &proto_ip6;
-			if (expr->payload.desc == &proto_icmp)
+			if (expr->payload.desc == &proto_icmp ||
+			    expr->payload.desc == &proto_igmp)
 				desc_upper = &proto_ip;
 
 			if (payload_add_dependency(ctx, desc, desc_upper,

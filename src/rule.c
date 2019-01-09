@@ -1070,7 +1070,7 @@ static void chain_print_declaration(const struct chain *chain,
 		nft_print(octx, "\t\ttype %s hook %s", chain->type,
 			  hooknum2str(chain->handle.family, chain->hooknum));
 		if (chain->dev != NULL)
-			nft_print(octx, " device %s", chain->dev);
+			nft_print(octx, " device \"%s\"", chain->dev);
 		nft_print(octx, " priority %s; policy %s;\n",
 			  prio2str(octx, priobuf, sizeof(priobuf),
 				   chain->handle.family, chain->hooknum,

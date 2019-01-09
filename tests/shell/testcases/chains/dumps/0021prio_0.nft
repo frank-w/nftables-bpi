@@ -1364,23 +1364,23 @@ table arp x {
 }
 table netdev x {
 	chain ingressfilterm11 {
-		type filter hook ingress device lo priority -11; policy accept;
+		type filter hook ingress device "lo" priority -11; policy accept;
 	}
 
 	chain ingressfilterm10 {
-		type filter hook ingress device lo priority filter - 10; policy accept;
+		type filter hook ingress device "lo" priority filter - 10; policy accept;
 	}
 
 	chain ingressfilter {
-		type filter hook ingress device lo priority filter; policy accept;
+		type filter hook ingress device "lo" priority filter; policy accept;
 	}
 
 	chain ingressfilterp10 {
-		type filter hook ingress device lo priority filter + 10; policy accept;
+		type filter hook ingress device "lo" priority filter + 10; policy accept;
 	}
 
 	chain ingressfilterp11 {
-		type filter hook ingress device lo priority 11; policy accept;
+		type filter hook ingress device "lo" priority 11; policy accept;
 	}
 }
 table bridge x {

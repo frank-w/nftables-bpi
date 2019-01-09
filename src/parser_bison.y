@@ -1969,7 +1969,7 @@ int_num		:	NUM			{ $$ = $1; }
 			|	DASH	NUM		{ $$ = -$2; }
 			;
 
-dev_spec		:	DEVICE	STRING		{ $$ = $2; }
+dev_spec		:	DEVICE	string		{ $$ = $2; }
 			|	/* empty */		{ $$ = NULL; }
 			;
 

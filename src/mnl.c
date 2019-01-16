@@ -664,10 +664,6 @@ int mnl_nft_table_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 		nftnl_table_set_u64(nlt, NFTNL_TABLE_HANDLE,
 				    cmd->handle.handle.id);
 
-	nlt = nftnl_table_alloc();
-	if (nlt == NULL)
-		memory_allocation_error();
-
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELTABLE,
 				    cmd->handle.family,

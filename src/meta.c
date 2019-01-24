@@ -444,6 +444,12 @@ const struct meta_template meta_templates[] = {
 						BYTEORDER_BIG_ENDIAN), /* avoid conversion; doesn't have endianess */
 	[NFT_META_SECPATH]	= META_TEMPLATE("ipsec", &boolean_type,
 						BITS_PER_BYTE, BYTEORDER_HOST_ENDIAN),
+	[NFT_META_IIFKIND]	= META_TEMPLATE("iifkind",   &ifname_type,
+						IFNAMSIZ * BITS_PER_BYTE,
+						BYTEORDER_HOST_ENDIAN),
+	[NFT_META_OIFKIND]	= META_TEMPLATE("oifkind",   &ifname_type,
+						IFNAMSIZ * BITS_PER_BYTE,
+						BYTEORDER_HOST_ENDIAN),
 };
 
 static bool meta_key_is_unqualified(enum nft_meta_keys key)

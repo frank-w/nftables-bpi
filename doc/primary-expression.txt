@@ -4,7 +4,7 @@ META EXPRESSIONS
 *meta* {length | nfproto | l4proto | protocol | priority}
 [meta] {mark | iif | iifname | iiftype | oif | oifname | oiftype |
 skuid | skgid | nftrace | rtclassid | ibrname | obrname | pkttype | cpu
-| iifgroup | oifgroup | cgroup | random | ipsec}
+| iifgroup | oifgroup | cgroup | random | ipsec | iifkind | oifkind}
 
 A meta expression refers to meta data associated with a packet.
 
@@ -114,6 +114,10 @@ integer (32 bit)
 |ipsec|
 boolean|
 boolean (1 bit)
+|iifkind|
+Input interface kind |
+|oifkind|
+Output interface kind
 |====================
 
 .Meta expression specific types
@@ -137,6 +141,8 @@ Device group (32 bit number). Can be specified numerically or as symbolic name d
 |pkt_type|
 Packet type: *host* (addressed to local host), *broadcast* (to all),
 *multicast* (to group), *other* (addressed to another host).
+|ifkind|
+Interface kind (16 byte string). Does not have to exist.
 |=============================
 
 .Using meta expressions

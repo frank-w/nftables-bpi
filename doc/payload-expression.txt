@@ -481,7 +481,7 @@ Transport Header, for example TCP
 
 .Matching destination port of both UDP and TCP
 ----------------------------------------------
-inet filter input meta l4proto {tcp, udp} @th,16,16 { dns, http }
+inet filter input meta l4proto {tcp, udp} @th,16,16 { 53, 80 }
 -----------------------------------------------------------------
 
 .Rewrite arp packet target hardware address if target protocol address matches a given address

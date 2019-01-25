@@ -216,15 +216,19 @@ inet test-inet input
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
-  [ payload load 8b @ transport header + 0 => reg 1 ]
-  [ cmp eq reg 1 0x16000004 0x00000000 ]
+  [ payload load 4b @ transport header + 0 => reg 1 ]
+  [ cmp eq reg 1 0x16000004 ]
+  [ payload load 4b @ transport header + 4 => reg 1 ]
+  [ cmp eq reg 1 0x00000000 ]
 
 # tcp sequence 0 tcp sport 1024 tcp dport 22
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
-  [ payload load 8b @ transport header + 0 => reg 1 ]
-  [ cmp eq reg 1 0x16000004 0x00000000 ]
+  [ payload load 4b @ transport header + 4 => reg 1 ]
+  [ cmp eq reg 1 0x00000000 ]
+  [ payload load 4b @ transport header + 0 => reg 1 ]
+  [ cmp eq reg 1 0x16000004 ]
 
 # tcp sequence 0 tcp sport { 1024, 1022} tcp dport 22
 __set%d test-inet 3
@@ -233,10 +237,12 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
+  [ payload load 4b @ transport header + 4 => reg 1 ]
+  [ cmp eq reg 1 0x00000000 ]
   [ payload load 2b @ transport header + 0 => reg 1 ]
   [ lookup reg 1 set __set%d ]
-  [ payload load 6b @ transport header + 2 => reg 1 ]
-  [ cmp eq reg 1 0x00001600 0x00000000 ]
+  [ payload load 2b @ transport header + 2 => reg 1 ]
+  [ cmp eq reg 1 0x00001600 ]
 
 # tcp sequence 22
 inet test-inet input

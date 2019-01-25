@@ -370,8 +370,10 @@ ip test-ip4 input
 
 # ip saddr 192.168.3.1 ip daddr 192.168.3.100
 ip test-ip4 input
-  [ payload load 8b @ network header + 12 => reg 1 ]
-  [ cmp eq reg 1 0x0103a8c0 0x6403a8c0 ]
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ cmp eq reg 1 0x0103a8c0 ]
+  [ payload load 4b @ network header + 16 => reg 1 ]
+  [ cmp eq reg 1 0x6403a8c0 ]
 
 # ip saddr != 1.1.1.1
 ip test-ip4 input

@@ -482,8 +482,10 @@ bridge test-bridge input
 bridge test-bridge input 
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
-  [ payload load 8b @ network header + 12 => reg 1 ]
-  [ cmp eq reg 1 0x0103a8c0 0x6403a8c0 ]
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ cmp eq reg 1 0x0103a8c0 ]
+  [ payload load 4b @ network header + 16 => reg 1 ]
+  [ cmp eq reg 1 0x6403a8c0 ]
 
 # ip saddr != 1.1.1.1
 bridge test-bridge input 

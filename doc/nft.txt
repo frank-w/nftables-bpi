@@ -335,7 +335,7 @@ For base chains, *type*, *hook* and *priority* parameters are mandatory.
 |Type | Families | Hooks | Description
 |filter | all | all |
 Standard chain type to use in doubt.
-|nat | ip, ip6 |
+|nat | ip, ip6, inet |
 prerouting, input, output, postrouting |
 Chains of this type perform Native Address Translation based on conntrack
 entries. Only the first packet of a connection actually traverses this chain -

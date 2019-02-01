@@ -304,8 +304,10 @@ NAT STATEMENTS
 [verse]
 *snat* to address [:port] [persistent, random, fully-random]
 *snat* to address - address [:port - port] [persistent, random, fully-random]
+*snat* to { ip | ip6 } address - address [:port - port] [persistent, random ]
 *dnat* to address [:port] [persistent, random, fully-random]
-*dnat* to address [:port - port] [persistent, random, fully-random]
+*dnat* to address [:port - port] [persistent, random ]
+*dnat* to { ip | ip6 } address [:port - port] [persistent, random ]
 *masquerade* to [:port] [persistent, random, fully-random]
 *masquerade* to [:port - port] [persistent, random, fully-random]
 *redirect* to [:port] [persistent, random, fully-random]
@@ -330,7 +332,11 @@ The *redirect* statement is a special form of dnat which always translates the
 destination address to the local host's one. It comes in handy if one only wants
 to alter the destination port of incoming traffic on different interfaces.
 
-Note that all nat statements require both prerouting and postrouting base chains
+When used in the inet family (available with kernel 5.2), the dnat and snat
+statements require the use of the ip and ip6 keyword in case an address is
+provided, see the examples below.
+
+Before kernel 4.18 nat statements require both prerouting and postrouting base chains
 to be present since otherwise packets on the return path won't be seen by
 netfilter and therefore no reverse translation will take place.
 
@@ -355,7 +361,10 @@ port number (16 bit)
 |persistent |
 Gives a client the same source-/destination-address for each connection.
 |random|
-If used then port mapping will be randomized using a random seeded MD5 hash mix using source and destination address and destination port.
+In kernel 5.0 and newer this is the same as fully-random.
+In earlier kernels the port mapping will be randomized using a seeded MD5
+hash mix using source and destination address and destination port.
+
 |fully-random|
 If used then port mapping is generated based on a 32-bit pseudo-random algorithm.
 |=============================
@@ -379,6 +388,15 @@ add rule nat postrouting oif eth0 masquerade
 
 # redirect incoming TCP traffic for port 22 to port 2222
 add rule nat prerouting tcp dport 22 redirect to :2222
+
+# inet family:
+# handle ip dnat:
+add rule inet nat prerouting dnat ip to 10.0.2.99
+# handle ip6 dnat:
+add rule inet nat prerouting dnat ip6 to fe80::dead
+# this masquerades both ipv4 and ipv6:
+add rule inet nat postrouting meta oif ppp0 masquerade
+
 ------------------------
 
 TPROXY STATEMENT

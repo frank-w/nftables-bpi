@@ -932,6 +932,9 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 
 	family = nftnl_expr_get_u32(nle, NFTNL_EXPR_NAT_FAMILY);
 
+	if (ctx->table->handle.family == NFPROTO_INET)
+		stmt->nat.family = family;
+
 	if (nftnl_expr_is_set(nle, NFTNL_EXPR_NAT_FLAGS))
 		stmt->nat.flags = nftnl_expr_get_u32(nle, NFTNL_EXPR_NAT_FLAGS);
 

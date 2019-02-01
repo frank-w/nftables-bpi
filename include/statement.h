@@ -123,6 +123,7 @@ struct nat_stmt {
 	struct expr		*addr;
 	struct expr		*proto;
 	uint32_t		flags;
+	uint8_t			family;
 };
 
 extern struct stmt *nat_stmt_alloc(const struct location *loc,

@@ -586,8 +586,18 @@ const char *nat_etype2str(enum nft_nat_etypes type)
 static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	nft_print(octx, "%s", nat_etype2str(stmt->nat.type));
-	if (stmt->nat.addr || stmt->nat.proto)
+	if (stmt->nat.addr || stmt->nat.proto) {
+		switch (stmt->nat.family) {
+		case NFPROTO_IPV4:
+			nft_print(octx, " ip");
+			break;
+		case NFPROTO_IPV6:
+			nft_print(octx, " ip6");
+			break;
+		}
+
 		nft_print(octx, " to");
+	}
 
 	if (stmt->nat.addr) {
 		nft_print(octx, " ");

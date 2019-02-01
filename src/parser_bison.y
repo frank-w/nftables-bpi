@@ -2816,6 +2816,11 @@ nat_stmt_args		:	stmt_expr
 			{
 				$<stmt>0->nat.addr = $2;
 			}
+			|	nf_key_proto	TO	stmt_expr
+			{
+				$<stmt>0->nat.family = $1;
+				$<stmt>0->nat.addr = $3;
+			}
 			|	stmt_expr	COLON	stmt_expr
 			{
 				$<stmt>0->nat.addr = $1;
@@ -2825,6 +2830,12 @@ nat_stmt_args		:	stmt_expr
 			{
 				$<stmt>0->nat.addr = $2;
 				$<stmt>0->nat.proto = $4;
+			}
+			|	nf_key_proto	TO	 stmt_expr	COLON	stmt_expr
+			{
+				$<stmt>0->nat.family = $1;
+				$<stmt>0->nat.addr = $3;
+				$<stmt>0->nat.proto = $5;
 			}
 			|	COLON		stmt_expr
 			{

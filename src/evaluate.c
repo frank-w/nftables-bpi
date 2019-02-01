@@ -2507,9 +2507,28 @@ static int stmt_evaluate_reject(struct eval_ctx *ctx, struct stmt *stmt)
 
 static int nat_evaluate_family(struct eval_ctx *ctx, struct stmt *stmt)
 {
+	const struct proto_desc *nproto;
+
 	switch (ctx->pctx.family) {
 	case NFPROTO_IPV4:
 	case NFPROTO_IPV6:
+		if (stmt->nat.family == NFPROTO_UNSPEC)
+			stmt->nat.family = ctx->pctx.family;
+		return 0;
+	case NFPROTO_INET:
+		if (!stmt->nat.addr)
+			return 0;
+
+		if (stmt->nat.family != NFPROTO_UNSPEC)
+			return 0;
+
+		nproto = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
+
+		if (nproto == &proto_ip)
+			stmt->nat.family = NFPROTO_IPV4;
+		else if (nproto == &proto_ip6)
+			stmt->nat.family = NFPROTO_IPV6;
+
 		return 0;
 	default:
 		return stmt_error(ctx, stmt,
@@ -2551,6 +2570,55 @@ static int nat_evaluate_transport(struct eval_ctx *ctx, struct stmt *stmt,
 				 BYTEORDER_BIG_ENDIAN, expr);
 }
 
+static int stmt_evaluate_l3proto(struct eval_ctx *ctx,
+				 struct stmt *stmt, uint8_t family)
+{
+	const struct proto_desc *nproto;
+
+	nproto = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
+
+	if ((nproto == &proto_ip && family != NFPROTO_IPV4) ||
+	    (nproto == &proto_ip6 && family != NFPROTO_IPV6))
+		return stmt_binary_error(ctx, stmt,
+					 &ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR],
+					 "conflicting protocols specified: %s vs. %s. You must specify ip or ip6 family in tproxy statement",
+					 ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc->name,
+					 family2str(stmt->tproxy.family));
+	return 0;
+}
+
+static int stmt_evaluate_addr(struct eval_ctx *ctx, struct stmt *stmt,
+			      uint8_t family,
+			      struct expr **addr)
+{
+	const struct datatype *dtype;
+	unsigned int len;
+	int err;
+
+	if (ctx->pctx.family == NFPROTO_INET) {
+		switch (family) {
+		case NFPROTO_IPV4:
+			dtype = &ipaddr_type;
+			len   = 4 * BITS_PER_BYTE;
+			break;
+		case NFPROTO_IPV6:
+			dtype = &ip6addr_type;
+			len   = 16 * BITS_PER_BYTE;
+			break;
+		default:
+			return stmt_error(ctx, stmt,
+					  "ip or ip6 must be specified with address for inet tables.");
+		}
+
+		err = stmt_evaluate_arg(ctx, stmt, dtype, len,
+					BYTEORDER_BIG_ENDIAN, addr);
+	} else {
+		err = evaluate_addr(ctx, stmt, addr);
+	}
+
+	return err;
+}
+
 static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	int err;
@@ -2560,7 +2628,12 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 		return err;
 
 	if (stmt->nat.addr != NULL) {
-		err = evaluate_addr(ctx, stmt, &stmt->nat.addr);
+		err = stmt_evaluate_l3proto(ctx, stmt, stmt->nat.family);
+		if (err < 0)
+			return err;
+
+		err = stmt_evaluate_addr(ctx, stmt, stmt->nat.family,
+					 &stmt->nat.addr);
 		if (err < 0)
 			return err;
 	}
@@ -2576,9 +2649,7 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 
 static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
 {
-	const struct proto_desc *nproto;
-	const struct datatype *dtype;
-	int err, len;
+	int err;
 
 	switch (ctx->pctx.family) {
 	case NFPROTO_IPV4:
@@ -2600,46 +2671,19 @@ static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
 	if (!stmt->tproxy.addr && !stmt->tproxy.port)
 		return stmt_error(ctx, stmt, "Either address or port must be specified!");
 
-	nproto = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
-	if ((nproto == &proto_ip && stmt->tproxy.family != NFPROTO_IPV4) ||
-	    (nproto == &proto_ip6 && stmt->tproxy.family != NFPROTO_IPV6))
-		/* this prevents us from rules like
-		 * ip protocol tcp tproxy ip6 to [dead::beef]
-		 */
-		return stmt_binary_error(ctx, stmt,
-					 &ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR],
-					 "conflicting protocols specified: %s vs. %s. You must specify ip or ip6 family in tproxy statement",
-					 ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc->name,
-					 family2str(stmt->tproxy.family));
+	err = stmt_evaluate_l3proto(ctx, stmt, stmt->tproxy.family);
+	if (err < 0)
+		return err;
 
 	if (stmt->tproxy.addr != NULL) {
 		if (stmt->tproxy.addr->etype == EXPR_RANGE)
 			return stmt_error(ctx, stmt, "Address ranges are not supported for tproxy.");
-		if (ctx->pctx.family == NFPROTO_INET) {
-			switch (stmt->tproxy.family) {
-			case NFPROTO_IPV4:
-				dtype = &ipaddr_type;
-				len   = 4 * BITS_PER_BYTE;
-				break;
-			case NFPROTO_IPV6:
-				dtype = &ip6addr_type;
-				len   = 16 * BITS_PER_BYTE;
-				break;
-			default:
-				return stmt_error(ctx, stmt,
-						  "Family must be specified in tproxy statement with address for inet tables.");
-			}
-			err = stmt_evaluate_arg(ctx, stmt, dtype, len,
-						BYTEORDER_BIG_ENDIAN,
-						&stmt->tproxy.addr);
-			if (err < 0)
-				return err;
-		}
-		else {
-			err = evaluate_addr(ctx, stmt, &stmt->tproxy.addr);
-			if (err < 0)
-				return err;
-		}
+
+		err = stmt_evaluate_addr(ctx, stmt, stmt->tproxy.family,
+					 &stmt->tproxy.addr);
+
+		if (err < 0)
+			return err;
 	}
 
 	if (stmt->tproxy.port != NULL) {

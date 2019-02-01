@@ -1025,7 +1025,7 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 		nle = alloc_nft_expr("nat");
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_NAT_TYPE, stmt->nat.type);
 
-		family = nftnl_rule_get_u32(ctx->nlr, NFTNL_RULE_FAMILY);
+		family = stmt->nat.family;
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_NAT_FAMILY, family);
 
 		nftnl_flag_attr = NFTNL_EXPR_NAT_FLAGS;

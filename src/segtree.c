@@ -497,7 +497,7 @@ static void segtree_linearize(struct list_head *list, const struct set *set,
 				nei = ei_alloc(p, q, NULL, EI_F_INTERVAL_END);
 				list_add_tail(&nei->list, list);
 			} else if (add && merge &&
-			           ei->expr->ops->type != EXPR_MAPPING) {
+			           ei->expr->etype != EXPR_MAPPING) {
 				/* Merge contiguous segments only in case of
 				 * new additions.
 				 */
@@ -542,7 +542,7 @@ static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 	expr = set_elem_expr_alloc(&internal_location, expr);
 
 	if (ei->expr != NULL) {
-		if (ei->expr->ops->type == EXPR_MAPPING) {
+		if (ei->expr->etype == EXPR_MAPPING) {
 			if (ei->expr->left->comment)
 				expr->comment = xstrdup(ei->expr->left->comment);
 			if (ei->expr->left->timeout)
@@ -623,7 +623,7 @@ struct expr *get_set_intervals(const struct set *set, const struct expr *init)
 	new_init = list_expr_alloc(&internal_location);
 
 	list_for_each_entry(i, &init->expressions, list) {
-		switch (i->key->ops->type) {
+		switch (i->key->etype) {
 		case EXPR_VALUE:
 			set_elem_add(set, new_init, i->key->value, i->flags);
 			break;
@@ -658,7 +658,7 @@ static struct expr *get_set_interval_find(const struct table *table,
 	mpz_init2(high, set->key->len);
 
 	list_for_each_entry(i, &set->init->expressions, list) {
-		switch (i->key->ops->type) {
+		switch (i->key->etype) {
 		case EXPR_RANGE:
 			range_expr_value_low(low, i);
 			range_expr_value_high(high, i);
@@ -694,7 +694,7 @@ static struct expr *get_set_interval_end(const struct table *table,
 	mpz_init2(high, set->key->len);
 
 	list_for_each_entry(i, &set->init->expressions, list) {
-		switch (i->key->ops->type) {
+		switch (i->key->etype) {
 		case EXPR_RANGE:
 			range_expr_value_low(low, i);
 			if (mpz_cmp(low, left->key->value) == 0) {
@@ -781,7 +781,7 @@ static bool range_is_prefix(const mpz_t range)
 
 static struct expr *expr_value(struct expr *expr)
 {
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_MAPPING:
 		return expr->left->key;
 	case EXPR_SET_ELEM:
@@ -895,7 +895,7 @@ void interval_map_decompose(struct expr *set)
 			tmp = range_expr_alloc(&low->location, expr_value(low), tmp);
 			tmp = set_elem_expr_alloc(&low->location, tmp);
 
-			if (low->ops->type == EXPR_MAPPING) {
+			if (low->etype == EXPR_MAPPING) {
 				if (low->left->comment)
 					tmp->comment = xstrdup(low->left->comment);
 				if (low->left->timeout)
@@ -926,7 +926,7 @@ void interval_map_decompose(struct expr *set)
 
 			prefix = set_elem_expr_alloc(&low->location, prefix);
 
-			if (low->ops->type == EXPR_MAPPING) {
+			if (low->etype == EXPR_MAPPING) {
 				if (low->left->comment)
 					prefix->comment = xstrdup(low->left->comment);
 				if (low->left->timeout)
@@ -968,7 +968,7 @@ void interval_map_decompose(struct expr *set)
 	} else {
 		i = range_expr_alloc(&low->location, expr_value(low), i);
 		i = set_elem_expr_alloc(&low->location, i);
-		if (low->ops->type == EXPR_MAPPING)
+		if (low->etype == EXPR_MAPPING)
 			i = mapping_expr_alloc(&i->location, i, low->right);
 	}
 

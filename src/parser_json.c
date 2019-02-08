@@ -993,7 +993,7 @@ static struct expr *json_parse_concat_expr(struct json_ctx *ctx,
 			expr = tmp;
 			continue;
 		}
-		if (expr->ops->type != EXPR_CONCAT) {
+		if (expr->etype != EXPR_CONCAT) {
 			struct expr *concat;
 
 			concat = concat_expr_alloc(int_loc);
@@ -1093,7 +1093,7 @@ static struct expr *json_parse_set_expr(struct json_ctx *ctx,
 		if (!expr)
 			return NULL;
 
-		if (expr->ops->type == EXPR_SYMBOL &&
+		if (expr->etype == EXPR_SYMBOL &&
 		    expr->symtype == SYMBOL_SET)
 			return expr;
 
@@ -1116,7 +1116,7 @@ static struct expr *json_parse_set_expr(struct json_ctx *ctx,
 				expr_free(set_expr);
 				return NULL;
 			}
-			if (expr->ops->type != EXPR_SET_ELEM)
+			if (expr->etype != EXPR_SET_ELEM)
 				expr = set_elem_expr_alloc(int_loc, expr);
 
 			expr2 = json_parse_set_rhs_expr(ctx, jright);
@@ -1137,7 +1137,7 @@ static struct expr *json_parse_set_expr(struct json_ctx *ctx,
 				return NULL;
 			}
 
-			if (expr->ops->type != EXPR_SET_ELEM)
+			if (expr->etype != EXPR_SET_ELEM)
 				expr = set_elem_expr_alloc(int_loc, expr);
 		}
 
@@ -1406,7 +1406,7 @@ static struct expr *json_parse_set_elem_expr_stmt(struct json_ctx *ctx, json_t *
 {
 	struct expr *expr = json_parse_flagged_expr(ctx, CTX_F_SES, root);
 
-	if (expr && expr->ops->type != EXPR_SET_ELEM)
+	if (expr && expr->etype != EXPR_SET_ELEM)
 		expr = set_elem_expr_alloc(int_loc, expr);
 
 	return expr;
@@ -1559,7 +1559,7 @@ static struct stmt *json_parse_mangle_stmt(struct json_ctx *ctx,
 		return NULL;
 	}
 
-	switch (key->ops->type) {
+	switch (key->etype) {
 	case EXPR_EXTHDR:
 		return exthdr_stmt_alloc(int_loc, key, value);
 	case EXPR_PAYLOAD:

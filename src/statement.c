@@ -573,12 +573,12 @@ static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	if (stmt->nat.addr) {
 		nft_print(octx, " ");
 		if (stmt->nat.proto) {
-			if (stmt->nat.addr->ops->type == EXPR_VALUE &&
+			if (stmt->nat.addr->etype == EXPR_VALUE &&
 			    stmt->nat.addr->dtype->type == TYPE_IP6ADDR) {
 				nft_print(octx, "[");
 				expr_print(stmt->nat.addr, octx);
 				nft_print(octx, "]");
-			} else if (stmt->nat.addr->ops->type == EXPR_RANGE &&
+			} else if (stmt->nat.addr->etype == EXPR_RANGE &&
 				   stmt->nat.addr->left->dtype->type == TYPE_IP6ADDR) {
 				nft_print(octx, "[");
 				expr_print(stmt->nat.addr->left, octx);
@@ -794,7 +794,7 @@ static void tproxy_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	nft_print(octx, " to");
 	if (stmt->tproxy.addr) {
 		nft_print(octx, " ");
-		if (stmt->tproxy.addr->ops->type == EXPR_VALUE &&
+		if (stmt->tproxy.addr->etype == EXPR_VALUE &&
 		    stmt->tproxy.addr->dtype->type == TYPE_IP6ADDR) {
 			nft_print(octx, "[");
 			expr_print(stmt->tproxy.addr, octx);
@@ -803,7 +803,7 @@ static void tproxy_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 			expr_print(stmt->tproxy.addr, octx);
 		}
 	}
-	if (stmt->tproxy.port && stmt->tproxy.port->ops->type == EXPR_VALUE) {
+	if (stmt->tproxy.port && stmt->tproxy.port->etype == EXPR_VALUE) {
 		if (!stmt->tproxy.addr)
 			nft_print(octx, " ");
 		nft_print(octx, ":");

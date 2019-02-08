@@ -118,7 +118,7 @@ struct error_record *symbol_parse(const struct expr *sym,
 {
 	const struct datatype *dtype = sym->dtype;
 
-	assert(sym->ops->type == EXPR_SYMBOL);
+	assert(sym->etype == EXPR_SYMBOL);
 
 	if (dtype == NULL)
 		return error(&sym->location, "No symbol type information");

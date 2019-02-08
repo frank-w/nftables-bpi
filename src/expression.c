@@ -40,6 +40,7 @@ struct expr *expr_alloc(const struct location *loc, const struct expr_ops *ops,
 	expr->location  = *loc;
 	expr->ops	= ops;
 	expr->dtype	= dtype;
+	expr->etype	= ops->type;
 	expr->byteorder	= byteorder;
 	expr->len	= len;
 	expr->refcnt	= 1;
@@ -97,7 +98,7 @@ bool expr_cmp(const struct expr *e1, const struct expr *e2)
 	assert(e1->flags & EXPR_F_SINGLETON);
 	assert(e2->flags & EXPR_F_SINGLETON);
 
-	if (e1->ops->type != e2->ops->type)
+	if (e1->etype != e2->etype)
 		return false;
 
 	return expr_ops(e1)->cmp(e1, e2);
@@ -373,8 +374,8 @@ struct expr *constant_expr_join(const struct expr *e1, const struct expr *e2)
 	unsigned int len = (e1->len + e2->len) / BITS_PER_BYTE, tmp;
 	unsigned char data[len];
 
-	assert(e1->ops->type == EXPR_VALUE);
-	assert(e2->ops->type == EXPR_VALUE);
+	assert(e1->etype == EXPR_VALUE);
+	assert(e2->etype == EXPR_VALUE);
 
 	tmp = e1->len / BITS_PER_BYTE;
 	mpz_export_data(data, e1->value, e1->byteorder, tmp);
@@ -391,7 +392,7 @@ struct expr *constant_expr_splice(struct expr *expr, unsigned int len)
 	struct expr *slice;
 	mpz_t mask;
 
-	assert(expr->ops->type == EXPR_VALUE);
+	assert(expr->etype == EXPR_VALUE);
 	assert(len <= expr->len);
 
 	slice = constant_expr_alloc(&expr->location, &invalid_type,
@@ -437,7 +438,7 @@ struct expr *bitmask_expr_to_binops(struct expr *expr)
 	struct expr *binop, *flag;
 	unsigned long n;
 
-	assert(expr->ops->type == EXPR_VALUE);
+	assert(expr->etype == EXPR_VALUE);
 	assert(expr->dtype->basetype->type == TYPE_BITMASK);
 
 	n = mpz_popcount(expr->value);
@@ -574,7 +575,7 @@ static void binop_arg_print(const struct expr *op, const struct expr *arg,
 {
 	bool prec = false;
 
-	if (arg->ops->type == EXPR_BINOP &&
+	if (arg->etype == EXPR_BINOP &&
 	    expr_binop_precedence[op->op] != 0 &&
 	    expr_binop_precedence[op->op] < expr_binop_precedence[arg->op])
 		prec = 1;
@@ -590,10 +591,10 @@ bool must_print_eq_op(const struct expr *expr)
 {
 	if (expr->right->dtype->basetype != NULL &&
 	    expr->right->dtype->basetype->type == TYPE_BITMASK &&
-	    expr->right->ops->type == EXPR_VALUE)
+	    expr->right->etype == EXPR_VALUE)
 		return true;
 
-	return expr->left->ops->type == EXPR_BINOP;
+	return expr->left->etype == EXPR_BINOP;
 }
 
 static void binop_expr_print(const struct expr *expr, struct output_ctx *octx)
@@ -674,7 +675,7 @@ void relational_expr_pctx_update(struct proto_ctx *ctx,
 	const struct expr *left = expr->left;
 	const struct expr_ops *ops;
 
-	assert(expr->ops->type == EXPR_RELATIONAL);
+	assert(expr->etype == EXPR_RELATIONAL);
 	assert(expr->op == OP_EQ || expr->op == OP_IMPLICIT);
 
 	ops = expr_ops(left);
@@ -982,7 +983,7 @@ struct expr *mapping_expr_alloc(const struct location *loc,
 static void map_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	expr_print(expr->map, octx);
-	if (expr->mappings->ops->type == EXPR_SET_REF &&
+	if (expr->mappings->etype == EXPR_SET_REF &&
 	    expr->mappings->set->datatype->type == TYPE_VERDICT)
 		nft_print(octx, " vmap ");
 	else
@@ -1119,7 +1120,7 @@ struct expr *set_elem_expr_alloc(const struct location *loc, struct expr *key)
 
 void range_expr_value_low(mpz_t rop, const struct expr *expr)
 {
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_VALUE:
 		return mpz_set(rop, expr->value);
 	case EXPR_PREFIX:
@@ -1139,7 +1140,7 @@ void range_expr_value_high(mpz_t rop, const struct expr *expr)
 {
 	mpz_t tmp;
 
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_VALUE:
 		return mpz_set(rop, expr->value);
 	case EXPR_PREFIX:

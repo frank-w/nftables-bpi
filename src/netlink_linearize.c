@@ -73,7 +73,7 @@ static void __release_register(struct netlink_linearize_ctx *ctx,
 static enum nft_registers get_register(struct netlink_linearize_ctx *ctx,
 				       const struct expr *expr)
 {
-	if (expr && expr->ops->type == EXPR_CONCAT)
+	if (expr && expr->etype == EXPR_CONCAT)
 		return __get_register(ctx, expr->len);
 	else
 		return __get_register(ctx, NFT_REG_SIZE * BITS_PER_BYTE);
@@ -82,7 +82,7 @@ static enum nft_registers get_register(struct netlink_linearize_ctx *ctx,
 static void release_register(struct netlink_linearize_ctx *ctx,
 			     const struct expr *expr)
 {
-	if (expr && expr->ops->type == EXPR_CONCAT)
+	if (expr && expr->etype == EXPR_CONCAT)
 		__release_register(ctx, expr->len);
 	else
 		__release_register(ctx, NFT_REG_SIZE * BITS_PER_BYTE);
@@ -269,7 +269,7 @@ static void netlink_gen_map(struct netlink_linearize_ctx *ctx,
 	enum nft_registers sreg;
 	int regspace = 0;
 
-	assert(expr->mappings->ops->type == EXPR_SET_REF);
+	assert(expr->mappings->etype == EXPR_SET_REF);
 
 	if (dreg == NFT_REG_VERDICT)
 		sreg = get_register(ctx, expr->map);
@@ -277,7 +277,7 @@ static void netlink_gen_map(struct netlink_linearize_ctx *ctx,
 		sreg = dreg;
 
 	/* suppress assert in netlink_gen_expr */
-	if (expr->map->ops->type == EXPR_CONCAT) {
+	if (expr->map->etype == EXPR_CONCAT) {
 		regspace = netlink_register_space(expr->map->len);
 		ctx->reg_low += regspace;
 	}
@@ -306,7 +306,7 @@ static void netlink_gen_lookup(struct netlink_linearize_ctx *ctx,
 	struct nftnl_expr *nle;
 	enum nft_registers sreg;
 
-	assert(expr->right->ops->type == EXPR_SET_REF);
+	assert(expr->right->etype == EXPR_SET_REF);
 	assert(dreg == NFT_REG_VERDICT);
 
 	sreg = get_register(ctx, expr->left);
@@ -490,7 +490,7 @@ static void netlink_gen_relational(struct netlink_linearize_ctx *ctx,
 		BUG("invalid relational operation %u\n", expr->op);
 	}
 
-	switch (expr->right->ops->type) {
+	switch (expr->right->etype) {
 	case EXPR_RANGE:
 		return netlink_gen_range(ctx, expr, dreg);
 	case EXPR_SET:
@@ -562,7 +562,7 @@ static void netlink_gen_binop(struct netlink_linearize_ctx *ctx,
 	mpz_init(tmp);
 
 	binops[n++] = left = (void *)expr;
-	while (left->ops->type == EXPR_BINOP && left->left != NULL)
+	while (left->etype == EXPR_BINOP && left->left != NULL)
 		binops[n++] = left = left->left;
 	n--;
 
@@ -662,7 +662,7 @@ static void netlink_gen_immediate(struct netlink_linearize_ctx *ctx,
 	nle = alloc_nft_expr("immediate");
 	netlink_put_register(nle, NFTNL_EXPR_IMM_DREG, dreg);
 	netlink_gen_data(expr, &nld);
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_VALUE:
 		nftnl_expr_set(nle, NFTNL_EXPR_IMM_DATA, nld.value, nld.len);
 		break;
@@ -700,7 +700,7 @@ static void netlink_gen_expr(struct netlink_linearize_ctx *ctx,
 {
 	assert(dreg < ctx->reg_low);
 
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_VERDICT:
 	case EXPR_VALUE:
 		return netlink_gen_immediate(ctx, expr, dreg);
@@ -752,7 +752,7 @@ static void netlink_gen_objref_stmt(struct netlink_linearize_ctx *ctx,
 	uint32_t sreg_key;
 
 	nle = alloc_nft_expr("objref");
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_MAP:
 		sreg_key = get_register(ctx, expr->map);
 		netlink_gen_expr(ctx, expr->map, sreg_key);
@@ -772,7 +772,7 @@ static void netlink_gen_objref_stmt(struct netlink_linearize_ctx *ctx,
 				   stmt->objref.type);
 		break;
 	default:
-		BUG("unsupported expression %u\n", expr->ops->type);
+		BUG("unsupported expression %u\n", expr->etype);
 	}
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
@@ -1057,7 +1057,7 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 		amin_reg = get_register(ctx, NULL);
 		registers++;
 
-		if (stmt->nat.addr->ops->type == EXPR_RANGE) {
+		if (stmt->nat.addr->etype == EXPR_RANGE) {
 			amax_reg = get_register(ctx, NULL);
 			registers++;
 
@@ -1079,7 +1079,7 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 		pmin_reg = get_register(ctx, NULL);
 		registers++;
 
-		if (stmt->nat.proto->ops->type == EXPR_RANGE) {
+		if (stmt->nat.proto->etype == EXPR_RANGE) {
 			pmax_reg = get_register(ctx, NULL);
 			registers++;
 

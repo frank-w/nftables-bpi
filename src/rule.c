@@ -2613,11 +2613,11 @@ static void payload_try_merge(const struct rule *rule)
 		if (stmt->ops->type != STMT_EXPRESSION)
 			goto do_merge;
 
-		if (stmt->expr->ops->type != EXPR_RELATIONAL)
+		if (stmt->expr->etype != EXPR_RELATIONAL)
 			continue;
-		if (stmt->expr->left->ops->type != EXPR_PAYLOAD)
+		if (stmt->expr->left->etype != EXPR_PAYLOAD)
 			continue;
-		if (stmt->expr->right->ops->type != EXPR_VALUE)
+		if (stmt->expr->right->etype != EXPR_VALUE)
 			continue;
 		switch (stmt->expr->op) {
 		case OP_EQ:

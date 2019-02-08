@@ -330,7 +330,7 @@ static bool netlink_event_ignore_range_event(struct nftnl_set_elem *nlse)
 
 static bool set_elem_is_open_interval(struct expr *elem)
 {
-	switch (elem->ops->type) {
+	switch (elem->etype) {
 	case EXPR_SET_ELEM:
 		return elem->elem_flags & SET_ELEM_F_INTERVAL_OPEN;
 	case EXPR_MAPPING:

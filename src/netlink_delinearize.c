@@ -1532,7 +1532,6 @@ static void payload_match_expand(struct rule_pp_ctx *ctx,
 	struct stmt *nstmt;
 	struct expr *nexpr = NULL;
 	enum proto_bases base = left->payload.base;
-	const struct expr_ops *payload_ops = left->ops;
 	bool stacked;
 
 	payload_expr_expand(&list, left, &ctx->pctx);
@@ -1549,7 +1548,7 @@ static void payload_match_expand(struct rule_pp_ctx *ctx,
 		nstmt = expr_stmt_alloc(&ctx->stmt->location, nexpr);
 		list_add_tail(&nstmt->list, &ctx->stmt->list);
 
-		assert(left->ops == payload_ops);
+		assert(left->etype == EXPR_PAYLOAD);
 		assert(left->payload.base);
 		assert(base == left->payload.base);
 
@@ -1587,7 +1586,7 @@ static void payload_match_postprocess(struct rule_pp_ctx *ctx,
 	switch (expr->op) {
 	case OP_EQ:
 	case OP_NEQ:
-		if (expr->right->ops->type == EXPR_VALUE) {
+		if (expr->right->etype == EXPR_VALUE) {
 			payload_match_expand(ctx, expr, payload);
 			break;
 		}
@@ -1631,7 +1630,7 @@ static bool meta_may_dependency_kill(struct payload_dep_ctx *ctx,
 
 	l3proto = mpz_get_uint16(dep->right->value);
 
-	switch (dep->left->ops->type) {
+	switch (dep->left->etype) {
 	case EXPR_META:
 		if (dep->left->meta.key != NFT_META_NFPROTO)
 			return true;
@@ -1679,14 +1678,14 @@ static void ct_meta_common_postprocess(struct rule_pp_ctx *ctx,
 	const struct expr *left = expr->left;
 	struct expr *right = expr->right;
 
-	if (right->ops->type == EXPR_SET || right->ops->type == EXPR_SET_REF)
+	if (right->etype == EXPR_SET || right->etype == EXPR_SET_REF)
 		expr_set_type(right, left->dtype, left->byteorder);
 
 	switch (expr->op) {
 	case OP_EQ:
-		if (expr->right->ops->type == EXPR_RANGE ||
-		    expr->right->ops->type == EXPR_SET ||
-		    expr->right->ops->type == EXPR_SET_REF)
+		if (expr->right->etype == EXPR_RANGE ||
+		    expr->right->etype == EXPR_SET ||
+		    expr->right->etype == EXPR_SET_REF)
 			break;
 
 		relational_expr_pctx_update(&ctx->pctx, expr);
@@ -1750,7 +1749,7 @@ static bool expr_mask_is_prefix(const struct expr *expr)
 /* Convert a series of inclusive OR expressions into a list */
 static struct expr *binop_tree_to_list(struct expr *list, struct expr *expr)
 {
-	if (expr->ops->type == EXPR_BINOP && expr->op == OP_OR) {
+	if (expr->etype == EXPR_BINOP && expr->op == OP_OR) {
 		if (list == NULL)
 			list = list_expr_alloc(&expr->location);
 		list = binop_tree_to_list(list, expr->left);
@@ -1772,7 +1771,7 @@ static void binop_adjust_one(const struct expr *binop, struct expr *value,
 	assert(value->len >= binop->right->len);
 
 	mpz_rshift_ui(value->value, shift);
-	switch (left->ops->type) {
+	switch (left->etype) {
 	case EXPR_PAYLOAD:
 	case EXPR_EXTHDR:
 		value->len = left->len;
@@ -1788,13 +1787,13 @@ static void __binop_adjust(const struct expr *binop, struct expr *right,
 {
 	struct expr *i;
 
-	switch (right->ops->type) {
+	switch (right->etype) {
 	case EXPR_VALUE:
 		binop_adjust_one(binop, right, shift);
 		break;
 	case EXPR_SET_REF:
 		list_for_each_entry(i, &right->set->init->expressions, list) {
-			switch (i->key->ops->type) {
+			switch (i->key->etype) {
 			case EXPR_VALUE:
 				binop_adjust_one(binop, i->key, shift);
 				break;
@@ -1832,9 +1831,9 @@ static void binop_postprocess(struct rule_pp_ctx *ctx, struct expr *expr)
 	struct expr *mask = binop->right;
 	unsigned int shift;
 
-	if ((left->ops->type == EXPR_PAYLOAD &&
+	if ((left->etype == EXPR_PAYLOAD &&
 	    payload_expr_trim(left, mask, &ctx->pctx, &shift)) ||
-	    (left->ops->type == EXPR_EXTHDR &&
+	    (left->etype == EXPR_EXTHDR &&
 	     exthdr_find_template(left, mask, &shift))) {
 		/* mask is implicit, binop needs to be removed.
 		 *
@@ -1847,13 +1846,13 @@ static void binop_postprocess(struct rule_pp_ctx *ctx, struct expr *expr)
 		 */
 		binop_adjust(expr, shift);
 
-		assert(expr->left->ops->type == EXPR_BINOP);
+		assert(expr->left->etype == EXPR_BINOP);
 		assert(binop->left == left);
 		expr->left = expr_get(left);
 		expr_free(binop);
-		if (left->ops->type == EXPR_PAYLOAD)
+		if (left->etype == EXPR_PAYLOAD)
 			payload_match_postprocess(ctx, expr, left);
-		else if (left->ops->type == EXPR_EXTHDR)
+		else if (left->etype == EXPR_EXTHDR)
 			expr_set_type(expr->right, left->dtype, left->byteorder);
 	}
 }
@@ -1865,8 +1864,8 @@ static void map_binop_postprocess(struct rule_pp_ctx *ctx, struct expr *expr)
 	if (binop->op != OP_AND)
 		return;
 
-	if (binop->left->ops->type == EXPR_PAYLOAD &&
-	    binop->right->ops->type == EXPR_VALUE)
+	if (binop->left->etype == EXPR_PAYLOAD &&
+	    binop->right->etype == EXPR_VALUE)
 		binop_postprocess(ctx, expr);
 }
 
@@ -1900,7 +1899,7 @@ static void relational_binop_postprocess(struct rule_pp_ctx *ctx, struct expr *e
 		expr_free(value);
 		expr_free(binop);
 	} else if (binop->op == OP_AND &&
-		   binop->right->ops->type == EXPR_VALUE) {
+		   binop->right->etype == EXPR_VALUE) {
 		/*
 		 * This *might* be a payload match testing header fields that
 		 * have non byte divisible offsets and/or bit lengths.
@@ -2019,9 +2018,9 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 
 	//pr_debug("%s len %u\n", expr->ops->name, expr->len);
 
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_MAP:
-		switch (expr->map->ops->type) {
+		switch (expr->map->etype) {
 		case EXPR_BINOP:
 			map_binop_postprocess(ctx, expr);
 			break;
@@ -2071,7 +2070,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 			      expr->left->byteorder);
 		break;
 	case EXPR_RELATIONAL:
-		switch (expr->left->ops->type) {
+		switch (expr->left->etype) {
 		case EXPR_PAYLOAD:
 			payload_match_postprocess(ctx, expr, expr->left);
 			return;
@@ -2083,7 +2082,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 		expr_set_type(expr->right, expr->left->dtype, expr->left->byteorder);
 		expr_postprocess(ctx, &expr->right);
 
-		switch (expr->left->ops->type) {
+		switch (expr->left->etype) {
 		case EXPR_CT:
 			ct_match_postprocess(ctx, expr);
 			break;
@@ -2218,22 +2217,22 @@ static bool expr_may_merge_range(struct expr *expr, struct expr *prev,
 {
 	struct expr *left, *prev_left;
 
-	if (prev->ops->type == EXPR_RELATIONAL &&
-	    expr->ops->type == EXPR_RELATIONAL) {
+	if (prev->etype == EXPR_RELATIONAL &&
+	    expr->etype == EXPR_RELATIONAL) {
 		/* ct and meta needs an unary to swap byteorder, in this case
 		 * we have to explore the inner branch in this tree.
 		 */
-		if (expr->left->ops->type == EXPR_UNARY)
+		if (expr->left->etype == EXPR_UNARY)
 			left = expr->left->arg;
 		else
 			left = expr->left;
 
-		if (prev->left->ops->type == EXPR_UNARY)
+		if (prev->left->etype == EXPR_UNARY)
 			prev_left = prev->left->arg;
 		else
 			prev_left = prev->left;
 
-		if (left->ops->type == prev_left->ops->type) {
+		if (left->etype == prev_left->etype) {
 			if (expr->op == OP_LTE && prev->op == OP_GTE) {
 				*op = OP_EQ;
 				return true;
@@ -2290,7 +2289,7 @@ static void stmt_payload_binop_pp(struct rule_pp_ctx *ctx, struct expr *binop)
 	struct expr *mask = binop->right;
 	unsigned int shift;
 
-	assert(payload->ops->type == EXPR_PAYLOAD);
+	assert(payload->etype == EXPR_PAYLOAD);
 	if (payload_expr_trim(payload, mask, &ctx->pctx, &shift)) {
 		__binop_adjust(binop, mask, shift);
 		payload_expr_complete(payload, &ctx->pctx);
@@ -2349,10 +2348,10 @@ static void stmt_payload_binop_postprocess(struct rule_pp_ctx *ctx)
 
 	expr = stmt->payload.val;
 
-	if (expr->ops->type != EXPR_BINOP)
+	if (expr->etype != EXPR_BINOP)
 		return;
 
-	switch (expr->left->ops->type) {
+	switch (expr->left->etype) {
 	case EXPR_BINOP: {/* I? */
 		mpz_t tmp;
 
@@ -2360,7 +2359,7 @@ static void stmt_payload_binop_postprocess(struct rule_pp_ctx *ctx)
 			return;
 
 		value = expr->right;
-		if (value->ops->type != EXPR_VALUE)
+		if (value->etype != EXPR_VALUE)
 			return;
 
 		binop = expr->left;
@@ -2368,14 +2367,14 @@ static void stmt_payload_binop_postprocess(struct rule_pp_ctx *ctx)
 			return;
 
 		payload = binop->left;
-		if (payload->ops->type != EXPR_PAYLOAD)
+		if (payload->etype != EXPR_PAYLOAD)
 			return;
 
 		if (!payload_expr_cmp(stmt->payload.expr, payload))
 			return;
 
 		mask = binop->right;
-		if (mask->ops->type != EXPR_VALUE)
+		if (mask->etype != EXPR_VALUE)
 			return;
 
 		mpz_init(tmp);
@@ -2403,7 +2402,7 @@ static void stmt_payload_binop_postprocess(struct rule_pp_ctx *ctx)
 	}
 	case EXPR_PAYLOAD: /* II? */
 		value = expr->right;
-		if (value->ops->type != EXPR_VALUE)
+		if (value->etype != EXPR_VALUE)
 			return;
 
 		switch (expr->op) {
@@ -2513,7 +2512,7 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 			if (stmt->ct.expr != NULL) {
 				expr_postprocess(&rctx, &stmt->ct.expr);
 
-				if (stmt->ct.expr->ops->type == EXPR_BINOP)
+				if (stmt->ct.expr->etype == EXPR_BINOP)
 					stmt->ct.expr = binop_tree_to_list(NULL,
 									   stmt->ct.expr);
 			}

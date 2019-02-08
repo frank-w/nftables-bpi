@@ -108,7 +108,7 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 		memory_allocation_error();
 
 	data = NULL;
-	if (expr->ops->type == EXPR_MAPPING) {
+	if (expr->etype == EXPR_MAPPING) {
 		elem = expr->left;
 		if (!(expr->flags & EXPR_F_INTERVAL_END))
 			data = expr->right;
@@ -145,7 +145,7 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 	}
 	if (set->set_flags & NFT_SET_MAP && data != NULL) {
 		netlink_gen_data(data, &nld);
-		switch (data->ops->type) {
+		switch (data->etype) {
 		case EXPR_VERDICT:
 			nftnl_set_elem_set_u32(nlse, NFTNL_SET_ELEM_VERDICT,
 					       data->verdict);
@@ -196,7 +196,7 @@ static void netlink_gen_concat_data(const struct expr *expr,
 		memset(data, 0, sizeof(data));
 		offset = 0;
 		list_for_each_entry(i, &expr->expressions, list) {
-			assert(i->ops->type == EXPR_VALUE);
+			assert(i->etype == EXPR_VALUE);
 			mpz_export_data(data + offset, i->value, i->byteorder,
 					div_round_up(i->len, BITS_PER_BYTE));
 			offset += netlink_padded_len(i->len) / BITS_PER_BYTE;
@@ -210,7 +210,7 @@ static void netlink_gen_concat_data(const struct expr *expr,
 static void netlink_gen_constant_data(const struct expr *expr,
 				      struct nft_data_linearize *data)
 {
-	assert(expr->ops->type == EXPR_VALUE);
+	assert(expr->etype == EXPR_VALUE);
 	netlink_gen_raw_data(expr->value, expr->byteorder,
 			     div_round_up(expr->len, BITS_PER_BYTE), data);
 }
@@ -231,7 +231,7 @@ static void netlink_gen_verdict(const struct expr *expr,
 
 void netlink_gen_data(const struct expr *expr, struct nft_data_linearize *data)
 {
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_VALUE:
 		return netlink_gen_constant_data(expr, data);
 	case EXPR_CONCAT:

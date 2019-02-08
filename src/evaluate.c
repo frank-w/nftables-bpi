@@ -439,7 +439,7 @@ static void expr_evaluate_bits(struct eval_ctx *ctx, struct expr **exprp)
 	uint8_t shift;
 	mpz_t bitmask;
 
-	switch (expr->ops->type) {
+	switch (expr->etype) {
 	case EXPR_PAYLOAD:
 		shift = expr_offset_shift(expr, expr->payload.offset,
 					  &extra_len);
@@ -651,7 +651,7 @@ static int __expr_evaluate_payload(struct eval_ctx *ctx, struct expr *expr)
 	struct stmt *nstmt;
 	int err;
 
-	if (expr->ops->type == EXPR_PAYLOAD && expr->payload.is_raw)
+	if (expr->etype == EXPR_PAYLOAD && expr->payload.is_raw)
 		return 0;
 
 	desc = ctx->pctx.protocol[base].desc;
@@ -938,7 +938,7 @@ static int expr_evaluate_unary(struct eval_ctx *ctx, struct expr **expr)
 
 	assert(!expr_is_constant(arg));
 	assert(expr_basetype(arg)->type == TYPE_INTEGER);
-	assert(arg->ops->type != EXPR_UNARY);
+	assert(arg->etype != EXPR_UNARY);
 
 	switch (unary->op) {
 	case OP_HTON:
@@ -968,8 +968,8 @@ static int constant_binop_simplify(struct eval_ctx *ctx, struct expr **expr)
 	struct expr *new;
 	mpz_t val, mask;
 
-	assert(left->ops->type == EXPR_VALUE);
-	assert(right->ops->type == EXPR_VALUE);
+	assert(left->etype == EXPR_VALUE);
+	assert(right->etype == EXPR_VALUE);
 	assert(left->byteorder == right->byteorder);
 
 	mpz_init2(val, op->len);
@@ -1198,7 +1198,7 @@ static int expr_evaluate_list(struct eval_ctx *ctx, struct expr **expr)
 	list_for_each_entry_safe(i, next, &list->expressions, list) {
 		if (list_member_evaluate(ctx, &i) < 0)
 			return -1;
-		if (i->ops->type != EXPR_VALUE)
+		if (i->etype != EXPR_VALUE)
 			return expr_error(ctx->msgs, i,
 					  "List member must be a constant "
 					  "value");
@@ -1228,7 +1228,7 @@ static int expr_evaluate_set_elem(struct eval_ctx *ctx, struct expr **expr)
 
 	if (ctx->set &&
 	    !(ctx->set->flags & (NFT_SET_ANONYMOUS | NFT_SET_INTERVAL))) {
-		switch (elem->key->ops->type) {
+		switch (elem->key->etype) {
 		case EXPR_PREFIX:
 			return expr_error(ctx->msgs, elem,
 					  "Set member cannot be prefix, "
@@ -1256,13 +1256,13 @@ static int expr_evaluate_set(struct eval_ctx *ctx, struct expr **expr)
 		if (list_member_evaluate(ctx, &i) < 0)
 			return -1;
 
-		if (i->ops->type == EXPR_SET_ELEM &&
-		    i->key->ops->type == EXPR_SET_REF)
+		if (i->etype == EXPR_SET_ELEM &&
+		    i->key->etype == EXPR_SET_REF)
 			return expr_error(ctx->msgs, i,
 					  "Set reference cannot be part of another set");
 
-		if (i->ops->type == EXPR_SET_ELEM &&
-		    i->key->ops->type == EXPR_SET) {
+		if (i->etype == EXPR_SET_ELEM &&
+		    i->key->etype == EXPR_SET) {
 			struct expr *new = expr_clone(i->key);
 
 			set->set_flags |= i->key->set_flags;
@@ -1275,7 +1275,7 @@ static int expr_evaluate_set(struct eval_ctx *ctx, struct expr **expr)
 			return expr_error(ctx->msgs, i,
 					  "Set member is not constant");
 
-		if (i->ops->type == EXPR_SET) {
+		if (i->etype == EXPR_SET) {
 			/* Merge recursive set definitions */
 			list_splice_tail_init(&i->expressions, &i->list);
 			list_del(&i->list);
@@ -1311,7 +1311,7 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 	mappings = map->mappings;
 	mappings->set_flags |= NFT_SET_MAP;
 
-	switch (map->mappings->ops->type) {
+	switch (map->mappings->etype) {
 	case EXPR_SET:
 		key = constant_expr_alloc(&map->location,
 				 ctx->ectx.dtype,
@@ -1342,7 +1342,7 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 	case EXPR_SYMBOL:
 		if (expr_evaluate(ctx, &map->mappings) < 0)
 			return -1;
-		if (map->mappings->ops->type != EXPR_SET_REF ||
+		if (map->mappings->etype != EXPR_SET_REF ||
 		    !(map->mappings->set->flags & NFT_SET_MAP))
 			return expr_error(ctx->msgs, map->mappings,
 					  "Expression is not a map");
@@ -1463,7 +1463,7 @@ static int binop_can_transfer(struct eval_ctx *ctx,
 {
 	int err;
 
-	switch (right->ops->type) {
+	switch (right->etype) {
 	case EXPR_VALUE:
 		break;
 	case EXPR_SET_ELEM:
@@ -1501,7 +1501,7 @@ static int binop_transfer_one(struct eval_ctx *ctx,
 {
 	int err;
 
-	switch ((*right)->ops->type) {
+	switch ((*right)->etype) {
 	case EXPR_MAPPING:
 		return binop_transfer_one(ctx, left, &(*right)->left);
 	case EXPR_VALUE:
@@ -1544,7 +1544,7 @@ static void binop_transfer_handle_lhs(struct expr **expr)
 	struct expr *tmp, *left = *expr;
 	unsigned int shift;
 
-	assert(left->ops->type == EXPR_BINOP);
+	assert(left->etype == EXPR_BINOP);
 
 	switch (left->op) {
 	case OP_RSHIFT:
@@ -1572,9 +1572,9 @@ static int __binop_transfer(struct eval_ctx *ctx,
 	struct expr *i, *next;
 	int err;
 
-	assert(left->ops->type == EXPR_BINOP);
+	assert(left->etype == EXPR_BINOP);
 
-	switch ((*right)->ops->type) {
+	switch ((*right)->etype) {
 	case EXPR_VALUE:
 		err = binop_can_transfer(ctx, left, *right);
 		if (err <= 0)
@@ -1617,7 +1617,7 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 	struct expr *left = (*expr)->left;
 	int ret;
 
-	if (left->ops->type != EXPR_BINOP)
+	if (left->etype != EXPR_BINOP)
 		return 0;
 
 	ret = __binop_transfer(ctx, left, &(*expr)->right);
@@ -1670,7 +1670,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 
 		/* fall through */
 	case OP_NEQ:
-		switch (right->ops->type) {
+		switch (right->etype) {
 		case EXPR_RANGE:
 			if (byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)
 				return -1;
@@ -1705,7 +1705,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 	case OP_GT:
 	case OP_LTE:
 	case OP_GTE:
-		switch (left->ops->type) {
+		switch (left->etype) {
 		case EXPR_CONCAT:
 			return expr_binary_error(ctx->msgs, left, rel,
 					"Relational expression (%s) is undefined "
@@ -1824,7 +1824,7 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 		erec_destroy(erec);
 	}
 
-	switch ((*expr)->ops->type) {
+	switch ((*expr)->etype) {
 	case EXPR_SYMBOL:
 		return expr_evaluate_symbol(ctx, expr);
 	case EXPR_VARIABLE:
@@ -1898,7 +1898,7 @@ static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
 	if (expr_evaluate(ctx, expr) < 0)
 		return -1;
 
-	if ((*expr)->ops->type == EXPR_PAYLOAD &&
+	if ((*expr)->etype == EXPR_PAYLOAD &&
 	    (*expr)->dtype->type == TYPE_INTEGER &&
 	    ((*expr)->dtype->type != datatype_basetype(dtype)->type ||
 	     (*expr)->len != len))
@@ -1915,7 +1915,7 @@ static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
 					 dtype->desc, (*expr)->dtype->desc);
 
 	/* we are setting a value, we can't use a set */
-	switch ((*expr)->ops->type) {
+	switch ((*expr)->etype) {
 	case EXPR_SET:
 		return stmt_binary_error(ctx, *expr, stmt,
 					 "you cannot use a set here, unknown "
@@ -1938,7 +1938,7 @@ static int stmt_evaluate_verdict(struct eval_ctx *ctx, struct stmt *stmt)
 	if (stmt_evaluate_arg(ctx, stmt, &verdict_type, 0, 0, &stmt->expr) < 0)
 		return -1;
 
-	switch (stmt->expr->ops->type) {
+	switch (stmt->expr->etype) {
 	case EXPR_VERDICT:
 		if (stmt->expr->verdict != NFT_CONTINUE)
 			stmt->flags |= STMT_F_TERMINAL;
@@ -2605,7 +2605,7 @@ static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
 				  "Conflicting network layer protocols.");
 
 	if (stmt->tproxy.addr != NULL) {
-		if (stmt->tproxy.addr->ops->type == EXPR_RANGE)
+		if (stmt->tproxy.addr->etype == EXPR_RANGE)
 			return stmt_error(ctx, stmt, "Address ranges are not supported for tproxy.");
 		if (ctx->pctx.family == NFPROTO_INET) {
 			switch (stmt->tproxy.family) {
@@ -2635,7 +2635,7 @@ static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
 	}
 
 	if (stmt->tproxy.port != NULL) {
-		if (stmt->tproxy.port->ops->type == EXPR_RANGE)
+		if (stmt->tproxy.port->etype == EXPR_RANGE)
 			return stmt_error(ctx, stmt, "Port ranges are not supported for tproxy.");
 		err = nat_evaluate_transport(ctx, stmt, &stmt->tproxy.port);
 		if (err < 0)
@@ -2740,7 +2740,7 @@ static int stmt_evaluate_queue(struct eval_ctx *ctx, struct stmt *stmt)
 		if (!expr_is_constant(stmt->queue.queue))
 			return expr_error(ctx->msgs, stmt->queue.queue,
 					  "queue number is not constant");
-		if (stmt->queue.queue->ops->type != EXPR_RANGE &&
+		if (stmt->queue.queue->etype != EXPR_RANGE &&
 		    (stmt->queue.flags & NFT_QUEUE_FLAG_CPU_FANOUT))
 			return expr_error(ctx->msgs, stmt->queue.queue,
 					  "fanout requires a range to be "
@@ -2772,7 +2772,7 @@ static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &stmt->set.set) < 0)
 		return -1;
-	if (stmt->set.set->ops->type != EXPR_SET_REF)
+	if (stmt->set.set->etype != EXPR_SET_REF)
 		return expr_error(ctx->msgs, stmt->set.set,
 				  "Expression does not refer to a set");
 
@@ -2804,7 +2804,7 @@ static int stmt_evaluate_map(struct eval_ctx *ctx, struct stmt *stmt)
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &stmt->map.set) < 0)
 		return -1;
-	if (stmt->map.set->ops->type != EXPR_SET_REF)
+	if (stmt->map.set->etype != EXPR_SET_REF)
 		return expr_error(ctx->msgs, stmt->map.set,
 				  "Expression does not refer to a set");
 
@@ -2861,7 +2861,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 	mappings = map->mappings;
 	mappings->set_flags |= NFT_SET_OBJECT;
 
-	switch (map->mappings->ops->type) {
+	switch (map->mappings->etype) {
 	case EXPR_SET:
 		key = constant_expr_alloc(&stmt->location,
 					  ctx->ectx.dtype,
@@ -2887,7 +2887,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 	case EXPR_SYMBOL:
 		if (expr_evaluate(ctx, &map->mappings) < 0)
 			return -1;
-		if (map->mappings->ops->type != EXPR_SET_REF)
+		if (map->mappings->etype != EXPR_SET_REF)
 			return expr_error(ctx->msgs, map->mappings,
 					  "Expression is not a map");
 		if (!(map->mappings->set->flags & NFT_SET_OBJECT))
@@ -2920,7 +2920,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 static int stmt_evaluate_objref(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	/* We need specific map evaluation for stateful objects. */
-	if (stmt->objref.expr->ops->type == EXPR_MAP)
+	if (stmt->objref.expr->etype == EXPR_MAP)
 		return stmt_evaluate_objref_map(ctx, stmt);
 
 	if (stmt_evaluate_arg(ctx, stmt,
@@ -3035,7 +3035,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 				 type);
 
 	if (set->key->len == 0) {
-		if (set->key->ops->type == EXPR_CONCAT &&
+		if (set->key->etype == EXPR_CONCAT &&
 		    expr_evaluate_concat(ctx, &set->key, false) < 0)
 			return -1;
 
@@ -3045,7 +3045,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 					 set->key->dtype->name, type);
 	}
 	if (set->flags & NFT_SET_INTERVAL &&
-	    set->key->ops->type == EXPR_CONCAT)
+	    set->key->etype == EXPR_CONCAT)
 		return set_error(ctx, set, "concatenated types not supported in interval sets");
 
 	if (set->flags & NFT_SET_MAP) {

@@ -220,6 +220,7 @@ struct expr {
 
 	const struct datatype	*dtype;
 	enum byteorder		byteorder;
+	enum expr_types		etype:8;
 	unsigned int		len;
 
 	const struct expr_ops	*ops;
@@ -411,7 +412,7 @@ const char *expr_name(const struct expr *e);
 static inline void symbol_expr_set_type(struct expr *expr,
 					const struct datatype *dtype)
 {
-	if (expr->ops->type == EXPR_SYMBOL)
+	if (expr->etype == EXPR_SYMBOL)
 		expr->dtype = dtype;
 }
 

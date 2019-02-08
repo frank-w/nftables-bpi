@@ -197,7 +197,7 @@ void tcpopt_init_raw(struct expr *expr, uint8_t type, unsigned int offset,
 	const struct proto_hdr_template *tmpl;
 	unsigned int i, off;
 
-	assert(expr->ops->type == EXPR_EXTHDR);
+	assert(expr->etype == EXPR_EXTHDR);
 
 	expr->len = len;
 	expr->exthdr.flags = flags;

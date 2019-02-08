@@ -1807,7 +1807,7 @@ data_type_atom_expr	:	type_identifier
 data_type_expr		:	data_type_atom_expr
 			|	data_type_expr	DOT	data_type_atom_expr
 			{
-				if ($1->ops->type != EXPR_CONCAT) {
+				if ($1->etype != EXPR_CONCAT) {
 					$$ = concat_expr_alloc(&@$);
 					compound_expr_add($$, $1);
 				} else {
@@ -2741,7 +2741,7 @@ basic_stmt_expr		:	inclusive_or_stmt_expr
 concat_stmt_expr	:	basic_stmt_expr
 			|	concat_stmt_expr	DOT	primary_stmt_expr
 			{
-				if ($$->ops->type != EXPR_CONCAT) {
+				if ($$->etype != EXPR_CONCAT) {
 					$$ = concat_expr_alloc(&@$);
 					compound_expr_add($$, $1);
 				} else {
@@ -3252,7 +3252,7 @@ basic_expr		:	inclusive_or_expr
 concat_expr		:	basic_expr
 			|	concat_expr		DOT		basic_expr
 			{
-				if ($$->ops->type != EXPR_CONCAT) {
+				if ($$->etype != EXPR_CONCAT) {
 					$$ = concat_expr_alloc(&@$);
 					compound_expr_add($$, $1);
 				} else {
@@ -3650,7 +3650,7 @@ basic_rhs_expr		:	inclusive_or_rhs_expr
 concat_rhs_expr		:	basic_rhs_expr
 			|	concat_rhs_expr	DOT	basic_rhs_expr
 			{
-				if ($$->ops->type != EXPR_CONCAT) {
+				if ($$->etype != EXPR_CONCAT) {
 					$$ = concat_expr_alloc(&@$);
 					compound_expr_add($$, $1);
 				} else {
@@ -4141,7 +4141,7 @@ ct_stmt			:	CT	ct_key		SET	stmt_expr
 
 payload_stmt		:	payload_expr		SET	stmt_expr
 			{
-				if ($1->ops->type == EXPR_EXTHDR)
+				if ($1->etype == EXPR_EXTHDR)
 					$$ = exthdr_stmt_alloc(&@$, $1, $3);
 				else
 					$$ = payload_stmt_alloc(&@$, $1, $3);

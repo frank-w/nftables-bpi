@@ -406,7 +406,7 @@ bool payload_is_stacked(const struct proto_desc *desc, const struct expr *expr)
 {
 	const struct proto_desc *next;
 
-	if (expr->left->ops->type != EXPR_PAYLOAD ||
+	if (expr->left->etype != EXPR_PAYLOAD ||
 	    !(expr->left->flags & EXPR_F_PROTOCOL) ||
 	    expr->op != OP_EQ)
 		return false;
@@ -475,7 +475,7 @@ static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
 	case NFPROTO_BRIDGE:
 	case NFPROTO_NETDEV:
 	case NFPROTO_INET:
-		if (dep->left->ops->type == EXPR_PAYLOAD &&
+		if (dep->left->etype == EXPR_PAYLOAD &&
 		    dep->left->payload.base == PROTO_BASE_NETWORK_HDR &&
 		    (dep->left->payload.desc == &proto_ip ||
 		     dep->left->payload.desc == &proto_ip6) &&
@@ -537,7 +537,7 @@ void payload_expr_complete(struct expr *expr, const struct proto_ctx *ctx)
 	const struct proto_hdr_template *tmpl;
 	unsigned int i;
 
-	assert(expr->ops->type == EXPR_PAYLOAD);
+	assert(expr->etype == EXPR_PAYLOAD);
 
 	desc = ctx->protocol[expr->payload.base].desc;
 	if (desc == NULL || desc == &proto_inet)
@@ -596,7 +596,7 @@ bool payload_expr_trim(struct expr *expr, struct expr *mask,
 	const struct proto_desc *desc;
 	unsigned int off, i, len = 0;
 
-	assert(expr->ops->type == EXPR_PAYLOAD);
+	assert(expr->etype == EXPR_PAYLOAD);
 
 	desc = ctx->protocol[expr->payload.base].desc;
 	if (desc == NULL)
@@ -659,7 +659,7 @@ void payload_expr_expand(struct list_head *list, struct expr *expr,
 	struct expr *new;
 	unsigned int i;
 
-	assert(expr->ops->type == EXPR_PAYLOAD);
+	assert(expr->etype == EXPR_PAYLOAD);
 
 	desc = ctx->protocol[expr->payload.base].desc;
 	if (desc == NULL)

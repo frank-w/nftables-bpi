@@ -607,7 +607,7 @@ json_t *map_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
 	const char *type = "map";
 
-	if (expr->mappings->ops->type == EXPR_SET_REF &&
+	if (expr->mappings->etype == EXPR_SET_REF &&
 	    expr->mappings->set->datatype->type == TYPE_VERDICT)
 		type = "vmap";
 

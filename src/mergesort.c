@@ -34,7 +34,7 @@ static int concat_expr_msort_cmp(const struct expr *e1, const struct expr *e2)
 
 static int expr_msort_cmp(const struct expr *e1, const struct expr *e2)
 {
-	switch (e1->ops->type) {
+	switch (e1->etype) {
 	case EXPR_SET_ELEM:
 		return expr_msort_cmp(e1->key, e2->key);
 	case EXPR_VALUE:

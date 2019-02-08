@@ -162,7 +162,7 @@ void exthdr_init_raw(struct expr *expr, uint8_t type,
 	const struct proto_hdr_template *tmpl = &exthdr_unknown_template;
 	unsigned int i;
 
-	assert(expr->ops->type == EXPR_EXTHDR);
+	assert(expr->etype == EXPR_EXTHDR);
 	if (op == NFT_EXTHDR_OP_TCPOPT)
 		return tcpopt_init_raw(expr, type, offset, len, flags);
 

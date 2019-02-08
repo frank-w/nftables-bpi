@@ -2683,7 +2683,7 @@ static struct cmd *json_parse_cmd_add_element(struct json_ctx *ctx,
 static struct expr *json_parse_flowtable_devs(struct json_ctx *ctx,
 					      json_t *root)
 {
-	struct expr *tmp, *expr = compound_expr_alloc(int_loc, NULL);
+	struct expr *tmp, *expr = compound_expr_alloc(int_loc, EXPR_INVALID);
 	const char *dev;
 	json_t *value;
 	size_t index;

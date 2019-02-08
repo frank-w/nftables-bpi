@@ -43,7 +43,7 @@ static void socket_expr_clone(struct expr *new, const struct expr *expr)
 	new->socket.key = expr->socket.key;
 }
 
-static const struct expr_ops socket_expr_ops = {
+const struct expr_ops socket_expr_ops = {
 	.type		= EXPR_SOCKET,
 	.name		= "socket",
 	.print		= socket_expr_print,
@@ -57,7 +57,7 @@ struct expr *socket_expr_alloc(const struct location *loc, enum nft_socket_keys 
 	const struct socket_template *tmpl = &socket_templates[key];
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &socket_expr_ops, tmpl->dtype,
+	expr = expr_alloc(loc, EXPR_SOCKET, tmpl->dtype,
 			  tmpl->byteorder, tmpl->len);
 	expr->socket.key = key;
 

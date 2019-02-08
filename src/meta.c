@@ -553,7 +553,7 @@ static void meta_expr_pctx_update(struct proto_ctx *ctx,
 	}
 }
 
-static const struct expr_ops meta_expr_ops = {
+const struct expr_ops meta_expr_ops = {
 	.type		= EXPR_META,
 	.name		= "meta",
 	.print		= meta_expr_print,
@@ -568,7 +568,7 @@ struct expr *meta_expr_alloc(const struct location *loc, enum nft_meta_keys key)
 	const struct meta_template *tmpl = &meta_templates[key];
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &meta_expr_ops, tmpl->dtype,
+	expr = expr_alloc(loc, EXPR_META, tmpl->dtype,
 			  tmpl->byteorder, tmpl->len);
 	expr->meta.key = key;
 

@@ -91,7 +91,7 @@ static void xfrm_expr_clone(struct expr *new, const struct expr *expr)
 	memcpy(&new->xfrm, &expr->xfrm, sizeof(new->xfrm));
 }
 
-static const struct expr_ops xfrm_expr_ops = {
+const struct expr_ops xfrm_expr_ops = {
 	.type		= EXPR_XFRM,
 	.name		= "xfrm",
 	.print		= xfrm_expr_print,
@@ -107,7 +107,7 @@ struct expr *xfrm_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &xfrm_expr_ops,
+	expr = expr_alloc(loc, EXPR_XFRM,
 			  xfrm_templates[key].dtype,
 			  xfrm_templates[key].byteorder,
 			  xfrm_templates[key].len);

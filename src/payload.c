@@ -104,7 +104,7 @@ static void payload_expr_pctx_update(struct proto_ctx *ctx,
 	proto_ctx_update(ctx, desc->base, &expr->location, desc);
 }
 
-static const struct expr_ops payload_expr_ops = {
+const struct expr_ops payload_expr_ops = {
 	.type		= EXPR_PAYLOAD,
 	.name		= "payload",
 	.print		= payload_expr_print,
@@ -156,7 +156,7 @@ struct expr *payload_expr_alloc(const struct location *loc,
 		desc = &proto_unknown;
 	}
 
-	expr = expr_alloc(loc, &payload_expr_ops, tmpl->dtype,
+	expr = expr_alloc(loc, EXPR_PAYLOAD, tmpl->dtype,
 			  tmpl->byteorder, tmpl->len);
 	expr->flags |= flags;
 

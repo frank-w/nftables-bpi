@@ -181,7 +181,7 @@ struct expr *tcpopt_expr_alloc(const struct location *loc, uint8_t type,
 
 	optnum = tcpopt_find_optnum(type);
 
-	expr = expr_alloc(loc, &exthdr_expr_ops, tmpl->dtype,
+	expr = expr_alloc(loc, EXPR_EXTHDR, tmpl->dtype,
 			  BYTEORDER_BIG_ENDIAN, tmpl->len);
 	expr->exthdr.desc   = desc;
 	expr->exthdr.tmpl   = tmpl;

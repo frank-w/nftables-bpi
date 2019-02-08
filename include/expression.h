@@ -219,12 +219,11 @@ struct expr {
 	unsigned int		flags;
 
 	const struct datatype	*dtype;
-	enum byteorder		byteorder;
+	enum byteorder		byteorder:8;
 	enum expr_types		etype:8;
+	enum ops		op:8;
 	unsigned int		len;
 
-	const struct expr_ops	*ops;
-	enum ops		op;
 	union {
 		struct {
 			/* EXPR_SYMBOL */
@@ -354,7 +353,7 @@ struct expr {
 };
 
 extern struct expr *expr_alloc(const struct location *loc,
-			       const struct expr_ops *ops,
+			       enum expr_types etype,
 			       const struct datatype *dtype,
 			       enum byteorder byteorder, unsigned int len);
 extern struct expr *expr_clone(const struct expr *expr);
@@ -441,7 +440,7 @@ extern struct expr *range_expr_alloc(const struct location *loc,
 				     struct expr *low, struct expr *high);
 
 extern struct expr *compound_expr_alloc(const struct location *loc,
-					const struct expr_ops *ops);
+					enum expr_types etypes);
 extern void compound_expr_add(struct expr *compound, struct expr *expr);
 extern void compound_expr_remove(struct expr *compound, struct expr *expr);
 extern void list_expr_sort(struct list_head *head);

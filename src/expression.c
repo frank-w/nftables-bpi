@@ -25,12 +25,20 @@
 #include <erec.h>
 #include <json.h>
 
-static const struct expr_ops *expr_ops(const struct expr *e)
-{
-	return e->ops;
-}
+extern const struct expr_ops ct_expr_ops;
+extern const struct expr_ops fib_expr_ops;
+extern const struct expr_ops hash_expr_ops;
+extern const struct expr_ops meta_expr_ops;
+extern const struct expr_ops numgen_expr_ops;
+extern const struct expr_ops osf_expr_ops;
+extern const struct expr_ops payload_expr_ops;
+extern const struct expr_ops rt_expr_ops;
+extern const struct expr_ops socket_expr_ops;
+extern const struct expr_ops xfrm_expr_ops;
 
-struct expr *expr_alloc(const struct location *loc, const struct expr_ops *ops,
+static const struct expr_ops *expr_ops(const struct expr *e);
+
+struct expr *expr_alloc(const struct location *loc, enum expr_types etype,
 			const struct datatype *dtype, enum byteorder byteorder,
 			unsigned int len)
 {
@@ -38,9 +46,8 @@ struct expr *expr_alloc(const struct location *loc, const struct expr_ops *ops,
 
 	expr = xzalloc(sizeof(*expr));
 	expr->location  = *loc;
-	expr->ops	= ops;
 	expr->dtype	= dtype;
-	expr->etype	= ops->type;
+	expr->etype	= etype;
 	expr->byteorder	= byteorder;
 	expr->len	= len;
 	expr->refcnt	= 1;
@@ -52,11 +59,11 @@ struct expr *expr_clone(const struct expr *expr)
 {
 	struct expr *new;
 
-	new = expr_alloc(&expr->location, expr->ops, expr->dtype,
+	new = expr_alloc(&expr->location, expr->etype, expr->dtype,
 			 expr->byteorder, expr->len);
 	new->flags = expr->flags;
 	new->op    = expr->op;
-	expr->ops->clone(new, expr);
+	expr_ops(expr)->clone(new, expr);
 	return new;
 }
 
@@ -70,7 +77,7 @@ static void expr_destroy(struct expr *e)
 {
 	const struct expr_ops *ops = expr_ops(e);
 
-	if (ops && ops->destroy)
+	if (ops->destroy)
 		ops->destroy(e);
 }
 
@@ -81,7 +88,11 @@ void expr_free(struct expr *expr)
 	if (--expr->refcnt > 0)
 		return;
 
-	expr_destroy(expr);
+	/* EXPR_INVALID expressions lack ->ops structure.
+	 * This happens for compound types.
+	 */
+	if (expr->etype != EXPR_INVALID)
+		expr_destroy(expr);
 	xfree(expr);
 }
 
@@ -106,7 +117,7 @@ bool expr_cmp(const struct expr *e1, const struct expr *e2)
 
 const char *expr_name(const struct expr *e)
 {
-	return e->ops->name;
+	return expr_ops(e)->name;
 }
 
 void expr_describe(const struct expr *expr, struct output_ctx *octx)
@@ -231,7 +242,7 @@ struct expr *verdict_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &verdict_expr_ops, &verdict_type,
+	expr = expr_alloc(loc, EXPR_VERDICT, &verdict_type,
 			  BYTEORDER_INVALID, 0);
 	expr->verdict = verdict;
 	if (chain != NULL)
@@ -272,7 +283,7 @@ struct expr *symbol_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &symbol_expr_ops, &invalid_type,
+	expr = expr_alloc(loc, EXPR_SYMBOL, &invalid_type,
 			  BYTEORDER_INVALID, 0);
 	expr->symtype	 = type;
 	expr->scope	 = scope;
@@ -312,7 +323,7 @@ struct expr *variable_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &variable_expr_ops, &invalid_type,
+	expr = expr_alloc(loc, EXPR_VARIABLE, &invalid_type,
 			  BYTEORDER_INVALID, 0);
 	expr->scope	 = scope;
 	expr->sym	 = sym;
@@ -358,7 +369,7 @@ struct expr *constant_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &constant_expr_ops, dtype, byteorder, len);
+	expr = expr_alloc(loc, EXPR_VALUE, dtype, byteorder, len);
 	expr->flags = EXPR_F_CONSTANT | EXPR_F_SINGLETON;
 
 	mpz_init2(expr->value, len);
@@ -502,7 +513,7 @@ struct expr *prefix_expr_alloc(const struct location *loc,
 {
 	struct expr *prefix;
 
-	prefix = expr_alloc(loc, &prefix_expr_ops, &invalid_type,
+	prefix = expr_alloc(loc, EXPR_PREFIX, &invalid_type,
 			    BYTEORDER_INVALID, 0);
 	prefix->prefix     = expr;
 	prefix->prefix_len = prefix_len;
@@ -555,7 +566,7 @@ struct expr *unary_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &unary_expr_ops, &invalid_type,
+	expr = expr_alloc(loc, EXPR_UNARY, &invalid_type,
 			  BYTEORDER_INVALID, 0);
 	expr->op  = op;
 	expr->arg = arg;
@@ -636,7 +647,7 @@ struct expr *binop_expr_alloc(const struct location *loc, enum ops op,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &binop_expr_ops, left->dtype,
+	expr = expr_alloc(loc, EXPR_BINOP, left->dtype,
 			  left->byteorder, 0);
 	expr->left  = left;
 	expr->op    = op;
@@ -657,7 +668,7 @@ struct expr *relational_expr_alloc(const struct location *loc, enum ops op,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &relational_expr_ops, &verdict_type,
+	expr = expr_alloc(loc, EXPR_RELATIONAL, &verdict_type,
 			  BYTEORDER_INVALID, 0);
 	expr->left  = left;
 	expr->op    = op;
@@ -733,7 +744,7 @@ struct expr *range_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &range_expr_ops, &invalid_type,
+	expr = expr_alloc(loc, EXPR_RANGE, &invalid_type,
 			  BYTEORDER_INVALID, 0);
 	expr->left  = left;
 	expr->right = right;
@@ -741,11 +752,11 @@ struct expr *range_expr_alloc(const struct location *loc,
 }
 
 struct expr *compound_expr_alloc(const struct location *loc,
-				 const struct expr_ops *ops)
+				 enum expr_types etype)
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, ops, &invalid_type, BYTEORDER_INVALID, 0);
+	expr = expr_alloc(loc, etype, &invalid_type, BYTEORDER_INVALID, 0);
 	init_list_head(&expr->expressions);
 	return expr;
 }
@@ -814,7 +825,7 @@ static const struct expr_ops concat_expr_ops = {
 
 struct expr *concat_expr_alloc(const struct location *loc)
 {
-	return compound_expr_alloc(loc, &concat_expr_ops);
+	return compound_expr_alloc(loc, EXPR_CONCAT);
 }
 
 static void list_expr_print(const struct expr *expr, struct output_ctx *octx)
@@ -833,7 +844,7 @@ static const struct expr_ops list_expr_ops = {
 
 struct expr *list_expr_alloc(const struct location *loc)
 {
-	return compound_expr_alloc(loc, &list_expr_ops);
+	return compound_expr_alloc(loc, EXPR_LIST);
 }
 
 static const char *calculate_delim(const struct expr *expr, int *count)
@@ -921,7 +932,7 @@ static const struct expr_ops set_expr_ops = {
 
 struct expr *set_expr_alloc(const struct location *loc, const struct set *set)
 {
-	struct expr *set_expr = compound_expr_alloc(loc, &set_expr_ops);
+	struct expr *set_expr = compound_expr_alloc(loc, EXPR_SET);
 
 	if (!set)
 		return set_expr;
@@ -973,7 +984,7 @@ struct expr *mapping_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &mapping_expr_ops, from->dtype,
+	expr = expr_alloc(loc, EXPR_MAPPING, from->dtype,
 			  from->byteorder, 0);
 	expr->left  = from;
 	expr->right = to;
@@ -1017,7 +1028,7 @@ struct expr *map_expr_alloc(const struct location *loc, struct expr *arg,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &map_expr_ops, &invalid_type, BYTEORDER_INVALID, 0);
+	expr = expr_alloc(loc, EXPR_MAP, &invalid_type, BYTEORDER_INVALID, 0);
 	expr->map      = arg;
 	expr->mappings = mappings;
 	return expr;
@@ -1058,7 +1069,7 @@ struct expr *set_ref_expr_alloc(const struct location *loc, struct set *set)
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &set_ref_expr_ops, set->key->dtype, 0, 0);
+	expr = expr_alloc(loc, EXPR_SET_REF, set->key->dtype, 0, 0);
 	expr->set = set_get(set);
 	expr->flags |= EXPR_F_CONSTANT;
 	return expr;
@@ -1112,7 +1123,7 @@ struct expr *set_elem_expr_alloc(const struct location *loc, struct expr *key)
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &set_elem_expr_ops, key->dtype,
+	expr = expr_alloc(loc, EXPR_SET_ELEM, key->dtype,
 			  key->byteorder, key->len);
 	expr->key = key;
 	return expr;
@@ -1158,4 +1169,42 @@ void range_expr_value_high(mpz_t rop, const struct expr *expr)
 	default:
 		BUG("invalid range expression type %s\n", expr_name(expr));
 	}
+}
+
+static const struct expr_ops *expr_ops(const struct expr *e)
+{
+	switch (e->etype) {
+	case EXPR_INVALID:
+		BUG("Invalid expression ops requested");
+		break;
+	case EXPR_VERDICT: return &verdict_expr_ops;
+	case EXPR_SYMBOL: return &symbol_expr_ops;
+	case EXPR_VARIABLE: return &variable_expr_ops;
+	case EXPR_VALUE: return &constant_expr_ops;
+	case EXPR_PREFIX: return &prefix_expr_ops;
+	case EXPR_RANGE: return &range_expr_ops;
+	case EXPR_PAYLOAD: return &payload_expr_ops;
+	case EXPR_EXTHDR: return &exthdr_expr_ops;
+	case EXPR_META: return &meta_expr_ops;
+	case EXPR_SOCKET: return &socket_expr_ops;
+	case EXPR_OSF: return &osf_expr_ops;
+	case EXPR_CT: return &ct_expr_ops;
+	case EXPR_CONCAT: return &concat_expr_ops;
+	case EXPR_LIST: return &list_expr_ops;
+	case EXPR_SET: return &set_expr_ops;
+	case EXPR_SET_REF: return &set_ref_expr_ops;
+	case EXPR_SET_ELEM: return &set_elem_expr_ops;
+	case EXPR_MAPPING: return &mapping_expr_ops;
+	case EXPR_MAP: return &map_expr_ops;
+	case EXPR_UNARY: return &unary_expr_ops;
+	case EXPR_BINOP: return &binop_expr_ops;
+	case EXPR_RELATIONAL: return &relational_expr_ops;
+	case EXPR_NUMGEN: return &numgen_expr_ops;
+	case EXPR_HASH: return &hash_expr_ops;
+	case EXPR_RT: return &rt_expr_ops;
+	case EXPR_FIB: return &fib_expr_ops;
+	case EXPR_XFRM: return &xfrm_expr_ops;
+	}
+
+	BUG("Unknown expression type %d\n", e->etype);
 }

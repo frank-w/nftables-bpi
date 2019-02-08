@@ -1771,7 +1771,7 @@ flowtable_expr		:	'{'	flowtable_list_expr	'}'
 
 flowtable_list_expr	:	flowtable_expr_member
 			{
-				$$ = compound_expr_alloc(&@$, NULL);
+				$$ = compound_expr_alloc(&@$, EXPR_INVALID);
 				compound_expr_add($$, $1);
 			}
 			|	flowtable_list_expr	COMMA	flowtable_expr_member

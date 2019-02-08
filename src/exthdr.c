@@ -90,7 +90,7 @@ struct expr *exthdr_expr_alloc(const struct location *loc,
 	else
 		tmpl = &exthdr_unknown_template;
 
-	expr = expr_alloc(loc, &exthdr_expr_ops, tmpl->dtype,
+	expr = expr_alloc(loc, EXPR_EXTHDR, tmpl->dtype,
 			  BYTEORDER_BIG_ENDIAN, tmpl->len);
 	expr->exthdr.desc = desc;
 	expr->exthdr.tmpl = tmpl;

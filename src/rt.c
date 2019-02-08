@@ -114,7 +114,7 @@ static void rt_expr_clone(struct expr *new, const struct expr *expr)
 	new->rt.key = expr->rt.key;
 }
 
-static const struct expr_ops rt_expr_ops = {
+const struct expr_ops rt_expr_ops = {
 	.type		= EXPR_RT,
 	.name		= "rt",
 	.print		= rt_expr_print,
@@ -130,10 +130,10 @@ struct expr *rt_expr_alloc(const struct location *loc, enum nft_rt_keys key,
 	struct expr *expr;
 
 	if (invalid && tmpl->invalid)
-		expr = expr_alloc(loc, &rt_expr_ops, &invalid_type,
+		expr = expr_alloc(loc, EXPR_RT, &invalid_type,
 				  tmpl->byteorder, 0);
 	else
-		expr = expr_alloc(loc, &rt_expr_ops, tmpl->dtype,
+		expr = expr_alloc(loc, EXPR_RT, tmpl->dtype,
 				  tmpl->byteorder, tmpl->len);
 	expr->rt.key = key;
 

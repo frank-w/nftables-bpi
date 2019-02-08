@@ -357,7 +357,7 @@ static void ct_expr_pctx_update(struct proto_ctx *ctx, const struct expr *expr)
 	proto_ctx_update(ctx, left->ct.base + 1, &expr->location, desc);
 }
 
-static const struct expr_ops ct_expr_ops = {
+const struct expr_ops ct_expr_ops = {
 	.type		= EXPR_CT,
 	.name		= "ct",
 	.print		= ct_expr_print,
@@ -373,7 +373,7 @@ struct expr *ct_expr_alloc(const struct location *loc, enum nft_ct_keys key,
 	const struct ct_template *tmpl = &ct_templates[key];
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &ct_expr_ops, tmpl->dtype,
+	expr = expr_alloc(loc, EXPR_CT, tmpl->dtype,
 			  tmpl->byteorder, tmpl->len);
 	expr->ct.key = key;
 	expr->ct.direction = direction;

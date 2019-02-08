@@ -32,7 +32,7 @@ static bool osf_expr_cmp(const struct expr *e1, const struct expr *e2)
 	return e1->osf.ttl == e2->osf.ttl;
 }
 
-static const struct expr_ops osf_expr_ops = {
+const struct expr_ops osf_expr_ops = {
 	.type		= EXPR_OSF,
 	.name		= "osf",
 	.print		= osf_expr_print,
@@ -47,7 +47,7 @@ struct expr *osf_expr_alloc(const struct location *loc, const uint8_t ttl)
 	const struct datatype *type = &string_type;
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &osf_expr_ops, type,
+	expr = expr_alloc(loc, EXPR_OSF, type,
 			  BYTEORDER_HOST_ENDIAN, len);
 	expr->osf.ttl = ttl;
 

@@ -101,7 +101,7 @@ static void fib_expr_clone(struct expr *new, const struct expr *expr)
 	new->fib.flags= expr->fib.flags;
 }
 
-static const struct expr_ops fib_expr_ops = {
+const struct expr_ops fib_expr_ops = {
 	.type		= EXPR_FIB,
 	.name		= "fib",
 	.print		= fib_expr_print,
@@ -135,7 +135,7 @@ struct expr *fib_expr_alloc(const struct location *loc,
 	if (flags & NFTA_FIB_F_PRESENT)
 		type = &boolean_type;
 
-	expr = expr_alloc(loc, &fib_expr_ops, type,
+	expr = expr_alloc(loc, EXPR_FIB, type,
 			  BYTEORDER_HOST_ENDIAN, len);
 
 	expr->fib.result = result;

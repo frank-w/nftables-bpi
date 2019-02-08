@@ -51,7 +51,7 @@ static void numgen_expr_clone(struct expr *new, const struct expr *expr)
 	new->numgen.offset = expr->numgen.offset;
 }
 
-static const struct expr_ops numgen_expr_ops = {
+const struct expr_ops numgen_expr_ops = {
 	.type		= EXPR_NUMGEN,
 	.name		= "numgen",
 	.print		= numgen_expr_print,
@@ -66,7 +66,7 @@ struct expr *numgen_expr_alloc(const struct location *loc,
 {
 	struct expr *expr;
 
-	expr = expr_alloc(loc, &numgen_expr_ops, &integer_type,
+	expr = expr_alloc(loc, EXPR_NUMGEN, &integer_type,
 			  BYTEORDER_HOST_ENDIAN, 4 * BITS_PER_BYTE);
 	expr->numgen.type  = type;
 	expr->numgen.mod   = mod;

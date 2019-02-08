@@ -25,6 +25,11 @@
 #include <erec.h>
 #include <json.h>
 
+static const struct expr_ops *expr_ops(const struct expr *e)
+{
+	return e->ops;
+}
+
 struct expr *expr_alloc(const struct location *loc, const struct expr_ops *ops,
 			const struct datatype *dtype, enum byteorder byteorder,
 			unsigned int len)
@@ -60,20 +65,31 @@ struct expr *expr_get(struct expr *expr)
 	return expr;
 }
 
+static void expr_destroy(struct expr *e)
+{
+	const struct expr_ops *ops = expr_ops(e);
+
+	if (ops && ops->destroy)
+		ops->destroy(e);
+}
+
 void expr_free(struct expr *expr)
 {
 	if (expr == NULL)
 		return;
 	if (--expr->refcnt > 0)
 		return;
-	if (expr->ops && expr->ops->destroy)
-		expr->ops->destroy(expr);
+
+	expr_destroy(expr);
 	xfree(expr);
 }
 
 void expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	expr->ops->print(expr, octx);
+	const struct expr_ops *ops = expr_ops(expr);
+
+	if (ops->print)
+		ops->print(expr, octx);
 }
 
 bool expr_cmp(const struct expr *e1, const struct expr *e2)
@@ -84,7 +100,7 @@ bool expr_cmp(const struct expr *e1, const struct expr *e2)
 	if (e1->ops->type != e2->ops->type)
 		return false;
 
-	return e1->ops->cmp(e1, e2);
+	return expr_ops(e1)->cmp(e1, e2);
 }
 
 const char *expr_name(const struct expr *e)
@@ -98,7 +114,7 @@ void expr_describe(const struct expr *expr, struct output_ctx *octx)
 	const char *delim = "";
 
 	nft_print(octx, "%s expression, datatype %s (%s)",
-		  expr->ops->name, dtype->name, dtype->desc);
+		  expr_name(expr), dtype->name, dtype->desc);
 	if (dtype->basetype != NULL) {
 		nft_print(octx, " (basetype ");
 		for (dtype = dtype->basetype; dtype != NULL;
@@ -134,8 +150,10 @@ void expr_describe(const struct expr *expr, struct output_ctx *octx)
 void expr_set_type(struct expr *expr, const struct datatype *dtype,
 		   enum byteorder byteorder)
 {
-	if (expr->ops->set_type)
-		expr->ops->set_type(expr, dtype, byteorder);
+	const struct expr_ops *ops = expr_ops(expr);
+
+	if (ops->set_type)
+		ops->set_type(expr, dtype, byteorder);
 	else {
 		expr->dtype	= dtype;
 		expr->byteorder	= byteorder;
@@ -654,13 +672,15 @@ void relational_expr_pctx_update(struct proto_ctx *ctx,
 				 const struct expr *expr)
 {
 	const struct expr *left = expr->left;
+	const struct expr_ops *ops;
 
 	assert(expr->ops->type == EXPR_RELATIONAL);
 	assert(expr->op == OP_EQ || expr->op == OP_IMPLICIT);
 
-	if (left->ops->pctx_update &&
+	ops = expr_ops(left);
+	if (ops->pctx_update &&
 	    (left->flags & EXPR_F_PROTOCOL))
-		left->ops->pctx_update(ctx, expr);
+		ops->pctx_update(ctx, expr);
 }
 
 static void range_expr_print(const struct expr *expr, struct output_ctx *octx)

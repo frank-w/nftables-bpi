@@ -787,7 +787,7 @@ static struct expr *expr_value(struct expr *expr)
 	case EXPR_SET_ELEM:
 		return expr->key;
 	default:
-		BUG("invalid expression type %s\n", expr->ops->name);
+		BUG("invalid expression type %s\n", expr_name(expr));
 	}
 }
 

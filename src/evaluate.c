@@ -449,7 +449,7 @@ static void expr_evaluate_bits(struct eval_ctx *ctx, struct expr **exprp)
 					  &extra_len);
 		break;
 	default:
-		BUG("Unknown expression %s\n", expr->ops->name);
+		BUG("Unknown expression %s\n", expr_name(expr));
 	}
 
 	masklen = len + shift;
@@ -1097,7 +1097,7 @@ static int expr_evaluate_binop(struct eval_ctx *ctx, struct expr **expr)
 		return expr_binary_error(ctx->msgs, left, op,
 					 "Binary operation (%s) is undefined "
 					 "for %s expressions",
-					 sym, left->ops->name);
+					 sym, expr_name(left));
 
 	if (!expr_is_constant(right))
 		return expr_binary_error(ctx->msgs, right, op,
@@ -1108,7 +1108,7 @@ static int expr_evaluate_binop(struct eval_ctx *ctx, struct expr **expr)
 		return expr_binary_error(ctx->msgs, left, op,
 					 "Binary operation (%s) is undefined "
 					 "for %s expressions",
-					 sym, right->ops->name);
+					 sym, expr_name(right));
 
 	/* The grammar guarantees this */
 	assert(expr_basetype(left) == expr_basetype(right));
@@ -1349,7 +1349,7 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 		break;
 	default:
 		BUG("invalid mapping expression %s\n",
-		    map->mappings->ops->name);
+		    expr_name(map->mappings));
 	}
 
 	if (!datatype_equal(map->map->dtype, map->mappings->set->key->dtype))
@@ -1698,7 +1698,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 				return -1;
 			break;
 		default:
-			BUG("invalid expression type %s\n", right->ops->name);
+			BUG("invalid expression type %s\n", expr_name(right));
 		}
 		break;
 	case OP_LT:
@@ -1711,7 +1711,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 					"Relational expression (%s) is undefined "
 				        "for %s expressions",
 					expr_op_symbols[rel->op],
-					left->ops->name);
+					expr_name(left));
 		default:
 			break;
 		}
@@ -1721,7 +1721,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 					"Relational expression (%s) is undefined "
 				        "for %s expressions",
 					expr_op_symbols[rel->op],
-					right->ops->name);
+					expr_name(right));
 
 		if (byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)
 			return -1;
@@ -1817,7 +1817,7 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 	if (ctx->nft->debug_mask & NFT_DEBUG_EVALUATION) {
 		struct error_record *erec;
 		erec = erec_create(EREC_INFORMATIONAL, &(*expr)->location,
-				   "Evaluate %s", (*expr)->ops->name);
+				   "Evaluate %s", expr_name(*expr));
 		erec_print(&ctx->nft->output, erec, ctx->nft->debug_mask);
 		expr_print(*expr, &ctx->nft->output);
 		nft_print(&ctx->nft->output, "\n\n");
@@ -1880,7 +1880,7 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 	case EXPR_XFRM:
 		return expr_evaluate_xfrm(ctx, expr);
 	default:
-		BUG("unknown expression type %s\n", (*expr)->ops->name);
+		BUG("unknown expression type %s\n", expr_name(*expr));
 	}
 }
 
@@ -1946,7 +1946,7 @@ static int stmt_evaluate_verdict(struct eval_ctx *ctx, struct stmt *stmt)
 	case EXPR_MAP:
 		break;
 	default:
-		BUG("invalid verdict expression %s\n", stmt->expr->ops->name);
+		BUG("invalid verdict expression %s\n", expr_name(stmt->expr));
 	}
 	return 0;
 }
@@ -2896,7 +2896,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 		break;
 	default:
 		BUG("invalid mapping expression %s\n",
-		    map->mappings->ops->name);
+		    expr_name(map->mappings));
 	}
 
 	if (!datatype_equal(map->map->dtype, map->mappings->set->key->dtype))

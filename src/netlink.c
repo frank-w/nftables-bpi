@@ -239,7 +239,7 @@ void netlink_gen_data(const struct expr *expr, struct nft_data_linearize *data)
 	case EXPR_VERDICT:
 		return netlink_gen_verdict(expr, data);
 	default:
-		BUG("invalid data expression type %s\n", expr->ops->name);
+		BUG("invalid data expression type %s\n", expr_name(expr));
 	}
 }
 

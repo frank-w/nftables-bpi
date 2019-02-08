@@ -406,6 +406,8 @@ extern struct expr *symbol_expr_alloc(const struct location *loc,
 				      enum symbol_types type, struct scope *scope,
 				      const char *identifier);
 
+const char *expr_name(const struct expr *e);
+
 static inline void symbol_expr_set_type(struct expr *expr,
 					const struct datatype *dtype)
 {

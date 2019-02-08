@@ -739,7 +739,7 @@ static void netlink_gen_expr(struct netlink_linearize_ctx *ctx,
 	case EXPR_XFRM:
 		return netlink_gen_xfrm(ctx, expr, dreg);
 	default:
-		BUG("unknown expression type %s\n", expr->ops->name);
+		BUG("unknown expression type %s\n", expr_name(expr));
 	}
 }
 

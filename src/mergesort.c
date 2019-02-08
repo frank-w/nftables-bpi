@@ -44,7 +44,7 @@ static int expr_msort_cmp(const struct expr *e1, const struct expr *e2)
 	case EXPR_MAPPING:
 		return expr_msort_cmp(e1->left, e2->left);
 	default:
-		BUG("Unknown expression %s\n", e1->ops->name);
+		BUG("Unknown expression %s\n", expr_name(e1));
 	}
 }
 

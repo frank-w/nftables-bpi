@@ -87,6 +87,11 @@ bool expr_cmp(const struct expr *e1, const struct expr *e2)
 	return e1->ops->cmp(e1, e2);
 }
 
+const char *expr_name(const struct expr *e)
+{
+	return e->ops->name;
+}
+
 void expr_describe(const struct expr *expr, struct output_ctx *octx)
 {
 	const struct datatype *dtype = expr->dtype;
@@ -1106,7 +1111,7 @@ void range_expr_value_low(mpz_t rop, const struct expr *expr)
 	case EXPR_SET_ELEM:
 		return range_expr_value_low(rop, expr->key);
 	default:
-		BUG("invalid range expression type %s\n", expr->ops->name);
+		BUG("invalid range expression type %s\n", expr_name(expr));
 	}
 }
 
@@ -1130,6 +1135,6 @@ void range_expr_value_high(mpz_t rop, const struct expr *expr)
 	case EXPR_SET_ELEM:
 		return range_expr_value_high(rop, expr->key);
 	default:
-		BUG("invalid range expression type %s\n", expr->ops->name);
+		BUG("invalid range expression type %s\n", expr_name(expr));
 	}
 }

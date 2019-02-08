@@ -2371,7 +2371,7 @@ static void stmt_payload_binop_postprocess(struct rule_pp_ctx *ctx)
 		if (payload->ops->type != EXPR_PAYLOAD)
 			return;
 
-		if (!payload->ops->cmp(stmt->payload.expr, payload))
+		if (!payload_expr_cmp(stmt->payload.expr, payload))
 			return;
 
 		mask = binop->right;

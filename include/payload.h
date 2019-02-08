@@ -59,4 +59,6 @@ extern void payload_expr_expand(struct list_head *list, struct expr *expr,
 extern void payload_expr_complete(struct expr *expr,
 				  const struct proto_ctx *ctx);
 
+bool payload_expr_cmp(const struct expr *e1, const struct expr *e2);
+
 #endif /* NFTABLES_PAYLOAD_H */

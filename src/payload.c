@@ -54,7 +54,7 @@ static void payload_expr_print(const struct expr *expr, struct output_ctx *octx)
 			  expr->payload.offset, expr->len);
 }
 
-static bool payload_expr_cmp(const struct expr *e1, const struct expr *e2)
+bool payload_expr_cmp(const struct expr *e1, const struct expr *e2)
 {
 	return e1->payload.desc   == e2->payload.desc &&
 	       e1->payload.tmpl   == e2->payload.tmpl &&

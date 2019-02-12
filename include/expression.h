@@ -168,6 +168,8 @@ struct expr_ops {
 					       const struct expr *expr);
 };
 
+const struct expr_ops *expr_ops(const struct expr *e);
+
 /**
  * enum expr_flags
  *

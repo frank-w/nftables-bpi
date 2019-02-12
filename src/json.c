@@ -33,18 +33,20 @@
 
 static json_t *expr_print_json(const struct expr *expr, struct output_ctx *octx)
 {
+	const struct expr_ops *ops;
 	char buf[1024];
 	FILE *fp;
 
-	if (expr->ops->json)
-		return expr->ops->json(expr, octx);
+	ops = expr_ops(expr);
+	if (ops->json)
+		return ops->json(expr, octx);
 
 	printf("warning: expr ops %s have no json callback\n", expr_name(expr));
 
 	fp = octx->output_fp;
 	octx->output_fp = fmemopen(buf, 1024, "w");
 
-	expr->ops->print(expr, octx);
+	ops->print(expr, octx);
 
 	fclose(octx->output_fp);
 	octx->output_fp = fp;

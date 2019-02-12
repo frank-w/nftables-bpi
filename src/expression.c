@@ -36,8 +36,6 @@ extern const struct expr_ops rt_expr_ops;
 extern const struct expr_ops socket_expr_ops;
 extern const struct expr_ops xfrm_expr_ops;
 
-static const struct expr_ops *expr_ops(const struct expr *e);
-
 struct expr *expr_alloc(const struct location *loc, enum expr_types etype,
 			const struct datatype *dtype, enum byteorder byteorder,
 			unsigned int len)
@@ -1171,7 +1169,7 @@ void range_expr_value_high(mpz_t rop, const struct expr *expr)
 	}
 }
 
-static const struct expr_ops *expr_ops(const struct expr *e)
+const struct expr_ops *expr_ops(const struct expr *e)
 {
 	switch (e->etype) {
 	case EXPR_INVALID:

@@ -2395,6 +2395,7 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 	chain = chain_alloc(NULL);
 	chain->flags |= CHAIN_F_BASECHAIN;
 	chain->type = xstrdup(type);
+	chain->priority.num = prio;
 	chain->hookstr = chain_hookname_lookup(hookstr);
 	if (!chain->hookstr) {
 		json_error(ctx, "Invalid chain hook '%s'.", hookstr);

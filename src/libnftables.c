@@ -398,11 +398,11 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, const char *buf)
 	if (nft_netlink(nft, &cmds, &msgs, nft->nf_sock) != 0)
 		rc = -1;
 err:
+	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	list_for_each_entry_safe(cmd, next, &cmds, list) {
 		list_del(&cmd->list);
 		cmd_free(cmd);
 	}
-	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	iface_cache_release();
 	if (nft->scanner) {
 		scanner_destroy(nft->scanner);
@@ -442,11 +442,11 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (nft_netlink(nft, &cmds, &msgs, nft->nf_sock) != 0)
 		rc = -1;
 err:
+	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	list_for_each_entry_safe(cmd, next, &cmds, list) {
 		list_del(&cmd->list);
 		cmd_free(cmd);
 	}
-	erec_print_list(&nft->output, &msgs, nft->debug_mask);
 	iface_cache_release();
 	if (nft->scanner) {
 		scanner_destroy(nft->scanner);

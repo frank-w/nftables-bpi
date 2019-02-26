@@ -1075,7 +1075,8 @@ static struct expr *json_parse_verdict_expr(struct json_ctx *ctx,
 			return NULL;
 
 		return verdict_expr_alloc(int_loc,
-					  verdict_tbl[i].verdict, chain);
+					  verdict_tbl[i].verdict,
+					  chain ? xstrdup(chain) : NULL);
 	}
 	json_error(ctx, "Unknown verdict '%s'.", type);
 	return NULL;

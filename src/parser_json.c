@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <errno.h>
 #include <stdint.h> /* needed by gmputil.h */
 #include <string.h>
@@ -3485,8 +3486,9 @@ static int json_update_table(struct netlink_mon_handler *monh,
 
 	nlt = netlink_table_alloc(nlh);
 	family = family2str(nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY));
-	name = nftnl_table_get_str(nlt, NFTNL_TABLE_NAME);
+	name = strdupa(nftnl_table_get_str(nlt, NFTNL_TABLE_NAME));
 	handle = nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE);
+	nftnl_table_free(nlt);
 
 	json_array_foreach(array, index, value) {
 		if (json_unpack(value, "{s:{s:o}}", "add", "table", &value) ||
@@ -3512,9 +3514,10 @@ static int json_update_chain(struct netlink_mon_handler *monh,
 
 	nlc = netlink_chain_alloc(nlh);
 	family = family2str(nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY));
-	table = nftnl_chain_get_str(nlc, NFTNL_CHAIN_TABLE);
-	name = nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME);
+	table = strdupa(nftnl_chain_get_str(nlc, NFTNL_CHAIN_TABLE));
+	name = strdupa(nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME));
 	handle = nftnl_chain_get_u64(nlc, NFTNL_CHAIN_HANDLE);
+	nftnl_chain_free(nlc);
 
 	json_array_foreach(array, index, value) {
 		if (json_unpack(value, "{s:{s:o}}", "add", "chain", &value) ||
@@ -3540,9 +3543,10 @@ static int json_update_rule(struct netlink_mon_handler *monh,
 
 	nlr = netlink_rule_alloc(nlh);
 	family = family2str(nftnl_rule_get_u32(nlr, NFTNL_RULE_FAMILY));
-	table = nftnl_rule_get_str(nlr, NFTNL_RULE_TABLE);
-	chain = nftnl_rule_get_str(nlr, NFTNL_RULE_CHAIN);
+	table = strdupa(nftnl_rule_get_str(nlr, NFTNL_RULE_TABLE));
+	chain = strdupa(nftnl_rule_get_str(nlr, NFTNL_RULE_CHAIN));
 	handle = nftnl_rule_get_u64(nlr, NFTNL_RULE_HANDLE);
+	nftnl_rule_free(nlr);
 
 	json_array_foreach(array, index, value) {
 		if (json_unpack(value, "{s:{s:o}}", "add", "rule", &value) ||
@@ -3574,13 +3578,16 @@ static int json_update_set(struct netlink_mon_handler *monh,
 
 	nls = netlink_set_alloc(nlh);
 	flags = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
-	if (flags & NFT_SET_ANONYMOUS)
+	if (flags & NFT_SET_ANONYMOUS) {
+		nftnl_set_free(nls);
 		return MNL_CB_OK;
+	}
 
 	family = family2str(nftnl_set_get_u32(nls, NFTNL_SET_FAMILY));
-	table = nftnl_set_get_str(nls, NFTNL_SET_TABLE);
-	name = nftnl_set_get_str(nls, NFTNL_SET_NAME);
+	table = strdupa(nftnl_set_get_str(nls, NFTNL_SET_TABLE));
+	name = strdupa(nftnl_set_get_str(nls, NFTNL_SET_NAME));
 	handle = nftnl_set_get_u64(nls, NFTNL_SET_HANDLE);
+	nftnl_set_free(nls);
 
 	json_array_foreach(array, index, value) {
 		if (json_unpack(value, "{s:{s:o}}", "add", "set", &value) ||
@@ -3605,10 +3612,11 @@ static int json_update_obj(struct netlink_mon_handler *monh,
 
 	nlo = netlink_obj_alloc(nlh);
 	family = family2str(nftnl_obj_get_u32(nlo, NFTNL_OBJ_FAMILY));
-	table = nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE);
-	name = nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME);
+	table = strdupa(nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE));
+	name = strdupa(nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME));
 	type = obj_type_name(nftnl_obj_get_u32(nlo, NFTNL_OBJ_TYPE));
 	handle = nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
+	nftnl_obj_free(nlo);
 
 	json_array_foreach(array, index, value) {
 		if (json_unpack(value, "{s:{s:o}}", "add", type, &value) ||

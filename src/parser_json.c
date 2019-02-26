@@ -2461,7 +2461,7 @@ static struct cmd *json_parse_cmd_add_rule(struct json_ctx *ctx, json_t *root,
 
 	json_unpack(root, "{s:s}", "comment", &comment);
 	if (comment)
-		rule->comment = strdup(comment);
+		rule->comment = xstrdup(comment);
 
 	json_array_foreach(tmp, index, value) {
 		struct stmt *stmt;

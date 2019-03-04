@@ -9,6 +9,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <inttypes.h>
 #include <arpa/inet.h>
 
@@ -66,8 +67,6 @@ struct elementary_interval {
 	enum elementary_interval_flags	flags;
 	struct expr			*expr;
 };
-
-static struct output_ctx debug_octx = {};
 
 static void seg_tree_init(struct seg_tree *tree, const struct set *set,
 			  struct expr *init, unsigned int debug_mask)
@@ -570,6 +569,7 @@ int set_to_intervals(struct list_head *errs, struct set *set,
 		     bool merge)
 {
 	struct elementary_interval *ei, *next;
+	struct output_ctx debug_octx;
 	struct seg_tree tree;
 	LIST_HEAD(list);
 
@@ -590,6 +590,9 @@ int set_to_intervals(struct list_head *errs, struct set *set,
 	}
 
 	if (segtree_debug(tree.debug_mask)) {
+		memset(&debug_octx, 0, sizeof(debug_octx));
+		debug_octx.output_fp = stderr;
+		debug_octx.error_fp = stderr;
 		expr_print(init, &debug_octx);
 		pr_gmp_debug("\n");
 	}

@@ -431,16 +431,19 @@ static bool segtree_needs_first_segment(const struct set *set,
 					const struct expr *init, bool add)
 {
 	if (add) {
-		/* Add the first segment in three situations:
+		/* Add the first segment in four situations:
 		 *
 		 * 1) This is an anonymous set.
 		 * 2) This set exists and it is empty.
-		 * 3) This set is created with a number of initial elements.
+		 * 3) New empty set and, separately, new elements are added.
+		 * 4) This set is created with a number of initial elements.
 		 */
 		if ((set->flags & NFT_SET_ANONYMOUS) ||
 		    (set->init && set->init->size == 0) ||
-		    (set->init == init))
+		    (set->init == NULL && init) ||
+		    (set->init == init)) {
 			return true;
+		}
 	} else {
 		/* If the set is empty after the removal, we have to
 		 * remove the first non-matching segment too.

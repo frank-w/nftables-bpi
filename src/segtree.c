@@ -566,10 +566,9 @@ static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 
 int set_to_intervals(struct list_head *errs, struct set *set,
 		     struct expr *init, bool add, unsigned int debug_mask,
-		     bool merge)
+		     bool merge, struct output_ctx *octx)
 {
 	struct elementary_interval *ei, *next;
-	struct output_ctx debug_octx;
 	struct seg_tree tree;
 	LIST_HEAD(list);
 
@@ -590,10 +589,7 @@ int set_to_intervals(struct list_head *errs, struct set *set,
 	}
 
 	if (segtree_debug(tree.debug_mask)) {
-		memset(&debug_octx, 0, sizeof(debug_octx));
-		debug_octx.output_fp = stderr;
-		debug_octx.error_fp = stderr;
-		expr_print(init, &debug_octx);
+		expr_print(init, octx);
 		pr_gmp_debug("\n");
 	}
 

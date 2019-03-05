@@ -1445,7 +1445,8 @@ static int do_add_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 
 	if (set->flags & NFT_SET_INTERVAL &&
 	    set_to_intervals(ctx->msgs, set, init, true,
-			     ctx->nft->debug_mask, set->automerge) < 0)
+			     ctx->nft->debug_mask, set->automerge,
+			     &ctx->nft->output) < 0)
 		return -1;
 
 	return __do_add_setelems(ctx, set, init, flags);
@@ -1459,7 +1460,8 @@ static int do_add_set(struct netlink_ctx *ctx, const struct cmd *cmd,
 	if (set->init != NULL) {
 		if (set->flags & NFT_SET_INTERVAL &&
 		    set_to_intervals(ctx->msgs, set, set->init, true,
-				     ctx->nft->debug_mask, set->automerge) < 0)
+				     ctx->nft->debug_mask, set->automerge,
+				     &ctx->nft->output) < 0)
 			return -1;
 	}
 	if (mnl_nft_set_add(ctx, cmd, flags) < 0)
@@ -1556,7 +1558,8 @@ static int do_delete_setelems(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	if (set->flags & NFT_SET_INTERVAL &&
 	    set_to_intervals(ctx->msgs, set, expr, false,
-			     ctx->nft->debug_mask, set->automerge) < 0)
+			     ctx->nft->debug_mask, set->automerge,
+			     &ctx->nft->output) < 0)
 		return -1;
 
 	if (mnl_nft_setelem_del(ctx, cmd) < 0)

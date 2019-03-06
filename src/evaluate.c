@@ -209,10 +209,12 @@ static int set_not_found(struct eval_ctx *ctx, const struct location *loc,
 		return cmd_error(ctx, loc, "%s", strerror(ENOENT));
 
 	return cmd_error(ctx, loc,
-			 "%s; did you mean set ‘%s’ in table %s ‘%s’?",
-			 strerror(ENOENT), set->handle.set.name,
-				 family2str(set->handle.family),
-				 table->handle.table.name);
+			 "%s; did you mean %s ‘%s’ in table %s ‘%s’?",
+			 strerror(ENOENT),
+			 set->flags & NFT_SET_MAP ? "map" : "set",
+			 set->handle.set.name,
+			 family2str(set->handle.family),
+			 table->handle.table.name);
 }
 
 /*

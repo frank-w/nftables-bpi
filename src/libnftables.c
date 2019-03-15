@@ -364,7 +364,7 @@ static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 
 	parser_init(nft, nft->state, msgs, cmds);
 	nft->scanner = scanner_init(nft->state);
-	if (scanner_read_file(nft->scanner, filename, &internal_location) < 0)
+	if (scanner_read_file(nft, filename, &internal_location) < 0)
 		return -1;
 
 	ret = nft_parse(nft, nft->scanner, nft->state);
@@ -405,7 +405,7 @@ err:
 	}
 	iface_cache_release();
 	if (nft->scanner) {
-		scanner_destroy(nft->scanner);
+		scanner_destroy(nft);
 		nft->scanner = NULL;
 	}
 	free(nlbuf);
@@ -449,7 +449,7 @@ err:
 	}
 	iface_cache_release();
 	if (nft->scanner) {
-		scanner_destroy(nft->scanner);
+		scanner_destroy(nft);
 		nft->scanner = NULL;
 	}
 

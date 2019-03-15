@@ -3,8 +3,8 @@
 
 #include <list.h>
 #include <rule.h> // FIXME
+#include <nftables.h>
 
-#define MAX_INCLUDE_DEPTH		16
 #define TABSIZE				8
 
 #define YYLTYPE				struct location
@@ -36,9 +36,9 @@ extern void parser_init(struct nft_ctx *nft, struct parser_state *state,
 extern int nft_parse(struct nft_ctx *ctx, void *, struct parser_state *state);
 
 extern void *scanner_init(struct parser_state *state);
-extern void scanner_destroy(void *scanner);
+extern void scanner_destroy(struct nft_ctx *nft);
 
-extern int scanner_read_file(void *scanner, const char *filename,
+extern int scanner_read_file(struct nft_ctx *nft, const char *filename,
 			     const struct location *loc);
 extern int scanner_include_file(struct nft_ctx *ctx, void *scanner,
 				const char *filename,

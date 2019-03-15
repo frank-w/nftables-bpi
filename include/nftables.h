@@ -86,6 +86,8 @@ struct nft_cache {
 struct mnl_socket;
 struct parser_state;
 
+#define MAX_INCLUDE_DEPTH	16
+
 struct nft_ctx {
 	struct mnl_socket	*nf_sock;
 	char			**include_paths;
@@ -99,6 +101,7 @@ struct nft_ctx {
 	struct parser_state	*state;
 	void			*scanner;
 	void			*json_root;
+	FILE			*f[MAX_INCLUDE_DEPTH];
 };
 
 enum nftables_exit_codes {

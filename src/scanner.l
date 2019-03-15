@@ -659,19 +659,17 @@ static void scanner_pop_buffer(yyscan_t scanner)
 	state->indesc = &state->indescs[--state->indesc_idx - 1];
 }
 
-static struct error_record *scanner_push_file(void *scanner, const char *filename,
-					      FILE *f, const struct location *loc)
+static struct error_record *scanner_push_file(struct nft_ctx *nft, void *scanner,
+					      const char *filename, const struct location *loc)
 {
 	struct parser_state *state = yyget_extra(scanner);
 	YY_BUFFER_STATE b;
 
-	if (state->indesc_idx == MAX_INCLUDE_DEPTH) {
-		fclose(f);
+	if (state->indesc_idx == MAX_INCLUDE_DEPTH)
 		return error(loc, "Include nested too deeply, max %u levels",
 			     MAX_INCLUDE_DEPTH);
-	}
 
-	b = yy_create_buffer(f, YY_BUF_SIZE, scanner);
+	b = yy_create_buffer(nft->f[state->indesc_idx], YY_BUF_SIZE, scanner);
 	yypush_buffer_state(b, scanner);
 
 	state->indesc = &state->indescs[state->indesc_idx++];
@@ -683,8 +681,8 @@ static struct error_record *scanner_push_file(void *scanner, const char *filenam
 	return NULL;
 }
 
-static int include_file(void *scanner, const char *filename,
-			const struct location *loc)
+static int include_file(struct nft_ctx *nft, void *scanner,
+			const char *filename, const struct location *loc)
 {
 	struct parser_state *state = yyget_extra(scanner);
 	struct error_record *erec;
@@ -696,8 +694,9 @@ static int include_file(void *scanner, const char *filename,
 			     filename, strerror(errno));
 		goto err;
 	}
+	nft->f[state->indesc_idx] = f;
 
-	erec = scanner_push_file(scanner, filename, f, loc);
+	erec = scanner_push_file(nft, scanner, filename, loc);
 	if (erec != NULL)
 		goto err;
 	return 0;
@@ -706,7 +705,7 @@ err:
 	return -1;
 }
 
-static int include_glob(void *scanner, const char *pattern,
+static int include_glob(struct nft_ctx *nft, void *scanner, const char *pattern,
 			const struct location *loc)
 {
 	struct parser_state *state = yyget_extra(scanner);
@@ -770,7 +769,7 @@ static int include_glob(void *scanner, const char *pattern,
 			if (len == 0 || path[len - 1] == '/')
 				continue;
 
-			ret = include_file(scanner, path, loc);
+			ret = include_file(nft, scanner, path, loc);
 			if (ret != 0)
 				goto err;
 		}
@@ -804,10 +803,10 @@ err:
 	return -1;
 }
 
-int scanner_read_file(void *scanner, const char *filename,
+int scanner_read_file(struct nft_ctx *nft, const char *filename,
 		      const struct location *loc)
 {
-	return include_file(scanner, filename, loc);
+	return include_file(nft, nft->scanner, filename, loc);
 }
 
 static bool search_in_include_path(const char *filename)
@@ -837,7 +836,7 @@ int scanner_include_file(struct nft_ctx *nft, void *scanner,
 				return -1;
 			}
 
-			ret = include_glob(scanner, buf, loc);
+			ret = include_glob(nft, scanner, buf, loc);
 
 			/* error was already handled */
 			if (ret == -1)
@@ -852,7 +851,7 @@ int scanner_include_file(struct nft_ctx *nft, void *scanner,
 		}
 	} else {
 		/* an absolute path (starts with '/') */
-		ret = include_glob(scanner, filename, loc);
+		ret = include_glob(nft, scanner, filename, loc);
 	}
 
 	/* handle the case where no file was found */
@@ -897,9 +896,9 @@ void *scanner_init(struct parser_state *state)
 	return scanner;
 }
 
-void scanner_destroy(void *scanner)
+void scanner_destroy(struct nft_ctx *nft)
 {
-	struct parser_state *state = yyget_extra(scanner);
+	struct parser_state *state = yyget_extra(nft->scanner);
 
 	do {
 		struct input_descriptor *inpdesc =
@@ -908,8 +907,13 @@ void scanner_destroy(void *scanner)
 			xfree(inpdesc->name);
 			inpdesc->name = NULL;
 		}
-		yypop_buffer_state(scanner);
+		yypop_buffer_state(nft->scanner);
+
+		if (nft->f[state->indesc_idx]) {
+			fclose(nft->f[state->indesc_idx]);
+			nft->f[state->indesc_idx] = NULL;
+		}
 	} while (state->indesc_idx--);
 
-	yylex_destroy(scanner);
+	yylex_destroy(nft->scanner);
 }

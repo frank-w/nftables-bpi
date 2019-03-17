@@ -13,16 +13,13 @@ AC_CONFIG_HEADER([config.h])
 
 AC_ARG_ENABLE([debug],
 	      AS_HELP_STRING([--disable-debug], [Disable debugging symbols]),
-	      AS_IF([test "x$enable_debug" = "xno"], [with_debug=no], [with_debug=yes]),
-	      [with_debug=yes])
-AC_SUBST(with_debug)
-AM_CONDITIONAL([BUILD_DEBUG], [test "x$with_debug" != xno])
+	      [], [enable_debug=yes])
+AM_CONDITIONAL([BUILD_DEBUG], [test "x$enable_debug" != xno])
 
 AC_ARG_ENABLE([man-doc],
 	      AS_HELP_STRING([--disable-man-doc], [Disable man page documentation]),
-	      AS_IF([test "x$enable_man_doc" = "xno"], [enable_man_doc=no],
-	      [enable_man_doc=yes]), [enable_man_doc=yes])
-AM_CONDITIONAL([BUILD_MAN], [test "x$enable_man_doc" == "xyes" ])
+	      [], [enable_man_doc=yes])
+AM_CONDITIONAL([BUILD_MAN], [test "x$enable_man_doc" = "xyes" ])
 
 # Checks for programs.
 AC_PROG_CC
@@ -58,12 +55,12 @@ PKG_CHECK_MODULES([LIBMNL], [libmnl >= 1.0.3])
 PKG_CHECK_MODULES([LIBNFTNL], [libnftnl >= 1.1.1])
 
 AC_ARG_WITH([mini-gmp], [AS_HELP_STRING([--with-mini-gmp],
-            [Use builtin mini-gmp (for embedded builds)])], [],
-            [with_mini_gmp=no])
+            [Use builtin mini-gmp (for embedded builds)])],
+	    [], [with_mini_gmp=no])
 AS_IF([test "x$with_mini_gmp" != xyes], [
 AC_CHECK_LIB([gmp],[__gmpz_init], , AC_MSG_ERROR([No suitable version of libgmp found]))
 ])
-AM_CONDITIONAL([BUILD_MINIGMP], [test "x$with_mini_gmp" == xyes])
+AM_CONDITIONAL([BUILD_MINIGMP], [test "x$with_mini_gmp" = xyes])
 
 AC_ARG_WITH([cli], [AS_HELP_STRING([--without-cli],
             [disable interactive CLI (libreadline support)])],
@@ -78,13 +75,12 @@ AM_CONDITIONAL([BUILD_CLI], [test "x$with_cli" != xno])
 
 AC_ARG_WITH([xtables], [AS_HELP_STRING([--with-xtables],
             [Use libxtables for iptables interaction])],
-	    [with_libxtables=$withval], [with_libxtables=no])
-AS_IF([test "x$with_libxtables" != xno], [
+	    [], [with_xtables=no])
+AS_IF([test "x$with_xtables" != xno], [
 PKG_CHECK_MODULES([XTABLES], [xtables >= 1.6.1])
 AC_DEFINE([HAVE_LIBXTABLES], [1], [0])
 ])
-AC_SUBST(with_libxtables)
-AM_CONDITIONAL([BUILD_XTABLES], [test "x$with_libxtables" == xyes])
+AM_CONDITIONAL([BUILD_XTABLES], [test "x$with_xtables" = xyes])
 
 AC_ARG_WITH([json], [AS_HELP_STRING([--with-json],
             [Enable JSON output support])],
@@ -106,9 +102,9 @@ AC_ARG_WITH([python_bin],
 	    [PYTHON_BIN="$withval"], [AC_PATH_PROGS(PYTHON_BIN, python python2 python2.7)]
 	   )
 
-AS_IF([test "x$PYTHON_BIN" == "x"], [
-	AS_IF([test "x$enable_python" == "xyes"], [AC_MSG_ERROR([Python asked but not found])])
-	AS_IF([test "x$enable_python" == "xcheck"], [AC_MSG_WARN([Python not found, continuing anyway])])
+AS_IF([test "x$PYTHON_BIN" = "x"], [
+	AS_IF([test "x$enable_python" = "xyes"], [AC_MSG_ERROR([Python asked but not found])])
+	AS_IF([test "x$enable_python" = "xcheck"], [AC_MSG_WARN([Python not found, continuing anyway])])
 	])
 
 AM_CONDITIONAL([HAVE_PYTHON], [test "x$PYTHON_BIN" != "x"])
@@ -136,10 +132,10 @@ AC_OUTPUT
 echo "
 nft configuration:
   cli support:			${with_cli}
-  enable debugging symbols:	${with_debug}
+  enable debugging symbols:	${enable_debug}
   use mini-gmp:			${with_mini_gmp}
   enable man page:              ${enable_man_doc}
-  libxtables support:		${with_libxtables}
+  libxtables support:		${with_xtables}
   json output support:          ${with_json}"
 
 AS_IF([test "x$PYTHON_BIN" != "x"], [

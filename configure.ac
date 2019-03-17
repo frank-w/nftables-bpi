@@ -48,12 +48,9 @@ fi
 AM_PROG_AR
 AM_PROG_LIBTOOL
 
-AC_CHECK_PROG(A2X, [a2x], [a2x])
-AM_CONDITIONAL([BUILD_MAN], [test -n "$A2X"])
-
-AS_IF([test "$need_a2x" = "yes"], [
-       AC_CHECK_PROG(A2X, [a2x], [found], [no])
-       AS_IF([test "$A2X" != "found"],
+AS_IF([test "x$enable_man_doc" = "xyes"], [
+       AC_CHECK_PROG(A2X, [a2x], [a2x], [no])
+       AS_IF([test "$A2X" = "no"],
 	     [AC_MSG_ERROR([a2x not found, please install asciidoc])])
 ])
 

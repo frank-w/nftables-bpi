@@ -3915,6 +3915,10 @@ meta_stmt		:	META	meta_key	SET	stmt_expr
 			{
 				$$ = flow_offload_stmt_alloc(&@$, $4);
 			}
+			|	FLOW	ADD	AT string
+			{
+				$$ = flow_offload_stmt_alloc(&@$, $4);
+			}
 			;
 
 socket_expr		:	SOCKET	socket_key

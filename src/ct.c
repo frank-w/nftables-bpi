@@ -481,7 +481,7 @@ struct stmt *notrack_stmt_alloc(const struct location *loc)
 static void flow_offload_stmt_print(const struct stmt *stmt,
 				    struct output_ctx *octx)
 {
-	printf("flow offload @%s", stmt->flow.table_name);
+	printf("flow add @%s", stmt->flow.table_name);
 }
 
 static const struct stmt_ops flow_offload_stmt_ops = {

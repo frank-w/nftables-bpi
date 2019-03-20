@@ -439,13 +439,13 @@ table inet x {
 }
 -------------------------------------
 
-FLOW OFFLOAD STATEMENT
-~~~~~~~~~~~~~~~~~~~~~~
-A flow offload statement allows us to select what flows you want to accelerate
+FLOW STATEMENT
+~~~~~~~~~~~~~~
+A flow statement allows us to select what flows you want to accelerate
 forwarding through layer 3 network stack bypass. You have to specify the
 flowtable name where you want to offload this flow.
 
-*flow offload* @flowtable
+*flow add* @flowtable
 
 QUEUE STATEMENT
 ~~~~~~~~~~~~~~~

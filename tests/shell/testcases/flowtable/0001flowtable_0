@@ -7,7 +7,7 @@ EXPECTED='table inet t {
 	}
 
 	chain c {
-		flow offload @f
+		flow add @f
 	}
 }'
 

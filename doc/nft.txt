@@ -585,7 +585,7 @@ address - to update the destination link-layer address - to forward packets.
 The ttl and hoplimit fields are also decremented. Hence, flowtables provides an
 alternative path that allow packets to bypass the classic forwarding path.
 Flowtables reside in the ingress hook that is located before the prerouting
-hook. You can select which flows you want to offload through the flow offload
+hook. You can select which flows you want to offload through the flow
 expression from the forward chain. Flowtables are identified by their address
 family and their name. The address family must be one of ip, ip6, or inet. The inet
 address family is a dummy family which is used to create hybrid IPv4/IPv6

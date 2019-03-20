@@ -22,6 +22,7 @@ noinst_HEADERS = 	cli.h		\
 			headers.h	\
 			list.h		\
 			meta.h		\
+			misspell.h	\
 			numgen.h	\
 			netlink.h	\
 			osf.h		\

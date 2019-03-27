@@ -350,6 +350,7 @@ struct expr {
 		struct {
 			/* EXPR_OSF */
 			uint8_t			ttl;
+			uint32_t		flags;
 		} osf;
 	};
 };

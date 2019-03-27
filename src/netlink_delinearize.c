@@ -655,10 +655,12 @@ static void netlink_parse_osf(struct netlink_parse_ctx *ctx,
 {
 	enum nft_registers dreg;
 	struct expr *expr;
+	uint32_t flags;
 	uint8_t ttl;
 
 	ttl = nftnl_expr_get_u8(nle, NFTNL_EXPR_OSF_TTL);
-	expr = osf_expr_alloc(loc, ttl);
+	flags = nftnl_expr_get_u32(nle, NFTNL_EXPR_OSF_FLAGS);
+	expr = osf_expr_alloc(loc, ttl, flags);
 
 	dreg = netlink_parse_register(nle, NFTNL_EXPR_OSF_DREG);
 	netlink_set_register(ctx, dreg, expr);

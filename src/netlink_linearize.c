@@ -228,6 +228,7 @@ static void netlink_gen_osf(struct netlink_linearize_ctx *ctx,
 	nle = alloc_nft_expr("osf");
 	netlink_put_register(nle, NFTNL_EXPR_OSF_DREG, dreg);
 	nftnl_expr_set_u8(nle, NFTNL_EXPR_OSF_TTL, expr->osf.ttl);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_OSF_FLAGS, expr->osf.flags);
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 

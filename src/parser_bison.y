@@ -3196,9 +3196,13 @@ fib_tuple		:  	fib_flag	DOT	fib_tuple
 			|	fib_flag
 			;
 
-osf_expr		:	OSF	osf_ttl		NAME
+osf_expr		:	OSF	osf_ttl		HDRVERSION
 			{
-				$$ = osf_expr_alloc(&@$, $2);
+				$$ = osf_expr_alloc(&@$, $2, NFT_OSF_F_VERSION);
+			}
+			|	OSF	osf_ttl		NAME
+			{
+				$$ = osf_expr_alloc(&@$, $2, 0);
 			}
 			;
 

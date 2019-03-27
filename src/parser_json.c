@@ -381,6 +381,7 @@ static struct expr *json_parse_osf_expr(struct json_ctx *ctx,
 					const char *type, json_t *root)
 {
 	const char *key, *ttl;
+	uint32_t flagval = 0;
 	uint8_t ttlval = 0;
 
 	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
@@ -397,8 +398,12 @@ static struct expr *json_parse_osf_expr(struct json_ctx *ctx,
 		}
 	}
 
-	if (!strcmp(key, "name"))
-		return osf_expr_alloc(int_loc, ttlval);
+	if (!strcmp(key, "name")) {
+		return osf_expr_alloc(int_loc, ttlval, flagval);
+	} else if (!strcmp(key, "version")) {
+		flagval |= NFT_OSF_F_VERSION;
+		return osf_expr_alloc(int_loc, ttlval, flagval);
+	}
 
 	json_error(ctx, "Invalid osf key value.");
 	return NULL;

@@ -864,7 +864,12 @@ json_t *socket_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *osf_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
-	json_t *root = json_pack("{s:s}", "key", "name");
+	json_t *root;
+
+	if (expr->osf.flags & NFT_OSF_F_VERSION)
+		root = json_pack("{s:s}", "key", "version");
+	else
+		root = json_pack("{s:s}", "key", "name");
 
 	switch (expr->osf.ttl) {
 	case 1:

@@ -219,6 +219,8 @@ and others) from packets with the SYN bit set.
 |ttl|
 Do TTL checks on the packet to determine the operating system.|
 string
+|version|
+Do OS version checks on the packet.|
 |name|
 Name of the OS signature to match. All signatures can be found at pf.os file.
 Use "unknown" for OS signatures that the expression could not detect.|

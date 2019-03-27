@@ -45,6 +45,21 @@
     }
 ]
 
+# osf name version "Linux:3.0"
+[
+    {
+        "match": {
+            "left": {
+                "osf": {
+                    "key": "version"
+                }
+            },
+            "op": "==",
+            "right": "Linux:3.0"
+        }
+    }
+]
+
 # osf name { "Windows", "MacOs" }
 [
     {

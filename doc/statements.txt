@@ -564,3 +564,37 @@ nft list set ip filter blackhole
 # manually add two addresses to the set:
 nft add element filter blackhole { 10.2.3.4, 10.23.1.42 }
 -----------------------------------------------
+
+MAP STATEMENT
+~~~~~~~~~~~~~
+The map statement is used to lookup data based on some specific input key.
+
+[verse]
+'expression' *map* *{* 'key' *:* 'value' [*,* 'key' *:* 'value' ...] *}*
+
+.Using the map statement
+------------------------
+# select DNAT target based on TCP dport:
+# connections to port 80 are redirected to 192.168.1.100,
+# connections to port 8888 are redirected to 192.168.1.101
+nft add rule ip nat prerouting dnat tcp dport map { 80 : 192.168.1.100, 8888 : 192.168.1.101 }
+
+# source address based SNAT:
+# packets from net 192.168.1.0/24 will appear as originating from 10.0.0.1,
+# packets from net 192.168.2.0/24 will appear as originating from 10.0.0.2
+nft add rule ip nat postrouting snat to ip saddr map { 192.168.1.0/24 : 10.0.0.1, 192.168.2.0/24 : 10.0.0.2 }
+------------------------
+
+VMAP STATEMENT
+~~~~~~~~~~~~~~
+The verdict map (vmap) statement works analogous to the map statement, but
+contains verdicts as values.
+
+[verse]
+'expression' *vmap* *{* 'key' *:* 'verdict' [*,* 'key' *:* 'verdict' ...] *}*
+
+.Using the vmap statement
+-------------------------
+# jump to different chains depending on layer 4 protocol type:
+nft add rule ip filter input ip protocol vmap { tcp : jump tcp-chain, udp : jump udp-chain , icmp : jump icmp-chain }
+------------------------

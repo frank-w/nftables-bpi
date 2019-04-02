@@ -106,6 +106,9 @@ class Nftables:
         self.nft_ctx_buffer_output(self.__ctx)
         self.nft_ctx_buffer_error(self.__ctx)
 
+    def __del__(self):
+        self.nft_ctx_free(self.__ctx)
+
     def __get_output_flag(self, name):
         flag = self.output_flags[name]
         return self.nft_ctx_output_get_flags(self.__ctx) & flag

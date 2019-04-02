@@ -3324,6 +3324,46 @@ static int json_verify_metainfo(struct json_ctx *ctx, json_t *root)
 	return 0;
 }
 
+struct json_cmd_assoc {
+	struct json_cmd_assoc *next;
+	const struct cmd *cmd;
+	json_t *json;
+};
+
+static struct json_cmd_assoc *json_cmd_list = NULL;
+
+static void json_cmd_assoc_free(void)
+{
+	struct json_cmd_assoc *cur;
+
+	while (json_cmd_list) {
+		cur = json_cmd_list;
+		json_cmd_list = cur->next;
+		free(cur);
+	}
+}
+
+static void json_cmd_assoc_add(json_t *json, const struct cmd *cmd)
+{
+	struct json_cmd_assoc *new = xzalloc(sizeof *new);
+
+	new->next	= json_cmd_list;
+	new->json	= json;
+	new->cmd	= cmd;
+	json_cmd_list	= new;
+}
+
+static json_t *seqnum_to_json(const uint32_t seqnum)
+{
+	const struct json_cmd_assoc *cur;
+
+	for (cur = json_cmd_list; cur; cur = cur->next) {
+		if (cur->cmd->seqnum == seqnum)
+			return cur->json;
+	}
+	return NULL;
+}
+
 static int __json_parse(struct json_ctx *ctx)
 {
 	struct eval_ctx ectx = {
@@ -3377,6 +3417,9 @@ static int __json_parse(struct json_ctx *ctx)
 			return -1;
 		}
 		list_splice_tail(&list, ctx->cmds);
+
+		if (nft_output_echo(&ctx->nft->output))
+			json_cmd_assoc_add(value, cmd);
 	}
 
 	return 0;
@@ -3451,213 +3494,76 @@ static int json_echo_error(struct netlink_mon_handler *monh,
 	return MNL_CB_ERROR;
 }
 
-static int obj_prop_check(json_t *obj, const char *key, const char *value)
+static uint64_t handle_from_nlmsg(const struct nlmsghdr *nlh)
 {
-	const char *cmp;
-
-	if (!value)
-		return 0;
-
-	if (json_unpack(obj, "{s:s}", key, &cmp) || strcmp(value, cmp))
-		return 1;
-
-	return 0;
-}
-
-static bool obj_info_matches(json_t *obj, const char *family, const char *table,
-			     const char *chain, const char *name)
-{
-	if (obj_prop_check(obj, "family", family) ||
-	    obj_prop_check(obj, "table", table) ||
-	    obj_prop_check(obj, "chain", chain) ||
-	    obj_prop_check(obj, "name", name))
-		return false;
-
-	return true;
-}
-
-static int json_update_table(struct netlink_mon_handler *monh,
-			     json_t *array, const struct nlmsghdr *nlh)
-{
-	const char *family, *name;
 	struct nftnl_table *nlt;
-	uint64_t handle;
-	json_t *value;
-	size_t index;
-
-	nlt = netlink_table_alloc(nlh);
-	family = family2str(nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY));
-	name = strdupa(nftnl_table_get_str(nlt, NFTNL_TABLE_NAME));
-	handle = nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE);
-	nftnl_table_free(nlt);
-
-	json_array_foreach(array, index, value) {
-		if (json_unpack(value, "{s:{s:o}}", "add", "table", &value) ||
-		    !obj_info_matches(value, family, NULL, NULL, name))
-			continue;
-
-		json_object_set_new(value, "handle", json_integer(handle));
-		return MNL_CB_OK;
-	}
-
-	return json_echo_error(monh, "JSON table object '%s %s' not found.\n",
-			       family, name);
-}
-
-static int json_update_chain(struct netlink_mon_handler *monh,
-			     json_t *array, const struct nlmsghdr *nlh)
-{
-	const char *family, *table, *name;
 	struct nftnl_chain *nlc;
-	uint64_t handle;
-	json_t *value;
-	size_t index;
-
-	nlc = netlink_chain_alloc(nlh);
-	family = family2str(nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY));
-	table = strdupa(nftnl_chain_get_str(nlc, NFTNL_CHAIN_TABLE));
-	name = strdupa(nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME));
-	handle = nftnl_chain_get_u64(nlc, NFTNL_CHAIN_HANDLE);
-	nftnl_chain_free(nlc);
-
-	json_array_foreach(array, index, value) {
-		if (json_unpack(value, "{s:{s:o}}", "add", "chain", &value) ||
-		    !obj_info_matches(value, family, table, NULL, name))
-			continue;
-
-		json_object_set_new(value, "handle", json_integer(handle));
-		return MNL_CB_OK;
-	}
-	return json_echo_error(monh,
-			       "JSON chain object '%s %s %s' not found.\n",
-			       family, table, name);
-}
-
-static int json_update_rule(struct netlink_mon_handler *monh,
-			    json_t *array, const struct nlmsghdr *nlh)
-{
-	const char *family, *table, *chain;
 	struct nftnl_rule *nlr;
-	uint64_t handle;
-	json_t *value;
-	size_t index;
-
-	nlr = netlink_rule_alloc(nlh);
-	family = family2str(nftnl_rule_get_u32(nlr, NFTNL_RULE_FAMILY));
-	table = strdupa(nftnl_rule_get_str(nlr, NFTNL_RULE_TABLE));
-	chain = strdupa(nftnl_rule_get_str(nlr, NFTNL_RULE_CHAIN));
-	handle = nftnl_rule_get_u64(nlr, NFTNL_RULE_HANDLE);
-	nftnl_rule_free(nlr);
-
-	json_array_foreach(array, index, value) {
-		if (json_unpack(value, "{s:{s:o}}", "add", "rule", &value) ||
-		    !obj_info_matches(value, family, table, chain, NULL))
-			continue;
-
-		/* this is a hack - assume rules are added in order and caller
-		 * sets the handle for each we previously returned */
-		if (json_object_get(value, "handle"))
-			continue;
-
-		json_object_set_new(value, "handle", json_integer(handle));
-		return MNL_CB_OK;
-	}
-	return json_echo_error(monh,
-			       "JSON rule object in '%s %s %s' without handle not found\n",
-			       family, table, chain);
-}
-
-static int json_update_set(struct netlink_mon_handler *monh,
-			   json_t *array, const struct nlmsghdr *nlh)
-{
-	const char *family, *table, *name;
 	struct nftnl_set *nls;
-	uint64_t handle;
-	uint32_t flags;
-	json_t *value;
-	size_t index;
-
-	nls = netlink_set_alloc(nlh);
-	flags = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
-	if (flags & NFT_SET_ANONYMOUS) {
-		nftnl_set_free(nls);
-		return MNL_CB_OK;
-	}
-
-	family = family2str(nftnl_set_get_u32(nls, NFTNL_SET_FAMILY));
-	table = strdupa(nftnl_set_get_str(nls, NFTNL_SET_TABLE));
-	name = strdupa(nftnl_set_get_str(nls, NFTNL_SET_NAME));
-	handle = nftnl_set_get_u64(nls, NFTNL_SET_HANDLE);
-	nftnl_set_free(nls);
-
-	json_array_foreach(array, index, value) {
-		if (json_unpack(value, "{s:{s:o}}", "add", "set", &value) ||
-		    !obj_info_matches(value, family, table, NULL, name))
-			continue;
-
-		json_object_set_new(value, "handle", json_integer(handle));
-		return MNL_CB_OK;
-	}
-	return json_echo_error(monh, "JSON set object '%s %s %s' not found.\n",
-			       family, table, name);
-}
-
-static int json_update_obj(struct netlink_mon_handler *monh,
-			   json_t *array, const struct nlmsghdr *nlh)
-{
-	const char *family, *table, *name, *type;
 	struct nftnl_obj *nlo;
-	uint64_t handle;
-	json_t *value;
-	size_t index;
-
-	nlo = netlink_obj_alloc(nlh);
-	family = family2str(nftnl_obj_get_u32(nlo, NFTNL_OBJ_FAMILY));
-	table = strdupa(nftnl_obj_get_str(nlo, NFTNL_OBJ_TABLE));
-	name = strdupa(nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME));
-	type = obj_type_name(nftnl_obj_get_u32(nlo, NFTNL_OBJ_TYPE));
-	handle = nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
-	nftnl_obj_free(nlo);
-
-	json_array_foreach(array, index, value) {
-		if (json_unpack(value, "{s:{s:o}}", "add", type, &value) ||
-		    !obj_info_matches(value, family, table, NULL, name))
-			continue;
-
-		json_object_set_new(value, "handle", json_integer(handle));
-		return MNL_CB_OK;
-	}
-	return json_echo_error(monh, "JSON %s object '%s %s %s' not found.\n",
-			       type, family, table, name);
-}
-
-int json_events_cb(const struct nlmsghdr *nlh, struct netlink_mon_handler *monh)
-{
-	json_t *root = monh->ctx->nft->json_root;
-	json_t *array;
-
-	if (!root)
-		return MNL_CB_OK;
-
-	if (json_unpack(root, "{s:o}", "nftables", &array)) {
-		erec_queue(error(int_loc, "Invalid JSON root element\n"),
-			   monh->ctx->msgs);
-		return MNL_CB_STOP;
-	}
+	uint64_t handle = 0;
+	uint32_t flags;
 
 	switch (NFNL_MSG_TYPE(nlh->nlmsg_type)) {
 	case NFT_MSG_NEWTABLE:
-		return json_update_table(monh, array, nlh);
+		nlt = netlink_table_alloc(nlh);
+		handle = nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE);
+		nftnl_table_free(nlt);
+		break;
 	case NFT_MSG_NEWCHAIN:
-		return json_update_chain(monh, array, nlh);
+		nlc = netlink_chain_alloc(nlh);
+		handle = nftnl_chain_get_u64(nlc, NFTNL_CHAIN_HANDLE);
+		nftnl_chain_free(nlc);
+		break;
 	case NFT_MSG_NEWRULE:
-		return json_update_rule(monh, array, nlh);
+		nlr = netlink_rule_alloc(nlh);
+		handle = nftnl_rule_get_u64(nlr, NFTNL_RULE_HANDLE);
+		nftnl_rule_free(nlr);
+		break;
 	case NFT_MSG_NEWSET:
-		return json_update_set(monh, array, nlh);
+		nls = netlink_set_alloc(nlh);
+		flags = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
+		if (!(flags & NFT_SET_ANONYMOUS))
+			handle = nftnl_set_get_u64(nls, NFTNL_SET_HANDLE);
+		nftnl_set_free(nls);
+		break;
 	case NFT_MSG_NEWOBJ:
-		return json_update_obj(monh, array, nlh);
+		nlo = netlink_obj_alloc(nlh);
+		handle = nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
+		nftnl_obj_free(nlo);
+		break;
+	}
+	return handle;
+}
+int json_events_cb(const struct nlmsghdr *nlh, struct netlink_mon_handler *monh)
+{
+	json_t *tmp, *json = seqnum_to_json(nlh->nlmsg_seq);
+	uint64_t handle = handle_from_nlmsg(nlh);
+	void *iter;
+
+	/* might be anonymous set, ignore message */
+	if (!json || !handle)
+		return MNL_CB_OK;
+
+	tmp = json_object_get(json, "add");
+	if (!tmp)
+		tmp = json_object_get(json, "insert");
+	if (!tmp)
+		/* assume loading JSON dump */
+		tmp = json;
+
+	iter = json_object_iter(tmp);
+	if (!iter) {
+		json_echo_error(monh, "Empty JSON object in cmd list\n");
+		return MNL_CB_OK;
+	}
+	json = json_object_iter_value(iter);
+	if (!json_is_object(json) || json_object_iter_next(tmp, iter)) {
+		json_echo_error(monh, "Malformed JSON object in cmd list\n");
+		return MNL_CB_OK;
 	}
 
+	json_object_set_new(json, "handle", json_integer(handle));
 	return MNL_CB_OK;
 }
 
@@ -3667,6 +3573,7 @@ void json_print_echo(struct nft_ctx *ctx)
 		return;
 
 	json_dumpf(ctx->json_root, ctx->output.output_fp, JSON_PRESERVE_ORDER);
+	json_cmd_assoc_free();
 	json_decref(ctx->json_root);
 	ctx->json_root = NULL;
 }

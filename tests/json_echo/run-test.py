@@ -24,6 +24,8 @@ nftables.set_echo_output(True)
 
 flush_ruleset = { "flush": { "ruleset": None } }
 
+list_ruleset = { "list": { "ruleset": None } }
+
 add_table = { "add": {
     "table": {
         "family": "inet",
@@ -99,113 +101,195 @@ def do_command(cmd):
         exit_err("command failed: %s" % err)
     return out
 
+def do_list_ruleset():
+    echo = nftables.get_echo_output()
+    nftables.set_echo_output(False)
+    out = do_command(list_ruleset)
+    nftables.set_echo_output(echo)
+    return out
+
+def get_handle(output, search):
+    try:
+        for item in output["nftables"]:
+            if "add" in item:
+                data = item["add"]
+            elif "insert" in item:
+                data = item["insert"]
+            else:
+                data = item
+
+            k = search.keys()[0]
+
+            if not k in data:
+                continue
+            found = True
+            for key in search[k].keys():
+                if key == "handle":
+                    continue
+                if not key in data[k] or search[k][key] != data[k][key]:
+                    found = False
+                    break
+            if not found:
+                continue
+
+            return data[k]["handle"]
+    except Exception as e:
+        exit_dump(e, output)
+
 # single commands first
 
 do_flush()
 
 print "Adding table t"
 out = do_command(add_table)
-try:
-    table_out = out["nftables"][0]
-    table_handle = out["nftables"][0]["add"]["table"]["handle"]
-except Exception as e:
-    exit_dump(e, out)
+handle = get_handle(out, add_table["add"])
+
+out = do_list_ruleset()
+handle_cmp = get_handle(out, add_table["add"])
+
+if handle != handle_cmp:
+    exit_err("handle mismatch!")
+
+add_table["add"]["table"]["handle"] = handle
 
 print "Adding chain c"
 out = do_command(add_chain)
-try:
-    chain_out = out["nftables"][0]
-    chain_handle = out["nftables"][0]["add"]["chain"]["handle"]
-except Exception as e:
-    exit_dump(e, out)
+handle = get_handle(out, add_chain["add"])
+
+out = do_list_ruleset()
+handle_cmp = get_handle(out, add_chain["add"])
+
+if handle != handle_cmp:
+    exit_err("handle mismatch!")
+
+add_chain["add"]["chain"]["handle"] = handle
 
 print "Adding set s"
 out = do_command(add_set)
-try:
-    set_out = out["nftables"][0]
-    set_handle = out["nftables"][0]["add"]["set"]["handle"]
-except Exception as e:
-    exit_dump(e, out)
+handle = get_handle(out, add_set["add"])
+
+out = do_list_ruleset()
+handle_cmp = get_handle(out, add_set["add"])
+
+if handle != handle_cmp:
+    exit_err("handle mismatch!")
+
+add_set["add"]["set"]["handle"] = handle
 
 print "Adding rule"
 out = do_command(add_rule)
-try:
-    rule_out = out["nftables"][0]
-    rule_handle = out["nftables"][0]["add"]["rule"]["handle"]
-except Exception as e:
-    exit_dump(e, out)
+handle = get_handle(out, add_rule["add"])
+
+out = do_list_ruleset()
+handle_cmp = get_handle(out, add_rule["add"])
+
+if handle != handle_cmp:
+    exit_err("handle mismatch!")
+
+add_rule["add"]["rule"]["handle"] = handle
 
 print "Adding counter"
 out = do_command(add_counter)
-try:
-    counter_out = out["nftables"][0]
-    counter_handle = out["nftables"][0]["add"]["counter"]["handle"]
-except Exception as e:
-    exit_dump(e, out)
+handle = get_handle(out, add_counter["add"])
+
+out = do_list_ruleset()
+handle_cmp = get_handle(out, add_counter["add"])
+
+if handle != handle_cmp:
+    exit_err("handle mismatch!")
+
+add_counter["add"]["counter"]["handle"] = handle
 
 print "Adding quota"
 out = do_command(add_quota)
-try:
-    quota_out = out["nftables"][0]
-    quota_handle = out["nftables"][0]["add"]["quota"]["handle"]
-except Exception as e:
-    exit_dump(e, out)
+handle = get_handle(out, add_quota["add"])
+
+out = do_list_ruleset()
+handle_cmp = get_handle(out, add_quota["add"])
+
+if handle != handle_cmp:
+    exit_err("handle mismatch!")
+
+add_quota["add"]["quota"]["handle"] = handle
 
 # adjust names and add items again
-# Note: Add second chain to same table, otherwise its handle will be the same
-# as before. Same for the set and the rule. Bug?
+# Note: Handles are per-table, hence add renamed objects to first table
+#       to make sure assigned handle differs from first run.
 
-table_out["add"]["table"]["name"] = "t2"
-#chain_out["add"]["chain"]["table"] = "t2"
-chain_out["add"]["chain"]["name"] = "c2"
-#set_out["add"]["set"]["table"] = "t2"
-set_out["add"]["set"]["name"] = "s2"
-#rule_out["add"]["rule"]["table"] = "t2"
-#rule_out["add"]["rule"]["chain"] = "c2"
-counter_out["add"]["counter"]["name"] = "c2"
-quota_out["add"]["quota"]["name"] = "q2"
+add_table["add"]["table"]["name"] = "t2"
+add_chain["add"]["chain"]["name"] = "c2"
+add_set["add"]["set"]["name"] = "s2"
+add_counter["add"]["counter"]["name"] = "c2"
+add_quota["add"]["quota"]["name"] = "q2"
 
 print "Adding table t2"
-out = do_command(table_out)
-if out["nftables"][0]["add"]["table"]["handle"] == table_handle:
+out = do_command(add_table)
+handle = get_handle(out, add_table["add"])
+if handle == add_table["add"]["table"]["handle"]:
    exit_err("handle not changed in re-added table!")
 
 print "Adding chain c2"
-out = do_command(chain_out)
-if out["nftables"][0]["add"]["chain"]["handle"] == chain_handle:
+out = do_command(add_chain)
+handle = get_handle(out, add_chain["add"])
+if handle == add_chain["add"]["chain"]["handle"]:
    exit_err("handle not changed in re-added chain!")
 
 print "Adding set s2"
-out = do_command(set_out)
-if out["nftables"][0]["add"]["set"]["handle"] == set_handle:
+out = do_command(add_set)
+handle = get_handle(out, add_set["add"])
+if handle == add_set["add"]["set"]["handle"]:
    exit_err("handle not changed in re-added set!")
 
 print "Adding rule again"
-out = do_command(rule_out)
-if out["nftables"][0]["add"]["rule"]["handle"] == rule_handle:
+out = do_command(add_rule)
+handle = get_handle(out, add_rule["add"])
+if handle == add_rule["add"]["rule"]["handle"]:
    exit_err("handle not changed in re-added rule!")
 
 print "Adding counter c2"
-out = do_command(counter_out)
-if out["nftables"][0]["add"]["counter"]["handle"] == counter_handle:
+out = do_command(add_counter)
+handle = get_handle(out, add_counter["add"])
+if handle == add_counter["add"]["counter"]["handle"]:
    exit_err("handle not changed in re-added counter!")
 
 print "Adding quota q2"
-out = do_command(quota_out)
-if out["nftables"][0]["add"]["quota"]["handle"] == quota_handle:
+out = do_command(add_quota)
+handle = get_handle(out, add_quota["add"])
+if handle == add_quota["add"]["quota"]["handle"]:
    exit_err("handle not changed in re-added quota!")
 
 # now multiple commands
 
+# reset name changes again
+add_table["add"]["table"]["name"] = "t"
+add_chain["add"]["chain"]["name"] = "c"
+add_set["add"]["set"]["name"] = "s"
+add_counter["add"]["counter"]["name"] = "c"
+add_quota["add"]["quota"]["name"] = "q"
+
 do_flush()
 
 print "doing multi add"
-add_multi = [ add_table, add_chain, add_set, add_rule ]
+# XXX: Add table separately, otherwise this triggers cache bug
+out = do_command(add_table)
+thandle = get_handle(out, add_table["add"])
+add_multi = [ add_chain, add_set, add_rule ]
 out = do_command(add_multi)
-out = out["nftables"]
 
-if not "handle" in out[0]["add"]["table"] or \
-   not "handle" in out[1]["add"]["chain"] or \
-   not "handle" in out[2]["add"]["set"] or \
-   not "handle" in out[3]["add"]["rule"]:
-       exit_err("handle(s) missing in multi cmd output!")
+chandle = get_handle(out, add_chain["add"])
+shandle = get_handle(out, add_set["add"])
+rhandle = get_handle(out, add_rule["add"])
+
+out = do_list_ruleset()
+
+if thandle != get_handle(out, add_table["add"]):
+    exit_err("table handle mismatch!")
+
+if chandle != get_handle(out, add_chain["add"]):
+    exit_err("chain handle mismatch!")
+
+if shandle != get_handle(out, add_set["add"]):
+    exit_err("set handle mismatch!")
+
+if rhandle != get_handle(out, add_rule["add"]):
+    exit_err("rule handle mismatch!")

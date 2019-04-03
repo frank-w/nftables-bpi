@@ -34,3 +34,11 @@ ip x y
   [ immediate reg 1 0x010200c0 ]
   [ immediate reg 2 0x0000a0c3 ]
   [ tproxy ip addr reg 1 port reg 2 ]
+
+# ip protocol 6 tproxy ip to :50080
+ip x y 
+  [ payload load 1b @ network header + 9 => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ immediate reg 1 0x0000a0c3 ]
+  [ tproxy ip port reg 1 ]
+

@@ -2687,6 +2687,12 @@ tproxy_stmt		:	TPROXY TO stmt_expr
 				$$->tproxy.addr = $4;
 				$$->tproxy.port = $6;
 			}
+			|	TPROXY nf_key_proto	TO COLON stmt_expr
+			{
+				$$ = tproxy_stmt_alloc(&@$);
+				$$->tproxy.family = $2;
+				$$->tproxy.port = $5;
+			}
 			;
 
 primary_stmt_expr	:	symbol_expr		{ $$ = $1; }

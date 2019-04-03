@@ -35,3 +35,10 @@ ip6 x y
   [ immediate reg 2 0x0000a0c3 ]
   [ tproxy ip6 addr reg 1 port reg 2 ]
 
+# meta l4proto 6 tproxy ip6 to :50080
+ip6 x y 
+  [ meta load l4proto => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ immediate reg 1 0x0000a0c3 ]
+  [ tproxy ip6 port reg 1 ]
+

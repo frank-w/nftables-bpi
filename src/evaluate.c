@@ -2606,8 +2606,11 @@ static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
 		/* this prevents us from rules like
 		 * ip protocol tcp tproxy ip6 to [dead::beef]
 		 */
-		return stmt_error(ctx, stmt,
-				  "Conflicting network layer protocols.");
+		return stmt_binary_error(ctx, stmt,
+					 &ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR],
+					 "conflicting protocols specified: %s vs. %s. You must specify ip or ip6 family in tproxy statement",
+					 ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc->name,
+					 family2str(stmt->tproxy.family));
 
 	if (stmt->tproxy.addr != NULL) {
 		if (stmt->tproxy.addr->etype == EXPR_RANGE)

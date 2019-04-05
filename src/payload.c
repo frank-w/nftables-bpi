@@ -189,11 +189,18 @@ static void payload_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	expr_print(stmt->payload.val, octx);
 }
 
+static void payload_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->payload.expr);
+	expr_free(stmt->payload.val);
+}
+
 static const struct stmt_ops payload_stmt_ops = {
 	.type		= STMT_PAYLOAD,
 	.name		= "payload",
 	.print		= payload_stmt_print,
 	.json		= payload_stmt_json,
+	.destroy	= payload_stmt_destroy,
 };
 
 struct stmt *payload_stmt_alloc(const struct location *loc,

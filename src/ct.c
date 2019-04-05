@@ -440,11 +440,17 @@ static void ct_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	expr_print(stmt->ct.expr, octx);
 }
 
+static void ct_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->ct.expr);
+}
+
 static const struct stmt_ops ct_stmt_ops = {
 	.type		= STMT_CT,
 	.name		= "ct",
 	.print		= ct_stmt_print,
 	.json		= ct_stmt_json,
+	.destroy	= ct_stmt_destroy,
 };
 
 struct stmt *ct_stmt_alloc(const struct location *loc, enum nft_ct_keys key,
@@ -484,10 +490,16 @@ static void flow_offload_stmt_print(const struct stmt *stmt,
 	nft_print(octx, "flow add @%s", stmt->flow.table_name);
 }
 
+static void flow_offload_stmt_destroy(struct stmt *stmt)
+{
+	xfree(stmt->flow.table_name);
+}
+
 static const struct stmt_ops flow_offload_stmt_ops = {
 	.type		= STMT_FLOW_OFFLOAD,
 	.name		= "flow_offload",
 	.print		= flow_offload_stmt_print,
+	.destroy	= flow_offload_stmt_destroy,
 };
 
 struct stmt *flow_offload_stmt_alloc(const struct location *loc,

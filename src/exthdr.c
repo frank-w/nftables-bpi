@@ -104,11 +104,18 @@ static void exthdr_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	expr_print(stmt->exthdr.val, octx);
 }
 
+static void exthdr_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->exthdr.expr);
+	expr_free(stmt->exthdr.val);
+}
+
 static const struct stmt_ops exthdr_stmt_ops = {
 	.type		= STMT_EXTHDR,
 	.name		= "exthdr",
 	.print		= exthdr_stmt_print,
 	.json		= exthdr_stmt_json,
+	.destroy	= exthdr_stmt_destroy,
 };
 
 struct stmt *exthdr_stmt_alloc(const struct location *loc,

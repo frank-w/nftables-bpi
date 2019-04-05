@@ -136,6 +136,7 @@ static void meter_stmt_destroy(struct stmt *stmt)
 	expr_free(stmt->meter.key);
 	expr_free(stmt->meter.set);
 	stmt_free(stmt->meter.stmt);
+	xfree(stmt->meter.name);
 }
 
 static const struct stmt_ops meter_stmt_ops = {
@@ -234,11 +235,17 @@ static void objref_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	expr_print(stmt->objref.expr, octx);
 }
 
+static void objref_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->objref.expr);
+}
+
 static const struct stmt_ops objref_stmt_ops = {
 	.type		= STMT_OBJREF,
 	.name		= "objref",
 	.print		= objref_stmt_print,
 	.json		= objref_stmt_json,
+	.destroy	= objref_stmt_destroy,
 };
 
 struct stmt *objref_stmt_alloc(const struct location *loc)
@@ -443,11 +450,17 @@ static void queue_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 
 }
 
+static void queue_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->queue.queue);
+}
+
 static const struct stmt_ops queue_stmt_ops = {
 	.type		= STMT_QUEUE,
 	.name		= "queue",
 	.print		= queue_stmt_print,
 	.json		= queue_stmt_json,
+	.destroy	= queue_stmt_destroy,
 };
 
 struct stmt *queue_stmt_alloc(const struct location *loc)
@@ -519,11 +532,17 @@ static void reject_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	}
 }
 
+static void reject_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->reject.expr);
+}
+
 static const struct stmt_ops reject_stmt_ops = {
 	.type		= STMT_REJECT,
 	.name		= "reject",
 	.print		= reject_stmt_print,
 	.json		= reject_stmt_json,
+	.destroy	= reject_stmt_destroy,
 };
 
 struct stmt *reject_stmt_alloc(const struct location *loc)
@@ -652,6 +671,7 @@ static void set_stmt_destroy(struct stmt *stmt)
 {
 	expr_free(stmt->set.key);
 	expr_free(stmt->set.set);
+	stmt_free(stmt->set.stmt);
 }
 
 static const struct stmt_ops set_stmt_ops = {
@@ -691,6 +711,7 @@ static void map_stmt_destroy(struct stmt *stmt)
 	expr_free(stmt->map.key);
 	expr_free(stmt->map.data);
 	expr_free(stmt->map.set);
+	stmt_free(stmt->map.stmt);
 }
 
 static const struct stmt_ops map_stmt_ops = {

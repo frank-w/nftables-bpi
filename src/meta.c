@@ -607,11 +607,17 @@ static void meta_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	expr_print(stmt->meta.expr, octx);
 }
 
+static void meta_stmt_destroy(struct stmt *stmt)
+{
+	expr_free(stmt->meta.expr);
+}
+
 static const struct stmt_ops meta_stmt_ops = {
 	.type		= STMT_META,
 	.name		= "meta",
 	.print		= meta_stmt_print,
 	.json		= meta_stmt_json,
+	.destroy	= meta_stmt_destroy,
 };
 
 struct stmt *meta_stmt_alloc(const struct location *loc, enum nft_meta_keys key,

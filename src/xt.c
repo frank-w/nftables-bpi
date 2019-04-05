@@ -102,6 +102,7 @@ void xt_stmt_release(const struct stmt *stmt)
 	}
 #endif
 	xfree(stmt->xt.entry);
+	xfree(stmt->xt.name);
 }
 
 #ifdef HAVE_LIBXTABLES

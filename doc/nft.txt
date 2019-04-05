@@ -256,6 +256,7 @@ TABLES
 [verse]
 {add | create} *table* ['family'] 'table' [ {flags 'flags'} ]
 {delete | list | flush} *table* ['family'] 'table'
+list *tables*
 delete *table* ['family'] handle 'handle'
 
 Tables are containers for chains, sets and stateful objects. They are identified
@@ -308,6 +309,7 @@ CHAINS
 [verse]
 {add | create} *chain* ['family'] 'table' 'chain' [ { type 'type' hook 'hook' [device 'device'] priority 'priority' ; [policy 'policy' ;] }]
 {delete | list | flush} *chain* ['family'] 'table' 'chain'
+list *chains*
 delete *chain* ['family'] 'table' handle 'handle'
 rename *chain* ['family'] 'table' 'chain' 'newname'
 
@@ -486,6 +488,7 @@ section describes nft set syntax in more detail.
 add *set* ['family'] 'table' 'set' { type 'type' ; [flags 'flags' ;] [timeout 'timeout' ;] [gc-interval 'gc-interval' ;] [elements = { 'element'[,...]
 } ;] [size size ;] [policy policy ;] [auto-merge auto-merge ;] }
 {delete | list | flush} *set* ['family'] 'table' 'set'
+list *sets*
 delete *set* ['family'] 'table' handle 'handle'
 {add | delete} *element* ['family'] 'table' 'set' { 'element'[,...] }
 
@@ -536,6 +539,7 @@ MAPS
 -----
 [verse]
 add *map* ['family'] 'table' 'map' { type 'type' [flags 'flags' ;] [elements = {'elements'[,...] } ;] [size 'size' ;] [policy 'policy' ;] }
+list *maps*
 {delete | list | flush} *map* ['family'] 'table' 'map'
 {add | delete} *element* ['family'] 'table' 'map' { elements = { 'elements'[,...] } ; }
 
@@ -606,6 +610,8 @@ STATEFUL OBJECTS
 [verse]
 {add | delete | list | reset} type ['family'] 'table' 'object'
 delete type ['family'] 'table' handle 'handle'
+list *counters*
+list *quotas*
 
 Stateful objects are attached to tables and are identified by an unique name.
 They group stateful information from rules, to reference them in rules the

@@ -56,6 +56,11 @@ static void hash_expr_clone(struct expr *new, const struct expr *expr)
 	new->hash.type = expr->hash.type;
 }
 
+static void hash_expr_destroy(struct expr *expr)
+{
+	expr_free(expr->hash.expr);
+}
+
 const struct expr_ops hash_expr_ops = {
 	.type		= EXPR_HASH,
 	.name		= "hash",
@@ -63,6 +68,7 @@ const struct expr_ops hash_expr_ops = {
 	.json		= hash_expr_json,
 	.cmp		= hash_expr_cmp,
 	.clone		= hash_expr_clone,
+	.destroy	= hash_expr_destroy,
 };
 
 struct expr *hash_expr_alloc(const struct location *loc,

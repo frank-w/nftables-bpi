@@ -1097,6 +1097,7 @@ static void set_elem_expr_destroy(struct expr *expr)
 {
 	xfree(expr->comment);
 	expr_free(expr->key);
+	stmt_free(expr->stmt);
 }
 
 static void set_elem_expr_clone(struct expr *new, const struct expr *expr)

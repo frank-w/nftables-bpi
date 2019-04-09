@@ -872,8 +872,7 @@ void interval_map_decompose(struct expr *set)
 				low = i;
 				continue;
 			}
-		} else
-			expr_get(low);
+		}
 
 		mpz_sub(range, expr_value(i)->value, expr_value(low)->value);
 		mpz_sub_ui(range, range, 1);
@@ -881,7 +880,7 @@ void interval_map_decompose(struct expr *set)
 		mpz_and(p, expr_value(low)->value, range);
 
 		if (!mpz_cmp_ui(range, 0))
-			compound_expr_add(set, low);
+			compound_expr_add(set, expr_get(low));
 		else if ((!range_is_prefix(range) ||
 			  !(i->dtype->flags & DTYPE_F_PREFIX)) ||
 			 mpz_cmp_ui(p, 0)) {
@@ -894,7 +893,9 @@ void interval_map_decompose(struct expr *set)
 			mpz_add(range, range, expr_value(low)->value);
 			mpz_set(tmp->value, range);
 
-			tmp = range_expr_alloc(&low->location, expr_value(low), tmp);
+			tmp = range_expr_alloc(&low->location,
+					       expr_clone(expr_value(low)),
+					       tmp);
 			tmp = set_elem_expr_alloc(&low->location, tmp);
 
 			if (low->etype == EXPR_MAPPING) {
@@ -906,7 +907,7 @@ void interval_map_decompose(struct expr *set)
 					tmp->expiration = low->left->expiration;
 
 				tmp = mapping_expr_alloc(&tmp->location, tmp,
-							 low->right);
+							 expr_clone(low->right));
 			} else {
 				if (low->comment)
 					tmp->comment = xstrdup(low->comment);
@@ -922,7 +923,8 @@ void interval_map_decompose(struct expr *set)
 			unsigned int prefix_len;
 
 			prefix_len = expr_value(i)->len - mpz_scan0(range, 0);
-			prefix = prefix_expr_alloc(&low->location, expr_value(low),
+			prefix = prefix_expr_alloc(&low->location,
+						   expr_clone(expr_value(low)),
 						   prefix_len);
 			prefix->len = expr_value(i)->len;
 
@@ -937,7 +939,7 @@ void interval_map_decompose(struct expr *set)
 					prefix->expiration = low->left->expiration;
 
 				prefix = mapping_expr_alloc(&low->location, prefix,
-							    low->right);
+							    expr_clone(low->right));
 			} else {
 				if (low->comment)
 					prefix->comment = xstrdup(low->comment);

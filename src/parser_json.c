@@ -2503,7 +2503,6 @@ static int string_to_nft_object(const char *str)
 	const char *obj_tbl[__NFT_OBJECT_MAX] = {
 		[NFT_OBJECT_COUNTER] = "counter",
 		[NFT_OBJECT_QUOTA] = "quota",
-		[NFT_OBJECT_CT_HELPER] = "ct helper",
 		[NFT_OBJECT_LIMIT] = "limit",
 		[NFT_OBJECT_SECMARK] = "secmark",
 	};

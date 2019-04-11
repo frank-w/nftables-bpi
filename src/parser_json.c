@@ -2500,7 +2500,7 @@ static struct cmd *json_parse_cmd_add_rule(struct json_ctx *ctx, json_t *root,
 
 static int string_to_nft_object(const char *str)
 {
-	const char *obj_tbl[] = {
+	const char *obj_tbl[__NFT_OBJECT_MAX] = {
 		[NFT_OBJECT_COUNTER] = "counter",
 		[NFT_OBJECT_QUOTA] = "quota",
 		[NFT_OBJECT_CT_HELPER] = "ct helper",
@@ -2509,8 +2509,8 @@ static int string_to_nft_object(const char *str)
 	};
 	unsigned int i;
 
-	for (i = 1; i < array_size(obj_tbl); i++) {
-		if (!strcmp(str, obj_tbl[i]))
+	for (i = 0; i < NFT_OBJECT_MAX; i++) {
+		if (obj_tbl[i] && !strcmp(str, obj_tbl[i]))
 			return i;
 	}
 	return 0;

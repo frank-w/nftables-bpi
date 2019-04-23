@@ -78,7 +78,7 @@ void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx)
 #endif
 }
 
-void xt_stmt_release(const struct stmt *stmt)
+void xt_stmt_destroy(struct stmt *stmt)
 {
 #ifdef HAVE_LIBXTABLES
 	switch (stmt->xt.type) {

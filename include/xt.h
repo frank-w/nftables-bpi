@@ -9,7 +9,7 @@ struct rule;
 struct output_ctx;
 
 void xt_stmt_xlate(const struct stmt *stmt, struct output_ctx *octx);
-void xt_stmt_release(const struct stmt *stmt);
+void xt_stmt_destroy(struct stmt *stmt);
 
 void netlink_parse_target(struct netlink_parse_ctx *ctx,
 			  const struct location *loc,

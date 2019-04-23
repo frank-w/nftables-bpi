@@ -866,12 +866,6 @@ static void xt_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	xt_stmt_xlate(stmt, octx);
 }
 
-static void xt_stmt_destroy(struct stmt *stmt)
-{
-	xfree(stmt->xt.name);
-	xt_stmt_release(stmt);
-}
-
 static const struct stmt_ops xt_stmt_ops = {
 	.type		= STMT_XT,
 	.name		= "xt",

@@ -128,12 +128,12 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 			memory_allocation_error();
 	}
 	if (elem->comment) {
-		if (!nftnl_udata_put_strz(udbuf, UDATA_SET_ELEM_COMMENT,
+		if (!nftnl_udata_put_strz(udbuf, NFTNL_UDATA_SET_ELEM_COMMENT,
 					  elem->comment))
 			memory_allocation_error();
 	}
 	if (expr->elem_flags) {
-		if (!nftnl_udata_put_u32(udbuf, UDATA_SET_ELEM_FLAGS,
+		if (!nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_ELEM_FLAGS,
 					 expr->elem_flags))
 			memory_allocation_error();
 	}
@@ -522,9 +522,9 @@ static int set_parse_udata_cb(const struct nftnl_udata *attr, void *data)
 	uint8_t len = nftnl_udata_len(attr);
 
 	switch (type) {
-	case UDATA_SET_KEYBYTEORDER:
-	case UDATA_SET_DATABYTEORDER:
-	case UDATA_SET_MERGE_ELEMENTS:
+	case NFTNL_UDATA_SET_KEYBYTEORDER:
+	case NFTNL_UDATA_SET_DATABYTEORDER:
+	case NFTNL_UDATA_SET_MERGE_ELEMENTS:
 		if (len != sizeof(uint32_t))
 			return -1;
 		break;
@@ -538,7 +538,7 @@ static int set_parse_udata_cb(const struct nftnl_udata *attr, void *data)
 struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 				    const struct nftnl_set *nls)
 {
-	const struct nftnl_udata *ud[UDATA_SET_MAX + 1] = {};
+	const struct nftnl_udata *ud[NFTNL_UDATA_SET_MAX + 1] = {};
 	uint32_t flags, key, data, data_len, objtype = 0;
 	enum byteorder keybyteorder = BYTEORDER_INVALID;
 	enum byteorder databyteorder = BYTEORDER_INVALID;
@@ -555,15 +555,15 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 			return NULL;
 		}
 
-		if (ud[UDATA_SET_KEYBYTEORDER])
-			keybyteorder =
-				nftnl_udata_get_u32(ud[UDATA_SET_KEYBYTEORDER]);
-		if (ud[UDATA_SET_DATABYTEORDER])
-			databyteorder =
-				nftnl_udata_get_u32(ud[UDATA_SET_DATABYTEORDER]);
-		if (ud[UDATA_SET_MERGE_ELEMENTS])
-			automerge =
-				nftnl_udata_get_u32(ud[UDATA_SET_MERGE_ELEMENTS]);
+#define GET_U32_UDATA(var, attr)				\
+		if (ud[attr])					\
+			var = nftnl_udata_get_u32(ud[attr])
+
+		GET_U32_UDATA(keybyteorder, NFTNL_UDATA_SET_KEYBYTEORDER);
+		GET_U32_UDATA(databyteorder, NFTNL_UDATA_SET_DATABYTEORDER);
+		GET_U32_UDATA(automerge, NFTNL_UDATA_SET_MERGE_ELEMENTS);
+
+#undef GET_U32_UDATA
 	}
 
 	key = nftnl_set_get_u32(nls, NFTNL_SET_KEY_TYPE);
@@ -712,11 +712,11 @@ static int set_elem_parse_udata_cb(const struct nftnl_udata *attr, void *data)
 	uint8_t len = nftnl_udata_len(attr);
 
 	switch (type) {
-	case UDATA_SET_ELEM_COMMENT:
+	case NFTNL_UDATA_SET_ELEM_COMMENT:
 		if (value[len - 1] != '\0')
 			return -1;
 		break;
-	case UDATA_SET_ELEM_FLAGS:
+	case NFTNL_UDATA_SET_ELEM_FLAGS:
 		if (len != sizeof(uint32_t))
 			return -1;
 		break;
@@ -730,7 +730,7 @@ static int set_elem_parse_udata_cb(const struct nftnl_udata *attr, void *data)
 static void set_elem_parse_udata(struct nftnl_set_elem *nlse,
 				 struct expr *expr)
 {
-	const struct nftnl_udata *ud[UDATA_SET_ELEM_MAX + 1] = {};
+	const struct nftnl_udata *ud[NFTNL_UDATA_SET_ELEM_MAX + 1] = {};
 	const void *data;
 	uint32_t len;
 
@@ -738,11 +738,12 @@ static void set_elem_parse_udata(struct nftnl_set_elem *nlse,
 	if (nftnl_udata_parse(data, len, set_elem_parse_udata_cb, ud))
 		return;
 
-	if (ud[UDATA_SET_ELEM_COMMENT])
+	if (ud[NFTNL_UDATA_SET_ELEM_COMMENT])
 		expr->comment =
-			xstrdup(nftnl_udata_get(ud[UDATA_SET_ELEM_COMMENT]));
-	if (ud[UDATA_SET_ELEM_FLAGS])
-		expr->elem_flags = nftnl_udata_get_u32(ud[UDATA_SET_ELEM_FLAGS]);
+			xstrdup(nftnl_udata_get(ud[NFTNL_UDATA_SET_ELEM_COMMENT]));
+	if (ud[NFTNL_UDATA_SET_ELEM_FLAGS])
+		expr->elem_flags =
+			nftnl_udata_get_u32(ud[NFTNL_UDATA_SET_ELEM_FLAGS]);
 }
 
 int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,

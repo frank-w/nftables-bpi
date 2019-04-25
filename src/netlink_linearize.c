@@ -1432,7 +1432,7 @@ void netlink_linearize_rule(struct netlink_ctx *ctx, struct nftnl_rule *nlr,
 		if (!udata)
 			memory_allocation_error();
 
-		if (!nftnl_udata_put_strz(udata, UDATA_TYPE_COMMENT,
+		if (!nftnl_udata_put_strz(udata, NFTNL_UDATA_RULE_COMMENT,
 					  rule->comment))
 			memory_allocation_error();
 		nftnl_rule_set_data(nlr, NFTNL_RULE_USERDATA,

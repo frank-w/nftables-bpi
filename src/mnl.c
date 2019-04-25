@@ -780,17 +780,17 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 	udbuf = nftnl_udata_buf_alloc(NFT_USERDATA_MAXLEN);
 	if (!udbuf)
 		memory_allocation_error();
-	if (!nftnl_udata_put_u32(udbuf, UDATA_SET_KEYBYTEORDER,
+	if (!nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_KEYBYTEORDER,
 				 set->key->byteorder))
 		memory_allocation_error();
 
 	if (set->flags & NFT_SET_MAP &&
-	    !nftnl_udata_put_u32(udbuf, UDATA_SET_DATABYTEORDER,
+	    !nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_DATABYTEORDER,
 				 set->datatype->byteorder))
 		memory_allocation_error();
 
 	if (set->automerge &&
-	    !nftnl_udata_put_u32(udbuf, UDATA_SET_MERGE_ELEMENTS,
+	    !nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_MERGE_ELEMENTS,
 				 set->automerge))
 		memory_allocation_error();
 

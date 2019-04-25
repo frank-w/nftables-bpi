@@ -2575,7 +2575,7 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 	}
 }
 
-static int parse_udata_cb(const struct nftnl_udata *attr, void *data)
+static int parse_rule_udata_cb(const struct nftnl_udata *attr, void *data)
 {
 	unsigned char *value = nftnl_udata_get(attr);
 	uint8_t type = nftnl_udata_type(attr);
@@ -2583,7 +2583,7 @@ static int parse_udata_cb(const struct nftnl_udata *attr, void *data)
 	const struct nftnl_udata **tb = data;
 
 	switch (type) {
-	case UDATA_TYPE_COMMENT:
+	case NFTNL_UDATA_RULE_COMMENT:
 		if (value[len - 1] != '\0')
 			return -1;
 		break;
@@ -2594,17 +2594,24 @@ static int parse_udata_cb(const struct nftnl_udata *attr, void *data)
 	return 0;
 }
 
-static char *udata_get_comment(const void *data, uint32_t data_len)
+static char *nftnl_rule_get_comment(const struct nftnl_rule *nlr)
 {
-	const struct nftnl_udata *tb[UDATA_TYPE_MAX + 1] = {};
+	const struct nftnl_udata *tb[NFTNL_UDATA_RULE_MAX + 1] = {};
+	const void *data;
+	uint32_t len;
 
-	if (nftnl_udata_parse(data, data_len, parse_udata_cb, tb) < 0)
+	if (!nftnl_rule_is_set(nlr, NFTNL_RULE_USERDATA))
 		return NULL;
 
-	if (!tb[UDATA_TYPE_COMMENT])
+	data = nftnl_rule_get_data(nlr, NFTNL_RULE_USERDATA, &len);
+
+	if (nftnl_udata_parse(data, len, parse_rule_udata_cb, tb) < 0)
 		return NULL;
 
-	return xstrdup(nftnl_udata_get(tb[UDATA_TYPE_COMMENT]));
+	if (!tb[NFTNL_UDATA_RULE_COMMENT])
+		return NULL;
+
+	return xstrdup(nftnl_udata_get(tb[NFTNL_UDATA_RULE_COMMENT]));
 }
 
 struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
@@ -2630,13 +2637,7 @@ struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 	pctx->table = table_lookup(&h, &ctx->nft->cache);
 	assert(pctx->table != NULL);
 
-	if (nftnl_rule_is_set(nlr, NFTNL_RULE_USERDATA)) {
-		const void *data;
-		uint32_t len;
-
-		data = nftnl_rule_get_data(nlr, NFTNL_RULE_USERDATA, &len);
-		pctx->rule->comment = udata_get_comment(data, len);
-	}
+	pctx->rule->comment = nftnl_rule_get_comment(nlr);
 
 	nftnl_expr_foreach(nlr, netlink_parse_rule_expr, pctx);
 

@@ -28,6 +28,7 @@
 #include <netinet/icmp6.h>
 #include <libnftnl/common.h>
 #include <libnftnl/set.h>
+#include <libnftnl/udata.h>
 
 #include <rule.h>
 #include <statement.h>
@@ -2185,8 +2186,9 @@ ruleid_spec		:	chain_spec	handle_spec
 
 comment_spec		:	COMMENT		string
 			{
-				if (strlen($2) > UDATA_COMMENT_MAXLEN) {
-					erec_queue(error(&@2, "comment too long, %d characters maximum allowed", UDATA_COMMENT_MAXLEN),
+				if (strlen($2) > NFTNL_UDATA_COMMENT_MAXLEN) {
+					erec_queue(error(&@2, "comment too long, %d characters maximum allowed",
+							 NFTNL_UDATA_COMMENT_MAXLEN),
 						   state->msgs);
 					YYERROR;
 				}

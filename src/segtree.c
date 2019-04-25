@@ -13,6 +13,8 @@
 #include <inttypes.h>
 #include <arpa/inet.h>
 
+#include <libnftnl/udata.h>
+
 #include <rule.h>
 #include <expression.h>
 #include <gmputil.h>
@@ -562,7 +564,7 @@ static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 	if (ei->flags & EI_F_INTERVAL_END)
 		expr->flags |= EXPR_F_INTERVAL_END;
 	if (ei->flags & EI_F_INTERVAL_OPEN)
-		expr->elem_flags |= SET_ELEM_F_INTERVAL_OPEN;
+		expr->elem_flags |= NFTNL_SET_ELEM_F_INTERVAL_OPEN;
 
 	compound_expr_add(set, expr);
 }

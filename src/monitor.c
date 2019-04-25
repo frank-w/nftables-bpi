@@ -332,7 +332,7 @@ static bool set_elem_is_open_interval(struct expr *elem)
 {
 	switch (elem->etype) {
 	case EXPR_SET_ELEM:
-		return elem->elem_flags & SET_ELEM_F_INTERVAL_OPEN;
+		return elem->elem_flags & NFTNL_SET_ELEM_F_INTERVAL_OPEN;
 	case EXPR_MAPPING:
 		return set_elem_is_open_interval(elem->left);
 	default:

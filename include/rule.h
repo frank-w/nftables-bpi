@@ -637,38 +637,6 @@ extern void cache_flush(struct nft_ctx *ctx, enum cmd_ops cmd,
 			struct list_head *msgs);
 extern void cache_release(struct nft_cache *cache);
 
-enum udata_type {
-	UDATA_TYPE_COMMENT,
-	__UDATA_TYPE_MAX,
-};
-#define UDATA_TYPE_MAX (__UDATA_TYPE_MAX - 1)
-
-#define UDATA_COMMENT_MAXLEN 128
-
-enum udata_set_type {
-	UDATA_SET_KEYBYTEORDER,
-	UDATA_SET_DATABYTEORDER,
-	UDATA_SET_MERGE_ELEMENTS,
-	__UDATA_SET_MAX,
-};
-#define UDATA_SET_MAX (__UDATA_SET_MAX - 1)
-
-enum udata_set_elem_type {
-	UDATA_SET_ELEM_COMMENT,
-	UDATA_SET_ELEM_FLAGS,
-	__UDATA_SET_ELEM_MAX,
-};
-#define UDATA_SET_ELEM_MAX (__UDATA_SET_ELEM_MAX - 1)
-
-/**
- * enum udata_set_elem_flags - meaning of bits in UDATA_SET_ELEM_FLAGS
- *
- * @SET_ELEM_F_INTERVAL_OPEN:	set element denotes a half-open range
- */
-enum udata_set_elem_flags {
-	SET_ELEM_F_INTERVAL_OPEN	= 0x1,
-};
-
 struct timeout_protocol {
 	uint32_t array_size;
 	const char *const *state_to_name;

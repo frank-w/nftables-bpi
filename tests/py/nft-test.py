@@ -310,14 +310,14 @@ def chain_delete(chain, table, filename=None, lineno=None):
     cmd = "flush chain %s %s" % (table, chain)
     ret = execute_cmd(cmd, filename, lineno)
     if ret != 0:
-        reason = "I cannot flush this chain " + chain
+        reason = "I cannot " + cmd
         print_error(reason, filename, lineno)
         return -1
 
     cmd = "delete chain %s %s" % (table, chain)
     ret = execute_cmd(cmd, filename, lineno)
     if ret != 0:
-        reason = cmd + "I cannot delete this chain " + chain
+        reason = "I cannot " + cmd
         print_error(reason, filename, lineno)
         return -1
 

@@ -2782,7 +2782,7 @@ static int json_parse_ct_timeout_policy(struct json_ctx *ctx,
 	if (!json_unpack(root, "{s:o}", "policy", &tmp))
 		return 0;
 
-	if (json_is_object(tmp)) {
+	if (!json_is_object(tmp)) {
 		json_error(ctx, "Invalid ct timeout policy.");
 		return 1;
 	}

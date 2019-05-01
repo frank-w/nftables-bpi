@@ -2462,7 +2462,9 @@ static struct cmd *json_parse_cmd_add_rule(struct json_ctx *ctx, json_t *root,
 		return NULL;
 	}
 
-	json_unpack(root, "{s:i}", "index", &h.index.id);
+	if (!json_unpack(root, "{s:I}", "index", &h.index.id)) {
+		h.index.id++;
+	}
 
 	rule = rule_alloc(int_loc, NULL);
 
@@ -3040,7 +3042,9 @@ static struct cmd *json_parse_cmd_replace(struct json_ctx *ctx,
 			    "expr", &tmp))
 		return NULL;
 	json_unpack(root, "{s:I}", "handle", &h.handle.id);
-	json_unpack(root, "{s:I}", "index", &h.index.id);
+	if (!json_unpack(root, "{s:I}", "index", &h.index.id)) {
+		h.index.id++;
+	}
 
 	if (op == CMD_REPLACE && !h.handle.id) {
 		json_error(ctx, "Handle is required when replacing a rule.");

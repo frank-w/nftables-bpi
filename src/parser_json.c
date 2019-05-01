@@ -2429,7 +2429,11 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 static struct cmd *json_parse_cmd_add_rule(struct json_ctx *ctx, json_t *root,
 					   enum cmd_ops op, enum cmd_obj obj)
 {
-	struct handle h = { 0 };
+	struct handle h = {
+		.table.location = *int_loc,
+		.chain.location = *int_loc,
+		.index.location = *int_loc,
+	};
 	const char *family = "", *comment = NULL;
 	struct rule *rule;
 	size_t index;

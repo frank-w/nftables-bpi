@@ -2811,7 +2811,7 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 					     enum cmd_obj cmd_obj)
 {
 	const char *family, *tmp, *rate_unit = "packets", *burst_unit = "bytes";
-	uint32_t l3proto = NFPROTO_IPV4;
+	uint32_t l3proto = NFPROTO_UNSPEC;
 	struct handle h = { 0 };
 	struct obj *obj;
 	int inv = 0;

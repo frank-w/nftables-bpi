@@ -7,6 +7,7 @@
 #include <gmp.h>
 #else
 #include <mini-gmp.h>
+#include <stdarg.h>
 #include <stdio.h>
 /* mini-gmp doesn't come with gmp_vfprintf, so we use our own minimal variant */
 extern int mpz_vfprintf(FILE *fp, const char *format, va_list args);

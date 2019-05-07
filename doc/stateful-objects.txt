@@ -1,7 +1,7 @@
 CT HELPER
 ~~~~~~~~~
 [verse]
-*ct* helper 'helper' {type 'type' protocol 'protocol' ; [l3proto 'family' ;] }
+*ct helper* 'helper' *{ type* 'type' *protocol* 'protocol' *;* [*l3proto* 'family' *;*] *}*
 
 Ct helper is used to define connection tracking helpers that can then be used in
 combination with the *ct helper set* statement. 'type' and 'protocol' are
@@ -43,7 +43,7 @@ table inet myhelpers {
 CT TIMEOUT
 ~~~~~~~~~~
 [verse]
-*ct* timeout 'name' {protocol 'protocol' ; policy = {'state': 'value'} ;[l3proto 'family' ;] }
+*ct timeout* 'name' *{ protocol* 'protocol' *; policy = {* 'state'*:* 'value' [*,* ...] *} ;* [*l3proto* 'family' *;*] *}*
 
 Ct timeout is used to update connection tracking timeout values.Timeout policies are assigned
 with the *ct timeout set* statement. 'protocol' and 'policy' are
@@ -98,7 +98,7 @@ sport=41360 dport=22
 COUNTER
 ~~~~~~~
 [verse]
-*counter* [packets bytes]
+*counter* ['packets bytes']
 
 .Counter specifications
 [options="header"]
@@ -115,7 +115,7 @@ unsigned integer (64 bit)
 QUOTA
 ~~~~~
 [verse]
-*quota* [over | until] [used]
+*quota* [*over* | *until*] ['used']
 
 .Quota specifications
 [options="header"]

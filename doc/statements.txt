@@ -3,8 +3,8 @@ VERDICT STATEMENT
 The verdict statement alters control flow in the ruleset and issues policy decisions for packets.
 
 [verse]
-{accept | drop | queue | continue | return}
-{jump | goto} 'chain'
+{*accept* | *drop* | *queue* | *continue* | *return*}
+{*jump* | *goto*} 'chain'
 
 *accept* and *drop* are absolute verdicts -- they terminate ruleset evaluation immediately.
 
@@ -35,7 +35,7 @@ resumes with the next base chain hook, not the rule following the queue verdict.
  call stack, meaning that after the new chain evaluation will continue at the last
  chain instead of the one containing the goto statement.
 
-.Verdict statements
+.Using verdict statements
 -------------------
 # process packets from eth0 and the internal network in from_lan
 # chain, drop all packets from eth0 with different source addresses.
@@ -46,8 +46,11 @@ filter input iif eth0 drop
 
 PAYLOAD STATEMENT
 ~~~~~~~~~~~~~~~~~
+[verse]
+'payload_expression' *set* 'value'
+
 The payload statement alters packet content. It can be used for example to
-set ip DSCP (differv) header field or ipv6 flow labels.
+set ip DSCP (diffserv) header field or ipv6 flow labels.
 
 .route some packets instead of bridging
 ---------------------------------------
@@ -63,6 +66,9 @@ ip forward ip dscp set 42
 
 EXTENSION HEADER STATEMENT
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+[verse]
+'extension_header_expression' *set* 'value'
+
 The extension header statement alters packet content in variable-sized headers.
 This can currently be used to alter the TCP Maximum segment size of packets,
 similar to TCPMSS.
@@ -77,9 +83,9 @@ tcp flags syn tcp option maxseg size set rt mtu
 LOG STATEMENT
 ~~~~~~~~~~~~~
 [verse]
-*log* [prefix 'quoted_string'] [level 'syslog-level'] [flags 'log-flags']
-*log* group 'nflog_group' [prefix 'quoted_string'] [queue-threshold 'value'] [snaplen 'size']
-*log* level audit
+*log* [*prefix* 'quoted_string'] [*level* 'syslog-level'] [*flags* 'log-flags']
+*log* *group* 'nflog_group' [*prefix* 'quoted_string'] [*queue-threshold* 'value'] [*snaplen* 'size']
+*log level audit*
 
 The log statement enables logging of matching packets. When this statement is
 used from a rule, the Linux kernel will print some information on all matching
@@ -154,8 +160,14 @@ ip6 filter output log flags all
 REJECT STATEMENT
 ~~~~~~~~~~~~~~~~
 [verse]
-*reject* [ with {icmp | icmpv6 | icmpx} type {icmp_code | icmpv6_code | icmpx_code} ]
-*reject* [ with tcp reset ]
+____
+*reject* [ *with* 'REJECT_WITH' ]
+
+'REJECT_WITH' := *icmp type* 'icmp_code' |
+                 *icmpv6 type* 'icmpv6_code' |
+                 *icmpx type* 'icmpx_code' |
+                 *tcp reset*
+____
 
 A reject statement is used to send back an error packet in response to the
 matched packet otherwise it is equivalent to drop so it is a terminating
@@ -190,14 +202,15 @@ COUNTER STATEMENT
 A counter statement sets the hit count of packets along with the number of bytes.
 
 [verse]
-*counter* [ packets 'number' bytes 'number' ]
+*counter* *packets* 'number' *bytes* 'number'
+*counter* { *packets* 'number' | *bytes* 'number' }
 
 CONNTRACK STATEMENT
 ~~~~~~~~~~~~~~~~~~~
 The conntrack statement can be used to set the conntrack mark and conntrack labels.
 
 [verse]
-*ct* {mark | event | label | zone} set 'value'
+*ct* {*mark* | *event* | *label* | *zone*} *set* 'value'
 
 The ct statement sets meta data associated with a connection. The zone id
 has to be assigned before a conntrack lookup takes place, i.e. this has to be
@@ -254,7 +267,8 @@ META STATEMENT
 A meta statement sets the value of a meta expression. The existing meta fields
 are: priority, mark, pkttype, nftrace. +
 
-meta {mark | priority | pkttype | nftrace} set 'value' +
+[verse]
+*meta* {*mark* | *priority* | *pkttype* | *nftrace*} *set* 'value'
 
 A meta statement sets meta data associated with a packet. +
 
@@ -279,13 +293,18 @@ ruleset packet tracing on/off. Use *monitor trace* command to watch traces|
 LIMIT STATEMENT
 ~~~~~~~~~~~~~~~
 [verse]
-*limit* rate [over] 'packet_number' / {second | minute | hour | day} [burst 'packet_number' packets]
-*limit* rate [over] 'byte_number' {bytes | kbytes | mbytes} / {second | minute | hour | day | week} [burst 'byte_number' bytes]
+____
+*limit rate* [*over*] 'packet_number' */* 'TIME_UNIT' [*burst* 'packet_number' *packets*]
+*limit rate* [*over*] 'byte_number' 'BYTE_UNIT' */* 'TIME_UNIT' [*burst* 'byte_number' 'BYTE_UNIT']
+
+'TIME_UNIT' := *second* | *minute* | *hour* | *day*
+'BYTE_UNIT' := *bytes* | *kbytes* | *mbytes*
+____
 
 A limit statement matches at a limited rate using a token bucket filter. A rule
 using this statement will match until this limit is reached. It can be used in
-combination with the log statement to give limited logging. The over keyword,
-that is optional, makes it match over the specified rate.
+combination with the log statement to give limited logging. The optional
+*over* keyword makes it match over the specified rate.
 
 .limit statement values
 [options="header"]
@@ -302,16 +321,23 @@ unsigned integer (32 bit)
 NAT STATEMENTS
 ~~~~~~~~~~~~~~
 [verse]
-*snat* to address [:port] [persistent, random, fully-random]
-*snat* to address - address [:port - port] [persistent, random, fully-random]
-*snat* to { ip | ip6 } address - address [:port - port] [persistent, random ]
-*dnat* to address [:port] [persistent, random, fully-random]
-*dnat* to address [:port - port] [persistent, random ]
-*dnat* to { ip | ip6 } address [:port - port] [persistent, random ]
-*masquerade* to [:port] [persistent, random, fully-random]
-*masquerade* to [:port - port] [persistent, random, fully-random]
-*redirect* to [:port] [persistent, random, fully-random]
-*redirect* to [:port - port] [persistent, random, fully-random]
+____
+*snat to* 'address' [*:*'port'] ['PRF_FLAGS']
+*snat to* 'address' *-* 'address' [*:*'port' *-* 'port'] ['PRF_FLAGS']
+*snat to* { *ip* | *ip6* } 'address' *-* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
+*dnat to* 'address' [*:*'port'] ['PRF_FLAGS']
+*dnat to* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
+*dnat to* { *ip* | *ip6* } 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
+*masquerade to* [*:*'port'] ['PRF_FLAGS']
+*masquerade to* [*:*'port' *-* 'port'] ['PRF_FLAGS']
+*redirect to* [*:*'port'] ['PRF_FLAGS']
+*redirect to* [*:*'port' *-* 'port'] ['PRF_FLAGS']
+
+'PRF_FLAGS' := 'PRF_FLAG' [*,* 'PRF_FLAGS']
+'PR_FLAGS'  := 'PR_FLAG' [*,* 'PR_FLAGS']
+'PRF_FLAG'  := 'PR_FLAG' | *fully-random*
+'PR_FLAG'   := *persistent* | *random*
+____
 
 The nat statements are only valid from nat chain types. +
 
@@ -407,16 +433,16 @@ is used as parameter. Tproxy matching requires another rule that ensures the
 presence of transport protocol header is specified.
 
 [verse]
-tproxy to 'address' : 'port'
-tproxy to {'address' | : 'port'}
+*tproxy to* 'address'*:*'port'
+*tproxy to* {'address' | *:*'port'}
 
 This syntax can be used in *ip/ip6* tables where network layer protocol is
-obvious. Either ip address or port can be specified, but at least one of them is
+obvious. Either IP address or port can be specified, but at least one of them is
 necessary.
 
 [verse]
-tproxy {ip | ip6} to 'address' [: 'port']
-tproxy to : 'port'
+*tproxy* {*ip* | *ip6*} *to* 'address'[*:*'port']
+*tproxy to :*'port'
 
 This syntax can be used in *inet* tables. The *ip/ip6* parameter defines the
 family the rule will match. The *address* parameter must be of this family.
@@ -463,7 +489,7 @@ A flow statement allows us to select what flows you want to accelerate
 forwarding through layer 3 network stack bypass. You have to specify the
 flowtable name where you want to offload this flow.
 
-*flow add* @flowtable
+*flow add @*'flowtable'
 
 QUEUE STATEMENT
 ~~~~~~~~~~~~~~~
@@ -474,8 +500,14 @@ or re-inject the packet into the kernel. See libnetfilter_queue documentation
 for details.
 
 [verse]
-*queue* [num 'queue_number'] [bypass]
-*queue* [num 'queue_number_from' - 'queue_number_to'] [bypass,fanout]
+____
+*queue* [*num* 'queue_number'] [*bypass*]
+*queue* [*num* 'queue_number_from' - 'queue_number_to'] ['QUEUE_FLAGS']
+
+'QUEUE_FLAGS' := 'QUEUE_FLAG' [*,* 'QUEUE_FLAGS']
+'QUEUE_FLAG'  := *bypass* | *fanout*
+____
+
 
 .queue statement values
 [options="header"]
@@ -509,8 +541,8 @@ The dup statement is used to duplicate a packet and send the copy to a different
 destination.
 
 [verse]
-*dup* to 'device'
-*dup* to 'address' device '*device*'
+*dup to* 'device'
+*dup to* 'address' *device* 'device'
 
 .Dup statement values
 [options="header"]
@@ -544,7 +576,7 @@ The fwd statement is used to redirect a raw packet to another interface. It is
 only available in the netdev family ingress hook. It is similar to the dup
 statement except that no copy is made.
 
-*fwd* to 'device'
+*fwd to* 'device'
 
 SET STATEMENT
 ~~~~~~~~~~~~~
@@ -556,7 +588,7 @@ number of entries in set will not grow indefinitely). The set statement can be
 used to e.g. create dynamic blacklists.
 
 [verse]
-{add | update} '@setname' { 'expression' [timeout 'timeout'] [comment 'string'] }
+{*add* | *update*} *@*'setname' *{* 'expression' [*timeout* 'timeout'] [*comment* 'string'] *}*
 
 .Example for simple blacklist
 -----------------------------
@@ -588,7 +620,15 @@ MAP STATEMENT
 The map statement is used to lookup data based on some specific input key.
 
 [verse]
-'expression' *map* *{* 'key' *:* 'value' [*,* 'key' *:* 'value' ...] *}*
+____
+'expression' *map* *{* 'MAP_ELEMENTS' *}*
+
+'MAP_ELEMENTS' := 'MAP_ELEMENT' [*,* 'MAP_ELEMENTS']
+'MAP_ELEMENT'  := 'key' *:* 'value'
+____
+
+The 'key' is a value returned by 'expression'.
+// XXX: Write about where map statement can be used (list of statements?)
 
 .Using the map statement
 ------------------------
@@ -609,7 +649,12 @@ The verdict map (vmap) statement works analogous to the map statement, but
 contains verdicts as values.
 
 [verse]
-'expression' *vmap* *{* 'key' *:* 'verdict' [*,* 'key' *:* 'verdict' ...] *}*
+____
+'expression' *vmap* *{* 'VMAP_ELEMENTS' *}*
+
+'VMAP_ELEMENTS' := 'VMAP_ELEMENT' [*,* 'VMAP_ELEMENTS']
+'VMAP_ELEMENT'  := 'key' *:* 'verdict'
+____
 
 .Using the vmap statement
 -------------------------

@@ -1,7 +1,7 @@
 ETHERNET HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*ether* ['Ethernet' 'header' 'field']
+*ether* {*daddr* | *saddr* | *type*}
 
 .Ethernet header expression types
 [options="header"]
@@ -21,7 +21,7 @@ ether_type
 VLAN HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*vlan* ['VLAN' 'header' 'field']
+*vlan* {*id* | *cfi* | *pcp* | *type*}
 
 .VLAN header expression
 [options="header"]
@@ -44,7 +44,7 @@ ether_type
 ARP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*arp* ['ARP' 'header' 'field']
+*arp* {*htype* | *ptype* | *hlen* | *plen* | *operation*}
 
 .ARP header expression
 [options="header"]
@@ -70,7 +70,7 @@ arp_op
 IPV4 HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*ip* ['IPv4' 'header' 'field']
+*ip* {*version* | *hdrlength* | *dscp* | *ecn* | *length* | *id* | *frag-off* | *ttl* | *protocol* | *checksum* | *saddr* | *daddr* }
 
 .IPv4 header expression
 [options="header"]
@@ -117,7 +117,7 @@ ipv4_addr
 ICMP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*icmp* ['ICMP' 'header' 'field']
+*icmp* {*type* | *code* | *checksum* | *id* | *sequence* | *gateway* | *mtu*}
 
 This expression refers to ICMP header fields. When using it in *inet*,
 *bridge* or *netdev* families, it will cause an implicit dependency on IPv4 to
@@ -154,7 +154,7 @@ integer (16 bit)
 IGMP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*igmp* ['IGMP' 'header' 'field']
+*igmp* {*type* | *mrt* | *checksum* | *group*}
 
 This expression refers to IGMP header fields. When using it in *inet*,
 *bridge* or *netdev* families, it will cause an implicit dependency on IPv4 to
@@ -182,7 +182,7 @@ integer (32 bit)
 IPV6 HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*ip6* ['IPv6' 'header' 'field']
+*ip6* {*version* | *dscp* | *ecn* | *flowlabel* | *length* | *nexthdr* | *hoplimit* | *saddr* | *daddr*}
 
 This expression refers to the ipv6 header fields. Caution when using *ip6
 nexthdr*, the value only refers to the next header, i.e. *ip6 nexthdr tcp* will
@@ -223,14 +223,17 @@ ipv6_addr
 Destination address |
 ipv6_addr
 |=======================
-*matching if first extension header indicates a fragment* +
 
-*ip6* nexthdr ipv6-frag counter
+.Using ip6 header expressions
+-----------------------------
+# matching if first extension header indicates a fragment
+ip6 nexthdr ipv6-frag
+-----------------------------
 
 ICMPV6 HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*icmpv6* ['ICMPv6' 'header' 'field']
+*icmpv6* {*type* | *code* | *checksum* | *parameter-problem* | *packet-too-big* | *id* | *sequence* | *max-delay*}
 
 This expression refers to ICMPv6 header fields. When using it in *inet*,
 *bridge* or *netdev* families, it will cause an implicit dependency on IPv6 to
@@ -270,7 +273,7 @@ integer (16 bit)
 TCP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*tcp* ['TCP' 'header' 'field']
+*tcp* {*sport* | *dport* | *sequence* | *ackseq* | *doff* | *reserved* | *flags* | *window* | *checksum* | *urgptr*}
 
 .TCP header expression
 [options="header"]
@@ -311,7 +314,7 @@ integer (16 bit)
 UDP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*udp* ['UDP' 'header' 'field']
+*udp* {*sport* | *dport* | *length* | *checksum*}
 
 .UDP header expression
 [options="header"]
@@ -334,7 +337,7 @@ integer (16 bit)
 UDP-LITE HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*udplite* ['UDP-Lite' 'header' 'field']
+*udplite* {*sport* | *dport* | *checksum*}
 
 .UDP-Lite header expression
 [options="header"]
@@ -354,7 +357,7 @@ integer (16 bit)
 SCTP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*sctp* ['SCTP' 'header' 'field']
+*sctp* {*sport* | *dport* | *vtag* | *checksum*}
 
 .SCTP header expression
 [options="header"]
@@ -377,7 +380,7 @@ integer (32 bit)
 DCCP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*dccp* ['DCCP' 'header' 'field']
+*dccp* {*sport* | *dport*}
 
 .DCCP header expression
 [options="header"]
@@ -394,7 +397,7 @@ inet_service
 AUTHENTICATION HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*ah* ['AH' 'header' 'field']
+*ah* {*nexthdr* | *hdrlength* | *reserved* | *spi* | *sequence*}
 
 .AH header expression
 [options="header"]
@@ -420,7 +423,7 @@ integer (32 bit)
 ENCRYPTED SECURITY PAYLOAD HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*esp* ['ESP' 'header' 'field']
+*esp* {*spi* | *sequence*}
 
 .ESP header expression
 [options="header"]
@@ -436,7 +439,7 @@ integer (32 bit)
 
 IPCOMP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-*comp* ['IPComp' 'header' 'field']
+*comp* {*nexthdr* | *flags* | *cpi*}
 
 .IPComp header expression
 [options="header"]
@@ -456,7 +459,7 @@ integer (16 bit)
 RAW PAYLOAD EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*@* [base,offset,length]
+*@*'base'*,*'offset'*,*'length'
 
 The raw payload expression instructs to load 'length' bits starting at 'offset' bits.
 Bit 0 refers to the very first bit -- in the C programming language, this
@@ -465,7 +468,7 @@ to match headers that do not have a human-readable template expression yet. Note
 that nft will not add dependencies for Raw payload expressions. If you e.g. want
 to match protocol fields of a transport header with protocol number 5, you need
 to manually exclude packets that have a different transport header, for instance
-my using meta l4proto 5 before the raw expression.
+by using *meta l4proto 5* before the raw expression.
 
 .Supported payload protocol bases
 [options="header"]
@@ -495,18 +498,18 @@ Extension header expressions refer to data from variable-sized protocol headers,
 
 nftables currently supports matching (finding) a given ipv6 extension header or TCP option.
 [verse]
-*hbh* {nexthdr | hdrlength}
-*frag* {nexthdr | frag-off | more-fragments | id}
-*rt* {nexthdr | hdrlength | type | seg-left}
-*dst* {nexthdr | hdrlength}
-*mh* {nexthdr | hdrlength | checksum | type}
-*srh* {flags | tag | sid | seg-left}
-*tcp option* {eol | noop | maxseg | window | sack-permitted | sack | sack0 | sack1 | sack2 | sack3 | timestamp} 'tcp_option_field'
+*hbh* {*nexthdr* | *hdrlength*}
+*frag* {*nexthdr* | *frag-off* | *more-fragments* | *id*}
+*rt* {*nexthdr* | *hdrlength* | *type* | *seg-left*}
+*dst* {*nexthdr* | *hdrlength*}
+*mh* {*nexthdr* | *hdrlength* | *checksum* | *type*}
+*srh* {*flags* | *tag* | *sid* | *seg-left*}
+*tcp option* {*eol* | *noop* | *maxseg* | *window* | *sack-permitted* | *sack* | *sack0* | *sack1* | *sack2* | *sack3* | *timestamp*} 'tcp_option_field'
 
 The following syntaxes are valid only in a relational expression with boolean type on right-hand side for checking header existence only:
 [verse]
-*exthdr* {hbh | frag | rt | dst | mh}
-*tcp option* {eol | noop | maxseg | window | sack-permitted | sack | sack0 | sack1 | sack2 | sack3 | timestamp}
+*exthdr* {*hbh* | *frag* | *rt* | *dst* | *mh*}
+*tcp option* {*eol* | *noop* | *maxseg* | *window* | *sack-permitted* | *sack* | *sack0* | *sack1* | *sack2* | *sack3* | *timestamp*}
 
 .IPv6 extension headers
 [options="header"]
@@ -588,9 +591,10 @@ is true for the *zone*, if a direction is given, the zone is only matched if the
 zone id is tied to the given direction. +
 
 [verse]
-*ct* {state | direction | status | mark | expiration | helper | label | l3proto | protocol | bytes | packets | avgpkt | zone}
-*ct* {original | reply} {l3proto | protocol | proto-src | proto-dst | bytes | packets | avgpkt | zone}
-*ct* {original | reply} {ip | ip6} {saddr | daddr}
+*ct* {*state* | *direction* | *status* | *mark* | *expiration* | *helper* | *label*}
+*ct* [*original* | *reply*] {*l3proto* | *protocol* | *bytes* | *packets* | *avgpkt* | *zone*}
+*ct* {*original* | *reply*} {*proto-src* | *proto-dst*}
+*ct* {*original* | *reply*} {*ip* | *ip6*} {*saddr* | *daddr*}
 
 .Conntrack expressions
 [options="header"]

@@ -1,10 +1,8 @@
 META EXPRESSIONS
 ~~~~~~~~~~~~~~~~
 [verse]
-*meta* {length | nfproto | l4proto | protocol | priority}
-[meta] {mark | iif | iifname | iiftype | oif | oifname | oiftype |
-skuid | skgid | nftrace | rtclassid | ibrname | obrname | pkttype | cpu
-| iifgroup | oifgroup | cgroup | random | ipsec | iifkind | oifkind}
+*meta* {*length* | *nfproto* | *l4proto* | *protocol* | *priority*}
+[*meta*] {*mark* | *iif* | *iifname* | *iiftype* | *oif* | *oifname* | *oiftype* | *skuid* | *skgid* | *nftrace* | *rtclassid* | *ibrname* | *obrname* | *pkttype* | *cpu* | *iifgroup* | *oifgroup* | *cgroup* | *random* | *ipsec* | *iifkind* | *oifkind*}
 
 A meta expression refers to meta data associated with a packet.
 
@@ -160,7 +158,7 @@ raw prerouting meta ipsec exists accept
 SOCKET EXPRESSION
 ~~~~~~~~~~~~~~~~~
 [verse]
-*socket* \{transparent\}
+*socket* {*transparent* | *mark*}
 
 Socket expression can be used to search for an existing open TCP/UDP socket and
 its attributes that can be associated with a packet. It looks for an established
@@ -206,7 +204,7 @@ table inet x {
 OSF EXPRESSION
 ~~~~~~~~~~~~~~
 [verse]
-osf {name}
+*osf* [*ttl* {*loose* | *skip*}] {*name* | *version*}
 
 The osf expression does passive operating system fingerprinting. This
 expression compares some data (Window Size, MSS, options and their order, DF,
@@ -249,7 +247,7 @@ table inet x {
 FIB EXPRESSIONS
 ~~~~~~~~~~~~~~~
 [verse]
-*fib* {saddr | daddr | {mark | iif | oif}} {oif | oifname | type}
+*fib* {*saddr* | *daddr* | *mark* | *iif* | *oif*} [*.* ...] {*oif* | *oifname* | *type*}
 
 A fib expression queries the fib (forwarding information base) to obtain
 information such as the output interface index a particular address would use.
@@ -286,7 +284,7 @@ filter prerouting meta mark set 0xdead fib daddr . mark type vmap { blackhole : 
 ROUTING EXPRESSIONS
 ~~~~~~~~~~~~~~~~~~~
 [verse]
-*rt* {classid | nexthop}
+*rt* [*ip* | *ip6*] {*classid* | *nexthop* | *mtu* | *ipsec*}
 
 A routing expression refers to routing data associated with a packet.
 
@@ -333,8 +331,8 @@ IPSEC EXPRESSIONS
 ~~~~~~~~~~~~~~~~~
 
 [verse]
-*ipsec* {in | out} [ spnum 'NUM' ]  {reqid | spi }
-*ipsec* {in | out} [ spnum 'NUM' ]  {ip | ip6 } { saddr | daddr }
+*ipsec* {*in* | *out*} [ *spnum* 'NUM' ]  {*reqid* | *spi*}
+*ipsec* {*in* | *out*} [ *spnum* 'NUM' ]  {*ip* | *ip6*} {*saddr* | *daddr*}
 
 An ipsec expression refers to ipsec data associated with a packet.
 

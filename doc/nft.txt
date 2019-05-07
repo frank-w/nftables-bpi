@@ -135,7 +135,7 @@ matched by include statements.
 SYMBOLIC VARIABLES
 ~~~~~~~~~~~~~~~~~~
 [verse]
-*define* variable 'expr'
+*define* 'variable' *=* 'expr'
 *$variable*
 
 Symbolic variables can be defined using the *define* statement. Variable
@@ -231,7 +231,7 @@ layer 3 protocol handlers and it can be used for early filtering and policing.
 RULESET
 -------
 [verse]
-{list | flush} *ruleset* ['family']
+{*list* | *flush*} *ruleset* ['family']
 
 The *ruleset* keyword is used to identify the whole set of tables, chains, etc.
 currently in place in kernel. The following *ruleset* commands exist:
@@ -254,10 +254,10 @@ Effectively, this is the nft-equivalent of *iptables-save* and
 TABLES
 ------
 [verse]
-{add | create} *table* ['family'] 'table' [ {flags 'flags'} ]
-{delete | list | flush} *table* ['family'] 'table'
-list *tables*
-delete *table* ['family'] handle 'handle'
+{*add* | *create*} *table* ['family'] 'table' [*{ flags* 'flags' *; }*]
+{*delete* | *list* | *flush*} *table* ['family'] 'table'
+*list tables*
+*delete table* ['family'] *handle* 'handle'
 
 Tables are containers for chains, sets and stateful objects. They are identified
 by their address family and their name. The address family must be one of *ip*,
@@ -307,11 +307,11 @@ add table inet mytable
 CHAINS
 ------
 [verse]
-{add | create} *chain* ['family'] 'table' 'chain' [ { type 'type' hook 'hook' [device 'device'] priority 'priority' ; [policy 'policy' ;] }]
-{delete | list | flush} *chain* ['family'] 'table' 'chain'
-list *chains*
-delete *chain* ['family'] 'table' handle 'handle'
-rename *chain* ['family'] 'table' 'chain' 'newname'
+{*add* | *create*} *chain* ['family'] 'table' 'chain' [*{ type* 'type' *hook* 'hook' [*device* 'device'] *priority* 'priority' *;* [*policy* 'policy' *;*] *}*]
+{*delete* | *list* | *flush*} *chain* ['family'] 'table' 'chain'
+*list chains*
+*delete chain* ['family'] 'table' *handle* 'handle'
+*rename chain* ['family'] 'table' 'chain' 'newname'
 
 Chains are containers for rules. They exist in two kinds, base chains and
 regular chains. A base chain is an entry point for packets from the networking
@@ -406,9 +406,9 @@ values are *accept* (which is the default) or *drop*.
 RULES
 -----
 [verse]
-{add | insert} *rule* ['family'] 'table' 'chain' [ handle 'handle' | index 'index' ] 'statement' ... [ comment 'comment' ]
-replace *rule* ['family'] 'table' 'chain' handle 'handle' 'statement' ... [ comment 'comment' ]
-delete *rule* ['family'] 'table' 'chain' handle 'handle'
+{*add* | *insert*} *rule* ['family'] 'table' 'chain' [*handle* 'handle' | *index* 'index'] 'statement' ... [*comment* 'comment']
+*replace rule* ['family'] 'table' 'chain' *handle* 'handle' 'statement' ... [*comment* 'comment']
+*delete rule* ['family'] 'table' 'chain' *handle* 'handle'
 
 Rules are added to chains in the given table. If the family is not specified, the
 ip family is used. Rules are constructed from two kinds of components according
@@ -485,14 +485,13 @@ The sets allowed_hosts and allowed_ports need to be created first. The next
 section describes nft set syntax in more detail.
 
 [verse]
-add *set* ['family'] 'table' 'set' { type 'type' ; [flags 'flags' ;] [timeout 'timeout' ;] [gc-interval 'gc-interval' ;] [elements = { 'element'[,...]
-} ;] [size size ;] [policy policy ;] [auto-merge auto-merge ;] }
-{delete | list | flush} *set* ['family'] 'table' 'set'
-list *sets*
-delete *set* ['family'] 'table' handle 'handle'
-{add | delete} *element* ['family'] 'table' 'set' { 'element'[,...] }
+*add set* ['family'] 'table' 'set' *{ type* 'type' *;* [*flags* 'flags' *;*] [*timeout* 'timeout' *;*] [*gc-interval* 'gc-interval' *;*] [*elements = {* 'element'[*,* ...] *} ;*] [*size* 'size' *;*] [*policy* 'policy' *;*] [*auto-merge ;*] *}*
+{*delete* | *list* | *flush*} *set* ['family'] 'table' 'set'
+*list sets*
+*delete set* ['family'] 'table' *handle* 'handle'
+{*add* | *delete*} *element* ['family'] 'table' 'set' *{* 'element'[*,* ...] *}*
 
-Sets are elements containers of a user-defined data type, they are uniquely
+Sets are element containers of a user-defined data type, they are uniquely
 identified by a user-defined name and attached to tables. Their behaviour can
 be tuned with the flags that can be specified at set creation time.
 
@@ -538,10 +537,10 @@ automatic merge of adjacent/overlapping set elements (only for interval sets) |
 MAPS
 -----
 [verse]
-add *map* ['family'] 'table' 'map' { type 'type' [flags 'flags' ;] [elements = {'elements'[,...] } ;] [size 'size' ;] [policy 'policy' ;] }
-list *maps*
-{delete | list | flush} *map* ['family'] 'table' 'map'
-{add | delete} *element* ['family'] 'table' 'map' { elements = { 'elements'[,...] } ; }
+*add map* ['family'] 'table' 'map' *{ type* 'type' [*flags* 'flags' *;*] [*elements = {* 'element'[*,* ...] *} ;*] [*size* 'size' *;*] [*policy* 'policy' *;*] *}*
+{*delete* | *list* | *flush*} *map* ['family'] 'table' 'map'
+*list maps*
+{*add* | *delete*} *element* ['family'] 'table' 'map' *{ elements = {* 'element'[*,* ...] *} ; }*
 
 Maps store data based on some specific key used as input. They are uniquely identified by a user-defined name and attached to tables.
 
@@ -578,8 +577,8 @@ string: performance [default], memory
 FLOWTABLES
 -----------
 [verse]
-{add | create} *flowtable* ['family'] 'table' 'flowtable' { hook 'hook' priority 'priority' ; devices = { 'device'[,...] } ; }
-{delete | list} *flowtable* ['family'] 'table' 'flowtable'
+{*add* | *create*} *flowtable* ['family'] 'table' 'flowtable' *{ hook* 'hook' *priority* 'priority' *; devices = {* 'device'[*,* ...] *} ; }*
+{*delete* | *list*} *flowtable* ['family'] 'table' 'flowtable'
 
 Flowtables allow you to accelerate packet forwarding in software. Flowtables
 entries are represented through a tuple that is composed of the input interface,
@@ -608,10 +607,10 @@ and subtraction can be used to set relative priority, e.g. filter + 5 equals to
 STATEFUL OBJECTS
 ----------------
 [verse]
-{add | delete | list | reset} type ['family'] 'table' 'object'
-delete type ['family'] 'table' handle 'handle'
-list *counters*
-list *quotas*
+{*add* | *delete* | *list* | *reset*} 'type' ['family'] 'table' 'object'
+*delete* 'type' ['family'] 'table' *handle* 'handle'
+*list counters*
+*list quotas*
 
 Stateful objects are attached to tables and are identified by an unique name.
 They group stateful information from rules, to reference them in rules the

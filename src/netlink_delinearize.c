@@ -1734,6 +1734,8 @@ static unsigned int expr_mask_to_prefix(const struct expr *expr)
 	unsigned long n;
 
 	n = mpz_scan1(expr->value, 0);
+	if (n == ULONG_MAX)
+		return 0;
 	return mpz_scan0(expr->value, n + 1) - n;
 }
 
@@ -1744,7 +1746,7 @@ static bool expr_mask_is_prefix(const struct expr *expr)
 
 	n1 = mpz_scan1(expr->value, 0);
 	if (n1 == ULONG_MAX)
-		return false;
+		return true;
 	n2 = mpz_scan0(expr->value, n1 + 1);
 	if (n2 < expr->len || n2 == ULONG_MAX)
 		return false;

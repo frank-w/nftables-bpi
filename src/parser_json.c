@@ -492,6 +492,7 @@ static const struct proto_desc *proto_lookup_byname(const char *name)
 		&proto_arp,
 		&proto_ip,
 		&proto_icmp,
+		&proto_igmp,
 		&proto_ip6,
 		&proto_icmp6,
 		&proto_ah,

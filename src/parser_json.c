@@ -1840,9 +1840,9 @@ static int nat_type_parse(const char *type)
 static struct stmt *json_parse_nat_stmt(struct json_ctx *ctx,
 					const char *key, json_t *value)
 {
+	int type, familyval;
 	struct stmt *stmt;
 	json_t *tmp;
-	int type;
 
 	type = nat_type_parse(key);
 	if (type < 0) {
@@ -1850,7 +1850,12 @@ static struct stmt *json_parse_nat_stmt(struct json_ctx *ctx,
 		return NULL;
 	}
 
+	familyval = json_parse_family(ctx, value);
+	if (familyval < 0)
+		return NULL;
+
 	stmt = nat_stmt_alloc(int_loc, type);
+	stmt->nat.family = familyval;
 
 	if (!json_unpack(value, "{s:o}", "addr", &tmp)) {
 		stmt->nat.addr = json_parse_stmt_expr(ctx, tmp);

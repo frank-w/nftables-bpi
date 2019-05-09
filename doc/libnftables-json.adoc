@@ -808,12 +808,14 @@ Duplicate a packet to a different destination.
 ____
 *{ "snat": {
 	"addr":* 'EXPRESSION'*,
+	"family":* 'STRING'*,
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
 *}}*
 
 *{ "dnat": {
 	"addr":* 'EXPRESSION'*,
+	"family":* 'STRING'*,
 	"port":* 'EXPRESSION'*,
 	"flags":* 'FLAGS'
 *}}*
@@ -837,6 +839,9 @@ Perform Network Address Translation.
 
 *addr*::
 	Address to translate to.
+*family*::
+	Family of *addr*, either *ip* or *ip6*. Required in *inet*
+	table family.
 *port*::
 	Port to translate to.
 *flags*::

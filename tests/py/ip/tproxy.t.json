@@ -13,8 +13,7 @@
     },
     {
         "tproxy": {
-            "addr": "192.0.2.1",
-            "family": "ip"
+            "addr": "192.0.2.1"
         }
     }
 ]
@@ -35,7 +34,6 @@
     {
         "tproxy": {
             "addr": "192.0.2.1",
-            "family": "ip",
             "port": 50080
         }
     }
@@ -99,6 +97,28 @@
     {
         "tproxy": {
             "addr": "192.0.2.1",
+            "family": "ip",
+            "port": 50080
+        }
+    }
+]
+
+# ip protocol 6 tproxy ip to :50080
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "protocol",
+                    "protocol": "ip"
+                }
+            },
+            "op": "==",
+            "right": 6
+        }
+    },
+    {
+        "tproxy": {
             "family": "ip",
             "port": 50080
         }

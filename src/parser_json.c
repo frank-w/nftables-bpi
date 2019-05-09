@@ -1899,17 +1899,15 @@ static struct stmt *json_parse_tproxy_stmt(struct json_ctx *ctx,
 	if (familyval < 0)
 		goto out_free;
 
-	if (familyval == NFPROTO_UNSPEC ||
-	    json_unpack(value, "{s:o}", "addr", &jaddr))
-		goto try_port;
-
 	stmt->tproxy.family = familyval;
-	stmt->tproxy.addr = json_parse_stmt_expr(ctx, jaddr);
-	if (!stmt->tproxy.addr) {
-		json_error(ctx, "Invalid addr.");
-		goto out_free;
+
+	if (!json_unpack(value, "{s:o}", "addr", &jaddr)) {
+		stmt->tproxy.addr = json_parse_stmt_expr(ctx, jaddr);
+		if (!stmt->tproxy.addr) {
+			json_error(ctx, "Invalid addr.");
+			goto out_free;
+		}
 	}
-try_port:
 	if (!json_unpack(value, "{s:o}", "port", &tmp)) {
 		stmt->tproxy.port = json_parse_stmt_expr(ctx, tmp);
 		if (!stmt->tproxy.port) {

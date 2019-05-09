@@ -49,7 +49,7 @@ inet x y
   [ immediate reg 1 0x0000a0c3 ]
   [ tproxy ip6 port reg 1 ]
 
-# ip daddr 0.0.0.0/0 meta l4proto tcp tproxy ip to :2000
+# ip daddr 0.0.0.0/0 meta l4proto 6 tproxy ip to :2000
 inet x y 
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x00000002 ]

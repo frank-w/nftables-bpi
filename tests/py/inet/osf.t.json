@@ -45,13 +45,14 @@
     }
 ]
 
-# osf name version "Linux:3.0"
+# osf ttl skip version "Linux:3.0"
 [
     {
         "match": {
             "left": {
                 "osf": {
-                    "key": "version"
+                    "key": "version",
+                    "ttl": "skip"
                 }
             },
             "op": "==",
@@ -74,6 +75,26 @@
                 "set": [
                     "MacOs",
                     "Windows"
+                ]
+            }
+        }
+    }
+]
+
+# osf version { "Windows:XP", "MacOs:Sierra" }
+[
+    {
+        "match": {
+            "left": {
+                "osf": {
+                    "key": "version"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "Windows:XP",
+                    "MacOs:Sierra"
                 ]
             }
         }
@@ -106,6 +127,40 @@
                     "key": {
                         "osf": {
                             "key": "name"
+                        }
+                    }
+                }
+            }
+        }
+    }
+]
+
+# ct mark set osf version map { "Windows:XP" : 0x00000003, "MacOs:Sierra" : 0x00000004 }
+[
+    {
+        "mangle": {
+            "key": {
+                "ct": {
+                    "key": "mark"
+                }
+            },
+            "value": {
+                "map": {
+                    "data": {
+                        "set": [
+                            [
+                                "Windows:XP",
+                                3
+                            ],
+                            [
+                                "MacOs:Sierra",
+                                4
+                            ]
+                        ]
+                    },
+                    "key": {
+                        "osf": {
+                            "key": "version"
                         }
                     }
                 }

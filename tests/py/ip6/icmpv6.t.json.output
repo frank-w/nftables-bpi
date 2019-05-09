@@ -109,6 +109,24 @@
     }
 ]
 
+# icmpv6 code 3-66
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "protocol": "icmpv6"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "range": [ "addr-unreachable", 66 ]
+            }
+        }
+    }
+]
+
 # icmpv6 code {5, 6, 7} accept
 [
     {
@@ -133,3 +151,44 @@
         "accept": null
     }
 ]
+
+# icmpv6 code { 3-66}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "protocol": "icmpv6"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ "addr-unreachable", 66 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmpv6 code != { 3-66}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "protocol": "icmpv6"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ "addr-unreachable", 66 ] }
+                ]
+            }
+        }
+    }
+]
+

@@ -23,32 +23,8 @@
     }
 ]
 
-# tcp sequence 0 tcp sport 1024 tcp dport 22
+# tcp sequence 0 tcp sport { 1024, 1022} tcp dport 22
 [
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "sport",
-                    "protocol": "tcp"
-                }
-            },
-	    "op": "==",
-            "right": 1024
-        }
-    },
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "dport",
-                    "protocol": "tcp"
-                }
-            },
-	    "op": "==",
-            "right": 22
-        }
-    },
     {
         "match": {
             "left": {
@@ -60,11 +36,7 @@
 	    "op": "==",
             "right": 0
         }
-    }
-]
-
-# tcp sequence 0 tcp sport { 1024, 1022} tcp dport 22
-[
+    },
     {
         "match": {
             "left": {
@@ -92,18 +64,6 @@
             },
 	    "op": "==",
             "right": 22
-        }
-    },
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "sequence",
-                    "protocol": "tcp"
-                }
-            },
-	    "op": "==",
-            "right": 0
         }
     }
 ]

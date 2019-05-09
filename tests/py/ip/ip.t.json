@@ -62,7 +62,7 @@
     }
 ]
 
-# ip dscp {cs0, le, cs1, cs2, cs3, cs4, cs5, cs6, cs7, af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, ef}
+# ip dscp {cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, ef}
 [
     {
         "match": {
@@ -76,7 +76,6 @@
             "right": {
                 "set": [
                     "cs0",
-                    "le",
                     "cs1",
                     "cs2",
                     "cs3",

@@ -28,7 +28,7 @@ ip dscp cs1;ok
 ip dscp != cs1;ok
 ip dscp 0x38;ok;ip dscp cs7
 ip dscp != 0x20;ok;ip dscp != cs4
-ip dscp {cs0, le, cs1, cs2, cs3, cs4, cs5, cs6, cs7, af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, ef};ok
+ip dscp {cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, ef};ok
 - ip dscp {0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38, 0x00, 0x0a, 0x0c, 0x0e, 0x12, 0x14, 0x16, 0x1a, 0x1c, 0x1e, 0x22, 0x24, 0x26, 0x2e};ok
 ip dscp != {cs0, cs3};ok
 ip dscp vmap { cs1 : continue , cs4 : accept } counter;ok

@@ -571,7 +571,6 @@ static const struct symbol_table dscp_type_tbl = {
 	.base		= BASE_HEXADECIMAL,
 	.symbols	= {
 		SYMBOL("cs0",	0x00),
-		SYMBOL("le",	0x01),
 		SYMBOL("cs1",	0x08),
 		SYMBOL("cs2",	0x10),
 		SYMBOL("cs3",	0x18),

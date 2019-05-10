@@ -352,9 +352,16 @@ class Nftables:
         output -- a string containing output written to stdout
         error  -- a string containing output written to stderr
         """
+        cmdline_is_unicode = False
+        if not isinstance(cmdline, bytes):
+            cmdline_is_unicode = True
+            cmdline = cmdline.encode("utf-8")
         rc = self.nft_run_cmd_from_buffer(self.__ctx, cmdline)
         output = self.nft_ctx_get_output_buffer(self.__ctx)
         error = self.nft_ctx_get_error_buffer(self.__ctx)
+        if cmdline_is_unicode:
+            output = output.decode("utf-8")
+            error = error.decode("utf-8")
 
         return (rc, output, error)
 

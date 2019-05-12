@@ -2414,23 +2414,23 @@ log_arg			:	PREFIX			string
 level_type		:	string
 			{
 				if (!strcmp("emerg", $1))
-					$$ = LOG_EMERG;
+					$$ = NFT_LOGLEVEL_EMERG;
 				else if (!strcmp("alert", $1))
-					$$ = LOG_ALERT;
+					$$ = NFT_LOGLEVEL_ALERT;
 				else if (!strcmp("crit", $1))
-					$$ = LOG_CRIT;
+					$$ = NFT_LOGLEVEL_CRIT;
 				else if (!strcmp("err", $1))
-					$$ = LOG_ERR;
+					$$ = NFT_LOGLEVEL_ERR;
 				else if (!strcmp("warn", $1))
-					$$ = LOG_WARNING;
+					$$ = NFT_LOGLEVEL_WARNING;
 				else if (!strcmp("notice", $1))
-					$$ = LOG_NOTICE;
+					$$ = NFT_LOGLEVEL_NOTICE;
 				else if (!strcmp("info", $1))
-					$$ = LOG_INFO;
+					$$ = NFT_LOGLEVEL_INFO;
 				else if (!strcmp("debug", $1))
-					$$ = LOG_DEBUG;
+					$$ = NFT_LOGLEVEL_DEBUG;
 				else if (!strcmp("audit", $1))
-					$$ = LOGLEVEL_AUDIT;
+					$$ = NFT_LOGLEVEL_AUDIT;
 				else {
 					erec_queue(error(&@1, "invalid log level"),
 						   state->msgs);
@@ -4101,7 +4101,6 @@ ct_key			:	L3PROTOCOL	{ $$ = NFT_CT_L3PROTOCOL; }
 			|	PROTO_DST	{ $$ = NFT_CT_PROTO_DST; }
 			|	LABEL		{ $$ = NFT_CT_LABELS; }
 			|	EVENT		{ $$ = NFT_CT_EVENTMASK; }
-			|	TIMEOUT 	{ $$ = NFT_CT_TIMEOUT; }
 			|	ct_key_dir_optional
 			;
 
@@ -4150,15 +4149,17 @@ ct_stmt			:	CT	ct_key		SET	stmt_expr
 					$$->objref.type = NFT_OBJECT_CT_HELPER;
 					$$->objref.expr = $4;
 					break;
-				case NFT_CT_TIMEOUT:
-					$$ = objref_stmt_alloc(&@$);
-					$$->objref.type = NFT_OBJECT_CT_TIMEOUT;
-					$$->objref.expr = $4;
-					break;
 				default:
 					$$ = ct_stmt_alloc(&@$, $2, -1, $4);
 					break;
 				}
+			}
+			|	CT	TIMEOUT		SET	stmt_expr
+			{
+				$$ = objref_stmt_alloc(&@$);
+				$$->objref.type = NFT_OBJECT_CT_TIMEOUT;
+				$$->objref.expr = $4;
+
 			}
 			|	CT	ct_dir	ct_key_dir_optional SET	stmt_expr
 			{

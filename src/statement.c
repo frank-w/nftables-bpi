@@ -256,21 +256,21 @@ struct stmt *objref_stmt_alloc(const struct location *loc)
 	return stmt;
 }
 
-static const char *syslog_level[LOGLEVEL_AUDIT + 1] = {
-	[LOG_EMERG]	= "emerg",
-	[LOG_ALERT]	= "alert",
-	[LOG_CRIT]	= "crit",
-	[LOG_ERR]       = "err",
-	[LOG_WARNING]	= "warn",
-	[LOG_NOTICE]	= "notice",
-	[LOG_INFO]	= "info",
-	[LOG_DEBUG]	= "debug",
-	[LOGLEVEL_AUDIT] = "audit"
+static const char *syslog_level[NFT_LOGLEVEL_MAX + 1] = {
+	[NFT_LOGLEVEL_EMERG]	= "emerg",
+	[NFT_LOGLEVEL_ALERT]	= "alert",
+	[NFT_LOGLEVEL_CRIT]	= "crit",
+	[NFT_LOGLEVEL_ERR]	= "err",
+	[NFT_LOGLEVEL_WARNING]	= "warn",
+	[NFT_LOGLEVEL_NOTICE]	= "notice",
+	[NFT_LOGLEVEL_INFO]	= "info",
+	[NFT_LOGLEVEL_DEBUG]	= "debug",
+	[NFT_LOGLEVEL_AUDIT] 	= "audit"
 };
 
 const char *log_level(uint32_t level)
 {
-	if (level > LOGLEVEL_AUDIT)
+	if (level > NFT_LOGLEVEL_MAX)
 		return "unknown";
 
 	return syslog_level[level];
@@ -280,7 +280,7 @@ int log_level_parse(const char *level)
 {
 	int i;
 
-	for (i = 0; i <= LOGLEVEL_AUDIT; i++) {
+	for (i = 0; i <= NFT_LOGLEVEL_MAX; i++) {
 		if (syslog_level[i] &&
 		    !strcmp(level, syslog_level[i]))
 			return i;

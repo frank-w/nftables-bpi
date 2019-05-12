@@ -1,6 +1,8 @@
 #ifndef NFTABLES_OSF_H
 #define NFTABLES_OSF_H
 
+#define NFT_OSF_F_VERSION	0x1
+
 struct expr *osf_expr_alloc(const struct location *loc, const uint8_t ttl,
 			    const uint32_t flags);
 

@@ -2812,7 +2812,7 @@ static int stmt_evaluate_log(struct eval_ctx *ctx, struct stmt *stmt)
 			return stmt_error(ctx, stmt,
 				  "flags and group are mutually exclusive");
 	}
-	if (stmt->log.level == LOGLEVEL_AUDIT &&
+	if (stmt->log.level == NFT_LOGLEVEL_AUDIT &&
 	    (stmt->log.flags & ~STMT_LOG_LEVEL || stmt->log.logflags))
 		return stmt_error(ctx, stmt,
 				  "log level audit doesn't support any further options");

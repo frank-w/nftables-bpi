@@ -6,7 +6,7 @@ table ip t {
 
 	chain c {
 		ct state new
-		tcp dport { 22222 }
+		tcp dport 22222
 		ip saddr @t drop
 		jump other
 	}

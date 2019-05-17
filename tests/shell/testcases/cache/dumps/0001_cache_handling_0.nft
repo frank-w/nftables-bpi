@@ -5,8 +5,8 @@ table inet test {
 	}
 
 	chain test {
-		ip daddr { 2.2.2.2 } counter packets 0 bytes 0 accept
+		ip daddr 2.2.2.2 counter packets 0 bytes 0 accept
 		ip saddr @test counter packets 0 bytes 0 accept
-		ip daddr { 2.2.2.2 } counter packets 0 bytes 0 accept
+		ip daddr 2.2.2.2 counter packets 0 bytes 0 accept
 	}
 }

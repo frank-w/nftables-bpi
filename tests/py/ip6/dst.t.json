@@ -112,46 +112,6 @@
     }
 ]
 
-# dst nexthdr { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "nexthdr",
-                    "name": "dst"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# dst nexthdr != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "nexthdr",
-                    "name": "dst"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # dst nexthdr { udplite, ipcomp, udp, ah, sctp, esp, dccp, tcp, ipv6-icmp}
 [
     {
@@ -353,44 +313,3 @@
         }
     }
 ]
-
-# dst hdrlength { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "hdrlength",
-                    "name": "dst"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# dst hdrlength != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "hdrlength",
-                    "name": "dst"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-

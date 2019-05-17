@@ -126,46 +126,6 @@
     }
 ]
 
-# udp sport { 12-40}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "sport",
-                    "protocol": "udp"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 12, 40 ] }
-                ]
-            }
-        }
-    }
-]
-
-# udp sport != { 13-24}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "sport",
-                    "protocol": "udp"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 13, 24 ] }
-                ]
-            }
-        }
-    }
-]
-
 # udp dport 80 accept
 [
     {
@@ -294,52 +254,6 @@
     }
 ]
 
-# udp dport { 70-75} accept
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "dport",
-                    "protocol": "udp"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 70, 75 ] }
-                ]
-            }
-        }
-    },
-    {
-        "accept": null
-    }
-]
-
-# udp dport != { 50-60} accept
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "dport",
-                    "protocol": "udp"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 50, 60 ] }
-                ]
-            }
-        }
-    },
-    {
-        "accept": null
-    }
-]
-
 # udp length 6666
 [
     {
@@ -459,46 +373,6 @@
     },
     {
         "accept": null
-    }
-]
-
-# udp length { 35-50}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "length",
-                    "protocol": "udp"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 35, 50 ] }
-                ]
-            }
-        }
-    }
-]
-
-# udp length != { 35-50}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "length",
-                    "protocol": "udp"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 35, 50 ] }
-                ]
-            }
-        }
     }
 ]
 
@@ -653,46 +527,6 @@
                     55,
                     67,
                     88
-                ]
-            }
-        }
-    }
-]
-
-# udp checksum { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "checksum",
-                    "protocol": "udp"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# udp checksum != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "checksum",
-                    "protocol": "udp"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
                 ]
             }
         }

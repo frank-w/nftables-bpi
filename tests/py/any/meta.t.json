@@ -143,40 +143,6 @@
     }
 ]
 
-# meta length { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "length" }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# meta length != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "length" }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # meta protocol { ip, arp, ip6, vlan }
 [
     {
@@ -333,23 +299,6 @@
                     55,
                     67,
                     88
-                ]
-            }
-        }
-    }
-]
-
-# meta l4proto { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "l4proto" }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -1000,26 +949,6 @@
     }
 ]
 
-# meta oif != {"lo"} accept
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "oif" }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    "lo"
-                ]
-            }
-        }
-    },
-    {
-        "accept": null
-    }
-]
-
 # meta oifname "dummy0"
 [
     {
@@ -1316,46 +1245,6 @@
     }
 ]
 
-# meta skuid { 2001-2005} accept
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "skuid" }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 2001, 2005 ] }
-                ]
-            }
-        }
-    },
-    {
-        "accept": null
-    }
-]
-
-# meta skuid != { 2001-2005} accept
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "skuid" }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 2001, 2005 ] }
-                ]
-            }
-        }
-    },
-    {
-        "accept": null
-    }
-]
-
 # meta skgid {"bin", "root", "daemon"} accept
 [
     {
@@ -1502,46 +1391,6 @@
             "op": "!=",
             "right": {
                 "range": [ 2001, 2005 ]
-            }
-        }
-    },
-    {
-        "accept": null
-    }
-]
-
-# meta skgid { 2001-2005} accept
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "skgid" }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 2001, 2005 ] }
-                ]
-            }
-        }
-    },
-    {
-        "accept": null
-    }
-]
-
-# meta skgid != { 2001-2005} accept
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "skgid" }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 2001, 2005 ] }
-                ]
             }
         }
     },
@@ -2190,23 +2039,6 @@
                 "set": [
                     11,
                     33
-                ]
-            }
-        }
-    }
-]
-
-# meta oifgroup {11-33}
-[
-    {
-        "match": {
-            "left": {
-                "meta": { "key": "oifgroup" }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 11, 33 ] }
                 ]
             }
         }

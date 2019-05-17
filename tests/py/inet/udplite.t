@@ -12,8 +12,6 @@ udplite sport 50-70 accept;ok
 udplite sport != 50-60 accept;ok
 udplite sport { 49, 50} drop;ok
 udplite sport != { 49, 50} accept;ok
-udplite sport { 12-40};ok
-udplite sport != { 12-40};ok
 
 udplite dport 80 accept;ok
 udplite dport != 60 accept;ok
@@ -21,8 +19,6 @@ udplite dport 70-75 accept;ok
 udplite dport != 50-60 accept;ok
 udplite dport { 49, 50} drop;ok
 udplite dport != { 49, 50} accept;ok
-udplite dport { 70-75} accept;ok
-udplite dport != { 70-75} accept;ok
 
 - udplite csumcov 6666;ok
 - udplite csumcov != 6666;ok
@@ -30,8 +26,6 @@ udplite dport != { 70-75} accept;ok
 - udplite csumcov != 50-65 accept;ok
 - udplite csumcov { 50, 65} accept;ok
 - udplite csumcov != { 50, 65} accept;ok
-- udplite csumcov { 35-50};ok
-- udplite csumcov != { 35-50};ok
 
 udplite checksum 6666 drop;ok
 udplite checksum != { 444, 555} accept;ok
@@ -41,5 +35,3 @@ udplite checksum 33-45;ok
 udplite checksum != 33-45;ok
 udplite checksum { 33, 55, 67, 88};ok
 udplite checksum != { 33, 55, 67, 88};ok
-udplite checksum { 33-55};ok
-udplite checksum != { 33-55};ok

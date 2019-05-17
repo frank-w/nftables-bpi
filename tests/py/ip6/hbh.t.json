@@ -112,46 +112,6 @@
     }
 ]
 
-# hbh hdrlength { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "hdrlength",
-                    "name": "hbh"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# hbh hdrlength != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "hdrlength",
-                    "name": "hbh"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # hbh nexthdr {esp, ah, comp, udp, udplite, tcp, dccp, sctp, icmpv6}
 [
     {
@@ -316,46 +276,6 @@
                     55,
                     67,
                     88
-                ]
-            }
-        }
-    }
-]
-
-# hbh nexthdr { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "nexthdr",
-                    "name": "hbh"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# hbh nexthdr != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "nexthdr",
-                    "name": "hbh"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
                 ]
             }
         }

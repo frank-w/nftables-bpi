@@ -270,46 +270,6 @@
     }
 ]
 
-# ip length { 333-535}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "length",
-                    "protocol": "ip"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 333, 535 ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip length != { 333-535}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "length",
-                    "protocol": "ip"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 333, 535 ] }
-                ]
-            }
-        }
-    }
-]
-
 # ip id 22
 [
     {
@@ -418,46 +378,6 @@
                     55,
                     67,
                     88
-                ]
-            }
-        }
-    }
-]
-
-# ip id { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "id",
-                    "protocol": "ip"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip id != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "id",
-                    "protocol": "ip"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -581,46 +501,6 @@
     }
 ]
 
-# ip frag-off { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "frag-off",
-                    "protocol": "ip"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip frag-off != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "frag-off",
-                    "protocol": "ip"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # ip ttl 0 drop
 [
     {
@@ -730,46 +610,6 @@
                     43,
                     45,
                     53
-                ]
-            }
-        }
-    }
-]
-
-# ip ttl { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "ttl",
-                    "protocol": "ip"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip ttl != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "ttl",
-                    "protocol": "ip"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -1019,46 +859,6 @@
     }
 ]
 
-# ip checksum { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "checksum",
-                    "protocol": "ip"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip checksum != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "checksum",
-                    "protocol": "ip"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # ip saddr 192.168.2.0/24
 [
     {
@@ -1246,46 +1046,6 @@
             "op": "!=",
             "right": {
                 "range": [ "192.168.0.1", "192.168.0.250" ]
-            }
-        }
-    }
-]
-
-# ip daddr { 192.168.0.1-192.168.0.250}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "daddr",
-                    "protocol": "ip"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ "192.168.0.1", "192.168.0.250" ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip daddr != { 192.168.0.1-192.168.0.250}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "daddr",
-                    "protocol": "ip"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ "192.168.0.1", "192.168.0.250" ] }
-                ]
             }
         }
     }

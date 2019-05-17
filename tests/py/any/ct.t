@@ -73,8 +73,6 @@ ct expiration 33-45;ok;ct expiration 33s-45s
 ct expiration != 33-45;ok;ct expiration != 33s-45s
 ct expiration {33, 55, 67, 88};ok;ct expiration { 1m7s, 33s, 55s, 1m28s}
 ct expiration != {33, 55, 67, 88};ok;ct expiration != { 1m7s, 33s, 55s, 1m28s}
-ct expiration {33-55};ok;ct expiration { 33s-55s}
-ct expiration != {33-55};ok;ct expiration != { 33s-55s}
 
 ct helper "ftp";ok
 ct helper "12345678901234567";fail

@@ -232,48 +232,6 @@
     }
 ]
 
-# mh nexthdr { 33-55 }
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "nexthdr",
-                    "name": "mh"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    {
-                        "range": [ 33, 55 ]
-                    }
-                ]
-            }
-        }
-    }
-]
-
-# mh nexthdr != { 33-55 }
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "nexthdr",
-                    "name": "mh"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # mh hdrlength 22
 [
     {
@@ -382,46 +340,6 @@
                     55,
                     67,
                     88
-                ]
-            }
-        }
-    }
-]
-
-# mh hdrlength { 33-55 }
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "hdrlength",
-                    "name": "mh"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# mh hdrlength != { 33-55 }
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "hdrlength",
-                    "name": "mh"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -606,46 +524,6 @@
     }
 ]
 
-# mh reserved { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "reserved",
-                    "name": "mh"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# mh reserved != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "reserved",
-                    "name": "mh"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # mh checksum 22
 [
     {
@@ -759,44 +637,3 @@
         }
     }
 ]
-
-# mh checksum { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "checksum",
-                    "name": "mh"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# mh checksum != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "exthdr": {
-                    "field": "checksum",
-                    "name": "mh"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-

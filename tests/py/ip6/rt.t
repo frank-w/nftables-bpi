@@ -15,8 +15,6 @@ rt nexthdr 33-45;ok
 rt nexthdr != 33-45;ok
 rt nexthdr { 33, 55, 67, 88};ok
 rt nexthdr != { 33, 55, 67, 88};ok
-rt nexthdr { 33-55};ok
-rt nexthdr != { 33-55};ok
 
 rt hdrlength 22;ok
 rt hdrlength != 233;ok
@@ -24,8 +22,6 @@ rt hdrlength 33-45;ok
 rt hdrlength != 33-45;ok
 rt hdrlength { 33, 55, 67, 88};ok
 rt hdrlength != { 33, 55, 67, 88};ok
-rt hdrlength { 33-55};ok
-rt hdrlength != { 33-55};ok
 
 rt type 22;ok
 rt type != 233;ok
@@ -33,8 +29,6 @@ rt type 33-45;ok
 rt type != 33-45;ok
 rt type { 33, 55, 67, 88};ok
 rt type != { 33, 55, 67, 88};ok
-rt type { 33-55};ok
-rt type != { 33-55};ok
 
 rt seg-left 22;ok
 rt seg-left != 233;ok
@@ -42,5 +36,3 @@ rt seg-left 33-45;ok
 rt seg-left != 33-45;ok
 rt seg-left { 33, 55, 67, 88};ok
 rt seg-left != { 33, 55, 67, 88};ok
-rt seg-left { 33-55};ok
-rt seg-left != { 33-55};ok

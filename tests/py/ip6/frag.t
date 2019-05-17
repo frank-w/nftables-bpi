@@ -17,8 +17,6 @@ frag reserved 33-45;ok
 frag reserved != 33-45;ok
 frag reserved { 33, 55, 67, 88};ok
 frag reserved != { 33, 55, 67, 88};ok
-frag reserved { 33-55};ok
-frag reserved != { 33-55};ok
 
 frag frag-off 22;ok
 frag frag-off != 233;ok
@@ -26,8 +24,6 @@ frag frag-off 33-45;ok
 frag frag-off != 33-45;ok
 frag frag-off { 33, 55, 67, 88};ok
 frag frag-off != { 33, 55, 67, 88};ok
-frag frag-off { 33-55};ok
-frag frag-off != { 33-55};ok
 
 frag reserved2 1;ok
 frag more-fragments 0;ok
@@ -40,5 +36,3 @@ frag id 33-45;ok
 frag id != 33-45;ok
 frag id { 33, 55, 67, 88};ok
 frag id != { 33, 55, 67, 88};ok
-frag id { 33-55};ok
-frag id != { 33-55};ok

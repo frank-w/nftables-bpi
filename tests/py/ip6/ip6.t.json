@@ -213,46 +213,6 @@
     }
 ]
 
-# ip6 flowlabel { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "flowlabel",
-                    "protocol": "ip6"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip6 flowlabel != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "flowlabel",
-                    "protocol": "ip6"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # ip6 flowlabel vmap { 0 : accept, 2 : continue } 
 [
     {
@@ -397,48 +357,6 @@
     }
 ]
 
-# ip6 length { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "length",
-                    "protocol": "ip6"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    {
-                        "range": [ 33, 55 ]
-                    }
-                ]
-            }
-        }
-    }
-]
-
-# ip6 length != { 33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "length",
-                    "protocol": "ip6"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
 # ip6 nexthdr {udp, ah, comp, udplite, tcp, dccp, sctp}
 [
     {
@@ -549,46 +467,6 @@
             },
             "op": "!=",
             "right": "esp"
-        }
-    }
-]
-
-# ip6 nexthdr { 33-44}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "nexthdr",
-                    "protocol": "ip6"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 44 ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip6 nexthdr != { 33-44}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "nexthdr",
-                    "protocol": "ip6"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 44 ] }
-                ]
-            }
         }
     }
 ]
@@ -737,46 +615,6 @@
                     55,
                     67,
                     88
-                ]
-            }
-        }
-    }
-]
-
-# ip6 hoplimit {33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "hoplimit",
-                    "protocol": "ip6"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
-                ]
-            }
-        }
-    }
-]
-
-# ip6 hoplimit != {33-55}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "hoplimit",
-                    "protocol": "ip6"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 33, 55 ] }
                 ]
             }
         }

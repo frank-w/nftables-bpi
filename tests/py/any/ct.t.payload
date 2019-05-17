@@ -283,24 +283,6 @@ ip test-ip4 output
   [ ct load expiration => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
-# ct expiration {33-55}
-__set%d test-ip4 7
-__set%d test-ip4 0
-	element 00000000  : 1 [end]	element e8800000  : 0 [end]	element d9d60000  : 1 [end]
-ip test-ip4 output
-  [ ct load expiration => reg 1 ]
-  [ byteorder reg 1 = hton(reg 1, 4, 4) ]
-  [ lookup reg 1 set __set%d ]
-
-# ct expiration != {33-55}
-__set%d test-ip4 7
-__set%d test-ip4 0
-	element 00000000  : 1 [end]	element e8800000  : 0 [end]	element d9d60000  : 1 [end]
-ip test-ip4 output
-  [ ct load expiration => reg 1 ]
-  [ byteorder reg 1 = hton(reg 1, 4, 4) ]
-  [ lookup reg 1 set __set%d 0x1 ]
-
 # ct helper "ftp"
 ip test-ip4 output
   [ ct load helper => reg 1 ]

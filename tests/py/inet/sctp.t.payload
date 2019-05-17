@@ -47,26 +47,6 @@ inet test-inet input
   [ payload load 2b @ transport header + 0 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
-# sctp sport { 23-44}
-__set%d test-inet 7
-__set%d test-inet 0
-	element 00000000  : 1 [end]	element 00001700  : 0 [end]	element 00002d00  : 1 [end]
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000084 ]
-  [ payload load 2b @ transport header + 0 => reg 1 ]
-  [ lookup reg 1 set __set%d ]
-
-# sctp sport != { 23-44}
-__set%d test-inet 7
-__set%d test-inet 0
-	element 00000000  : 1 [end]	element 00001700  : 0 [end]	element 00002d00  : 1 [end]
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000084 ]
-  [ payload load 2b @ transport header + 0 => reg 1 ]
-  [ lookup reg 1 set __set%d 0x1 ]
-
 # sctp dport 23
 inet test-inet input
   [ meta load l4proto => reg 1 ]
@@ -110,26 +90,6 @@ inet test-inet input
 __set%d test-inet 3
 __set%d test-inet 0
 	element 00001700  : 0 [end]	element 00001800  : 0 [end]	element 00001900  : 0 [end]
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000084 ]
-  [ payload load 2b @ transport header + 2 => reg 1 ]
-  [ lookup reg 1 set __set%d 0x1 ]
-
-# sctp dport { 23-44}
-__set%d test-inet 7
-__set%d test-inet 0
-	element 00000000  : 1 [end]	element 00001700  : 0 [end]	element 00002d00  : 1 [end]
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000084 ]
-  [ payload load 2b @ transport header + 2 => reg 1 ]
-  [ lookup reg 1 set __set%d ]
-
-# sctp dport != { 23-44}
-__set%d test-inet 7
-__set%d test-inet 0
-	element 00000000  : 1 [end]	element 00001700  : 0 [end]	element 00002d00  : 1 [end]
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000084 ]
@@ -185,26 +145,6 @@ inet test-inet input
   [ payload load 4b @ transport header + 8 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
-# sctp checksum { 22-44}
-__set%d test-inet 7
-__set%d test-inet 0
-	element 00000000  : 1 [end]	element 16000000  : 0 [end]	element 2d000000  : 1 [end]
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000084 ]
-  [ payload load 4b @ transport header + 8 => reg 1 ]
-  [ lookup reg 1 set __set%d ]
-
-# sctp checksum != { 22-44}
-__set%d test-inet 7
-__set%d test-inet 0
-	element 00000000  : 1 [end]	element 16000000  : 0 [end]	element 2d000000  : 1 [end]
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000084 ]
-  [ payload load 4b @ transport header + 8 => reg 1 ]
-  [ lookup reg 1 set __set%d 0x1 ]
-
 # sctp vtag 22
 inet test-inet input
   [ meta load l4proto => reg 1 ]
@@ -248,26 +188,6 @@ inet test-inet input
 __set%d test-inet 3
 __set%d test-inet 0
 	element 21000000  : 0 [end]	element 37000000  : 0 [end]	element 43000000  : 0 [end]	element 58000000  : 0 [end]
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000084 ]
-  [ payload load 4b @ transport header + 4 => reg 1 ]
-  [ lookup reg 1 set __set%d 0x1 ]
-
-# sctp vtag { 33-55}
-__set%d test-inet 7
-__set%d test-inet 0
-	element 00000000  : 1 [end]	element 21000000  : 0 [end]	element 38000000  : 1 [end]
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000084 ]
-  [ payload load 4b @ transport header + 4 => reg 1 ]
-  [ lookup reg 1 set __set%d ]
-
-# sctp vtag != { 33-55}
-__set%d test-inet 7
-__set%d test-inet 0
-	element 00000000  : 1 [end]	element 21000000  : 0 [end]	element 38000000  : 1 [end]
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000084 ]

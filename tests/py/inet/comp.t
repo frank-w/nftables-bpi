@@ -20,8 +20,6 @@ comp flags 0x33-0x45;ok
 comp flags != 0x33-0x45;ok
 comp flags {0x33, 0x55, 0x67, 0x88};ok
 comp flags != {0x33, 0x55, 0x67, 0x88};ok
-comp flags { 0x33-0x55};ok
-comp flags != { 0x33-0x55};ok
 
 comp cpi 22;ok
 comp cpi != 233;ok
@@ -29,5 +27,3 @@ comp cpi 33-45;ok
 comp cpi != 33-45;ok
 comp cpi {33, 55, 67, 88};ok
 comp cpi != {33, 55, 67, 88};ok
-comp cpi { 33-55};ok
-comp cpi != { 33-55};ok

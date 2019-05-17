@@ -108,26 +108,6 @@
     }
 ]
 
-# esp spi { 100-102}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "spi",
-                    "protocol": "esp"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 100, 102 ] }
-                ]
-            }
-        }
-    }
-]
-
 # esp sequence 22
 [
     {
@@ -221,44 +201,3 @@
         }
     }
 ]
-
-# esp sequence { 22-25}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "sequence",
-                    "protocol": "esp"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    { "range": [ 22, 25 ] }
-                ]
-            }
-        }
-    }
-]
-
-# esp sequence != { 22-25}
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "sequence",
-                    "protocol": "esp"
-                }
-            },
-            "op": "!=",
-            "right": {
-                "set": [
-                    { "range": [ 22, 25 ] }
-                ]
-            }
-        }
-    }
-]
-

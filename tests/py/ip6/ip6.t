@@ -24,8 +24,6 @@ ip6 flowlabel != 233;ok
 ip6 flowlabel { 33, 55, 67, 88};ok
 # BUG ip6 flowlabel { 5046528, 2883584, 13522432 }
 ip6 flowlabel != { 33, 55, 67, 88};ok
-ip6 flowlabel { 33-55};ok
-ip6 flowlabel != { 33-55};ok
 ip6 flowlabel vmap { 0 : accept, 2 : continue } ;ok
 
 ip6 length 22;ok
@@ -34,16 +32,12 @@ ip6 length 33-45;ok
 ip6 length != 33-45;ok
 ip6 length { 33, 55, 67, 88};ok
 ip6 length != {33, 55, 67, 88};ok
-ip6 length { 33-55};ok
-ip6 length != { 33-55};ok
 
 ip6 nexthdr {udp, ah, comp, udplite, tcp, dccp, sctp};ok;ip6 nexthdr { 132, 51, 108, 136, 17, 33, 6}
 ip6 nexthdr {esp, ah, comp, udp, udplite, tcp, dccp, sctp, icmpv6};ok;ip6 nexthdr { 6, 136, 108, 33, 50, 17, 132, 58, 51}
 ip6 nexthdr != {esp, ah, comp, udp, udplite, tcp, dccp, sctp, icmpv6};ok;ip6 nexthdr != { 6, 136, 108, 33, 50, 17, 132, 58, 51}
 ip6 nexthdr esp;ok;ip6 nexthdr 50
 ip6 nexthdr != esp;ok;ip6 nexthdr != 50
-ip6 nexthdr { 33-44};ok
-ip6 nexthdr != { 33-44};ok
 ip6 nexthdr 33-44;ok
 ip6 nexthdr != 33-44;ok
 
@@ -53,8 +47,6 @@ ip6 hoplimit 33-45;ok
 ip6 hoplimit != 33-45;ok
 ip6 hoplimit {33, 55, 67, 88};ok
 ip6 hoplimit != {33, 55, 67, 88};ok
-ip6 hoplimit {33-55};ok
-ip6 hoplimit != {33-55};ok
 
 # from src/scanner.l
 # v680		(({hex4}:){7}{hex4})

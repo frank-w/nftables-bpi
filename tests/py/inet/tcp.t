@@ -14,8 +14,6 @@ tcp dport 33-45;ok
 tcp dport != 33-45;ok
 tcp dport { 33, 55, 67, 88};ok
 tcp dport != { 33, 55, 67, 88};ok
-tcp dport { 33-55};ok
-tcp dport != { 33-55};ok
 tcp dport {telnet, http, https} accept;ok;tcp dport { 443, 23, 80} accept
 tcp dport vmap { 22 : accept, 23 : drop };ok
 tcp dport vmap { 25:accept, 28:drop };ok
@@ -30,8 +28,6 @@ tcp sport 33-45;ok
 tcp sport != 33-45;ok
 tcp sport { 33, 55, 67, 88};ok
 tcp sport != { 33, 55, 67, 88};ok
-tcp sport { 33-55};ok
-tcp sport != { 33-55};ok
 tcp sport vmap { 25:accept, 28:drop };ok
 
 tcp sport 8080 drop;ok
@@ -47,8 +43,6 @@ tcp sequence 33-45;ok
 tcp sequence != 33-45;ok
 tcp sequence { 33, 55, 67, 88};ok
 tcp sequence != { 33, 55, 67, 88};ok
-tcp sequence { 33-55};ok
-tcp sequence != { 33-55};ok
 
 tcp ackseq 42949672 drop;ok
 tcp ackseq 22;ok
@@ -57,8 +51,6 @@ tcp ackseq 33-45;ok
 tcp ackseq != 33-45;ok
 tcp ackseq { 33, 55, 67, 88};ok
 tcp ackseq != { 33, 55, 67, 88};ok
-tcp ackseq { 33-55};ok
-tcp ackseq != { 33-55};ok
 
 - tcp doff 22;ok
 - tcp doff != 233;ok
@@ -66,8 +58,6 @@ tcp ackseq != { 33-55};ok
 - tcp doff != 33-45;ok
 - tcp doff { 33, 55, 67, 88};ok
 - tcp doff != { 33, 55, 67, 88};ok
-- tcp doff { 33-55};ok
-- tcp doff != { 33-55};ok
 
 # BUG reserved
 # BUG: It is accepted but it is not shown then. tcp reserver
@@ -87,8 +77,6 @@ tcp window 33-45;ok
 tcp window != 33-45;ok
 tcp window { 33, 55, 67, 88};ok
 tcp window != { 33, 55, 67, 88};ok
-tcp window { 33-55};ok
-tcp window != { 33-55};ok
 
 tcp checksum 22;ok
 tcp checksum != 233;ok
@@ -96,8 +84,6 @@ tcp checksum 33-45;ok
 tcp checksum != 33-45;ok
 tcp checksum { 33, 55, 67, 88};ok
 tcp checksum != { 33, 55, 67, 88};ok
-tcp checksum { 33-55};ok
-tcp checksum != { 33-55};ok
 
 tcp urgptr 1234 accept;ok
 tcp urgptr 22;ok
@@ -106,7 +92,5 @@ tcp urgptr 33-45;ok
 tcp urgptr != 33-45;ok
 tcp urgptr { 33, 55, 67, 88};ok
 tcp urgptr != { 33, 55, 67, 88};ok
-tcp urgptr { 33-55};ok
-tcp urgptr != { 33-55};ok
 
 tcp doff 8;ok

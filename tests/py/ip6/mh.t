@@ -15,8 +15,6 @@ mh nexthdr 33-45;ok
 mh nexthdr != 33-45;ok
 mh nexthdr { 33, 55, 67, 88 };ok
 mh nexthdr != { 33, 55, 67, 88 };ok
-mh nexthdr { 33-55 };ok
-mh nexthdr != { 33-55 };ok
 
 mh hdrlength 22;ok
 mh hdrlength != 233;ok
@@ -24,8 +22,6 @@ mh hdrlength 33-45;ok
 mh hdrlength != 33-45;ok
 mh hdrlength { 33, 55, 67, 88 };ok
 mh hdrlength != { 33, 55, 67, 88 };ok
-mh hdrlength { 33-55 };ok
-mh hdrlength != { 33-55 };ok
 
 mh type {binding-refresh-request, home-test-init, careof-test-init, home-test, careof-test, binding-update, binding-acknowledgement, binding-error, fast-binding-update, fast-binding-acknowledgement, fast-binding-advertisement, experimental-mobility-header, home-agent-switch-message};ok
 mh type home-agent-switch-message;ok
@@ -37,8 +33,6 @@ mh reserved 33-45;ok
 mh reserved != 33-45;ok
 mh reserved { 33, 55, 67, 88};ok
 mh reserved != { 33, 55, 67, 88};ok
-mh reserved { 33-55};ok
-mh reserved != { 33-55};ok
 
 mh checksum 22;ok
 mh checksum != 233;ok
@@ -46,5 +40,3 @@ mh checksum 33-45;ok
 mh checksum != 33-45;ok
 mh checksum { 33, 55, 67, 88};ok
 mh checksum != { 33, 55, 67, 88};ok
-mh checksum { 33-55};ok
-mh checksum != { 33-55};ok

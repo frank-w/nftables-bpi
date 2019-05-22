@@ -874,23 +874,29 @@ const struct datatype arpop_type = {
 };
 
 #define ARPHDR_TYPE(__name, __type, __member) \
-	HDR_TYPE(__name, __type, struct arphdr, __member)
+	HDR_TYPE(__name, __type, struct arp_hdr, __member)
 #define ARPHDR_FIELD(__name, __member) \
-	HDR_FIELD(__name, struct arphdr, __member)
+	HDR_FIELD(__name, struct arp_hdr, __member)
 
 const struct proto_desc proto_arp = {
 	.name		= "arp",
 	.base		= PROTO_BASE_NETWORK_HDR,
 	.templates	= {
-		[ARPHDR_HRD]		= ARPHDR_FIELD("htype",	ar_hrd),
-		[ARPHDR_PRO]		= ARPHDR_TYPE("ptype", &ethertype_type, ar_pro),
-		[ARPHDR_HLN]		= ARPHDR_FIELD("hlen", ar_hln),
-		[ARPHDR_PLN]		= ARPHDR_FIELD("plen", ar_pln),
-		[ARPHDR_OP]		= ARPHDR_TYPE("operation", &arpop_type, ar_op),
+		[ARPHDR_HRD]		= ARPHDR_FIELD("htype",	htype),
+		[ARPHDR_PRO]		= ARPHDR_TYPE("ptype", &ethertype_type, ptype),
+		[ARPHDR_HLN]		= ARPHDR_FIELD("hlen", hlen),
+		[ARPHDR_PLN]		= ARPHDR_FIELD("plen", plen),
+		[ARPHDR_OP]		= ARPHDR_TYPE("operation", &arpop_type, oper),
+		[ARPHDR_SADDR_ETHER]	= ARPHDR_TYPE("saddr ether", &etheraddr_type, sha),
+		[ARPHDR_DADDR_ETHER]	= ARPHDR_TYPE("daddr ether", &etheraddr_type, tha),
+		[ARPHDR_SADDR_IP]	= ARPHDR_TYPE("saddr ip", &ipaddr_type, spa),
+		[ARPHDR_DADDR_IP]	= ARPHDR_TYPE("daddr ip", &ipaddr_type, tpa),
 	},
 	.format		= {
 		.filter	= (1 << ARPHDR_HRD) | (1 << ARPHDR_PRO) |
-			  (1 << ARPHDR_HLN) | (1 << ARPHDR_PLN),
+			  (1 << ARPHDR_HLN) | (1 << ARPHDR_PLN) |
+			  (1 << ARPHDR_SADDR_ETHER) | (1 << ARPHDR_DADDR_ETHER) |
+			  (1 << ARPHDR_SADDR_IP) | (1 << ARPHDR_DADDR_IP),
 	},
 };
 

@@ -4243,6 +4243,10 @@ arp_hdr_field		:	HTYPE		{ $$ = ARPHDR_HRD; }
 			|	HLEN		{ $$ = ARPHDR_HLN; }
 			|	PLEN		{ $$ = ARPHDR_PLN; }
 			|	OPERATION	{ $$ = ARPHDR_OP; }
+			|	SADDR ETHER	{ $$ = ARPHDR_SADDR_ETHER; }
+			|	DADDR ETHER	{ $$ = ARPHDR_DADDR_ETHER; }
+			|	SADDR IP	{ $$ = ARPHDR_SADDR_IP; }
+			|	DADDR IP	{ $$ = ARPHDR_DADDR_IP; }
 			;
 
 ip_hdr_expr		:	IP	ip_hdr_field

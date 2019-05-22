@@ -182,6 +182,10 @@ enum arp_hdr_fields {
 	ARPHDR_HLN,
 	ARPHDR_PLN,
 	ARPHDR_OP,
+	ARPHDR_SADDR_ETHER,
+	ARPHDR_DADDR_ETHER,
+	ARPHDR_SADDR_IP,
+	ARPHDR_DADDR_IP,
 };
 
 enum ip_hdr_fields {

@@ -81,6 +81,7 @@ struct nft_cache {
 	uint16_t		genid;
 	struct list_head	list;
 	uint32_t		seqnum;
+	uint32_t		cmd;
 };
 
 struct mnl_socket;

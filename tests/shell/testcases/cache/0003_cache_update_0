@@ -27,3 +27,17 @@ EOF
 $NFT -i >/dev/null <<EOF
 add table ip t3; add chain ip t c
 EOF
+
+# The following test exposes a problem with incremental cache update when
+# reading commands from a file that add a rule using the "index" keyword.
+#
+# add rule ip t4 c meta l4proto icmp accept -> rule to reference in next step
+# add rule ip t4 c index 0 drop -> index 0 is not found due to rule cache not
+#                                  being updated
+$NFT -i >/dev/null <<EOF
+add table ip t4; add chain ip t4 c
+add rule ip t4 c meta l4proto icmp accept
+EOF
+$NFT -f - >/dev/null <<EOF
+add rule ip t4 c index 0 drop
+EOF

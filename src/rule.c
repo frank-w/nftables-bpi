@@ -220,6 +220,23 @@ static int cache_init(struct netlink_ctx *ctx, enum cmd_ops cmd)
 	return 0;
 }
 
+/* Return a "score" of how complete local cache will be if
+ * cache_init_objects() ran for given cmd. Higher value
+ * means more complete. */
+static int cache_completeness(enum cmd_ops cmd)
+{
+	if (cmd == CMD_LIST)
+		return 3;
+	if (cmd != CMD_RESET)
+		return 2;
+	return 1;
+}
+
+static bool cache_needs_more(enum cmd_ops old_cmd, enum cmd_ops cmd)
+{
+	return cache_completeness(old_cmd) < cache_completeness(cmd);
+}
+
 int cache_update(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
 {
 	uint16_t genid;
@@ -235,6 +252,8 @@ int cache_update(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
 replay:
 	ctx.seqnum = cache->seqnum++;
 	genid = mnl_genid_get(&ctx);
+	if (cache->genid && cache_needs_more(cache->cmd, cmd))
+		cache_release(cache);
 	if (genid && genid == cache->genid)
 		return 0;
 	if (cache->genid)
@@ -250,6 +269,7 @@ replay:
 		return -1;
 	}
 	cache->genid = genid;
+	cache->cmd = cmd;
 	return 0;
 }
 

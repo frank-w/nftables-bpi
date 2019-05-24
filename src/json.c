@@ -673,14 +673,14 @@ json_t *verdict_expr_json(const struct expr *expr, struct output_ctx *octx)
 		{ NF_QUEUE, "queue", false },
 	};
 	const char *name = NULL;
-	const char *chain = NULL;
+	json_t *chain = NULL;
 	unsigned int i;
 
 	for (i = 0; i < array_size(verdict_tbl); i++) {
 		if (expr->verdict == verdict_tbl[i].verdict) {
 			name = verdict_tbl[i].name;
 			if (verdict_tbl[i].chain && expr->chain)
-				chain = expr->chain;
+				chain = expr_print_json(expr->chain, octx);
 			break;
 		}
 	}
@@ -689,7 +689,7 @@ json_t *verdict_expr_json(const struct expr *expr, struct output_ctx *octx)
 		return NULL;
 	}
 	if (chain)
-		return json_pack("{s:{s:s}}", name, "target", chain);
+		return json_pack("{s:{s:o}}", name, "target", chain);
 	else
 		return json_pack("{s:n}", name);
 }

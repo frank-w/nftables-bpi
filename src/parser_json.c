@@ -1068,10 +1068,16 @@ static struct expr *json_parse_verdict_expr(struct json_ctx *ctx,
 		{ NF_ACCEPT, "accept", false },
 		{ NF_DROP, "drop", false },
 	};
+	struct expr *chain_expr = NULL;
 	const char *chain = NULL;
 	unsigned int i;
 
 	json_unpack(root, "{s:s}", "target", &chain);
+	if (!chain)
+		chain_expr = constant_expr_alloc(int_loc, &string_type,
+						 BYTEORDER_HOST_ENDIAN,
+						 NFT_CHAIN_MAXNAMELEN *
+						 BITS_PER_BYTE, chain);
 
 	for (i = 0; i < array_size(verdict_tbl); i++) {
 		if (strcmp(type, verdict_tbl[i].name))
@@ -1082,8 +1088,7 @@ static struct expr *json_parse_verdict_expr(struct json_ctx *ctx,
 			return NULL;
 
 		return verdict_expr_alloc(int_loc,
-					  verdict_tbl[i].verdict,
-					  chain ? xstrdup(chain) : NULL);
+					  verdict_tbl[i].verdict, chain_expr);
 	}
 	json_error(ctx, "Unknown verdict '%s'.", type);
 	return NULL;

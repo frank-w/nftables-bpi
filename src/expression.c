@@ -207,22 +207,22 @@ static bool verdict_expr_cmp(const struct expr *e1, const struct expr *e2)
 
 	if ((e1->verdict == NFT_JUMP ||
 	     e1->verdict == NFT_GOTO) &&
-	    strcmp(e1->chain, e2->chain))
-		return false;
+	     expr_cmp(e1->chain, e2->chain))
+		return true;
 
-	return true;
+	return false;
 }
 
 static void verdict_expr_clone(struct expr *new, const struct expr *expr)
 {
 	new->verdict = expr->verdict;
 	if (expr->chain != NULL)
-		new->chain = xstrdup(expr->chain);
+		mpz_init_set(new->chain->value, expr->chain->value);
 }
 
 static void verdict_expr_destroy(struct expr *expr)
 {
-	xfree(expr->chain);
+	expr_free(expr->chain);
 }
 
 static const struct expr_ops verdict_expr_ops = {
@@ -236,7 +236,7 @@ static const struct expr_ops verdict_expr_ops = {
 };
 
 struct expr *verdict_expr_alloc(const struct location *loc,
-				int verdict, const char *chain)
+				int verdict, struct expr *chain)
 {
 	struct expr *expr;
 

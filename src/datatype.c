@@ -254,6 +254,8 @@ const struct datatype invalid_type = {
 
 static void verdict_type_print(const struct expr *expr, struct output_ctx *octx)
 {
+	char chain[NFT_CHAIN_MAXNAMELEN];
+
 	switch (expr->verdict) {
 	case NFT_CONTINUE:
 		nft_print(octx, "continue");
@@ -262,10 +264,26 @@ static void verdict_type_print(const struct expr *expr, struct output_ctx *octx)
 		nft_print(octx, "break");
 		break;
 	case NFT_JUMP:
-		nft_print(octx, "jump %s", expr->chain);
+		if (expr->chain->etype == EXPR_VALUE) {
+			mpz_export_data(chain, expr->chain->value,
+					BYTEORDER_HOST_ENDIAN,
+					NFT_CHAIN_MAXNAMELEN);
+			nft_print(octx, "jump %s", chain);
+		} else {
+			nft_print(octx, "jump ");
+			expr_print(expr->chain, octx);
+		}
 		break;
 	case NFT_GOTO:
-		nft_print(octx, "goto %s", expr->chain);
+		if (expr->chain->etype == EXPR_VALUE) {
+			mpz_export_data(chain, expr->chain->value,
+					BYTEORDER_HOST_ENDIAN,
+					NFT_CHAIN_MAXNAMELEN);
+			nft_print(octx, "goto %s", chain);
+		} else {
+			nft_print(octx, "goto ");
+			expr_print(expr->chain, octx);
+		}
 		break;
 	case NFT_RETURN:
 		nft_print(octx, "return");

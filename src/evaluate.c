@@ -1947,6 +1947,10 @@ static int stmt_evaluate_verdict(struct eval_ctx *ctx, struct stmt *stmt)
 	case EXPR_VERDICT:
 		if (stmt->expr->verdict != NFT_CONTINUE)
 			stmt->flags |= STMT_F_TERMINAL;
+		if (stmt->expr->chain != NULL) {
+			if (expr_evaluate(ctx, &stmt->expr->chain) < 0)
+				return -1;
+		}
 		break;
 	case EXPR_MAP:
 		break;

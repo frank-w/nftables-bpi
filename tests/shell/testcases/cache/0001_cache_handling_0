@@ -9,7 +9,7 @@ table inet test {
 
 	chain test {
 		ip saddr @test counter accept
-		ip daddr 2.2.2.2 counter accept
+		ip daddr { 2.2.2.2} counter accept
 	}
 }'
 

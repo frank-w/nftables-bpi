@@ -112,6 +112,46 @@
     }
 ]
 
+# tcp dport { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "protocol": "tcp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp dport != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "protocol": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # tcp dport {telnet, http, https} accept
 [
     {
@@ -351,6 +391,46 @@
                     55,
                     67,
                     88
+                ]
+            }
+        }
+    }
+]
+
+# tcp sport { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "tcp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp sport != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -673,6 +753,46 @@
     }
 ]
 
+# tcp sequence { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "protocol": "tcp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp sequence != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "protocol": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # tcp ackseq 42949672 drop
 [
     {
@@ -800,6 +920,46 @@
                     55,
                     67,
                     88
+                ]
+            }
+        }
+    }
+]
+
+# tcp ackseq { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "protocol": "tcp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp ackseq != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "ackseq",
+                    "protocol": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -1094,6 +1254,46 @@
     }
 ]
 
+# tcp window { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "protocol": "tcp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp window != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "window",
+                    "protocol": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # tcp checksum 22
 [
     {
@@ -1202,6 +1402,46 @@
                     55,
                     67,
                     88
+                ]
+            }
+        }
+    }
+]
+
+# tcp checksum { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "protocol": "tcp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp checksum != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "protocol": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -1335,6 +1575,46 @@
                     55,
                     67,
                     88
+                ]
+            }
+        }
+    }
+]
+
+# tcp urgptr { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "protocol": "tcp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# tcp urgptr != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "urgptr",
+                    "protocol": "tcp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
                 ]
             }
         }

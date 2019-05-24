@@ -13,6 +13,8 @@ arp htype 33-45;ok
 arp htype != 33-45;ok
 arp htype { 33, 55, 67, 88};ok
 arp htype != { 33, 55, 67, 88};ok
+arp htype { 33-55};ok
+arp htype != { 33-55};ok
 
 arp ptype 0x0800;ok;arp ptype ip
 
@@ -22,6 +24,8 @@ arp hlen 33-45;ok
 arp hlen != 33-45;ok
 arp hlen { 33, 55, 67, 88};ok
 arp hlen != { 33, 55, 67, 88};ok
+arp hlen { 33-55};ok
+arp hlen != { 33-55};ok
 
 arp plen 22;ok
 arp plen != 233;ok
@@ -29,6 +33,8 @@ arp plen 33-45;ok
 arp plen != 33-45;ok
 arp plen { 33, 55, 67, 88};ok
 arp plen != { 33, 55, 67, 88};ok
+arp plen { 33-55};ok
+arp plen != {33-55};ok
 
 arp operation {nak, inreply, inrequest, rreply, rrequest, reply, request};ok
 arp operation != {nak, inreply, inrequest, rreply, rrequest, reply, request};ok

@@ -126,6 +126,46 @@
     }
 ]
 
+# udplite sport { 12-40}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "udplite"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 12, 40 ] }
+                ]
+            }
+        }
+    }
+]
+
+# udplite sport != { 12-40}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "udplite"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 12, 40 ] }
+                ]
+            }
+        }
+    }
+]
+
 # udplite dport 80 accept
 [
     {
@@ -245,6 +285,52 @@
                 "set": [
                     49,
                     50
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# udplite dport { 70-75} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "protocol": "udplite"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 70, 75 ] }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# udplite dport != { 70-75} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "protocol": "udplite"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 70, 75 ] }
                 ]
             }
         }
@@ -410,3 +496,44 @@
         }
     }
 ]
+
+# udplite checksum { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "protocol": "udplite"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# udplite checksum != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "protocol": "udplite"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+

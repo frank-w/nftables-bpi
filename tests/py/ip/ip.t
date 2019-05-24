@@ -39,6 +39,8 @@ ip length 333-435;ok
 ip length != 333-453;ok
 ip length { 333, 553, 673, 838};ok
 ip length != { 333, 553, 673, 838};ok
+ip length { 333-535};ok
+ip length != { 333-535};ok
 
 ip id 22;ok
 ip id != 233;ok
@@ -46,6 +48,8 @@ ip id 33-45;ok
 ip id != 33-45;ok
 ip id { 33, 55, 67, 88};ok
 ip id != { 33, 55, 67, 88};ok
+ip id { 33-55};ok
+ip id != { 33-55};ok
 
 ip frag-off 222 accept;ok
 ip frag-off != 233;ok
@@ -53,6 +57,8 @@ ip frag-off 33-45;ok
 ip frag-off != 33-45;ok
 ip frag-off { 33, 55, 67, 88};ok
 ip frag-off != { 33, 55, 67, 88};ok
+ip frag-off { 33-55};ok
+ip frag-off != { 33-55};ok
 
 ip ttl 0 drop;ok
 ip ttl 233;ok
@@ -60,6 +66,8 @@ ip ttl 33-55;ok
 ip ttl != 45-50;ok
 ip ttl {43, 53, 45 };ok
 ip ttl != {43, 53, 45 };ok
+ip ttl { 33-55};ok
+ip ttl != { 33-55};ok
 
 ip protocol tcp;ok;ip protocol 6
 ip protocol != tcp;ok;ip protocol != 6
@@ -76,6 +84,8 @@ ip checksum 33-45;ok
 ip checksum != 33-45;ok
 ip checksum { 33, 55, 67, 88};ok
 ip checksum != { 33, 55, 67, 88};ok
+ip checksum { 33-55};ok
+ip checksum != { 33-55};ok
 
 ip saddr set {192.19.1.2, 191.1.22.1};fail
 
@@ -89,6 +99,8 @@ ip daddr 10.0.0.0-10.255.255.255;ok
 ip daddr 172.16.0.0-172.31.255.255;ok
 ip daddr 192.168.3.1-192.168.4.250;ok
 ip daddr != 192.168.0.1-192.168.0.250;ok
+ip daddr { 192.168.0.1-192.168.0.250};ok
+ip daddr != { 192.168.0.1-192.168.0.250};ok
 ip daddr { 192.168.5.1, 192.168.5.2, 192.168.5.3 } accept;ok
 ip daddr != { 192.168.5.1, 192.168.5.2, 192.168.5.3 } accept;ok
 

@@ -78,6 +78,26 @@
     }
 ]
 
+# dccp sport { 20-50 }
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "dccp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
+            }
+        }
+    }
+]
+
 # dccp sport ftp-data - re-mail-ck
 [
     {
@@ -109,6 +129,46 @@
 	    "op": "==",
             "right": {
                 "range": [ 20, 50 ]
+            }
+        }
+    }
+]
+
+# dccp sport { 20-50}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "dccp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
+            }
+        }
+    }
+]
+
+# dccp sport != { 20-50}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
             }
         }
     }
@@ -152,6 +212,46 @@
                     23,
                     24,
                     25
+                ]
+            }
+        }
+    }
+]
+
+# dccp dport { 20-50}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "protocol": "dccp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
+                ]
+            }
+        }
+    }
+]
+
+# dccp dport != { 20-50}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "protocol": "dccp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 20, 50 ] }
                 ]
             }
         }

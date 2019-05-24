@@ -144,6 +144,46 @@
     }
 ]
 
+# arp htype { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "protocol": "arp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp htype != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "htype",
+                    "protocol": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # arp ptype 0x0800
 [
     {
@@ -274,6 +314,46 @@
     }
 ]
 
+# arp hlen { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "protocol": "arp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp hlen != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "hlen",
+                    "protocol": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # arp plen 22
 [
     {
@@ -382,6 +462,46 @@
                     55,
                     67,
                     88
+                ]
+            }
+        }
+    }
+]
+
+# arp plen { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "protocol": "arp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# arp plen != {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "plen",
+                    "protocol": "arp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
                 ]
             }
         }

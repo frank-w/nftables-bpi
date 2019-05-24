@@ -883,6 +883,48 @@
     }
 ]
 
+# ct expiration {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "expiration"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    {
+                        "range": [ 33, 55 ]
+                    }
+                ]
+            }
+        }
+    }
+]
+
+# ct expiration != {33-55}
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "expiration"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    {
+                        "range": [ 33, 55 ]
+                    }
+                ]
+            }
+        }
+    }
+]
+
 # ct helper "ftp"
 [
     {

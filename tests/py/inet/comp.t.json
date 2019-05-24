@@ -128,6 +128,46 @@
     }
 ]
 
+# comp flags { 0x33-0x55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "protocol": "comp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ "0x33", "0x55" ] }
+                ]
+            }
+        }
+    }
+]
+
+# comp flags != { 0x33-0x55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "protocol": "comp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ "0x33", "0x55" ] }
+                ]
+            }
+        }
+    }
+]
+
 # comp cpi 22
 [
     {
@@ -241,3 +281,44 @@
         }
     }
 ]
+
+# comp cpi { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "protocol": "comp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# comp cpi != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "cpi",
+                    "protocol": "comp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+

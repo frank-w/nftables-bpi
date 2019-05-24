@@ -230,6 +230,46 @@
     }
 ]
 
+# frag reserved { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "reserved",
+                    "name": "frag"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# frag reserved != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "reserved",
+                    "name": "frag"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # frag frag-off 22
 [
     {
@@ -338,6 +378,46 @@
                     55,
                     67,
                     88
+                ]
+            }
+        }
+    }
+]
+
+# frag frag-off { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "frag-off",
+                    "name": "frag"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# frag frag-off != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "frag-off",
+                    "name": "frag"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -521,3 +601,44 @@
         }
     }
 ]
+
+# frag id { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "id",
+                    "name": "frag"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# frag id != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "id",
+                    "name": "frag"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+

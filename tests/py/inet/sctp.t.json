@@ -110,6 +110,46 @@
     }
 ]
 
+# sctp sport { 23-44}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "sctp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 23, 44 ] }
+                ]
+            }
+        }
+    }
+]
+
+# sctp sport != { 23-44}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sport",
+                    "protocol": "sctp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 23, 44 ] }
+                ]
+            }
+        }
+    }
+]
+
 # sctp dport 23
 [
     {
@@ -222,6 +262,46 @@
     }
 ]
 
+# sctp dport { 23-44}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "protocol": "sctp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 23, 44 ] }
+                ]
+            }
+        }
+    }
+]
+
+# sctp dport != { 23-44}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "dport",
+                    "protocol": "sctp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 23, 44 ] }
+                ]
+            }
+        }
+    }
+]
+
 # sctp checksum 1111
 [
     {
@@ -328,6 +408,46 @@
                     22,
                     33,
                     44
+                ]
+            }
+        }
+    }
+]
+
+# sctp checksum { 22-44}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "protocol": "sctp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 22, 44 ] }
+                ]
+            }
+        }
+    }
+]
+
+# sctp checksum != { 22-44}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "protocol": "sctp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 22, 44 ] }
                 ]
             }
         }
@@ -447,3 +567,44 @@
         }
     }
 ]
+
+# sctp vtag { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "vtag",
+                    "protocol": "sctp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# sctp vtag != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "vtag",
+                    "protocol": "sctp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+

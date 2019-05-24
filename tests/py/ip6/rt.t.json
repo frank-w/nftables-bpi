@@ -232,6 +232,46 @@
     }
 ]
 
+# rt nexthdr { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "nexthdr",
+                    "name": "rt"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# rt nexthdr != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "nexthdr",
+                    "name": "rt"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # rt hdrlength 22
 [
     {
@@ -340,6 +380,46 @@
                     55,
                     67,
                     88
+                ]
+            }
+        }
+    }
+]
+
+# rt hdrlength { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "hdrlength",
+                    "name": "rt"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# rt hdrlength != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "hdrlength",
+                    "name": "rt"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
                 ]
             }
         }
@@ -460,6 +540,46 @@
     }
 ]
 
+# rt type { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "type",
+                    "name": "rt"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# rt type != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "type",
+                    "name": "rt"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # rt seg-left 22
 [
     {
@@ -573,3 +693,44 @@
         }
     }
 ]
+
+# rt seg-left { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "seg-left",
+                    "name": "rt"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# rt seg-left != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "exthdr": {
+                    "field": "seg-left",
+                    "name": "rt"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+

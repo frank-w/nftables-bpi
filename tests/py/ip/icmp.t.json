@@ -416,6 +416,46 @@
     }
 ]
 
+# icmp code { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "protocol": "icmp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp code != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # icmp code { 2, 4, 54, 33, 56}
 [
     {
@@ -536,6 +576,52 @@
             "op": "!=",
             "right": {
                 "range": [ 11, 343 ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum { 11-343} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "protocol": "icmp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 11, 343 ] }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# icmp checksum != { 11-343} accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "checksum",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 11, 343 ] }
+                ]
             }
         }
     },
@@ -676,6 +762,46 @@
             "op": "!=",
             "right": {
                 "range": [ 33, 45 ]
+            }
+        }
+    }
+]
+
+# icmp id { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "icmp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp id != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
             }
         }
     }
@@ -839,6 +965,46 @@
     }
 ]
 
+# icmp sequence { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "protocol": "icmp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp sequence != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # icmp mtu 33
 [
     {
@@ -868,6 +1034,46 @@
 	    "op": "==",
             "right": {
                 "range": [ 22, 33 ]
+            }
+        }
+    }
+]
+
+# icmp mtu { 22-33}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "protocol": "icmp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 22, 33 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp mtu != { 22-33}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 22, 33 ] }
+                ]
             }
         }
     }
@@ -987,6 +1193,46 @@
     }
 ]
 
+# icmp mtu { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "protocol": "icmp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp mtu != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
 # icmp gateway 22
 [
     {
@@ -1095,6 +1341,46 @@
                     55,
                     67,
                     88
+                ]
+            }
+        }
+    }
+]
+
+# icmp gateway { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "protocol": "icmp"
+                }
+            },
+	    "op": "==",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
+                ]
+            }
+        }
+    }
+]
+
+# icmp gateway != { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "gateway",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "!=",
+            "right": {
+                "set": [
+                    { "range": [ 33, 55 ] }
                 ]
             }
         }

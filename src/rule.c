@@ -232,9 +232,14 @@ static int cache_completeness(enum cmd_ops cmd)
 	return 1;
 }
 
-static bool cache_needs_more(enum cmd_ops old_cmd, enum cmd_ops cmd)
+static bool cache_is_complete(struct nft_cache *cache, enum cmd_ops cmd)
 {
-	return cache_completeness(old_cmd) < cache_completeness(cmd);
+	return cache_completeness(cache->cmd) >= cache_completeness(cmd);
+}
+
+static bool cache_is_updated(struct nft_cache *cache, uint16_t genid)
+{
+	return genid && genid == cache->genid;
 }
 
 int cache_update(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
@@ -252,10 +257,10 @@ int cache_update(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
 replay:
 	ctx.seqnum = cache->seqnum++;
 	genid = mnl_genid_get(&ctx);
-	if (cache->genid && cache_needs_more(cache->cmd, cmd))
-		cache_release(cache);
-	if (genid && genid == cache->genid)
+	if (cache_is_complete(cache, cmd) &&
+	    cache_is_updated(cache, genid))
 		return 0;
+
 	if (cache->genid)
 		cache_release(cache);
 

@@ -5,6 +5,7 @@ set -e
 RULESET='
 define set1 = {
 	2.2.2.0/24,
+	3.3.3.0/24,
 }
 define set2 = {
 	$set1,

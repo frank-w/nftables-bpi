@@ -16,11 +16,11 @@ generate1()
 	add set $family t s {type inet_service;}
 	add element $family t s {8080}
 	insert rule $family t c meta l4proto tcp tcp dport @s accept
-	replace rule $family t c handle 2 meta l4proto tcp tcp dport {9090}
+	replace rule $family t c handle 2 meta l4proto tcp tcp dport {9090, 8080}
 	add map $family t m {type inet_service:verdict;}
 	add element $family t m {10080:drop}
 	insert rule $family t c meta l4proto tcp tcp dport vmap @m
-	add rule $family t c meta l4proto udp udp sport vmap {1111:accept}
+	add rule $family t c meta l4proto udp udp sport vmap {1111:accept, 2222:drop}
 	"
 }
 

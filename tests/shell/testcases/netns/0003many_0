@@ -19,7 +19,7 @@ RULESET="table ip t {
 
 	chain c {
 		ct state new
-		udp dport { 12345 }
+		udp dport { 12345, 54321 }
 		ip saddr @s drop
 		jump other
 	}
@@ -35,7 +35,7 @@ table ip6 t {
 
 	chain c {
 		ct state new
-		udp dport { 12345 }
+		udp dport { 12345, 54321 }
 		ip6 saddr @s drop
 		jump other
 	}
@@ -51,7 +51,7 @@ table inet t {
 
 	chain c {
 		ct state new
-		udp dport { 12345 }
+		udp dport { 12345, 54321 }
 		ip6 saddr @s drop
 		jump other
 	}

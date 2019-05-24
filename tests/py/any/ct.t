@@ -73,17 +73,16 @@ ct expiration 33-45;ok;ct expiration 33s-45s
 ct expiration != 33-45;ok;ct expiration != 33s-45s
 ct expiration {33, 55, 67, 88};ok;ct expiration { 1m7s, 33s, 55s, 1m28s}
 ct expiration != {33, 55, 67, 88};ok;ct expiration != { 1m7s, 33s, 55s, 1m28s}
-ct expiration {33-55};ok;ct expiration { 33s-55s}
-ct expiration != {33-55};ok;ct expiration != { 33s-55s}
+ct expiration {33-55, 66-88};ok;ct expiration { 33s-55s, 1m6s-1m28s}
+ct expiration != {33-55, 66-88};ok;ct expiration != { 33s-55s, 1m6s-1m28s}
 
 ct helper "ftp";ok
 ct helper "12345678901234567";fail
 ct helper "";fail
 
-ct state . ct mark { new . 0x12345678};ok
 ct state . ct mark { new . 0x12345678, new . 0x34127856, established . 0x12785634};ok
-ct direction . ct mark { original . 0x12345678};ok
-ct state . ct mark vmap { new . 0x12345678 : drop};ok
+ct direction . ct mark { original . 0x12345678, reply . 0x87654321};ok
+ct state . ct mark vmap { new . 0x12345678 : drop, established . 0x87654321 : accept};ok
 
 ct original bytes > 100000;ok
 ct reply packets < 100;ok

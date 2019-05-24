@@ -17,19 +17,19 @@ set -e
 
 $NFT add table ip nat
 $NFT add chain ip nat test
-$NFT add rule ip nat test tcp dport {123}
+$NFT add rule ip nat test tcp dport {123, 321}
 
 $NFT add table ip6 test
 $NFT add chain ip6 test test
-$NFT add rule ip6 test test udp sport {123}
+$NFT add rule ip6 test test udp sport {123, 321}
 
 $NFT add table arp test_arp
 $NFT add chain arp test_arp test
-$NFT add rule arp test_arp test meta mark {123}
+$NFT add rule arp test_arp test meta mark {123, 321}
 
 $NFT add table bridge test_bridge
 $NFT add chain bridge test_bridge test
-$NFT add rule bridge test_bridge test ip daddr {1.1.1.1}
+$NFT add rule bridge test_bridge test ip daddr {1.1.1.1, 2.2.2.2}
 
 $NFT add table inet filter
 $NFT add chain inet filter test

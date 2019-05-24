@@ -8,7 +8,7 @@ table ip x {
                 define unused = 4.4.4.4
                 define address = { 1.1.1.1, 2.2.2.2 }
                 ip saddr \$address
-                redefine address = { 3.3.3.3 }
+                redefine address = { 3.3.3.3, 4.4.4.4 }
                 ip saddr \$address
                 undefine unused
         }
@@ -17,7 +17,7 @@ table ip x {
 EXPECTED="table ip x {
 	chain y {
 		ip saddr { 1.1.1.1, 2.2.2.2 }
-		ip saddr { 3.3.3.3 }
+		ip saddr { 3.3.3.3, 4.4.4.4 }
 	}
 }"
 

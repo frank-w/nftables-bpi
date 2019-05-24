@@ -283,20 +283,20 @@ ip test-ip4 output
   [ ct load expiration => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
-# ct expiration {33-55}
-__set%d test-ip4 7
+# ct expiration {33-55, 66-88}
+__set%d test-ip4 7 size 5
 __set%d test-ip4 0
-	element 00000000  : 1 [end]	element e8800000  : 0 [end]	element d9d60000  : 1 [end]
-ip test-ip4 output
+	element 00000000  : 1 [end]	element e8800000  : 0 [end]	element d9d60000  : 1 [end]	element d0010100  : 0 [end]	element c1570100  : 1 [end]
+ip test-ip4 output 
   [ ct load expiration => reg 1 ]
   [ byteorder reg 1 = hton(reg 1, 4, 4) ]
   [ lookup reg 1 set __set%d ]
 
-# ct expiration != {33-55}
-__set%d test-ip4 7
+# ct expiration != {33-55, 66-88}
+__set%d test-ip4 7 size 5
 __set%d test-ip4 0
-	element 00000000  : 1 [end]	element e8800000  : 0 [end]	element d9d60000  : 1 [end]
-ip test-ip4 output
+	element 00000000  : 1 [end]	element e8800000  : 0 [end]	element d9d60000  : 1 [end]	element d0010100  : 0 [end]	element c1570100  : 1 [end]
+ip test-ip4 output 
   [ ct load expiration => reg 1 ]
   [ byteorder reg 1 = hton(reg 1, 4, 4) ]
   [ lookup reg 1 set __set%d 0x1 ]
@@ -323,24 +323,6 @@ ip test-ip4 output
   [ ct load state => reg 1 ]
   [ ct load mark => reg 9 ]
   [ lookup reg 1 set __set%d ]
-
-# ct direction . ct mark { original . 0x12345678}
-__set%d test 3
-__set%d test 0
-	element 00000000 12345678  : 0 [end]
-ip test-ip4 output
-  [ ct load direction => reg 1 ]
-  [ ct load mark => reg 9 ]
-  [ lookup reg 1 set __set%d ]
-
-# ct state . ct mark vmap { new . 0x12345678 : drop}
-__map%d test-ip4 b
-__map%d test-ip4 0
-	element 00000008 12345678  : 0 [end]
-ip test-ip4 output
-  [ ct load state => reg 1 ]
-  [ ct load mark => reg 9 ]
-  [ lookup reg 1 set __map%d dreg 0 ]
 
 # ct mark set mark
 ip test-ip4 output
@@ -492,4 +474,22 @@ ip test-ip4 output
 # notrack
 ip test-ip4 output
   [ notrack ]
+
+# ct direction . ct mark { original . 0x12345678, reply . 0x87654321}
+__set%d test-ip4 3 size 2
+__set%d test-ip4 0
+	element 00000000 12345678  : 0 [end]	element 00000001 87654321  : 0 [end]
+ip test-ip4 output 
+  [ ct load direction => reg 1 ]
+  [ ct load mark => reg 9 ]
+  [ lookup reg 1 set __set%d ]
+
+# ct state . ct mark vmap { new . 0x12345678 : drop, established . 0x87654321 : accept}
+__map%d test-ip4 b size 2
+__map%d test-ip4 0
+	element 00000008 12345678  : 0 [end]	element 00000002 87654321  : 0 [end]
+ip test-ip4 output 
+  [ ct load state => reg 1 ]
+  [ ct load mark => reg 9 ]
+  [ lookup reg 1 set __map%d dreg 0 ]
 

@@ -11,6 +11,7 @@ setup(name='nftables',
       packages=['nftables'],
       provides=['nftables'],
       package_dir={'nftables':'.'},
+      package_data={'nftables':['schema.json']},
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',

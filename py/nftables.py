@@ -17,8 +17,22 @@
 import json
 from ctypes import *
 import sys
+import os
 
 NFTABLES_VERSION = "0.1"
+
+class SchemaValidator:
+    """Libnftables JSON validator using jsonschema"""
+
+    def __init__(self):
+        schema_path = os.path.join(os.path.dirname(__file__), "schema.json")
+        with open(schema_path, 'r') as schema_file:
+            self.schema = json.load(schema_file)
+        import jsonschema
+        self.jsonschema = jsonschema
+
+    def validate(self, json):
+        self.jsonschema.validate(instance=json, schema=self.schema)
 
 class Nftables:
     """A class representing libnftables interface"""
@@ -45,6 +59,8 @@ class Nftables:
         "numeric_prio":   (1 << 8),
         "numeric_symbol": (1 << 9),
     }
+
+    validator = None
 
     def __init__(self, sofile="libnftables.so"):
         """Instantiate a new Nftables class object.
@@ -382,3 +398,16 @@ class Nftables:
         if len(output):
             output = json.loads(output)
         return (rc, output, error)
+
+    def json_validate(self, json_root):
+        """Validate JSON object against libnftables schema.
+
+        Accepts a hash object as input.
+
+        Returns True if JSON is valid, raises an exception otherwise.
+        """
+        if not self.validator:
+            self.validator = SchemaValidator()
+
+        self.validator.validate(json_root)
+        return True

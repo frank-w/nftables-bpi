@@ -1,4 +1,4 @@
-EXTRA_DIST = setup.py __init__.py nftables.py
+EXTRA_DIST = setup.py __init__.py nftables.py schema.json
 
 if HAVE_PYTHON
 

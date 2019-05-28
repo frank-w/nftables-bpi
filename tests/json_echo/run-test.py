@@ -1,5 +1,6 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 
+from __future__ import print_function
 import sys
 import os
 import json
@@ -13,8 +14,8 @@ from nftables import Nftables
 os.chdir(TESTS_PATH + "/../..")
 
 if not os.path.exists('src/.libs/libnftables.so'):
-    print "The nftables library does not exist. " \
-          "You need to build the project."
+    print("The nftables library does not exist. "
+          "You need to build the project.")
     sys.exit(1)
 
 nftables = Nftables(sofile = 'src/.libs/libnftables.so')
@@ -79,26 +80,26 @@ add_quota = { "add": {
 # helper functions
 
 def exit_err(msg):
-    print "Error: %s" % msg
+    print("Error: %s" %msg)
     sys.exit(1)
 
 def exit_dump(e, obj):
-    print "FAIL: %s" % e
-    print "Output was:"
+    print("FAIL: {}".format(e))
+    print("Output was:")
     json.dumps(out, sort_keys = True, indent = 4, separators = (',', ': '))
     sys.exit(1)
 
 def do_flush():
     rc, out, err = nftables.json_cmd({ "nftables": [flush_ruleset] })
     if not rc is 0:
-        exit_err("flush ruleset failed: %s" % err)
+        exit_err("flush ruleset failed: {}".format(err))
 
 def do_command(cmd):
     if not type(cmd) is list:
         cmd = [cmd]
     rc, out, err = nftables.json_cmd({ "nftables": cmd })
     if not rc is 0:
-        exit_err("command failed: %s" % err)
+        exit_err("command failed: {}".format(err))
     return out
 
 def do_list_ruleset():
@@ -123,7 +124,7 @@ def get_handle(output, search):
             if not k in data:
                 continue
             found = True
-            for key in search[k].keys():
+            for key in list(search[k].keys()):
                 if key == "handle":
                     continue
                 if not key in data[k] or search[k][key] != data[k][key]:
@@ -140,7 +141,7 @@ def get_handle(output, search):
 
 do_flush()
 
-print "Adding table t"
+print("Adding table t")
 out = do_command(add_table)
 handle = get_handle(out, add_table["add"])
 
@@ -152,7 +153,7 @@ if handle != handle_cmp:
 
 add_table["add"]["table"]["handle"] = handle
 
-print "Adding chain c"
+print("Adding chain c")
 out = do_command(add_chain)
 handle = get_handle(out, add_chain["add"])
 
@@ -164,7 +165,7 @@ if handle != handle_cmp:
 
 add_chain["add"]["chain"]["handle"] = handle
 
-print "Adding set s"
+print("Adding set s")
 out = do_command(add_set)
 handle = get_handle(out, add_set["add"])
 
@@ -176,7 +177,7 @@ if handle != handle_cmp:
 
 add_set["add"]["set"]["handle"] = handle
 
-print "Adding rule"
+print("Adding rule")
 out = do_command(add_rule)
 handle = get_handle(out, add_rule["add"])
 
@@ -188,7 +189,7 @@ if handle != handle_cmp:
 
 add_rule["add"]["rule"]["handle"] = handle
 
-print "Adding counter"
+print("Adding counter")
 out = do_command(add_counter)
 handle = get_handle(out, add_counter["add"])
 
@@ -200,7 +201,7 @@ if handle != handle_cmp:
 
 add_counter["add"]["counter"]["handle"] = handle
 
-print "Adding quota"
+print("Adding quota")
 out = do_command(add_quota)
 handle = get_handle(out, add_quota["add"])
 
@@ -222,37 +223,37 @@ add_set["add"]["set"]["name"] = "s2"
 add_counter["add"]["counter"]["name"] = "c2"
 add_quota["add"]["quota"]["name"] = "q2"
 
-print "Adding table t2"
+print("Adding table t2")
 out = do_command(add_table)
 handle = get_handle(out, add_table["add"])
 if handle == add_table["add"]["table"]["handle"]:
    exit_err("handle not changed in re-added table!")
 
-print "Adding chain c2"
+print("Adding chain c2")
 out = do_command(add_chain)
 handle = get_handle(out, add_chain["add"])
 if handle == add_chain["add"]["chain"]["handle"]:
    exit_err("handle not changed in re-added chain!")
 
-print "Adding set s2"
+print("Adding set s2")
 out = do_command(add_set)
 handle = get_handle(out, add_set["add"])
 if handle == add_set["add"]["set"]["handle"]:
    exit_err("handle not changed in re-added set!")
 
-print "Adding rule again"
+print("Adding rule again")
 out = do_command(add_rule)
 handle = get_handle(out, add_rule["add"])
 if handle == add_rule["add"]["rule"]["handle"]:
    exit_err("handle not changed in re-added rule!")
 
-print "Adding counter c2"
+print("Adding counter c2")
 out = do_command(add_counter)
 handle = get_handle(out, add_counter["add"])
 if handle == add_counter["add"]["counter"]["handle"]:
    exit_err("handle not changed in re-added counter!")
 
-print "Adding quota q2"
+print("Adding quota q2")
 out = do_command(add_quota)
 handle = get_handle(out, add_quota["add"])
 if handle == add_quota["add"]["quota"]["handle"]:
@@ -269,7 +270,7 @@ add_quota["add"]["quota"]["name"] = "q"
 
 do_flush()
 
-print "doing multi add"
+print("doing multi add")
 # XXX: Add table separately, otherwise this triggers cache bug
 out = do_command(add_table)
 thandle = get_handle(out, add_table["add"])

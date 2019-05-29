@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# let's try to exceed transaction buffer space
+
+$NFT flush ruleset
+$NFT add table inet test
+$NFT add chain inet test c
+
+RULESET=$(
+for ((i = 0; i < 3000; i++)); do
+	echo "add rule inet test c accept comment rule$i"
+done
+)
+$NFT -e -f - <<< "$RULESET" >/dev/null

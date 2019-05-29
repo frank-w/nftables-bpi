@@ -233,6 +233,23 @@ static void mnl_set_sndbuffer(const struct mnl_socket *nl,
 	nlbuffsiz = newbuffsiz;
 }
 
+static int mnl_set_rcvbuffer(const struct mnl_socket *nl, size_t bufsiz)
+{
+	int ret;
+
+	ret = setsockopt(mnl_socket_get_fd(nl), SOL_SOCKET, SO_RCVBUFFORCE,
+			 &bufsiz, sizeof(socklen_t));
+	if (ret < 0) {
+		/* If this doesn't work, try to reach the system wide maximum
+		 * (or whatever the user requested).
+		 */
+		ret = setsockopt(mnl_socket_get_fd(nl), SOL_SOCKET, SO_RCVBUF,
+				 &bufsiz, sizeof(socklen_t));
+	}
+
+	return ret;
+}
+
 static ssize_t mnl_nft_socket_sendmsg(const struct netlink_ctx *ctx)
 {
 	static const struct sockaddr_nl snl = {
@@ -1391,20 +1408,12 @@ int mnl_nft_event_listener(struct mnl_socket *nf_sock, unsigned int debug_mask,
 	fd_set readfds;
 	int ret;
 
-	ret = setsockopt(fd, SOL_SOCKET, SO_RCVBUFFORCE, &bufsiz,
-			 sizeof(socklen_t));
-	if (ret < 0) {
-		/* If this doesn't work, try to reach the system wide maximum
-		 * (or whatever the user requested).
-		 */
-		ret = setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &bufsiz,
-				 sizeof(socklen_t));
-		if (ret < 0)
-			nft_print(octx, "# Cannot increase netlink socket buffer size, expect message loss\n");
-		else
-			nft_print(octx, "# Cannot set up netlink socket buffer size to %u bytes, falling back to %u bytes\n",
-				  NFTABLES_NLEVENT_BUFSIZ, bufsiz);
-	}
+	ret = mnl_set_rcvbuffer(nf_sock, bufsiz);
+	if (ret < 0)
+		nft_print(octx, "# Cannot increase netlink socket buffer size, expect message loss\n");
+	else
+		nft_print(octx, "# Cannot set up netlink socket buffer size to %u bytes, falling back to %u bytes\n",
+			  NFTABLES_NLEVENT_BUFSIZ, bufsiz);
 
 	while (1) {
 		FD_ZERO(&readfds);

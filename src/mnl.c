@@ -276,7 +276,6 @@ static ssize_t mnl_nft_socket_sendmsg(const struct netlink_ctx *ctx)
 	};
 	uint32_t i;
 
-	mnl_set_sndbuffer(ctx->nft->nf_sock, ctx->batch);
 	nftnl_batch_iovec(ctx->batch, iov, iov_len);
 
 	for (i = 0; i < iov_len; i++) {
@@ -301,6 +300,8 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
 		.tv_usec	= 0
 	};
 	int err = 0;
+
+	mnl_set_sndbuffer(ctx->nft->nf_sock, ctx->batch);
 
 	ret = mnl_nft_socket_sendmsg(ctx);
 	if (ret == -1)

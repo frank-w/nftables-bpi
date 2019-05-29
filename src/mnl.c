@@ -299,12 +299,14 @@ static ssize_t mnl_nft_socket_sendmsg(struct netlink_ctx *ctx,
 	return sendmsg(mnl_socket_get_fd(ctx->nft->nf_sock), msg, 0);
 }
 
-int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
+int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
+		   uint32_t num_cmds)
 {
 	struct mnl_socket *nl = ctx->nft->nf_sock;
 	int ret, fd = mnl_socket_get_fd(nl), portid = mnl_socket_get_portid(nl);
 	uint32_t iov_len = nftnl_batch_iovec_len(ctx->batch);
 	char rcv_buf[MNL_SOCKET_BUFFER_SIZE];
+	size_t avg_msg_size, batch_size;
 	const struct sockaddr_nl snl = {
 		.nl_family = AF_NETLINK
 	};
@@ -319,7 +321,10 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
 
 	mnl_set_sndbuffer(ctx->nft->nf_sock, ctx->batch);
 
-	mnl_nft_batch_to_msg(ctx, &msg, &snl, iov, iov_len);
+	batch_size = mnl_nft_batch_to_msg(ctx, &msg, &snl, iov, iov_len);
+	avg_msg_size = div_round_up(batch_size, num_cmds);
+
+	mnl_set_rcvbuffer(ctx->nft->nf_sock, num_cmds * avg_msg_size * 4);
 
 	ret = mnl_nft_socket_sendmsg(ctx, &msg);
 	if (ret == -1)

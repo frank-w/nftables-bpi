@@ -58,6 +58,14 @@ static int nft_netlink(struct nft_ctx *nft,
 		goto out;
 
 	ret = mnl_batch_talk(&ctx, &err_list, num_cmds);
+	if (ret < 0) {
+		netlink_io_error(&ctx, NULL,
+				 "Could not process rule: %s", strerror(errno));
+		goto out;
+	}
+
+	if (!list_empty(&err_list))
+		ret = -1;
 
 	list_for_each_entry_safe(err, tmp, &err_list, head) {
 		list_for_each_entry(cmd, cmds, list) {

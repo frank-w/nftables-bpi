@@ -317,7 +317,6 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 	struct iovec iov[iov_len];
 	struct msghdr msg = {};
 	fd_set readfds;
-	int err = 0;
 
 	mnl_set_sndbuffer(ctx->nft->nf_sock, ctx->batch);
 
@@ -347,10 +346,8 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 
 		ret = mnl_cb_run(rcv_buf, ret, 0, portid, &netlink_echo_callback, ctx);
 		/* Continue on error, make sure we get all acknowledgments */
-		if (ret == -1) {
+		if (ret == -1)
 			mnl_err_list_node_add(err_list, errno, nlh->nlmsg_seq);
-			err = -1;
-		}
 
 		ret = select(fd+1, &readfds, NULL, NULL, &tv);
 		if (ret == -1)
@@ -359,7 +356,7 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 		FD_ZERO(&readfds);
 		FD_SET(fd, &readfds);
 	}
-	return err;
+	return 0;
 }
 
 int mnl_nft_rule_add(struct netlink_ctx *ctx, const struct cmd *cmd,

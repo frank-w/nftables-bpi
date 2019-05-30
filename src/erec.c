@@ -161,7 +161,6 @@ void erec_print(struct output_ctx *octx, const struct error_record *erec,
 			loc = &erec->locations[l];
 			netlink_dump_expr(loc->nle, f, debug_mask);
 		}
-		fprintf(f, "\n\n");
 		return;
 	}
 

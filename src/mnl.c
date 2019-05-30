@@ -233,9 +233,20 @@ static void mnl_set_sndbuffer(const struct mnl_socket *nl,
 	nlbuffsiz = newbuffsiz;
 }
 
+static unsigned int nlsndbufsiz;
+
 static int mnl_set_rcvbuffer(const struct mnl_socket *nl, size_t bufsiz)
 {
+	socklen_t len = sizeof(nlsndbufsiz);
 	int ret;
+
+	if (!nlsndbufsiz) {
+		getsockopt(mnl_socket_get_fd(nl), SOL_SOCKET, SO_RCVBUF,
+			   &nlsndbufsiz, &len);
+	}
+
+	if (nlsndbufsiz >= bufsiz)
+		return 0;
 
 	ret = setsockopt(mnl_socket_get_fd(nl), SOL_SOCKET, SO_RCVBUFFORCE,
 			 &bufsiz, sizeof(socklen_t));

@@ -261,49 +261,67 @@ static int mnl_set_rcvbuffer(const struct mnl_socket *nl, size_t bufsiz)
 	return ret;
 }
 
-static ssize_t mnl_nft_socket_sendmsg(const struct netlink_ctx *ctx)
+static size_t mnl_nft_batch_to_msg(struct netlink_ctx *ctx, struct msghdr *msg,
+				   const struct sockaddr_nl *snl,
+				   struct iovec *iov, unsigned int iov_len)
 {
-	static const struct sockaddr_nl snl = {
-		.nl_family = AF_NETLINK
-	};
-	uint32_t iov_len = nftnl_batch_iovec_len(ctx->batch);
-	struct iovec iov[iov_len];
-	struct msghdr msg = {
-		.msg_name	= (struct sockaddr *) &snl,
-		.msg_namelen	= sizeof(snl),
-		.msg_iov	= iov,
-		.msg_iovlen	= iov_len,
-	};
-	uint32_t i;
+	unsigned int i;
+	size_t len = 0;
+
+	msg->msg_name		= (struct sockaddr_nl *)snl;
+	msg->msg_namelen	= sizeof(*snl);
+	msg->msg_iov		= iov;
+	msg->msg_iovlen		= iov_len;
 
 	nftnl_batch_iovec(ctx->batch, iov, iov_len);
 
-	for (i = 0; i < iov_len; i++) {
-		if (ctx->nft->debug_mask & NFT_DEBUG_MNL) {
+	for (i = 0; i < iov_len; i++)
+		len += msg->msg_iov[i].iov_len;
+
+	return len;
+}
+
+static ssize_t mnl_nft_socket_sendmsg(struct netlink_ctx *ctx,
+				      const struct msghdr *msg)
+{
+	uint32_t iov_len = msg->msg_iovlen;
+	struct iovec *iov = msg->msg_iov;
+	unsigned int i;
+
+	if (ctx->nft->debug_mask & NFT_DEBUG_MNL) {
+		for (i = 0; i < iov_len; i++) {
 			mnl_nlmsg_fprintf(ctx->nft->output.output_fp,
 					  iov[i].iov_base, iov[i].iov_len,
 					  sizeof(struct nfgenmsg));
 		}
 	}
 
-	return sendmsg(mnl_socket_get_fd(ctx->nft->nf_sock), &msg, 0);
+	return sendmsg(mnl_socket_get_fd(ctx->nft->nf_sock), msg, 0);
 }
 
 int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list)
 {
 	struct mnl_socket *nl = ctx->nft->nf_sock;
 	int ret, fd = mnl_socket_get_fd(nl), portid = mnl_socket_get_portid(nl);
+	uint32_t iov_len = nftnl_batch_iovec_len(ctx->batch);
 	char rcv_buf[MNL_SOCKET_BUFFER_SIZE];
-	fd_set readfds;
+	const struct sockaddr_nl snl = {
+		.nl_family = AF_NETLINK
+	};
 	struct timeval tv = {
 		.tv_sec		= 0,
 		.tv_usec	= 0
 	};
+	struct iovec iov[iov_len];
+	struct msghdr msg = {};
+	fd_set readfds;
 	int err = 0;
 
 	mnl_set_sndbuffer(ctx->nft->nf_sock, ctx->batch);
 
-	ret = mnl_nft_socket_sendmsg(ctx);
+	mnl_nft_batch_to_msg(ctx, &msg, &snl, iov, iov_len);
+
+	ret = mnl_nft_socket_sendmsg(ctx, &msg);
 	if (ret == -1)
 		return -1;
 

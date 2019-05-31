@@ -329,16 +329,17 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 	if (ret == -1)
 		return -1;
 
-	FD_ZERO(&readfds);
-	FD_SET(fd, &readfds);
-
 	/* receive and digest all the acknowledgments from the kernel. */
-	ret = select(fd+1, &readfds, NULL, NULL, &tv);
-	if (ret == -1)
-		return -1;
+	while (true) {
+		FD_ZERO(&readfds);
+		FD_SET(fd, &readfds);
 
-	while (ret > 0 && FD_ISSET(fd, &readfds)) {
-		struct nlmsghdr *nlh = (struct nlmsghdr *)rcv_buf;
+		ret = select(fd + 1, &readfds, NULL, NULL, &tv);
+		if (ret == -1)
+			return -1;
+
+		if (!FD_ISSET(fd, &readfds))
+			break;
 
 		ret = mnl_socket_recvfrom(nl, rcv_buf, sizeof(rcv_buf));
 		if (ret == -1)
@@ -346,15 +347,11 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 
 		ret = mnl_cb_run(rcv_buf, ret, 0, portid, &netlink_echo_callback, ctx);
 		/* Continue on error, make sure we get all acknowledgments */
-		if (ret == -1)
+		if (ret == -1) {
+			struct nlmsghdr *nlh = (struct nlmsghdr *)rcv_buf;
+
 			mnl_err_list_node_add(err_list, errno, nlh->nlmsg_seq);
-
-		FD_ZERO(&readfds);
-		FD_SET(fd, &readfds);
-
-		ret = select(fd+1, &readfds, NULL, NULL, &tv);
-		if (ret == -1)
-			return -1;
+		}
 	}
 	return 0;
 }

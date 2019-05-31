@@ -349,12 +349,12 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 		if (ret == -1)
 			mnl_err_list_node_add(err_list, errno, nlh->nlmsg_seq);
 
+		FD_ZERO(&readfds);
+		FD_SET(fd, &readfds);
+
 		ret = select(fd+1, &readfds, NULL, NULL, &tv);
 		if (ret == -1)
 			return -1;
-
-		FD_ZERO(&readfds);
-		FD_SET(fd, &readfds);
 	}
 	return 0;
 }

@@ -449,6 +449,8 @@ err:
 	    nft_output_json(&nft->output) &&
 	    nft_output_echo(&nft->output))
 		json_print_echo(nft);
+	if (rc)
+		cache_release(&nft->cache);
 	return rc;
 }
 
@@ -497,6 +499,8 @@ err:
 	    nft_output_json(&nft->output) &&
 	    nft_output_echo(&nft->output))
 		json_print_echo(nft);
+	if (rc)
+		cache_release(&nft->cache);
 	return rc;
 }
 

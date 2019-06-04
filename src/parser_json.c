@@ -3390,10 +3390,6 @@ static json_t *seqnum_to_json(const uint32_t seqnum)
 
 static int __json_parse(struct json_ctx *ctx)
 {
-	struct eval_ctx ectx = {
-		.nft = ctx->nft,
-		.msgs = ctx->msgs,
-	};
 	json_t *tmp, *value;
 	size_t index;
 
@@ -3435,11 +3431,6 @@ static int __json_parse(struct json_ctx *ctx)
 
 		list_add_tail(&cmd->list, &list);
 
-		if (cmd_evaluate(&ectx, cmd) < 0) {
-			cmd_free(cmd);
-			json_error(ctx, "Evaluating command at index %zd failed.", index);
-			return -1;
-		}
 		list_splice_tail(&list, ctx->cmds);
 
 		if (nft_output_echo(&ctx->nft->output))

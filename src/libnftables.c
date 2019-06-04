@@ -400,11 +400,11 @@ static int nft_evaluate(struct nft_ctx *nft, struct list_head *msgs,
 
 int nft_run_cmd_from_buffer(struct nft_ctx *nft, const char *buf)
 {
+	int rc = -EINVAL, parser_rc;
 	struct cmd *cmd, *next;
 	LIST_HEAD(msgs);
 	LIST_HEAD(cmds);
 	char *nlbuf;
-	int rc = -EINVAL;
 
 	nlbuf = xzalloc(strlen(buf) + 2);
 	sprintf(nlbuf, "%s\n", buf);
@@ -413,12 +413,17 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, const char *buf)
 		rc = nft_parse_json_buffer(nft, nlbuf, &msgs, &cmds);
 	if (rc == -EINVAL)
 		rc = nft_parse_bison_buffer(nft, nlbuf, &msgs, &cmds);
-	if (rc)
-		goto err;
+
+	parser_rc = rc;
 
 	rc = nft_evaluate(nft, &msgs, &cmds);
 	if (rc < 0)
 		goto err;
+
+	if (parser_rc) {
+		rc = parser_rc;
+		goto err;
+	}
 
 	if (nft_netlink(nft, &cmds, &msgs, nft->nf_sock) != 0)
 		rc = -1;
@@ -445,9 +450,9 @@ err:
 int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 {
 	struct cmd *cmd, *next;
+	int rc, parser_rc;
 	LIST_HEAD(msgs);
 	LIST_HEAD(cmds);
-	int rc;
 
 	rc = cache_update(nft, CMD_INVALID, &msgs);
 	if (rc < 0)
@@ -461,12 +466,17 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 		rc = nft_parse_json_filename(nft, filename, &msgs, &cmds);
 	if (rc == -EINVAL)
 		rc = nft_parse_bison_filename(nft, filename, &msgs, &cmds);
-	if (rc)
-		goto err;
+
+	parser_rc = rc;
 
 	rc = nft_evaluate(nft, &msgs, &cmds);
 	if (rc < 0)
 		goto err;
+
+	if (parser_rc) {
+		rc = parser_rc;
+		goto err;
+	}
 
 	if (nft_netlink(nft, &cmds, &msgs, nft->nf_sock) != 0)
 		rc = -1;

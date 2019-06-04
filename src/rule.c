@@ -1501,15 +1501,8 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 {
 	uint32_t flags = excl ? NLM_F_EXCL : 0;
 
-	if (nft_output_echo(&ctx->nft->output)) {
-		int ret;
-
-		ret = cache_update(ctx->nft, cmd->obj, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
+	if (nft_output_echo(&ctx->nft->output))
 		flags |= NLM_F_ECHO;
-	}
 
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
@@ -1552,15 +1545,8 @@ static int do_command_insert(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	uint32_t flags = 0;
 
-	if (nft_output_echo(&ctx->nft->output)) {
-		int ret;
-
-		ret = cache_update(ctx->nft, cmd->obj, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
+	if (nft_output_echo(&ctx->nft->output))
 		flags |= NLM_F_ECHO;
-	}
 
 	switch (cmd->obj) {
 	case CMD_OBJ_RULE:

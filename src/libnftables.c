@@ -381,7 +381,12 @@ static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 static int nft_evaluate(struct nft_ctx *nft, struct list_head *msgs,
 			struct list_head *cmds)
 {
+	unsigned int completeness;
 	struct cmd *cmd;
+
+	completeness = cache_evaluate(nft, cmds);
+	if (cache_update(nft, completeness, msgs) < 0)
+		return -1;
 
 	list_for_each_entry(cmd, cmds, list) {
 		struct eval_ctx ectx = {
@@ -453,10 +458,6 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	int rc, parser_rc;
 	LIST_HEAD(msgs);
 	LIST_HEAD(cmds);
-
-	rc = cache_update(nft, CMD_INVALID, &msgs);
-	if (rc < 0)
-		return -1;
 
 	if (!strcmp(filename, "-"))
 		filename = "/dev/stdin";

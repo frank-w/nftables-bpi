@@ -226,7 +226,6 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 	struct table *table;
 	struct set *set;
 	struct expr *new;
-	int ret;
 
 	switch ((*expr)->symtype) {
 	case SYMBOL_VALUE:
@@ -238,10 +237,6 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 		}
 		break;
 	case SYMBOL_SET:
-		ret = cache_update(ctx->nft, ctx->cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		table = table_lookup_global(ctx);
 		if (table == NULL)
 			return table_not_found(ctx);
@@ -3191,12 +3186,6 @@ static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
 	struct chain *chain;
 	uint64_t index = 0;
 	struct rule *r;
-	int ret;
-
-	/* update cache with CMD_LIST so that rules are fetched, too */
-	ret = cache_update(ctx->nft, CMD_LIST, ctx->msgs);
-	if (ret < 0)
-		return ret;
 
 	table = table_lookup(&rule->handle, &ctx->nft->cache);
 	if (!table)
@@ -3412,38 +3401,20 @@ static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 
 static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 {
-	int ret;
-
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		handle_merge(&cmd->set->handle, &cmd->handle);
 		return set_evaluate(ctx, cmd->set);
 	case CMD_OBJ_RULE:
 		handle_merge(&cmd->rule->handle, &cmd->handle);
 		return rule_evaluate(ctx, cmd->rule);
 	case CMD_OBJ_CHAIN:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		return chain_evaluate(ctx, cmd->chain);
 	case CMD_OBJ_TABLE:
 		return table_evaluate(ctx, cmd->table);
 	case CMD_OBJ_FLOWTABLE:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		handle_merge(&cmd->flowtable->handle, &cmd->handle);
 		return flowtable_evaluate(ctx, cmd->flowtable);
 	case CMD_OBJ_COUNTER:
@@ -3460,14 +3431,8 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 
 static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 {
-	int ret;
-
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
 	case CMD_OBJ_RULE:
@@ -3490,11 +3455,6 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table;
 	struct set *set;
-	int ret;
-
-	ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-	if (ret < 0)
-		return ret;
 
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
@@ -3553,11 +3513,6 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table;
 	struct set *set;
-	int ret;
-
-	ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-	if (ret < 0)
-		return ret;
 
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
@@ -3648,12 +3603,6 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 
 static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 {
-	int ret;
-
-	ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-	if (ret < 0)
-		return ret;
-
 	switch (cmd->obj) {
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
@@ -3674,7 +3623,6 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table;
 	struct set *set;
-	int ret;
 
 	switch (cmd->obj) {
 	case CMD_OBJ_RULESET:
@@ -3688,10 +3636,6 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		/* Chains don't hold sets */
 		break;
 	case CMD_OBJ_SET:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return table_not_found(ctx);
@@ -3703,10 +3647,6 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 		return 0;
 	case CMD_OBJ_MAP:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return table_not_found(ctx);
@@ -3718,10 +3658,6 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 		return 0;
 	case CMD_OBJ_METER:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return table_not_found(ctx);
@@ -3741,14 +3677,9 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table;
-	int ret;
 
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
-		ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-		if (ret < 0)
-			return ret;
-
 		table = table_lookup(&ctx->cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return table_not_found(ctx);
@@ -3840,11 +3771,6 @@ static uint32_t monitor_flags[CMD_MONITOR_EVENT_MAX][CMD_MONITOR_OBJ_MAX] = {
 static int cmd_evaluate_monitor(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	uint32_t event;
-	int ret;
-
-	ret = cache_update(ctx->nft, cmd->op, ctx->msgs);
-	if (ret < 0)
-		return ret;
 
 	if (cmd->monitor->event == NULL)
 		event = CMD_MONITOR_EVENT_ANY;
@@ -3870,7 +3796,7 @@ static int cmd_evaluate_export(struct eval_ctx *ctx, struct cmd *cmd)
 		return cmd_error(ctx, &cmd->location,
 				 "JSON export is no longer supported, use 'nft -j list ruleset' instead");
 
-	return cache_update(ctx->nft, cmd->op, ctx->msgs);
+	return 0;
 }
 
 static int cmd_evaluate_import(struct eval_ctx *ctx, struct cmd *cmd)

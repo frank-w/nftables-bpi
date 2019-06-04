@@ -31,6 +31,7 @@ lib_LTLIBRARIES = libnftables.la
 libnftables_la_SOURCES =			\
 		rule.c				\
 		statement.c			\
+		cache.c				\
 		datatype.c			\
 		expression.c			\
 		evaluate.c			\

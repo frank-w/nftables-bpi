@@ -394,15 +394,9 @@ int mnl_nft_rule_replace(struct netlink_ctx *ctx, const struct cmd *cmd)
 	unsigned int flags = 0;
 	struct nftnl_rule *nlr;
 	struct nlmsghdr *nlh;
-	int err;
 
-	if (nft_output_echo(&ctx->nft->output)) {
-		err = cache_update(ctx->nft, CMD_INVALID, ctx->msgs);
-		if (err < 0)
-			return err;
-
+	if (nft_output_echo(&ctx->nft->output))
 		flags |= NLM_F_ECHO;
-	}
 
 	nlr = nftnl_rule_alloc();
 	if (!nlr)

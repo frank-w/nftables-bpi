@@ -348,7 +348,6 @@ static const struct input_descriptor indesc_cmdline = {
 static int nft_parse_bison_buffer(struct nft_ctx *nft, const char *buf,
 				  struct list_head *msgs, struct list_head *cmds)
 {
-	struct cmd *cmd;
 	int ret;
 
 	parser_init(nft, nft->state, msgs, cmds);
@@ -359,16 +358,12 @@ static int nft_parse_bison_buffer(struct nft_ctx *nft, const char *buf,
 	if (ret != 0 || nft->state->nerrs > 0)
 		return -1;
 
-	list_for_each_entry(cmd, cmds, list)
-		nft_cmd_expand(cmd);
-
 	return 0;
 }
 
 static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 				    struct list_head *msgs, struct list_head *cmds)
 {
-	struct cmd *cmd;
 	int ret;
 
 	parser_init(nft, nft->state, msgs, cmds);
@@ -379,6 +374,23 @@ static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 	ret = nft_parse(nft, nft->scanner, nft->state);
 	if (ret != 0 || nft->state->nerrs > 0)
 		return -1;
+
+	return 0;
+}
+
+static int nft_evaluate(struct nft_ctx *nft, struct list_head *msgs,
+			struct list_head *cmds)
+{
+	struct cmd *cmd;
+
+	list_for_each_entry(cmd, cmds, list) {
+		struct eval_ctx ectx = {
+			.nft	= nft,
+			.msgs	= msgs,
+		};
+		if (cmd_evaluate(&ectx, cmd) < 0)
+			return -1;
+	}
 
 	list_for_each_entry(cmd, cmds, list)
 		nft_cmd_expand(cmd);
@@ -402,6 +414,10 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, const char *buf)
 	if (rc == -EINVAL)
 		rc = nft_parse_bison_buffer(nft, nlbuf, &msgs, &cmds);
 	if (rc)
+		goto err;
+
+	rc = nft_evaluate(nft, &msgs, &cmds);
+	if (rc < 0)
 		goto err;
 
 	if (nft_netlink(nft, &cmds, &msgs, nft->nf_sock) != 0)
@@ -446,6 +462,10 @@ int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 	if (rc == -EINVAL)
 		rc = nft_parse_bison_filename(nft, filename, &msgs, &cmds);
 	if (rc)
+		goto err;
+
+	rc = nft_evaluate(nft, &msgs, &cmds);
+	if (rc < 0)
 		goto err;
 
 	if (nft_netlink(nft, &cmds, &msgs, nft->nf_sock) != 0)

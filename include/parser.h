@@ -27,7 +27,6 @@ struct parser_state {
 	unsigned int			scope;
 
 	struct list_head		*cmds;
-	struct eval_ctx			ectx;
 };
 
 struct mnl_socket;

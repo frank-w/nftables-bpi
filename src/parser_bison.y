@@ -48,8 +48,6 @@ void parser_init(struct nft_ctx *nft, struct parser_state *state,
 	state->msgs = msgs;
 	state->cmds = cmds;
 	state->scopes[0] = scope_init(&state->top_scope, NULL);
-	state->ectx.nft = nft;
-	state->ectx.msgs = msgs;
 	init_list_head(&state->indesc_list);
 }
 
@@ -792,17 +790,8 @@ input			:	/* empty */
 			|	input		line
 			{
 				if ($2 != NULL) {
-					LIST_HEAD(list);
-
 					$2->location = @2;
-
-					list_add_tail(&$2->list, &list);
-					if (cmd_evaluate(&state->ectx, $2) < 0) {
-						cmd_free($2);
-						if (++state->nerrs == nft->parser_max_errors)
-							YYABORT;
-					} else
-						list_splice_tail(&list, state->cmds);
+					list_add_tail(&$2->list, state->cmds);
 				}
 			}
 			;
@@ -878,22 +867,10 @@ line			:	common_block			{ $$ = NULL; }
 				 * work.
 				 */
 				if ($1 != NULL) {
-					LIST_HEAD(list);
-
 					$1->location = @1;
-
-					list_add_tail(&$1->list, &list);
-					if (cmd_evaluate(&state->ectx, $1) < 0) {
-						cmd_free($1);
-						if (++state->nerrs == nft->parser_max_errors)
-							YYABORT;
-					} else
-						list_splice_tail(&list, state->cmds);
+					list_add_tail(&$1->list, state->cmds);
 				}
-				if (state->nerrs)
-					YYABORT;
 				$$ = NULL;
-
 				YYACCEPT;
 			}
 			;

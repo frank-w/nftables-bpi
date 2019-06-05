@@ -50,6 +50,7 @@ void parser_init(struct nft_ctx *nft, struct parser_state *state,
 	state->scopes[0] = scope_init(&state->top_scope, NULL);
 	state->ectx.nft = nft;
 	state->ectx.msgs = msgs;
+	init_list_head(&state->indesc_list);
 }
 
 static void yyerror(struct location *loc, struct nft_ctx *nft, void *scanner,

@@ -165,6 +165,7 @@ enum input_descriptor_types {
  * @line_offset:	offset of the current line to the beginning
  */
 struct input_descriptor {
+	struct list_head		list;
 	struct location			location;
 	enum input_descriptor_types	type;
 	const char			*name;

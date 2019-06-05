@@ -59,12 +59,12 @@
 static void scanner_pop_buffer(yyscan_t scanner);
 
 
-static void init_pos(struct parser_state *state)
+static void init_pos(struct input_descriptor *indesc)
 {
-	state->indesc->lineno		= 1;
-	state->indesc->column		= 1;
-	state->indesc->token_offset	= 0;
-	state->indesc->line_offset 	= 0;
+	indesc->lineno		= 1;
+	indesc->column		= 1;
+	indesc->token_offset	= 0;
+	indesc->line_offset 	= 0;
 }
 
 static void update_pos(struct parser_state *state, struct location *loc,
@@ -656,13 +656,14 @@ static void scanner_pop_buffer(yyscan_t scanner)
 	struct parser_state *state = yyget_extra(scanner);
 
 	yypop_buffer_state(scanner);
-	state->indesc = &state->indescs[--state->indesc_idx - 1];
+	state->indesc = state->indescs[--state->indesc_idx];
 }
 
 static struct error_record *scanner_push_file(struct nft_ctx *nft, void *scanner,
 					      const char *filename, const struct location *loc)
 {
 	struct parser_state *state = yyget_extra(scanner);
+	struct input_descriptor *indesc;
 	YY_BUFFER_STATE b;
 
 	if (state->indesc_idx == MAX_INCLUDE_DEPTH)
@@ -672,12 +673,18 @@ static struct error_record *scanner_push_file(struct nft_ctx *nft, void *scanner
 	b = yy_create_buffer(nft->f[state->indesc_idx], YY_BUF_SIZE, scanner);
 	yypush_buffer_state(b, scanner);
 
-	state->indesc = &state->indescs[state->indesc_idx++];
+	indesc = xzalloc(sizeof(struct input_descriptor));
+
 	if (loc != NULL)
-		state->indesc->location = *loc;
-	state->indesc->type	= INDESC_FILE;
-	state->indesc->name	= xstrdup(filename);
-	init_pos(state);
+		indesc->location = *loc;
+	indesc->type	= INDESC_FILE;
+	indesc->name	= xstrdup(filename);
+	init_pos(indesc);
+
+	state->indescs[state->indesc_idx] = indesc;
+	state->indesc = state->indescs[state->indesc_idx++];
+	list_add_tail(&indesc->list, &state->indesc_list);
+
 	return NULL;
 }
 
@@ -874,21 +881,23 @@ void scanner_push_buffer(void *scanner, const struct input_descriptor *indesc,
 	struct parser_state *state = yyget_extra(scanner);
 	YY_BUFFER_STATE b;
 
-	state->indesc = &state->indescs[state->indesc_idx++];
+	state->indesc = xzalloc(sizeof(struct input_descriptor));
+	state->indescs[state->indesc_idx] = state->indesc;
+	state->indesc_idx++;
+
 	memcpy(state->indesc, indesc, sizeof(*state->indesc));
 	state->indesc->data = buffer;
 	state->indesc->name = NULL;
+	list_add_tail(&state->indesc->list, &state->indesc_list);
 
 	b = yy_scan_string(buffer, scanner);
 	assert(b != NULL);
-	init_pos(state);
+	init_pos(state->indesc);
 }
 
 void *scanner_init(struct parser_state *state)
 {
 	yyscan_t scanner;
-
-	state->indesc = state->indescs;
 
 	yylex_init_extra(state, &scanner);
 	yyset_out(NULL, scanner);
@@ -896,17 +905,28 @@ void *scanner_init(struct parser_state *state)
 	return scanner;
 }
 
+static void input_descriptor_destroy(const struct input_descriptor *indesc)
+{
+	if (indesc->name)
+		xfree(indesc->name);
+	xfree(indesc);
+}
+
+static void input_descriptor_list_destroy(struct parser_state *state)
+{
+	struct input_descriptor *indesc, *next;
+
+	list_for_each_entry_safe(indesc, next, &state->indesc_list, list) {
+		list_del(&indesc->list);
+		input_descriptor_destroy(indesc);
+	}
+}
+
 void scanner_destroy(struct nft_ctx *nft)
 {
 	struct parser_state *state = yyget_extra(nft->scanner);
 
 	do {
-		struct input_descriptor *inpdesc =
-			&state->indescs[state->indesc_idx];
-		if (inpdesc && inpdesc->name) {
-			xfree(inpdesc->name);
-			inpdesc->name = NULL;
-		}
 		yypop_buffer_state(nft->scanner);
 
 		if (nft->f[state->indesc_idx]) {
@@ -915,5 +935,6 @@ void scanner_destroy(struct nft_ctx *nft)
 		}
 	} while (state->indesc_idx--);
 
+	input_descriptor_list_destroy(state);
 	yylex_destroy(nft->scanner);
 }

@@ -251,7 +251,7 @@ int cache_update(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
 		.nft		= nft,
 	};
 	struct nft_cache *cache = &nft->cache;
-	uint32_t genid;
+	uint32_t genid, genid_stop;
 	int ret;
 replay:
 	ctx.seqnum = cache->seqnum++;
@@ -272,6 +272,13 @@ replay:
 		}
 		return -1;
 	}
+
+	genid_stop = mnl_genid_get(&ctx);
+	if (genid != genid_stop) {
+		cache_release(cache);
+		goto replay;
+	}
+
 	cache->genid = genid;
 	cache->cmd = cmd;
 	return 0;

@@ -378,6 +378,10 @@ int mnl_nft_rule_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 	nftnl_rule_set_str(nlr, NFTNL_RULE_CHAIN, h->chain.name);
 	if (h->position.id)
 		nftnl_rule_set_u64(nlr, NFTNL_RULE_POSITION, h->position.id);
+	if (h->rule_id)
+		nftnl_rule_set_u32(nlr, NFTNL_RULE_ID, h->rule_id);
+	if (h->position_id)
+		nftnl_rule_set_u32(nlr, NFTNL_RULE_POSITION_ID, h->position_id);
 
 	netlink_linearize_rule(ctx, nlr, rule);
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),

@@ -73,6 +73,8 @@ struct handle {
 	struct position_spec	position;
 	struct position_spec	index;
 	uint32_t		set_id;
+	uint32_t		rule_id;
+	uint32_t		position_id;
 };
 
 extern void handle_merge(struct handle *dst, const struct handle *src);

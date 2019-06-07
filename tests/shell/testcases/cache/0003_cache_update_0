@@ -34,10 +34,17 @@ EOF
 # add rule ip t4 c meta l4proto icmp accept -> rule to reference in next step
 # add rule ip t4 c index 0 drop -> index 0 is not found due to rule cache not
 #                                  being updated
+# add rule ip t4 c index 2 drop -> index 2 is not found due to igmp rule being
+#                                  in same transaction and therefore not having
+#                                  an allocated handle
 $NFT -i >/dev/null <<EOF
 add table ip t4; add chain ip t4 c
 add rule ip t4 c meta l4proto icmp accept
 EOF
 $NFT -f - >/dev/null <<EOF
 add rule ip t4 c index 0 drop
+EOF
+$NFT -f - >/dev/null <<EOF
+add rule ip t4 c meta l4proto igmp accept
+add rule ip t4 c index 2 drop
 EOF

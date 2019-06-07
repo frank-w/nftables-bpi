@@ -3180,13 +3180,29 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 	return 0;
 }
 
-/* Convert rule's handle.index into handle.position. */
-static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
+/* make src point at dst, either via handle.position or handle.position_id */
+static void link_rules(struct rule *src, struct rule *dst)
 {
+	static uint32_t ref_id = 0;
+
+	if (dst->handle.handle.id) {
+		/* dst is in kernel, make src reference it by handle */
+		src->handle.position.id = dst->handle.handle.id;
+		src->handle.position.location = src->handle.index.location;
+		return;
+	}
+
+	/* dst is not in kernel, make src reference it by per-transaction ID */
+	if (!dst->handle.rule_id)
+		dst->handle.rule_id = ++ref_id;
+	src->handle.position_id = dst->handle.rule_id;
+}
+
+static int rule_cache_update(struct eval_ctx *ctx, enum cmd_ops op)
+{
+	struct rule *rule = ctx->rule, *ref = NULL;
 	struct table *table;
 	struct chain *chain;
-	uint64_t index = 0;
-	struct rule *r;
 
 	table = table_lookup(&rule->handle, &ctx->nft->cache);
 	if (!table)
@@ -3196,21 +3212,59 @@ static int rule_translate_index(struct eval_ctx *ctx, struct rule *rule)
 	if (!chain)
 		return chain_not_found(ctx);
 
-	list_for_each_entry(r, &chain->rules, list) {
-		if (++index < rule->handle.index.id)
-			continue;
-		rule->handle.position.id = r->handle.handle.id;
-		rule->handle.position.location = rule->handle.index.location;
+	if (rule->handle.index.id) {
+		ref = rule_lookup_by_index(chain, rule->handle.index.id);
+		if (!ref)
+			return cmd_error(ctx, &rule->handle.index.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
+
+		link_rules(rule, ref);
+	} else if (rule->handle.handle.id) {
+		ref = rule_lookup(chain, rule->handle.handle.id);
+		if (!ref)
+			return cmd_error(ctx, &rule->handle.handle.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
+	} else if (rule->handle.position.id) {
+		ref = rule_lookup(chain, rule->handle.position.id);
+		if (!ref)
+			return cmd_error(ctx, &rule->handle.position.location,
+					 "Could not process rule: %s",
+					 strerror(ENOENT));
+	}
+
+	switch (op) {
+	case CMD_INSERT:
+		rule_get(rule);
+		if (ref)
+			list_add_tail(&rule->list, &ref->list);
+		else
+			list_add(&rule->list, &chain->rules);
+		break;
+	case CMD_ADD:
+		rule_get(rule);
+		if (ref)
+			list_add(&rule->list, &ref->list);
+		else
+			list_add_tail(&rule->list, &chain->rules);
+		break;
+	case CMD_REPLACE:
+		rule_get(rule);
+		list_add(&rule->list, &ref->list);
+		/* fall through */
+	case CMD_DELETE:
+		list_del(&ref->list);
+		rule_free(ref);
+		break;
+	default:
 		break;
 	}
-	if (!rule->handle.position.id)
-		return cmd_error(ctx, &rule->handle.index.location,
-				"Could not process rule: %s",
-				strerror(ENOENT));
 	return 0;
 }
 
-static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule)
+static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule,
+			 enum cmd_ops op)
 {
 	struct stmt *stmt, *tstmt = NULL;
 	struct error_record *erec;
@@ -3238,11 +3292,11 @@ static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule)
 		return -1;
 	}
 
-	if (rule->handle.index.id &&
-	    rule_translate_index(ctx, rule))
-		return -1;
+	/* add rules to cache only if it is complete enough to contain them */
+	if (!cache_is_complete(&ctx->nft->cache, CMD_LIST))
+		return 0;
 
-	return 0;
+	return rule_cache_update(ctx, op);
 }
 
 static uint32_t str2hooknum(uint32_t family, const char *hook)
@@ -3323,7 +3377,7 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 
 	list_for_each_entry(rule, &chain->rules, list) {
 		handle_merge(&rule->handle, &chain->handle);
-		if (rule_evaluate(ctx, rule) < 0)
+		if (rule_evaluate(ctx, rule, CMD_INVALID) < 0)
 			return -1;
 	}
 	return 0;
@@ -3410,7 +3464,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 		return set_evaluate(ctx, cmd->set);
 	case CMD_OBJ_RULE:
 		handle_merge(&cmd->rule->handle, &cmd->handle);
-		return rule_evaluate(ctx, cmd->rule);
+		return rule_evaluate(ctx, cmd->rule, cmd->op);
 	case CMD_OBJ_CHAIN:
 		return chain_evaluate(ctx, cmd->chain);
 	case CMD_OBJ_TABLE:

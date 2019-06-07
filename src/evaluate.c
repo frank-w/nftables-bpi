@@ -1689,7 +1689,8 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 			break;
 		case EXPR_SET:
 			right = rel->right =
-				implicit_set_declaration(ctx, "__set%d", left, right);
+				implicit_set_declaration(ctx, "__set%d",
+							 expr_get(left), right);
 			/* fall through */
 		case EXPR_SET_REF:
 			/* Data for range lookups needs to be in big endian order */

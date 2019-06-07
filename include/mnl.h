@@ -10,7 +10,7 @@ struct mnl_socket *nft_mnl_socket_open(void);
 struct mnl_socket *nft_mnl_socket_reopen(struct mnl_socket *nf_sock);
 
 uint32_t mnl_seqnum_alloc(uint32_t *seqnum);
-uint16_t mnl_genid_get(struct netlink_ctx *ctx);
+uint32_t mnl_genid_get(struct netlink_ctx *ctx);
 
 struct mnl_err {
 	struct list_head	head;

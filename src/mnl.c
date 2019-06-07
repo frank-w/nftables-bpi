@@ -108,7 +108,7 @@ nft_mnl_talk(struct netlink_ctx *ctx, const void *data, unsigned int len,
 /*
  * Rule-set consistency check across several netlink dumps
  */
-static uint16_t nft_genid;
+static uint32_t nft_genid;
 
 static int genid_cb(const struct nlmsghdr *nlh, void *data)
 {
@@ -119,7 +119,7 @@ static int genid_cb(const struct nlmsghdr *nlh, void *data)
 	return MNL_CB_OK;
 }
 
-uint16_t mnl_genid_get(struct netlink_ctx *ctx)
+uint32_t mnl_genid_get(struct netlink_ctx *ctx)
 {
 	char buf[MNL_SOCKET_BUFFER_SIZE];
 	struct nlmsghdr *nlh;
@@ -131,11 +131,16 @@ uint16_t mnl_genid_get(struct netlink_ctx *ctx)
 	return nft_genid;
 }
 
+static uint16_t nft_genid_u16(uint32_t genid)
+{
+	return genid & 0xffff;
+}
+
 static int check_genid(const struct nlmsghdr *nlh)
 {
 	struct nfgenmsg *nfh = mnl_nlmsg_get_payload(nlh);
 
-	if (nft_genid != ntohs(nfh->res_id)) {
+	if (nft_genid_u16(nft_genid) != ntohs(nfh->res_id)) {
 		errno = EINTR;
 		return -1;
 	}

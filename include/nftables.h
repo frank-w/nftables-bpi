@@ -78,7 +78,7 @@ static inline bool nft_output_numeric_symbol(const struct output_ctx *octx)
 }
 
 struct nft_cache {
-	uint16_t		genid;
+	uint32_t		genid;
 	struct list_head	list;
 	uint32_t		seqnum;
 	uint32_t		cmd;

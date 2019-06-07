@@ -816,6 +816,70 @@
     }
 ]
 
+# arp saddr ip 1.2.3.4
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr ip",
+                    "protocol": "arp"
+                }
+            },
+            "op": "==",
+            "right": "1.2.3.4"
+        }
+    }
+]
+
+# arp daddr ip 4.3.2.1
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "daddr ip",
+                    "protocol": "arp"
+                }
+            },
+            "op": "==",
+            "right": "4.3.2.1"
+        }
+    }
+]
+
+# arp saddr ether aa:bb:cc:aa:bb:cc
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr ether",
+                    "protocol": "arp"
+                }
+            },
+            "op": "==",
+            "right": "aa:bb:cc:aa:bb:cc"
+        }
+    }
+]
+
+# arp daddr ether aa:bb:cc:aa:bb:cc
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "daddr ether",
+                    "protocol": "arp"
+                }
+            },
+            "op": "==",
+            "right": "aa:bb:cc:aa:bb:cc"
+        }
+    }
+]
+
 # meta iifname "invalid" arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566
 [
     {

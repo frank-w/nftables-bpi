@@ -129,25 +129,23 @@
         "match": {
             "left": {
                 "payload": {
-                    "base": "nh",
-                    "len": 32,
-                    "offset": 192
+                    "field": "daddr ip",
+                    "protocol": "arp"
                 }
             },
 	    "op": "==",
-            "right": 3232272144
+            "right": "192.168.143.16"
         }
     },
     {
         "mangle": {
             "key": {
                 "payload": {
-                    "base": "nh",
-                    "len": 48,
-                    "offset": 144
+                    "field": "daddr ether",
+                    "protocol": "arp"
                 }
             },
-            "value": 18838586676582
+            "value": "11:22:33:44:55:66"
         }
     }
 ]

@@ -883,7 +883,7 @@
     }
 ]
 
-# ct expiration {33-55}
+# ct expiration {33-55, 66-88}
 [
     {
         "match": {
@@ -895,16 +895,15 @@
             "op": "==",
             "right": {
                 "set": [
-                    {
-                        "range": [ 33, 55 ]
-                    }
+                    { "range": [ 33, 55 ] },
+                    { "range": [ 66, 88 ] }
                 ]
             }
         }
     }
 ]
 
-# ct expiration != {33-55}
+# ct expiration != {33-55, 66-88}
 [
     {
         "match": {
@@ -916,9 +915,8 @@
             "op": "!=",
             "right": {
                 "set": [
-                    {
-                        "range": [ 33, 55 ]
-                    }
+                    { "range": [ 33, 55 ] },
+                    { "range": [ 66, 88 ] }
                 ]
             }
         }
@@ -1003,7 +1001,7 @@
     }
 ]
 
-# ct direction . ct mark { original . 0x12345678}
+# ct direction . ct mark { original . 0x12345678, reply . 0x87654321}
 [
     {
         "match": {
@@ -1029,6 +1027,12 @@
                             "original",
                             "0x12345678"
                         ]
+                    },
+                    {
+                        "concat": [
+                            "reply",
+                            "0x87654321"
+                        ]
                     }
                 ]
             }
@@ -1036,7 +1040,7 @@
     }
 ]
 
-# ct state . ct mark vmap { new . 0x12345678 : drop}
+# ct state . ct mark vmap { new . 0x12345678 : drop, established . 0x87654321 : accept}
 [
     {
         "vmap": {
@@ -1065,6 +1069,17 @@
                         },
                         {
                             "drop": null
+                        }
+                    ],
+                    [
+                        {
+                            "concat": [
+                                "established",
+                                "0x87654321"
+                            ]
+                        },
+                        {
+                            "accept": null
                         }
                     ]
                 ]

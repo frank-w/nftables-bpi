@@ -549,7 +549,7 @@
     }
 ]
 
-# ct direction . ct mark { original . 0x12345678}
+# ct direction . ct mark { original . 0x12345678, reply . 0x87654321}
 [
     {
         "match": {
@@ -575,6 +575,12 @@
                             "original",
                             305419896
                         ]
+                    },
+                    {
+                        "concat": [
+                            "reply",
+                            2271560481
+                        ]
                     }
                 ]
             }
@@ -582,7 +588,7 @@
     }
 ]
 
-# ct state . ct mark vmap { new . 0x12345678 : drop}
+# ct state . ct mark vmap { new . 0x12345678 : drop, established . 0x87654321 : accept}
 [
     {
         "vmap": {
@@ -602,6 +608,17 @@
             },
             "data": {
                 "set": [
+                    [
+                        {
+                            "concat": [
+                                "established",
+                                2271560481
+                            ]
+                        },
+                        {
+                            "accept": null
+                        }
+                    ],
                     [
                         {
                             "concat": [

@@ -393,7 +393,8 @@ static int nft_evaluate(struct nft_ctx *nft, struct list_head *msgs,
 			.nft	= nft,
 			.msgs	= msgs,
 		};
-		if (cmd_evaluate(&ectx, cmd) < 0)
+		if (cmd_evaluate(&ectx, cmd) < 0 &&
+		    ++nft->state->nerrs == nft->parser_max_errors)
 			return -1;
 	}
 

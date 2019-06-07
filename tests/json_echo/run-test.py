@@ -271,12 +271,10 @@ add_quota["add"]["quota"]["name"] = "q"
 do_flush()
 
 print("doing multi add")
-# XXX: Add table separately, otherwise this triggers cache bug
-out = do_command(add_table)
-thandle = get_handle(out, add_table["add"])
-add_multi = [ add_chain, add_set, add_rule ]
+add_multi = [ add_table, add_chain, add_set, add_rule ]
 out = do_command(add_multi)
 
+thandle = get_handle(out, add_table["add"])
 chandle = get_handle(out, add_chain["add"])
 shandle = get_handle(out, add_set["add"])
 rhandle = get_handle(out, add_rule["add"])

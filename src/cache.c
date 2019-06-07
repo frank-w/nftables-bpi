@@ -24,13 +24,7 @@ static unsigned int evaluate_cache_add(struct cmd *cmd)
 		completeness = cmd->op;
 		break;
 	case CMD_OBJ_RULE:
-		/* XXX index is set to zero unless this handle_merge() call is
-		 * invoked, this handle_merge() call is done from the
-		 * evaluation, which is too late.
-		 */
-		handle_merge(&cmd->rule->handle, &cmd->handle);
-
-		if (cmd->rule->handle.index.id)
+		if (cmd->handle.index.id)
 			completeness = CMD_LIST;
 		break;
 	default:

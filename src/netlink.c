@@ -265,8 +265,8 @@ static struct expr *netlink_alloc_verdict(const struct location *loc,
 	case NFT_GOTO:
 		chain = constant_expr_alloc(loc, &string_type,
 					    BYTEORDER_HOST_ENDIAN,
-					    NFT_CHAIN_MAXNAMELEN *
-					    BITS_PER_BYTE, nld->chain);
+					    strlen(nld->chain) * BITS_PER_BYTE,
+					    nld->chain);
 		break;
 	default:
 		chain = NULL;

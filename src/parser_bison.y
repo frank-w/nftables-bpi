@@ -3824,8 +3824,8 @@ chain_expr		:	variable_expr
 			{
 				$$ = constant_expr_alloc(&@$, &string_type,
 							 BYTEORDER_HOST_ENDIAN,
-							 NFT_CHAIN_MAXNAMELEN *
-							 BITS_PER_BYTE, $1);
+							 strlen($1) * BITS_PER_BYTE,
+							 $1);
 			}
 			;
 

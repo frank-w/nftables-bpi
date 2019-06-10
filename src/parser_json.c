@@ -1059,7 +1059,7 @@ static struct expr *json_alloc_chain_expr(const char *chain)
 		return NULL;
 
 	return constant_expr_alloc(int_loc, &string_type, BYTEORDER_HOST_ENDIAN,
-				   NFT_CHAIN_MAXNAMELEN * BITS_PER_BYTE, chain);
+				   strlen(chain) * BITS_PER_BYTE, chain);
 }
 
 static struct expr *json_parse_verdict_expr(struct json_ctx *ctx,

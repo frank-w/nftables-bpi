@@ -1172,8 +1172,7 @@ static void trace_print_verdict(const struct nftnl_trace *nlt,
 		chain_expr = constant_expr_alloc(&netlink_location,
 						 &string_type,
 						 BYTEORDER_HOST_ENDIAN,
-						 NFT_CHAIN_MAXNAMELEN
-						 * BITS_PER_BYTE,
+						 strlen(chain) * BITS_PER_BYTE,
 						 chain);
 	}
 	expr = verdict_expr_alloc(&netlink_location, verdict, chain_expr);

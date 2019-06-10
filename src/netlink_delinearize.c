@@ -293,6 +293,7 @@ static void netlink_parse_cmp(struct netlink_parse_ctx *ctx,
 	    expr_basetype(left) != &string_type) {
 		return netlink_error(ctx, loc, "Relational expression size mismatch");
 	} else if (left->len > 0 && left->len < right->len) {
+		expr_free(left);
 		left = netlink_parse_concat_expr(ctx, loc, sreg, right->len);
 		if (left == NULL)
 			return;
@@ -329,6 +330,7 @@ static void netlink_parse_lookup(struct netlink_parse_ctx *ctx,
 				     "Lookup expression has no left hand side");
 
 	if (left->len < set->key->len) {
+		expr_free(left);
 		left = netlink_parse_concat_expr(ctx, loc, sreg, set->key->len);
 		if (left == NULL)
 			return;
@@ -1317,6 +1319,7 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 				     "Dynset statement has no key expression");
 
 	if (expr->len < set->key->len) {
+		expr_free(expr);
 		expr = netlink_parse_concat_expr(ctx, loc, sreg, set->key->len);
 		if (expr == NULL)
 			return;
@@ -1408,6 +1411,7 @@ static void netlink_parse_objref(struct netlink_parse_ctx *ctx,
 					     "objref expression has no left hand side");
 
 		if (left->len < set->key->len) {
+			expr_free(left);
 			left = netlink_parse_concat_expr(ctx, loc, sreg, set->key->len);
 			if (left == NULL)
 				return;

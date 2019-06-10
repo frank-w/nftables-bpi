@@ -3826,6 +3826,7 @@ chain_expr		:	variable_expr
 							 BYTEORDER_HOST_ENDIAN,
 							 strlen($1) * BITS_PER_BYTE,
 							 $1);
+				xfree($1);
 			}
 			;
 

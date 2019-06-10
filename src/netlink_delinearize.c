@@ -63,7 +63,7 @@ static void netlink_set_register(struct netlink_parse_ctx *ctx,
 				 enum nft_registers reg,
 				 struct expr *expr)
 {
-	if (reg == NFT_REG_VERDICT || reg > 1 + NFT_REG32_15 - NFT_REG32_00) {
+	if (reg == NFT_REG_VERDICT || reg > MAX_REGS) {
 		netlink_error(ctx, &expr->location,
 			      "Invalid destination register %u", reg);
 		expr_free(expr);
@@ -82,7 +82,7 @@ static struct expr *netlink_get_register(struct netlink_parse_ctx *ctx,
 {
 	struct expr *expr;
 
-	if (reg == NFT_REG_VERDICT || reg > 1 + NFT_REG32_15 - NFT_REG32_00) {
+	if (reg == NFT_REG_VERDICT || reg > MAX_REGS) {
 		netlink_error(ctx, loc, "Invalid source register %u", reg);
 		return NULL;
 	}
@@ -98,7 +98,7 @@ static void netlink_release_registers(struct netlink_parse_ctx *ctx)
 {
 	int i;
 
-	for (i = 0; i <= NFT_REG_MAX; i++)
+	for (i = 0; i < MAX_REGS; i++)
 		expr_free(ctx->registers[i]);
 }
 

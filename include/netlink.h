@@ -14,12 +14,14 @@
 
 #include <rule.h>
 
+#define MAX_REGS	(1 + NFT_REG32_15 - NFT_REG32_00)
+
 struct netlink_parse_ctx {
 	struct list_head	*msgs;
 	struct table		*table;
 	struct rule		*rule;
 	struct stmt		*stmt;
-	struct expr		*registers[1 + NFT_REG32_15 - NFT_REG32_00 + 1];
+	struct expr		*registers[MAX_REGS + 1];
 	unsigned int		debug_mask;
 };
 

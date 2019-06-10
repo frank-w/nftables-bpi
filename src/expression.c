@@ -217,7 +217,7 @@ static void verdict_expr_clone(struct expr *new, const struct expr *expr)
 {
 	new->verdict = expr->verdict;
 	if (expr->chain != NULL)
-		mpz_init_set(new->chain->value, expr->chain->value);
+		new->chain = expr_clone(expr->chain);
 }
 
 static void verdict_expr_destroy(struct expr *expr)

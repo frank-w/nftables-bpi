@@ -206,9 +206,9 @@ void exthdr_init_raw(struct expr *expr, uint8_t type,
  out:
 	expr->exthdr.tmpl = tmpl;
 	if (flags & NFT_EXTHDR_F_PRESENT)
-		expr->dtype = &boolean_type;
+		datatype_set(expr, &boolean_type);
 	else
-		expr->dtype = tmpl->dtype;
+		datatype_set(expr, tmpl->dtype);
 }
 
 static unsigned int mask_length(const struct expr *mask)

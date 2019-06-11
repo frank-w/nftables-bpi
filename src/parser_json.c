@@ -1966,8 +1966,7 @@ static struct stmt *json_parse_reject_stmt(struct json_ctx *ctx,
 			stmt_free(stmt);
 			return NULL;
 		}
-		if (dtype)
-			stmt->reject.expr->dtype = dtype;
+		datatype_set(stmt->reject.expr, dtype);
 	}
 	return stmt;
 }

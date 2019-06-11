@@ -44,7 +44,7 @@ struct expr *expr_alloc(const struct location *loc, enum expr_types etype,
 
 	expr = xzalloc(sizeof(*expr));
 	expr->location  = *loc;
-	expr->dtype	= dtype;
+	expr->dtype	= datatype_get(dtype);
 	expr->etype	= etype;
 	expr->byteorder	= byteorder;
 	expr->len	= len;
@@ -57,8 +57,8 @@ struct expr *expr_clone(const struct expr *expr)
 {
 	struct expr *new;
 
-	new = expr_alloc(&expr->location, expr->etype, expr->dtype,
-			 expr->byteorder, expr->len);
+	new = expr_alloc(&expr->location, expr->etype,
+			 expr->dtype, expr->byteorder, expr->len);
 	new->flags = expr->flags;
 	new->op    = expr->op;
 	expr_ops(expr)->clone(new, expr);
@@ -85,6 +85,8 @@ void expr_free(struct expr *expr)
 		return;
 	if (--expr->refcnt > 0)
 		return;
+
+	datatype_free(expr->dtype);
 
 	/* EXPR_INVALID expressions lack ->ops structure.
 	 * This happens for compound types.
@@ -165,7 +167,7 @@ void expr_set_type(struct expr *expr, const struct datatype *dtype,
 	if (ops->set_type)
 		ops->set_type(expr, dtype, byteorder);
 	else {
-		expr->dtype	= dtype;
+		datatype_set(expr, dtype);
 		expr->byteorder	= byteorder;
 	}
 }
@@ -803,7 +805,6 @@ void compound_expr_remove(struct expr *compound, struct expr *expr)
 
 static void concat_expr_destroy(struct expr *expr)
 {
-	concat_type_destroy(expr->dtype);
 	compound_expr_destroy(expr);
 }
 
@@ -936,7 +937,7 @@ struct expr *set_expr_alloc(const struct location *loc, const struct set *set)
 		return set_expr;
 
 	set_expr->set_flags = set->flags;
-	set_expr->dtype = set->key->dtype;
+	datatype_set(set_expr, set->key->dtype);
 
 	return set_expr;
 }

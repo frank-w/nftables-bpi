@@ -415,7 +415,7 @@ static inline void symbol_expr_set_type(struct expr *expr,
 					const struct datatype *dtype)
 {
 	if (expr->etype == EXPR_SYMBOL)
-		expr->dtype = dtype;
+		datatype_set(expr, dtype);
 }
 
 struct expr *variable_expr_alloc(const struct location *loc,

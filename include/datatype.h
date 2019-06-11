@@ -117,12 +117,10 @@ struct expr;
  *
  * @DTYPE_F_ALLOC:		datatype is dynamically allocated
  * @DTYPE_F_PREFIX:		preferred representation for ranges is a prefix
- * @DTYPE_F_CLONE:		this is an instance from original datatype
  */
 enum datatype_flags {
 	DTYPE_F_ALLOC		= (1 << 0),
 	DTYPE_F_PREFIX		= (1 << 1),
-	DTYPE_F_CLONE		= (1 << 2),
 };
 
 /**
@@ -140,6 +138,7 @@ enum datatype_flags {
  * @print:	function to print a constant of this type
  * @parse:	function to parse a symbol and return an expression
  * @sym_tbl:	symbol table for this type
+ * @refcnt:	reference counter (only for DTYPE_F_ALLOC)
  */
 struct datatype {
 	uint32_t			type;
@@ -158,10 +157,14 @@ struct datatype {
 	struct error_record		*(*parse)(const struct expr *sym,
 						  struct expr **res);
 	const struct symbol_table	*sym_tbl;
+	unsigned int			refcnt;
 };
 
 extern const struct datatype *datatype_lookup(enum datatypes type);
 extern const struct datatype *datatype_lookup_byname(const char *name);
+extern struct datatype *datatype_get(const struct datatype *dtype);
+extern void datatype_set(struct expr *expr, const struct datatype *dtype);
+extern void datatype_free(const struct datatype *dtype);
 
 extern struct error_record *symbol_parse(const struct expr *sym,
 					 struct expr **res);

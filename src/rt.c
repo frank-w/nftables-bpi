@@ -148,10 +148,10 @@ void rt_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 	case NFT_RT_NEXTHOP4:
 		desc = ctx->protocol[PROTO_BASE_NETWORK_HDR].desc;
 		if (desc == &proto_ip)
-			expr->dtype = &ipaddr_type;
+			datatype_set(expr, &ipaddr_type);
 		else if (desc == &proto_ip6) {
 			expr->rt.key++;
-			expr->dtype = &ip6addr_type;
+			datatype_set(expr, &ip6addr_type);
 		}
 		expr->len = expr->dtype->size;
 		break;

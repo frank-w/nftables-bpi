@@ -1076,6 +1076,25 @@ static struct datatype *dtype_alloc(void)
 	return dtype;
 }
 
+struct datatype *datatype_get(const struct datatype *ptr)
+{
+	struct datatype *dtype = (struct datatype *)ptr;
+
+	if (!dtype)
+		return NULL;
+	if (!(dtype->flags & DTYPE_F_ALLOC))
+		return dtype;
+
+	dtype->refcnt++;
+	return dtype;
+}
+
+void datatype_set(struct expr *expr, const struct datatype *dtype)
+{
+	datatype_free(expr->dtype);
+	expr->dtype = datatype_get(dtype);
+}
+
 static struct datatype *dtype_clone(const struct datatype *orig_dtype)
 {
 	struct datatype *dtype;
@@ -1084,18 +1103,26 @@ static struct datatype *dtype_clone(const struct datatype *orig_dtype)
 	*dtype = *orig_dtype;
 	dtype->name = xstrdup(orig_dtype->name);
 	dtype->desc = xstrdup(orig_dtype->desc);
-	dtype->flags = DTYPE_F_ALLOC | DTYPE_F_CLONE;
+	dtype->flags = DTYPE_F_ALLOC;
+	dtype->refcnt = 0;
 
 	return dtype;
 }
 
-static void dtype_free(const struct datatype *dtype)
+void datatype_free(const struct datatype *ptr)
 {
-	if (dtype->flags & DTYPE_F_ALLOC) {
-		xfree(dtype->name);
-		xfree(dtype->desc);
-		xfree(dtype);
-	}
+	struct datatype *dtype = (struct datatype *)ptr;
+
+	if (!dtype)
+		return;
+	if (!(dtype->flags & DTYPE_F_ALLOC))
+		return;
+	if (--dtype->refcnt > 0)
+		return;
+
+	xfree(dtype->name);
+	xfree(dtype->desc);
+	xfree(dtype);
 }
 
 const struct datatype *concat_type_alloc(uint32_t type)
@@ -1137,7 +1164,7 @@ const struct datatype *concat_type_alloc(uint32_t type)
 
 void concat_type_destroy(const struct datatype *dtype)
 {
-	dtype_free(dtype);
+	datatype_free(dtype);
 }
 
 const struct datatype *set_datatype_alloc(const struct datatype *orig_dtype,
@@ -1157,8 +1184,7 @@ const struct datatype *set_datatype_alloc(const struct datatype *orig_dtype,
 
 void set_datatype_destroy(const struct datatype *dtype)
 {
-	if (dtype && dtype->flags & DTYPE_F_CLONE)
-		dtype_free(dtype);
+	datatype_free(dtype);
 }
 
 static struct error_record *time_unit_parse(const struct location *loc,

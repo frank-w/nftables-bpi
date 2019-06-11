@@ -341,7 +341,7 @@ struct set *set_clone(const struct set *set)
 	new_set->gc_int		= set->gc_int;
 	new_set->timeout	= set->timeout;
 	new_set->key		= expr_clone(set->key);
-	new_set->datatype	= set->datatype;
+	new_set->datatype	= datatype_get(set->datatype);
 	new_set->datalen	= set->datalen;
 	new_set->objtype	= set->objtype;
 	new_set->policy		= set->policy;

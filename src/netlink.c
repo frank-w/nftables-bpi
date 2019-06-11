@@ -617,7 +617,8 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	set->objtype = objtype;
 
 	if (datatype)
-		set->datatype = set_datatype_alloc(datatype, databyteorder);
+		set->datatype = datatype_get(set_datatype_alloc(datatype,
+								databyteorder));
 	else
 		set->datatype = NULL;
 
@@ -767,7 +768,7 @@ int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 		flags = nftnl_set_elem_get_u32(nlse, NFTNL_SET_ELEM_FLAGS);
 
 	key = netlink_alloc_value(&netlink_location, &nld);
-	key->dtype	= set->key->dtype;
+	datatype_set(key, set->key->dtype);
 	key->byteorder	= set->key->byteorder;
 	if (set->key->dtype->subtypes)
 		key = netlink_parse_concat_elem(set->key->dtype, key);
@@ -811,7 +812,7 @@ int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 		data = netlink_alloc_data(&netlink_location, &nld,
 					  set->datatype->type == TYPE_VERDICT ?
 					  NFT_REG_VERDICT : NFT_REG_1);
-		data->dtype = set->datatype;
+		datatype_set(data, set->datatype);
 		data->byteorder = set->datatype->byteorder;
 		if (data->byteorder == BYTEORDER_HOST_ENDIAN)
 			mpz_switch_byteorder(data->value, data->len / BITS_PER_BYTE);

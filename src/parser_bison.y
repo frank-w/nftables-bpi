@@ -2598,7 +2598,7 @@ reject_opts		:       /* empty */
 					symbol_expr_alloc(&@$, SYMBOL_VALUE,
 							  current_scope(state),
 							  $4);
-				$<stmt>0->reject.expr->dtype = &icmp_code_type;
+				datatype_set($<stmt>0->reject.expr, &icmp_code_type);
 				xfree($4);
 			}
 			|	WITH	ICMP6	TYPE	STRING
@@ -2609,7 +2609,7 @@ reject_opts		:       /* empty */
 					symbol_expr_alloc(&@$, SYMBOL_VALUE,
 							  current_scope(state),
 							  $4);
-				$<stmt>0->reject.expr->dtype = &icmpv6_code_type;
+				datatype_set($<stmt>0->reject.expr, &icmpv6_code_type);
 				xfree($4);
 			}
 			|	WITH	ICMPX	TYPE	STRING
@@ -2619,7 +2619,7 @@ reject_opts		:       /* empty */
 					symbol_expr_alloc(&@$, SYMBOL_VALUE,
 							  current_scope(state),
 							  $4);
-				$<stmt>0->reject.expr->dtype = &icmpx_code_type;
+				datatype_set($<stmt>0->reject.expr, &icmpx_code_type);
 				xfree($4);
 			}
 			|	WITH	TCP	RESET

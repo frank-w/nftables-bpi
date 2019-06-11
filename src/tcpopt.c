@@ -218,9 +218,9 @@ void tcpopt_init_raw(struct expr *expr, uint8_t type, unsigned int offset,
 			continue;
 
 		if (flags & NFT_EXTHDR_F_PRESENT)
-			expr->dtype = &boolean_type;
+			datatype_set(expr, &boolean_type);
 		else
-			expr->dtype = tmpl->dtype;
+			datatype_set(expr, tmpl->dtype);
 		expr->exthdr.tmpl = tmpl;
 		expr->exthdr.op   = NFT_EXTHDR_OP_TCPOPT;
 		break;

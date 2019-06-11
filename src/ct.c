@@ -413,10 +413,10 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 	case NFT_CT_SRC:
 	case NFT_CT_DST:
 		if (desc == &proto_ip) {
-			expr->dtype = &ipaddr_type;
+			datatype_set(expr, &ipaddr_type);
 			expr->ct.nfproto = NFPROTO_IPV4;
 		} else if (desc == &proto_ip6) {
-			expr->dtype = &ip6addr_type;
+			datatype_set(expr, &ip6addr_type);
 			expr->ct.nfproto = NFPROTO_IPV6;
 		}
 
@@ -426,7 +426,7 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 	case NFT_CT_PROTO_DST:
 		if (desc == NULL)
 			break;
-		expr->dtype = &inet_service_type;
+		datatype_set(expr, &inet_service_type);
 		break;
 	default:
 		break;

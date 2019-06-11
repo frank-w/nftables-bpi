@@ -70,7 +70,7 @@ static void key_fix_dtype_byteorder(struct expr *key)
 	if (dtype->byteorder == key->byteorder)
 		return;
 
-	key->dtype = set_datatype_alloc(dtype, key->byteorder);
+	datatype_set(key, set_datatype_alloc(dtype, key->byteorder));
 	if (dtype->flags & DTYPE_F_ALLOC)
 		concat_type_destroy(dtype);
 }
@@ -229,7 +229,7 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 
 	switch ((*expr)->symtype) {
 	case SYMBOL_VALUE:
-		(*expr)->dtype = ctx->ectx.dtype;
+		datatype_set(*expr, ctx->ectx.dtype);
 		erec = symbol_parse(*expr, &new);
 		if (erec != NULL) {
 			erec_queue(erec, ctx->msgs);
@@ -312,7 +312,7 @@ static int expr_evaluate_string(struct eval_ctx *ctx, struct expr **exprp)
 
 	prefix = prefix_expr_alloc(&expr->location, value,
 				   datalen * BITS_PER_BYTE);
-	prefix->dtype = ctx->ectx.dtype;
+	datatype_set(prefix, ctx->ectx.dtype);
 	prefix->flags |= EXPR_F_CONSTANT;
 	prefix->byteorder = BYTEORDER_HOST_ENDIAN;
 
@@ -489,7 +489,7 @@ static int __expr_evaluate_exthdr(struct eval_ctx *ctx, struct expr **exprp)
 	struct expr *expr = *exprp;
 
 	if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
-		expr->dtype = &boolean_type;
+		datatype_set(expr, &boolean_type);
 
 	if (expr_evaluate_primary(ctx, exprp) < 0)
 		return -1;
@@ -915,7 +915,7 @@ static int expr_evaluate_range(struct eval_ctx *ctx, struct expr **expr)
 		return expr_error(ctx->msgs, range,
 				  "Range has zero or negative size");
 
-	range->dtype = left->dtype;
+	datatype_set(range, left->dtype);
 	range->flags |= EXPR_F_CONSTANT;
 	return 0;
 }
@@ -1172,7 +1172,7 @@ static int expr_evaluate_concat(struct eval_ctx *ctx, struct expr **expr,
 	}
 
 	(*expr)->flags |= flags;
-	(*expr)->dtype = concat_type_alloc(ntype);
+	datatype_set(*expr, concat_type_alloc(ntype));
 	(*expr)->len   = (*expr)->dtype->size;
 
 	if (off > 0)
@@ -1239,7 +1239,7 @@ static int expr_evaluate_set_elem(struct eval_ctx *ctx, struct expr **expr)
 		}
 	}
 
-	elem->dtype = elem->key->dtype;
+	datatype_set(elem, elem->key->dtype);
 	elem->len   = elem->key->len;
 	elem->flags = elem->key->flags;
 	return 0;
@@ -1285,7 +1285,7 @@ static int expr_evaluate_set(struct eval_ctx *ctx, struct expr **expr)
 
 	set->set_flags |= NFT_SET_CONSTANT;
 
-	set->dtype = ctx->ectx.dtype;
+	datatype_set(set, ctx->ectx.dtype);
 	set->len   = ctx->ectx.len;
 	set->flags |= EXPR_F_CONSTANT;
 	return 0;
@@ -1311,15 +1311,16 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 	switch (map->mappings->etype) {
 	case EXPR_SET:
 		key = constant_expr_alloc(&map->location,
-				 ctx->ectx.dtype,
-				 ctx->ectx.byteorder,
-				 ctx->ectx.len, NULL);
+					  ctx->ectx.dtype,
+					  ctx->ectx.byteorder,
+					  ctx->ectx.len, NULL);
 
 		mappings = implicit_set_declaration(ctx, "__map%d",
 						    key,
 						    mappings);
-		mappings->set->datatype = set_datatype_alloc(ectx.dtype,
-							     ectx.byteorder);
+		mappings->set->datatype =
+			datatype_get(set_datatype_alloc(ectx.dtype,
+							ectx.byteorder));
 		mappings->set->datalen  = ectx.len;
 
 		map->mappings = mappings;
@@ -1356,7 +1357,7 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 					 map->mappings->set->key->dtype->desc,
 					 map->map->dtype->desc);
 
-	map->dtype = map->mappings->set->datatype;
+	datatype_set(map, map->mappings->set->datatype);
 	map->flags |= EXPR_F_CONSTANT;
 
 	/* Data for range lookups needs to be in big endian order */
@@ -1413,7 +1414,7 @@ static void expr_dtype_integer_compatible(struct eval_ctx *ctx,
 	if (ctx->ectx.dtype &&
 	    ctx->ectx.dtype->basetype == &integer_type &&
 	    ctx->ectx.len == 4 * BITS_PER_BYTE) {
-		expr->dtype = ctx->ectx.dtype;
+		datatype_set(expr, ctx->ectx.dtype);
 		expr->len   = ctx->ectx.len;
 	}
 }
@@ -1554,7 +1555,7 @@ static void binop_transfer_handle_lhs(struct expr **expr)
 	case OP_LSHIFT:
 	case OP_XOR:
 		tmp = expr_get(left->left);
-		tmp->dtype = left->dtype;
+		datatype_set(tmp, left->dtype);
 		expr_free(left);
 		*expr = tmp;
 		break;
@@ -1745,7 +1746,7 @@ static int expr_evaluate_fib(struct eval_ctx *ctx, struct expr **exprp)
 
 	if (expr->flags & EXPR_F_BOOLEAN) {
 		expr->fib.flags |= NFTA_FIB_F_PRESENT;
-		expr->dtype = &boolean_type;
+		datatype_set(expr, &boolean_type);
 	}
 	return expr_evaluate_primary(ctx, exprp);
 }
@@ -2965,7 +2966,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 					 map->mappings->set->key->dtype->desc,
 					 map->map->dtype->desc);
 
-	map->dtype = map->mappings->set->datatype;
+	datatype_set(map, map->mappings->set->datatype);
 	map->flags |= EXPR_F_CONSTANT;
 
 	/* Data for range lookups needs to be in big endian order */

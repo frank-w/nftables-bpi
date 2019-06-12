@@ -1103,7 +1103,7 @@ static struct datatype *dtype_clone(const struct datatype *orig_dtype)
 	*dtype = *orig_dtype;
 	dtype->name = xstrdup(orig_dtype->name);
 	dtype->desc = xstrdup(orig_dtype->desc);
-	dtype->flags = DTYPE_F_ALLOC;
+	dtype->flags = DTYPE_F_ALLOC | orig_dtype->flags;
 	dtype->refcnt = 0;
 
 	return dtype;

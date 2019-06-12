@@ -2435,6 +2435,9 @@ static int do_command_monitor(struct netlink_ctx *ctx, struct cmd *cmd)
 		.debug_mask	= ctx->nft->debug_mask,
 	};
 
+	if (nft_output_json(&ctx->nft->output))
+		monhandler.format = NFTNL_OUTPUT_JSON;
+
 	monhandler.cache_needed = need_cache(cmd);
 	if (monhandler.cache_needed) {
 		struct rule *rule, *nrule;

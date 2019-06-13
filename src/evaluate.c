@@ -2114,7 +2114,8 @@ static int stmt_evaluate_meter(struct eval_ctx *ctx, struct stmt *stmt)
 	if (key->timeout)
 		set->set_flags |= NFT_SET_TIMEOUT;
 
-	setref = implicit_set_declaration(ctx, stmt->meter.name, key, set);
+	setref = implicit_set_declaration(ctx, stmt->meter.name,
+					  expr_get(key), set);
 
 	setref->set->desc.size = stmt->meter.size;
 	stmt->meter.set = setref;

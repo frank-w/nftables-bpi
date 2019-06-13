@@ -2003,7 +2003,6 @@ static bool __expr_postprocess_string(struct expr **exprp)
 		escaped_string_wildcard_expr_alloc(exprp, len);
 
 	mpz_clear(tmp);
-	expr->len = len;
 
 	return nulterminated;
 }
@@ -2119,6 +2118,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 		if (expr_basetype(expr)->type == TYPE_STRING)
 			*exprp = expr_postprocess_string(expr);
 
+		expr = *exprp;
 		if (expr->dtype->basetype != NULL &&
 		    expr->dtype->basetype->type == TYPE_BITMASK)
 			*exprp = bitmask_expr_to_binops(expr);

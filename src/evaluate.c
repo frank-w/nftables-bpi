@@ -71,8 +71,6 @@ static void key_fix_dtype_byteorder(struct expr *key)
 		return;
 
 	datatype_set(key, set_datatype_alloc(dtype, key->byteorder));
-	if (dtype->flags & DTYPE_F_ALLOC)
-		concat_type_destroy(dtype);
 }
 
 static struct expr *implicit_set_declaration(struct eval_ctx *ctx,

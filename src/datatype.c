@@ -1162,11 +1162,6 @@ const struct datatype *concat_type_alloc(uint32_t type)
 	return dtype;
 }
 
-void concat_type_destroy(const struct datatype *dtype)
-{
-	datatype_free(dtype);
-}
-
 const struct datatype *set_datatype_alloc(const struct datatype *orig_dtype,
 					  unsigned int byteorder)
 {

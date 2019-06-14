@@ -260,7 +260,6 @@ extern const struct datatype boolean_type;
 void inet_service_type_print(const struct expr *expr, struct output_ctx *octx);
 
 extern const struct datatype *concat_type_alloc(uint32_t type);
-extern void concat_type_destroy(const struct datatype *dtype);
 
 static inline uint32_t concat_subtype_add(uint32_t type, uint32_t subtype)
 {

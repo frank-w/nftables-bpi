@@ -84,7 +84,8 @@ static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 	struct set *set;
 	struct handle h;
 
-	key_fix_dtype_byteorder(key);
+	if (expr->set_flags & NFT_SET_MAP)
+		key_fix_dtype_byteorder(key);
 
 	set = set_alloc(&expr->location);
 	set->flags	= NFT_SET_ANONYMOUS | expr->set_flags;

@@ -54,6 +54,9 @@ static unsigned int evaluate_cache_flush(struct cmd *cmd)
 	unsigned int completeness = CMD_INVALID;
 
 	switch (cmd->obj) {
+	case CMD_OBJ_RULESET:
+		completeness = __CMD_FLUSH_RULESET;
+		break;
 	case CMD_OBJ_SET:
 	case CMD_OBJ_MAP:
 	case CMD_OBJ_METER:

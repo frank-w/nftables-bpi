@@ -210,6 +210,9 @@ static int cache_init(struct netlink_ctx *ctx, enum cmd_ops cmd)
 	};
 	int ret;
 
+	if (cmd == __CMD_FLUSH_RULESET)
+		return 0;
+
 	ret = cache_init_tables(ctx, &handle, &ctx->nft->cache);
 	if (ret < 0)
 		return ret;

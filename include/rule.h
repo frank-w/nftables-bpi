@@ -462,6 +462,7 @@ enum cmd_ops {
 	CMD_EXPORT,
 	CMD_MONITOR,
 	CMD_DESCRIBE,
+	__CMD_FLUSH_RULESET,
 };
 
 /**

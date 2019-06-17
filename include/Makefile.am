@@ -2,6 +2,7 @@ SUBDIRS =		linux		\
 			nftables
 
 noinst_HEADERS = 	cli.h		\
+			cache.h		\
 			datatype.h	\
 			expression.h	\
 			fib.h		\

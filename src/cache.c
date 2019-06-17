@@ -11,112 +11,116 @@
 #include <rule.h>
 #include <erec.h>
 #include <utils.h>
+#include <cache.h>
 
-static unsigned int evaluate_cache_add(struct cmd *cmd)
+static unsigned int evaluate_cache_add(struct cmd *cmd, unsigned int flags)
 {
-	unsigned int completeness = CMD_INVALID;
-
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-	case CMD_OBJ_SET:
-	case CMD_OBJ_CHAIN:
-	case CMD_OBJ_FLOWTABLE:
-		completeness = cmd->op;
+		flags |= NFT_CACHE_SETELEM;
 		break;
 	case CMD_OBJ_RULE:
-		if (cmd->handle.index.id)
-			completeness = CMD_LIST;
+		if (cmd->handle.index.id ||
+		    cmd->handle.position.id)
+			flags |= NFT_CACHE_RULE;
 		break;
 	default:
 		break;
 	}
 
-	return completeness;
+	return flags;
 }
 
-static unsigned int evaluate_cache_del(struct cmd *cmd)
+static unsigned int evaluate_cache_del(struct cmd *cmd, unsigned int flags)
 {
-	unsigned int completeness = CMD_INVALID;
-
 	switch (cmd->obj) {
 	case CMD_OBJ_SETELEM:
-		completeness = cmd->op;
+		flags |= NFT_CACHE_SETELEM;
 		break;
 	default:
 		break;
 	}
 
-	return completeness;
+	return flags;
 }
 
-static unsigned int evaluate_cache_flush(struct cmd *cmd)
+static unsigned int evaluate_cache_flush(struct cmd *cmd, unsigned int flags)
 {
-	unsigned int completeness = CMD_INVALID;
-
 	switch (cmd->obj) {
-	case CMD_OBJ_RULESET:
-		completeness = __CMD_FLUSH_RULESET;
-		break;
 	case CMD_OBJ_SET:
 	case CMD_OBJ_MAP:
 	case CMD_OBJ_METER:
-		completeness = cmd->op;
+		flags |= NFT_CACHE_SET;
 		break;
+	case CMD_OBJ_RULESET:
 	default:
+		flags = NFT_CACHE_EMPTY;
 		break;
 	}
 
-	return completeness;
+	return flags;
 }
 
-static unsigned int evaluate_cache_rename(struct cmd *cmd)
+static unsigned int evaluate_cache_rename(struct cmd *cmd, unsigned int flags)
 {
-	unsigned int completeness = CMD_INVALID;
-
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
-		completeness = cmd->op;
+		flags |= NFT_CACHE_CHAIN;
 		break;
 	default:
 		break;
 	}
 
-	return completeness;
+	return flags;
 }
 
-int cache_evaluate(struct nft_ctx *nft, struct list_head *cmds)
+unsigned int cache_evaluate(struct nft_ctx *nft, struct list_head *cmds)
 {
-	unsigned int echo_completeness = CMD_INVALID;
-	unsigned int completeness = CMD_INVALID;
+	unsigned int flags = NFT_CACHE_EMPTY;
 	struct cmd *cmd;
 
 	list_for_each_entry(cmd, cmds, list) {
 		switch (cmd->op) {
 		case CMD_ADD:
 		case CMD_INSERT:
-		case CMD_REPLACE:
-			if (nft_output_echo(&nft->output))
-				echo_completeness = cmd->op;
+			if (nft_output_echo(&nft->output)) {
+				flags = NFT_CACHE_FULL;
+				break;
+			}
 
+			flags |= NFT_CACHE_TABLE |
+				 NFT_CACHE_CHAIN |
+				 NFT_CACHE_SET |
+				 NFT_CACHE_FLOWTABLE |
+				 NFT_CACHE_OBJECT;
 			/* Fall through */
 		case CMD_CREATE:
-			completeness = evaluate_cache_add(cmd);
+			flags = evaluate_cache_add(cmd, flags);
+			break;
+		case CMD_REPLACE:
+			flags = NFT_CACHE_FULL;
 			break;
 		case CMD_DELETE:
-			completeness = evaluate_cache_del(cmd);
+			flags |= NFT_CACHE_TABLE |
+				 NFT_CACHE_CHAIN |
+				 NFT_CACHE_SET |
+				 NFT_CACHE_FLOWTABLE |
+				 NFT_CACHE_OBJECT;
+
+			flags = evaluate_cache_del(cmd, flags);
 			break;
 		case CMD_GET:
 		case CMD_LIST:
 		case CMD_RESET:
 		case CMD_EXPORT:
 		case CMD_MONITOR:
-			completeness = cmd->op;
+			flags |= NFT_CACHE_FULL;
 			break;
 		case CMD_FLUSH:
-			completeness = evaluate_cache_flush(cmd);
+			flags = evaluate_cache_flush(cmd, flags);
 			break;
 		case CMD_RENAME:
-			completeness = evaluate_cache_rename(cmd);
+			flags = evaluate_cache_rename(cmd, flags);
 			break;
 		case CMD_DESCRIBE:
 		case CMD_IMPORT:
@@ -126,5 +130,5 @@ int cache_evaluate(struct nft_ctx *nft, struct list_head *cmds)
 		}
 	}
 
-	return max(completeness, echo_completeness);
+	return flags;
 }

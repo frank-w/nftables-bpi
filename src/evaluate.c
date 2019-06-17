@@ -29,6 +29,7 @@
 #include <netlink.h>
 #include <time.h>
 #include <rule.h>
+#include <cache.h>
 #include <erec.h>
 #include <gmputil.h>
 #include <utils.h>
@@ -3294,7 +3295,7 @@ static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule,
 	}
 
 	/* add rules to cache only if it is complete enough to contain them */
-	if (!cache_is_complete(&ctx->nft->cache, CMD_LIST))
+	if (!cache_is_complete(&ctx->nft->cache, NFT_CACHE_RULE))
 		return 0;
 
 	return rule_cache_update(ctx, op);

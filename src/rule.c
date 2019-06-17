@@ -24,6 +24,7 @@
 #include <mnl.h>
 #include <misspell.h>
 #include <json.h>
+#include <cache.h>
 
 #include <libnftnl/common.h>
 #include <libnftnl/ruleset.h>
@@ -147,97 +148,85 @@ static int cache_init_tables(struct netlink_ctx *ctx, struct handle *h,
 	return 0;
 }
 
-static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
+static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 {
+	struct rule *rule, *nrule;
 	struct table *table;
 	struct chain *chain;
-	struct rule *rule, *nrule;
 	struct set *set;
 	int ret;
 
 	list_for_each_entry(table, &ctx->nft->cache.list, list) {
-		ret = netlink_list_sets(ctx, &table->handle);
-		list_splice_tail_init(&ctx->list, &table->sets);
-
-		if (ret < 0)
-			return -1;
-
-		list_for_each_entry(set, &table->sets, list) {
-			ret = netlink_list_setelems(ctx, &set->handle, set);
+		if (flags & NFT_CACHE_SET_BIT) {
+			ret = netlink_list_sets(ctx, &table->handle);
+			list_splice_tail_init(&ctx->list, &table->sets);
 			if (ret < 0)
 				return -1;
 		}
-
-		ret = netlink_list_chains(ctx, &table->handle);
-		if (ret < 0)
-			return -1;
-		list_splice_tail_init(&ctx->list, &table->chains);
-
-		ret = netlink_list_flowtables(ctx, &table->handle);
-		if (ret < 0)
-			return -1;
-		list_splice_tail_init(&ctx->list, &table->flowtables);
-
-		if (cmd != CMD_RESET) {
+		if (flags & NFT_CACHE_SETELEM_BIT) {
+			list_for_each_entry(set, &table->sets, list) {
+				ret = netlink_list_setelems(ctx, &set->handle,
+							    set);
+				if (ret < 0)
+					return -1;
+			}
+		}
+		if (flags & NFT_CACHE_CHAIN_BIT) {
+			ret = netlink_list_chains(ctx, &table->handle);
+			if (ret < 0)
+				return -1;
+			list_splice_tail_init(&ctx->list, &table->chains);
+		}
+		if (flags & NFT_CACHE_FLOWTABLE_BIT) {
+			ret = netlink_list_flowtables(ctx, &table->handle);
+			if (ret < 0)
+				return -1;
+			list_splice_tail_init(&ctx->list, &table->flowtables);
+		}
+		if (flags & NFT_CACHE_OBJECT_BIT) {
 			ret = netlink_list_objs(ctx, &table->handle);
 			if (ret < 0)
 				return -1;
 			list_splice_tail_init(&ctx->list, &table->objs);
 		}
 
-		/* Skip caching other objects to speed up things: We only need
-		 * a full cache when listing the existing ruleset.
-		 */
-		if (cmd != CMD_LIST)
-			continue;
-
-		ret = netlink_list_rules(ctx, &table->handle);
-		list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
-			chain = chain_lookup(table, &rule->handle);
-			list_move_tail(&rule->list, &chain->rules);
+		if (flags & NFT_CACHE_RULE_BIT) {
+			ret = netlink_list_rules(ctx, &table->handle);
+			list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
+				chain = chain_lookup(table, &rule->handle);
+				list_move_tail(&rule->list, &chain->rules);
+			}
+			if (ret < 0)
+				return -1;
 		}
-
-		if (ret < 0)
-			return -1;
 	}
 	return 0;
 }
 
-static int cache_init(struct netlink_ctx *ctx, enum cmd_ops cmd)
+static int cache_init(struct netlink_ctx *ctx, unsigned int flags)
 {
 	struct handle handle = {
 		.family = NFPROTO_UNSPEC,
 	};
 	int ret;
 
-	if (cmd == __CMD_FLUSH_RULESET)
+	if (flags == NFT_CACHE_EMPTY)
 		return 0;
 
+	/* assume NFT_CACHE_TABLE is always set. */
 	ret = cache_init_tables(ctx, &handle, &ctx->nft->cache);
 	if (ret < 0)
 		return ret;
-	ret = cache_init_objects(ctx, cmd);
+	ret = cache_init_objects(ctx, flags);
 	if (ret < 0)
 		return ret;
 
 	return 0;
 }
 
-/* Return a "score" of how complete local cache will be if
- * cache_init_objects() ran for given cmd. Higher value
- * means more complete. */
-static int cache_completeness(enum cmd_ops cmd)
+bool cache_is_complete(struct nft_cache *cache, unsigned int flags)
 {
-	if (cmd == CMD_LIST)
-		return 3;
-	if (cmd != CMD_RESET)
-		return 2;
-	return 1;
-}
-
-bool cache_is_complete(struct nft_cache *cache, enum cmd_ops cmd)
-{
-	return cache_completeness(cache->cmd) >= cache_completeness(cmd);
+	return (cache->flags & flags) == flags;
 }
 
 static bool cache_is_updated(struct nft_cache *cache, uint16_t genid)
@@ -245,7 +234,7 @@ static bool cache_is_updated(struct nft_cache *cache, uint16_t genid)
 	return genid && genid == cache->genid;
 }
 
-int cache_update(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
+int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs)
 {
 	struct netlink_ctx ctx = {
 		.list		= LIST_HEAD_INIT(ctx.list),
@@ -259,14 +248,14 @@ int cache_update(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
 replay:
 	ctx.seqnum = cache->seqnum++;
 	genid = mnl_genid_get(&ctx);
-	if (cache_is_complete(cache, cmd) &&
+	if (cache_is_complete(cache, flags) &&
 	    cache_is_updated(cache, genid))
 		return 0;
 
 	if (cache->genid)
 		cache_release(cache);
 
-	ret = cache_init(&ctx, cmd);
+	ret = cache_init(&ctx, flags);
 	if (ret < 0) {
 		cache_release(cache);
 		if (errno == EINTR) {
@@ -283,7 +272,7 @@ replay:
 	}
 
 	cache->genid = genid;
-	cache->cmd = cmd;
+	cache->flags = flags;
 	return 0;
 }
 
@@ -308,15 +297,14 @@ void cache_flush(struct nft_ctx *nft, struct list_head *msgs)
 
 	__cache_flush(&cache->list);
 	cache->genid = mnl_genid_get(&ctx);
-	cache->cmd = CMD_LIST;
+	cache->flags = NFT_CACHE_FULL;
 }
 
 void cache_release(struct nft_cache *cache)
 {
 	__cache_flush(&cache->list);
 	cache->genid = 0;
-	cache->cmd = CMD_INVALID;
-
+	cache->flags = NFT_CACHE_EMPTY;
 }
 
 /* internal ID to uniquely identify a set in the batch */

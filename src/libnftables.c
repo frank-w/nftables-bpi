@@ -381,11 +381,11 @@ static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 static int nft_evaluate(struct nft_ctx *nft, struct list_head *msgs,
 			struct list_head *cmds)
 {
-	unsigned int completeness;
+	unsigned int flags;
 	struct cmd *cmd;
 
-	completeness = cache_evaluate(nft, cmds);
-	if (cache_update(nft, completeness, msgs) < 0)
+	flags = cache_evaluate(nft, cmds);
+	if (cache_update(nft, flags, msgs) < 0)
 		return -1;
 
 	list_for_each_entry(cmd, cmds, list) {

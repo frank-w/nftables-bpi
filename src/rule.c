@@ -2427,8 +2427,6 @@ static bool need_cache(const struct cmd *cmd)
 
 static int do_command_monitor(struct netlink_ctx *ctx, struct cmd *cmd)
 {
-	struct table *t;
-	struct set *s;
 	struct netlink_mon_handler monhandler = {
 		.monitor_flags	= cmd->monitor->flags,
 		.format		= cmd->monitor->format,
@@ -2442,36 +2440,6 @@ static int do_command_monitor(struct netlink_ctx *ctx, struct cmd *cmd)
 		monhandler.format = NFTNL_OUTPUT_JSON;
 
 	monhandler.cache_needed = need_cache(cmd);
-	if (monhandler.cache_needed) {
-		struct rule *rule, *nrule;
-		struct chain *chain;
-		int ret;
-
-		list_for_each_entry(t, &ctx->nft->cache.list, list) {
-			list_for_each_entry(s, &t->sets, list)
-				s->init = set_expr_alloc(&cmd->location, s);
-
-			if (!(cmd->monitor->flags & (1 << NFT_MSG_TRACE)))
-				continue;
-
-			/* When tracing we'd like to translate the rule handle
-			 * we receive in the trace messages to the actual rule
-			 * struct to print that out.  Populate rule cache now.
-			 */
-			ret = netlink_list_table(ctx, &t->handle);
-
-			if (ret != 0)
-				/* Shouldn't happen and doesn't break things
-				 * too badly
-				 */
-				continue;
-
-			list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
-				chain = chain_lookup(t, &rule->handle);
-				list_move_tail(&rule->list, &chain->rules);
-			}
-		}
-	}
 
 	return netlink_monitor(&monhandler, ctx->nft->nf_sock);
 }

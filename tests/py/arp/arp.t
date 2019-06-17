@@ -38,6 +38,7 @@ arp plen != {33-55};ok
 
 arp operation {nak, inreply, inrequest, rreply, rrequest, reply, request};ok
 arp operation != {nak, inreply, inrequest, rreply, rrequest, reply, request};ok
+arp operation 1-2;ok
 arp operation request;ok
 arp operation reply;ok
 arp operation rrequest;ok

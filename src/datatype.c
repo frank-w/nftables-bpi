@@ -191,19 +191,10 @@ void symbolic_constant_print(const struct symbol_table *tbl,
 			break;
 	}
 
-	if (s->identifier == NULL)
+	if (s->identifier == NULL || nft_output_numeric_symbol(octx))
 		return expr_basetype(expr)->print(expr, octx);
 
-	if (quotes)
-		nft_print(octx, "\"");
-
-	if (nft_output_numeric_symbol(octx))
-		nft_print(octx, "%" PRIu64 "", val);
-	else
-		nft_print(octx, "%s", s->identifier);
-
-	if (quotes)
-		nft_print(octx, "\"");
+	nft_print(octx, quotes ? "\"%s\"" : "%s", s->identifier);
 }
 
 static void switch_byteorder(void *data, unsigned int len)

@@ -188,6 +188,12 @@ arp test-arp input
   [ payload load 2b @ network header + 6 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
+# arp operation 1-2
+arp test-arp input
+  [ payload load 2b @ network header + 6 => reg 1 ]
+  [ cmp gte reg 1 0x00000100 ]
+  [ cmp lte reg 1 0x00000200 ]
+
 # arp operation request
 arp test-arp input
   [ payload load 2b @ network header + 6 => reg 1 ]

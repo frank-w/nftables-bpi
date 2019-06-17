@@ -302,6 +302,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "timeout"		{ return TIMEOUT; }
 "gc-interval"		{ return GC_INTERVAL; }
 "elements"		{ return ELEMENTS; }
+"expires"		{ return EXPIRES; }
 
 "policy"		{ return POLICY; }
 "size"			{ return SIZE; }

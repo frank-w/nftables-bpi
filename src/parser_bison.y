@@ -255,6 +255,7 @@ int nft_lex(void *, void *, void *);
 %token TIMEOUT			"timeout"
 %token GC_INTERVAL		"gc-interval"
 %token ELEMENTS			"elements"
+%token EXPIRES			"expires"
 
 %token POLICY			"policy"
 %token MEMORY			"memory"
@@ -3366,6 +3367,10 @@ set_elem_options	:	set_elem_option
 set_elem_option		:	TIMEOUT			time_spec
 			{
 				$<expr>0->timeout = $2;
+			}
+			|	EXPIRES		time_spec
+			{
+				$<expr>0->expiration = $2;
 			}
 			|	comment_spec
 			{

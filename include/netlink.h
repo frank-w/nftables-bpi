@@ -104,6 +104,7 @@ extern struct expr *netlink_alloc_data(const struct location *loc,
 				       const struct nft_data_delinearize *nld,
 				       enum nft_registers dreg);
 
+extern int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h);
 extern void netlink_linearize_rule(struct netlink_ctx *ctx,
 				   struct nftnl_rule *nlr,
 				   const struct rule *rule);
@@ -115,7 +116,6 @@ extern struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 					       const struct nftnl_chain *nlc);
 
 extern int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h);
-extern int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h);
 extern struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 					       const struct nftnl_table *nlt);
 

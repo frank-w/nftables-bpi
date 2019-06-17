@@ -191,7 +191,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, enum cmd_ops cmd)
 		if (cmd != CMD_LIST)
 			continue;
 
-		ret = netlink_list_table(ctx, &table->handle);
+		ret = netlink_list_rules(ctx, &table->handle);
 		list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
 			chain = chain_lookup(table, &rule->handle);
 			list_move_tail(&rule->list, &chain->rules);

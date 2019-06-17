@@ -333,7 +333,7 @@ static int list_rule_cb(struct nftnl_rule *nlr, void *arg)
 	return 0;
 }
 
-static int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h)
+int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h)
 {
 	struct nftnl_rule_list *rule_cache;
 
@@ -483,11 +483,6 @@ int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h)
 	nftnl_table_list_foreach(table_cache, list_table_cb, ctx);
 	nftnl_table_list_free(table_cache);
 	return 0;
-}
-
-int netlink_list_table(struct netlink_ctx *ctx, const struct handle *h)
-{
-	return netlink_list_rules(ctx, h);
 }
 
 enum nft_data_types dtype_map_to_kernel(const struct datatype *dtype)

@@ -297,7 +297,7 @@ static void __cache_flush(struct list_head *table_list)
 	}
 }
 
-void cache_flush(struct nft_ctx *nft, enum cmd_ops cmd, struct list_head *msgs)
+void cache_flush(struct nft_ctx *nft, struct list_head *msgs)
 {
 	struct netlink_ctx ctx = {
 		.list		= LIST_HEAD_INIT(ctx.list),

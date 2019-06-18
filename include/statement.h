@@ -102,8 +102,9 @@ extern void __limit_stmt_print(const struct limit_stmt *limit);
 
 struct reject_stmt {
 	struct expr		*expr;
-	enum nft_reject_types	type;
+	enum nft_reject_types	type:8;
 	int8_t			icmp_code;
+	uint8_t			verbose_print:1;
 	unsigned int		family;
 };
 

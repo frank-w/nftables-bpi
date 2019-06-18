@@ -2202,6 +2202,12 @@ static void stmt_reject_postprocess(struct rule_pp_ctx *rctx)
 			datatype_set(stmt->reject.expr, &icmpx_code_type);
 			break;
 		}
+
+		/* always print full icmp(6) name, simple 'reject' might be ambiguious
+		 * because ipv4 vs. ipv6 info might be lost
+		 */
+		stmt->reject.verbose_print = 1;
+
 		base = rctx->pctx.protocol[PROTO_BASE_LL_HDR].desc;
 		desc = rctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
 		protocol = proto_find_num(base, desc);

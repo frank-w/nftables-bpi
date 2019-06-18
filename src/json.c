@@ -1311,13 +1311,15 @@ json_t *reject_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 	case NFT_REJECT_ICMP_UNREACH:
 		switch (stmt->reject.family) {
 		case NFPROTO_IPV4:
-			if (stmt->reject.icmp_code == ICMP_PORT_UNREACH)
+			if (!stmt->reject.verbose_print &&
+			    stmt->reject.icmp_code == ICMP_PORT_UNREACH)
 				break;
 			type = "icmp";
 			jexpr = expr_print_json(stmt->reject.expr, octx);
 			break;
 		case NFPROTO_IPV6:
-			if (stmt->reject.icmp_code == ICMP6_DST_UNREACH_NOPORT)
+			if (!stmt->reject.verbose_print &&
+			    stmt->reject.icmp_code == ICMP6_DST_UNREACH_NOPORT)
 				break;
 			type = "icmpv6";
 			jexpr = expr_print_json(stmt->reject.expr, octx);

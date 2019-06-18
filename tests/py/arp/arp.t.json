@@ -560,6 +560,27 @@
     }
 ]
 
+# arp operation 1-2
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "operation",
+                    "protocol": "arp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "range": [
+                    "request",
+                    "reply"
+                ]
+            }
+        }
+    }
+]
+
 # arp operation request
 [
     {

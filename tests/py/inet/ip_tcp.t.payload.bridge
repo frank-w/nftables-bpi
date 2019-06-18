@@ -1,6 +1,6 @@
 # ip protocol tcp tcp dport 22
 bridge test-bridge input 
-  [ payload load 2b @ link header + 12 => reg 1 ]
+  [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 9 => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
@@ -9,7 +9,7 @@ bridge test-bridge input
 
 # ip protocol tcp ip saddr 1.2.3.4 tcp dport 22
 bridge test-bridge input 
-  [ payload load 2b @ link header + 12 => reg 1 ]
+  [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 9 => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
@@ -20,7 +20,7 @@ bridge test-bridge input
 
 # ip protocol tcp counter ip saddr 1.2.3.4 tcp dport 22
 bridge test-bridge input 
-  [ payload load 2b @ link header + 12 => reg 1 ]
+  [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 9 => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
@@ -32,7 +32,7 @@ bridge test-bridge input
 
 # ip protocol tcp counter tcp dport 22
 bridge test-bridge input 
-  [ payload load 2b @ link header + 12 => reg 1 ]
+  [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 9 => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]

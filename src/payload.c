@@ -18,6 +18,7 @@
 #include <net/if_arp.h>
 #include <arpa/inet.h>
 #include <linux/netfilter.h>
+#include <linux/if_ether.h>
 
 #include <rule.h>
 #include <expression.h>
@@ -368,6 +369,23 @@ int payload_gen_dependency(struct eval_ctx *ctx, const struct expr *expr,
 				  "ambiguous payload specification: "
 				  "no %s protocol specified",
 				  proto_base_names[expr->payload.base - 1]);
+
+	if (ctx->pctx.family == NFPROTO_BRIDGE && desc == &proto_eth) {
+		/* prefer netdev proto, which adds dependencies based
+		 * on skb->protocol.
+		 *
+		 * This has the advantage that we will also match
+		 * vlan encapsulated traffic.
+		 *
+		 * eth_hdr(skb)->type would not match, as nft_payload
+		 * will pretend vlan tag was not offloaded, i.e.
+		 * type is ETH_P_8021Q in such a case, but skb->protocol
+		 * would still match the l3 header type.
+		 */
+		if (expr->payload.desc == &proto_ip ||
+		    expr->payload.desc == &proto_ip6)
+			desc = &proto_netdev;
+	}
 
 	return payload_add_dependency(ctx, desc, expr->payload.desc, expr, res);
 }

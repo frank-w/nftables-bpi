@@ -539,7 +539,11 @@ static void meta_expr_pctx_update(struct proto_ctx *ctx,
 		proto_ctx_update(ctx, PROTO_BASE_TRANSPORT_HDR, &expr->location, desc);
 		break;
 	case NFT_META_PROTOCOL:
-		if (h->base < PROTO_BASE_NETWORK_HDR && ctx->family != NFPROTO_NETDEV)
+		if (h->base != PROTO_BASE_LL_HDR)
+			return;
+
+		if (ctx->family != NFPROTO_NETDEV &&
+		    ctx->family != NFPROTO_BRIDGE)
 			return;
 
 		desc = proto_find_upper(h->desc, ntohs(mpz_get_uint16(right->value)));

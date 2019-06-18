@@ -388,6 +388,8 @@ struct set *set_lookup_fuzzy(const char *set_name,
 
 	list_for_each_entry(table, &cache->list, list) {
 		list_for_each_entry(set, &table->sets, list) {
+			if (set->flags & NFT_SET_ANONYMOUS)
+				continue;
 			if (!strcmp(set->handle.set.name, set_name)) {
 				*t = table;
 				return set;

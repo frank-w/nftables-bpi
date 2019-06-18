@@ -1,18 +1,6 @@
 # reject with icmp type host-unreachable
 [
     {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip"
-        }
-    },
-    {
         "reject": {
             "expr": "host-unreachable",
             "type": "icmp"
@@ -22,18 +10,6 @@
 
 # reject with icmp type net-unreachable
 [
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip"
-        }
-    },
     {
         "reject": {
             "expr": "net-unreachable",
@@ -45,18 +21,6 @@
 # reject with icmp type prot-unreachable
 [
     {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip"
-        }
-    },
-    {
         "reject": {
             "expr": "prot-unreachable",
             "type": "icmp"
@@ -64,39 +28,8 @@
     }
 ]
 
-# reject with icmp type port-unreachable
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip"
-        }
-    },
-    {
-        "reject": null
-    }
-]
-
 # reject with icmp type net-prohibited
 [
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip"
-        }
-    },
     {
         "reject": {
             "expr": "net-prohibited",
@@ -108,18 +41,6 @@
 # reject with icmp type host-prohibited
 [
     {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip"
-        }
-    },
-    {
         "reject": {
             "expr": "host-prohibited",
             "type": "icmp"
@@ -129,18 +50,6 @@
 
 # reject with icmp type admin-prohibited
 [
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip"
-        }
-    },
     {
         "reject": {
             "expr": "admin-prohibited",
@@ -152,18 +61,6 @@
 # reject with icmpv6 type no-route
 [
     {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip6"
-        }
-    },
-    {
         "reject": {
             "expr": "no-route",
             "type": "icmpv6"
@@ -173,18 +70,6 @@
 
 # reject with icmpv6 type admin-prohibited
 [
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip6"
-        }
-    },
     {
         "reject": {
             "expr": "admin-prohibited",
@@ -196,18 +81,6 @@
 # reject with icmpv6 type addr-unreachable
 [
     {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip6"
-        }
-    },
-    {
         "reject": {
             "expr": "addr-unreachable",
             "type": "icmpv6"
@@ -218,19 +91,10 @@
 # reject with icmpv6 type port-unreachable
 [
     {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "ether"
-                }
-            },
-	    "op": "==",
-            "right": "ip6"
+         "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpv6"
         }
-    },
-    {
-        "reject": null
     }
 ]
 
@@ -239,9 +103,11 @@
     {
         "match": {
             "left": {
-                "meta": { "key": "mark" }
+                "meta": {
+                    "key": "mark"
+                }
             },
-	    "op": "==",
+            "op": "==",
             "right": 12345
         }
     },
@@ -253,7 +119,7 @@
                     "protocol": "ip"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 6
         }
     },
@@ -271,3 +137,22 @@
     }
 ]
 
+# ether type ip reject
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# ether type ip6 reject
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpv6"
+        }
+    }
+]

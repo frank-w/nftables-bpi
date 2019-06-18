@@ -2217,6 +2217,10 @@ static void stmt_reject_postprocess(struct rule_pp_ctx *rctx)
 		default:
 			break;
 		}
+
+		if (payload_dependency_exists(&rctx->pdctx, PROTO_BASE_NETWORK_HDR))
+			payload_dependency_release(&rctx->pdctx);
+
 		break;
 	default:
 		break;

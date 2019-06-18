@@ -3587,9 +3587,12 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		set = set_lookup(table, cmd->handle.set.name);
-		if (set == NULL || set->flags & NFT_SET_MAP)
+		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
+		else if (set->flags & (NFT_SET_MAP | NFT_SET_ANONYMOUS))
+			return cmd_error(ctx,  &ctx->cmd->handle.set.location,
+					 "%s", strerror(ENOENT));
 
 		return 0;
 	case CMD_OBJ_METER:
@@ -3598,9 +3601,13 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		set = set_lookup(table, cmd->handle.set.name);
-		if (set == NULL || !(set->flags & NFT_SET_EVAL))
+		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
+		else if (!(set->flags & NFT_SET_EVAL) ||
+			 !(set->flags & NFT_SET_ANONYMOUS))
+			return cmd_error(ctx, &ctx->cmd->handle.set.location,
+					 "%s", strerror(ENOENT));
 
 		return 0;
 	case CMD_OBJ_MAP:
@@ -3609,9 +3616,13 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		set = set_lookup(table, cmd->handle.set.name);
-		if (set == NULL || !(set->flags & NFT_SET_MAP))
+		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
+		else if (!(set->flags & NFT_SET_MAP) ||
+			 set->flags & NFT_SET_ANONYMOUS)
+			return cmd_error(ctx, &ctx->cmd->handle.set.location,
+					 "%s", strerror(ENOENT));
 
 		return 0;
 	case CMD_OBJ_CHAIN:
@@ -3698,9 +3709,12 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		set = set_lookup(table, cmd->handle.set.name);
-		if (set == NULL || set->flags & NFT_SET_MAP)
+		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
+		else if (set->flags & (NFT_SET_MAP | NFT_SET_ANONYMOUS))
+			return cmd_error(ctx, &ctx->cmd->handle.set.location,
+					 "%s", strerror(ENOENT));
 
 		return 0;
 	case CMD_OBJ_MAP:
@@ -3709,9 +3723,13 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		set = set_lookup(table, cmd->handle.set.name);
-		if (set == NULL || !(set->flags & NFT_SET_MAP))
+		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
+		else if (!(set->flags & NFT_SET_MAP) ||
+			 set->flags & NFT_SET_ANONYMOUS)
+			return cmd_error(ctx, &ctx->cmd->handle.set.location,
+					 "%s", strerror(ENOENT));
 
 		return 0;
 	case CMD_OBJ_METER:
@@ -3720,9 +3738,13 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		set = set_lookup(table, cmd->handle.set.name);
-		if (set == NULL || !(set->flags & NFT_SET_EVAL))
+		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
+		else if (!(set->flags & NFT_SET_EVAL) ||
+			 !(set->flags & NFT_SET_ANONYMOUS))
+			return cmd_error(ctx, &ctx->cmd->handle.set.location,
+					 "%s", strerror(ENOENT));
 
 		return 0;
 	default:

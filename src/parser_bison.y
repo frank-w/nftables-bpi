@@ -4060,15 +4060,15 @@ rt_key			:	CLASSID		{ $$ = NFT_RT_CLASSID; }
 
 ct_expr			: 	CT	ct_key
 			{
-				$$ = ct_expr_alloc(&@$, $2, -1, NFPROTO_UNSPEC);
+				$$ = ct_expr_alloc(&@$, $2, -1);
 			}
 			|	CT	ct_dir	ct_key_dir
 			{
-				$$ = ct_expr_alloc(&@$, $3, $2, NFPROTO_UNSPEC);
+				$$ = ct_expr_alloc(&@$, $3, $2);
 			}
-			|	CT	ct_dir	nf_key_proto ct_key_proto_field
+			|	CT	ct_dir	ct_key_proto_field
 			{
-				$$ = ct_expr_alloc(&@$, $4, $2, $3);
+				$$ = ct_expr_alloc(&@$, $3, $2);
 			}
 			;
 
@@ -4102,8 +4102,10 @@ ct_key_dir		:	SADDR		{ $$ = NFT_CT_SRC; }
 			|	ct_key_dir_optional
 			;
 
-ct_key_proto_field	:	SADDR		{ $$ = NFT_CT_SRC; }
-			|	DADDR		{ $$ = NFT_CT_DST; }
+ct_key_proto_field	:	IP	SADDR	{ $$ = NFT_CT_SRC_IP; }
+			|	IP	DADDR	{ $$ = NFT_CT_DST_IP; }
+			|	IP6	SADDR	{ $$ = NFT_CT_SRC_IP6; }
+			|	IP6	DADDR	{ $$ = NFT_CT_DST_IP6; }
 			;
 
 ct_key_dir_optional	:	BYTES		{ $$ = NFT_CT_BYTES; }

@@ -30,8 +30,7 @@
             "left": {
                 "ct": {
                     "dir": "original",
-                    "family": "ip6",
-                    "key": "saddr"
+                    "key": "ip6 saddr"
                 }
             },
 	    "op": "==",

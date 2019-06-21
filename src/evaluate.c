@@ -782,7 +782,7 @@ static int ct_gen_nh_dependency(struct eval_ctx *ctx, struct expr *ct)
 		return 0;
 	}
 
-	left = ct_expr_alloc(&ct->location, NFT_CT_L3PROTOCOL, ct->ct.direction, ct->ct.nfproto);
+	left = ct_expr_alloc(&ct->location, NFT_CT_L3PROTOCOL, ct->ct.direction);
 
 	right = constant_expr_alloc(&ct->location, left->dtype,
 				    left->dtype->byteorder, left->len,
@@ -803,12 +803,29 @@ static int ct_gen_nh_dependency(struct eval_ctx *ctx, struct expr *ct)
  */
 static int expr_evaluate_ct(struct eval_ctx *ctx, struct expr **expr)
 {
+	const struct proto_desc *base, *error;
 	struct expr *ct = *expr;
+
+	base = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
 
 	switch (ct->ct.key) {
 	case NFT_CT_SRC:
 	case NFT_CT_DST:
 		ct_gen_nh_dependency(ctx, ct);
+		break;
+	case NFT_CT_SRC_IP:
+	case NFT_CT_DST_IP:
+		if (base == &proto_ip6) {
+			error = &proto_ip;
+			goto err_conflict;
+		}
+		break;
+	case NFT_CT_SRC_IP6:
+	case NFT_CT_DST_IP6:
+		if (base == &proto_ip) {
+			error = &proto_ip6;
+			goto err_conflict;
+		}
 		break;
 	default:
 		break;
@@ -817,6 +834,12 @@ static int expr_evaluate_ct(struct eval_ctx *ctx, struct expr **expr)
 	ct_expr_update_type(&ctx->pctx, ct);
 
 	return expr_evaluate_primary(ctx, expr);
+
+err_conflict:
+	return stmt_binary_error(ctx, ct,
+				 &ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR],
+				 "conflicting protocols specified: %s vs. %s",
+				 base->name, error->name);
 }
 
 /*

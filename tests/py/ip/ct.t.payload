@@ -1,44 +1,44 @@
 # ct original ip saddr 192.168.0.1
 ip test-ip4 output
-  [ ct load src => reg 1 , dir original ]
+  [ ct load src_ip => reg 1 , dir original ]
   [ cmp eq reg 1 0x0100a8c0 ]
 
 # ct reply ip saddr 192.168.0.1
 ip test-ip4 output
-  [ ct load src => reg 1 , dir reply ]
+  [ ct load src_ip => reg 1 , dir reply ]
   [ cmp eq reg 1 0x0100a8c0 ]
 
 # ct original ip daddr 192.168.0.1
 ip test-ip4 output
-  [ ct load dst => reg 1 , dir original ]
+  [ ct load dst_ip => reg 1 , dir original ]
   [ cmp eq reg 1 0x0100a8c0 ]
 
 # ct reply ip daddr 192.168.0.1
 ip test-ip4 output
-  [ ct load dst => reg 1 , dir reply ]
+  [ ct load dst_ip => reg 1 , dir reply ]
   [ cmp eq reg 1 0x0100a8c0 ]
 
 # ct original ip saddr 192.168.1.0/24
 ip test-ip4 output
-  [ ct load src => reg 1 , dir original ]
+  [ ct load src_ip => reg 1 , dir original ]
   [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0001a8c0 ]
 
 # ct reply ip saddr 192.168.1.0/24
 ip test-ip4 output
-  [ ct load src => reg 1 , dir reply ]
+  [ ct load src_ip => reg 1 , dir reply ]
   [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0001a8c0 ]
 
 # ct original ip daddr 192.168.1.0/24
 ip test-ip4 output
-  [ ct load dst => reg 1 , dir original ]
+  [ ct load dst_ip => reg 1 , dir original ]
   [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0001a8c0 ]
 
 # ct reply ip daddr 192.168.1.0/24
 ip test-ip4 output
-  [ ct load dst => reg 1 , dir reply ]
+  [ ct load dst_ip => reg 1 , dir reply ]
   [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0001a8c0 ]
 

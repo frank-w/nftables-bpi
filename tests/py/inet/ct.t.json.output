@@ -5,7 +5,6 @@
             "left": {
                 "ct": {
                     "dir": "original",
-                    "family": "ip",
                     "key": "saddr"
                 }
             },

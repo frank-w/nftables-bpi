@@ -5,8 +5,7 @@
             "left": {
                 "ct": {
                     "dir": "original",
-                    "family": "ip",
-                    "key": "saddr"
+                    "key": "ip saddr"
                 }
             },
 	    "op": "==",
@@ -22,8 +21,7 @@
             "left": {
                 "ct": {
                     "dir": "reply",
-                    "family": "ip",
-                    "key": "saddr"
+                    "key": "ip saddr"
                 }
             },
 	    "op": "==",
@@ -39,8 +37,7 @@
             "left": {
                 "ct": {
                     "dir": "original",
-                    "family": "ip",
-                    "key": "daddr"
+                    "key": "ip daddr"
                 }
             },
 	    "op": "==",
@@ -56,8 +53,7 @@
             "left": {
                 "ct": {
                     "dir": "reply",
-                    "family": "ip",
-                    "key": "daddr"
+                    "key": "ip daddr"
                 }
             },
 	    "op": "==",
@@ -73,8 +69,7 @@
             "left": {
                 "ct": {
                     "dir": "original",
-                    "family": "ip",
-                    "key": "saddr"
+                    "key": "ip saddr"
                 }
             },
 	    "op": "==",
@@ -95,8 +90,7 @@
             "left": {
                 "ct": {
                     "dir": "reply",
-                    "family": "ip",
-                    "key": "saddr"
+                    "key": "ip saddr"
                 }
             },
 	    "op": "==",
@@ -117,8 +111,7 @@
             "left": {
                 "ct": {
                     "dir": "original",
-                    "family": "ip",
-                    "key": "daddr"
+                    "key": "ip daddr"
                 }
             },
 	    "op": "==",
@@ -139,8 +132,7 @@
             "left": {
                 "ct": {
                     "dir": "reply",
-                    "family": "ip",
-                    "key": "daddr"
+                    "key": "ip daddr"
                 }
             },
 	    "op": "==",

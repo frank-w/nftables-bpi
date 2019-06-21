@@ -714,6 +714,10 @@ static bool ct_key_is_dir(enum nft_ct_keys key)
 		NFT_CT_BYTES,
 		NFT_CT_AVGPKT,
 		NFT_CT_ZONE,
+		NFT_CT_SRC_IP,
+		NFT_CT_DST_IP,
+		NFT_CT_SRC_IP6,
+		NFT_CT_DST_IP6,
 	};
 	unsigned int i;
 
@@ -727,9 +731,9 @@ static bool ct_key_is_dir(enum nft_ct_keys key)
 static struct expr *json_parse_ct_expr(struct json_ctx *ctx,
 				       const char *type, json_t *root)
 {
+	int dirval = -1, keyval = -1;
 	const char *key, *dir;
 	unsigned int i;
-	int dirval = -1, familyval, keyval = -1;
 
 	if (json_unpack_err(ctx, root, "{s:s}", "key", &key))
 		return NULL;
@@ -745,10 +749,6 @@ static struct expr *json_parse_ct_expr(struct json_ctx *ctx,
 		json_error(ctx, "Unknown ct key '%s'.", key);
 		return NULL;
 	}
-
-	familyval = json_parse_family(ctx, root);
-	if (familyval < 0)
-		return NULL;
 
 	if (!json_unpack(root, "{s:s}", "dir", &dir)) {
 		if (!strcmp(dir, "original")) {
@@ -766,7 +766,7 @@ static struct expr *json_parse_ct_expr(struct json_ctx *ctx,
 		}
 	}
 
-	return ct_expr_alloc(int_loc, keyval, dirval, familyval);
+	return ct_expr_alloc(int_loc, keyval, dirval);
 }
 
 static struct expr *json_parse_numgen_expr(struct json_ctx *ctx,

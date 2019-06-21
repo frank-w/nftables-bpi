@@ -485,7 +485,6 @@ json_t *ct_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
 	const char *dirstr = ct_dir2str(expr->ct.direction);
 	enum nft_ct_keys key = expr->ct.key;
-	const struct proto_desc *desc;
 	json_t *root;
 
 	root = json_pack("{s:s}", "key", ct_templates[key].token);
@@ -495,18 +494,6 @@ json_t *ct_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 	if (dirstr)
 		json_object_set_new(root, "dir", json_string(dirstr));
-
-	switch (key) {
-	case NFT_CT_SRC:
-	case NFT_CT_DST:
-		desc = proto_find_upper(&proto_inet, expr->ct.nfproto);
-		if (desc)
-			json_object_set_new(root, "family",
-					    json_string(desc->name));
-		break;
-	default:
-		break;
-	}
 out:
 	return json_pack("{s:o}", "ct", root);
 }

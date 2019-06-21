@@ -291,6 +291,14 @@ const struct ct_template ct_templates[__NFT_CT_MAX] = {
 					      BYTEORDER_HOST_ENDIAN, 16),
 	[NFT_CT_EVENTMASK]	= CT_TEMPLATE("event", &ct_event_type,
 					      BYTEORDER_HOST_ENDIAN, 32),
+	[NFT_CT_SRC_IP]		= CT_TEMPLATE("ip saddr", &ipaddr_type,
+					      BYTEORDER_BIG_ENDIAN, 0),
+	[NFT_CT_DST_IP]		= CT_TEMPLATE("ip daddr", &ipaddr_type,
+					      BYTEORDER_BIG_ENDIAN, 0),
+	[NFT_CT_SRC_IP6]	= CT_TEMPLATE("ip6 saddr", &ip6addr_type,
+					      BYTEORDER_BIG_ENDIAN, 0),
+	[NFT_CT_DST_IP6]	= CT_TEMPLATE("ip6 daddr", &ip6addr_type,
+					      BYTEORDER_BIG_ENDIAN, 0),
 };
 
 static void ct_print(enum nft_ct_keys key, int8_t dir, uint8_t nfproto,
@@ -368,7 +376,7 @@ const struct expr_ops ct_expr_ops = {
 };
 
 struct expr *ct_expr_alloc(const struct location *loc, enum nft_ct_keys key,
-			   int8_t direction, uint8_t nfproto)
+			   int8_t direction)
 {
 	const struct ct_template *tmpl = &ct_templates[key];
 	struct expr *expr;
@@ -377,7 +385,6 @@ struct expr *ct_expr_alloc(const struct location *loc, enum nft_ct_keys key,
 			  tmpl->byteorder, tmpl->len);
 	expr->ct.key = key;
 	expr->ct.direction = direction;
-	expr->ct.nfproto = nfproto;
 
 	switch (key) {
 	case NFT_CT_SRC:
@@ -427,6 +434,16 @@ void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr)
 		if (desc == NULL)
 			break;
 		datatype_set(expr, &inet_service_type);
+		break;
+	case NFT_CT_SRC_IP:
+	case NFT_CT_DST_IP:
+		expr->dtype = &ipaddr_type;
+		expr->len = expr->dtype->size;
+		break;
+	case NFT_CT_SRC_IP6:
+	case NFT_CT_DST_IP6:
+		expr->dtype = &ip6addr_type;
+		expr->len = expr->dtype->size;
 		break;
 	default:
 		break;

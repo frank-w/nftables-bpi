@@ -7,7 +7,6 @@ ip test-ip4 output
 
 # ct original ip6 saddr ::1
 inet test-inet input
-  [ ct load l3protocol => reg 1 , dir original ]
-  [ cmp eq reg 1 0x0000000a ]
-  [ ct load src => reg 1 , dir original ]
+  [ ct load src_ip6 => reg 1 , dir original ]
   [ cmp eq reg 1 0x00000000 0x00000000 0x00000000 0x01000000 ]
+

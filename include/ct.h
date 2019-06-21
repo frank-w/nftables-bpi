@@ -26,8 +26,7 @@ extern const struct ct_template ct_templates[__NFT_CT_MAX];
 }
 
 extern struct expr *ct_expr_alloc(const struct location *loc,
-				  enum nft_ct_keys key, int8_t direction,
-				  uint8_t nfproto);
+				  enum nft_ct_keys key, int8_t direction);
 extern void ct_expr_update_type(struct proto_ctx *ctx, struct expr *expr);
 
 extern struct stmt *notrack_stmt_alloc(const struct location *loc);

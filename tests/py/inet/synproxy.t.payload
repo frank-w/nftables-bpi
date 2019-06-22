@@ -1,0 +1,72 @@
+# synproxy
+ip synproxyip synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy
+ip6 synproxyip6 synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy
+inet synproxyinet synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy mss 1460 wscale 7
+ip synproxyip synproxychain
+  [ synproxy mss 1460 wscale 7 ]
+
+# synproxy mss 1460 wscale 7
+ip6 synproxyip6 synproxychain
+  [ synproxy mss 1460 wscale 7 ]
+
+# synproxy mss 1460 wscale 7
+inet synproxyinet synproxychain
+  [ synproxy mss 1460 wscale 7 ]
+
+# synproxy mss 1460 wscale 5 timestamp sack-perm
+ip synproxyip synproxychain
+  [ synproxy mss 1460 wscale 5 ]
+
+# synproxy mss 1460 wscale 5 timestamp sack-perm
+ip6 synproxyip6 synproxychain
+  [ synproxy mss 1460 wscale 5 ]
+
+# synproxy mss 1460 wscale 5 timestamp sack-perm
+inet synproxyinet synproxychain
+  [ synproxy mss 1460 wscale 5 ]
+
+# synproxy timestamp sack-perm
+ip synproxyip synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy timestamp sack-perm
+ip6 synproxyip6 synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy timestamp sack-perm
+inet synproxyinet synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy timestamp
+ip synproxyip synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy timestamp
+ip6 synproxyip6 synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy timestamp
+inet synproxyinet synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy sack-perm
+ip synproxyip synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy sack-perm
+ip6 synproxyip6 synproxychain
+  [ synproxy mss 0 wscale 0 ]
+
+# synproxy sack-perm
+inet synproxyinet synproxychain
+  [ synproxy mss 0 wscale 0 ]
+

@@ -1141,6 +1141,21 @@ static void netlink_gen_tproxy_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
+static void netlink_gen_synproxy_stmt(struct netlink_linearize_ctx *ctx,
+				      const struct stmt *stmt)
+{
+	struct nftnl_expr *nle;
+
+	nle = alloc_nft_expr("synproxy");
+	nftnl_expr_set_u16(nle, NFTNL_EXPR_SYNPROXY_MSS, stmt->synproxy.mss);
+	nftnl_expr_set_u8(nle, NFTNL_EXPR_SYNPROXY_WSCALE,
+			  stmt->synproxy.wscale);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_SYNPROXY_FLAGS,
+			   stmt->synproxy.flags);
+
+	nftnl_rule_add_expr(ctx->nlr, nle);
+}
+
 static void netlink_gen_dup_stmt(struct netlink_linearize_ctx *ctx,
 				 const struct stmt *stmt)
 {
@@ -1382,6 +1397,8 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_nat_stmt(ctx, stmt);
 	case STMT_TPROXY:
 		return netlink_gen_tproxy_stmt(ctx, stmt);
+	case STMT_SYNPROXY:
+		return netlink_gen_synproxy_stmt(ctx, stmt);
 	case STMT_DUP:
 		return netlink_gen_dup_stmt(ctx, stmt);
 	case STMT_QUEUE:

@@ -483,6 +483,93 @@ table inet x {
 }
 -------------------------------------
 
+SYNPROXY STATEMENT
+~~~~~~~~~~~~~~~~~~
+This statement will process TCP three-way-handshake parallel in netfilter
+context to protect either local or backend system. This statement requires
+connection tracking because sequence numbers need to be translated.
+
+[verse]
+*synproxy* [*mss* 'mss_value'] [*wscale* 'wscale_value'] ['SYNPROXY_FLAGS']
+
+.synproxy statement attributes
+[options="header"]
+|=================
+| Name | Description
+| mss | Maximum segment size announced to clients. This must match the backend.
+| wscale | Window scale announced to clients. This must match the backend.
+|=================
+
+.synproxy statement flags
+[options="header"]
+|=================
+| Flag | Description
+| sack-perm |
+Pass client selective acknowledgement option to backend (will be disabled if
+not present).
+| timestamp |
+Pass client timestamp option to backend (will be disabled if not present, also
+needed for selective acknowledgement and window scaling).
+|=================
+
+.Example ruleset for synproxy statement
+---------------------------------------
+Determine tcp options used by backend, from an external system
+
+              tcpdump -pni eth0 -c 1 'tcp[tcpflags] == (tcp-syn|tcp-ack)'
+                  port 80 &
+              telnet 192.0.2.42 80
+              18:57:24.693307 IP 192.0.2.42.80 > 192.0.2.43.48757:
+                  Flags [S.], seq 360414582, ack 788841994, win 14480,
+                  options [mss 1460,sackOK,
+                  TS val 1409056151 ecr 9690221,
+                  nop,wscale 9],
+                  length 0
+
+Switch tcp_loose mode off, so conntrack will mark out-of-flow packets as state INVALID.
+
+              echo 0 > /proc/sys/net/netfilter/nf_conntrack_tcp_loose
+
+Make SYN packets untracked.
+
+	table ip x {
+		chain y {
+			type filter hook prerouting priority raw; policy accept;
+			tcp flags syn notrack
+		}
+	}
+
+Catch UNTRACKED (SYN  packets) and INVALID (3WHS ACK packets) states and send
+them to SYNPROXY. This rule will respond to SYN packets with SYN+ACK
+syncookies, create ESTABLISHED for valid client response (3WHS ACK packets) and
+drop incorrect cookies. Flags combinations not expected during  3WHS will not
+match and continue (e.g. SYN+FIN, SYN+ACK). Finally, drop invalid packets, this
+will be out-of-flow packets that were not matched by SYNPROXY.
+
+    table ip foo {
+            chain z {
+                    type filter hook input priority filter; policy accept;
+                    ct state { invalid, untracked } synproxy mss 1460 wscale 9 timestamp sack-perm
+                    ct state invalid drop
+            }
+    }
+
+The outcome ruleset of the steps above should be similar to the one below.
+
+	table ip x {
+		chain y {
+			type filter hook prerouting priority raw; policy accept;
+	                tcp flags syn notrack
+		}
+
+		chain z {
+			type filter hook input priority filter; policy accept;
+	                ct state { invalid, untracked } synproxy mss 1460 wscale 9 timestamp sack-perm
+		        ct state invalid drop
+	        }
+	}
+---------------------------------------
+
 FLOW STATEMENT
 ~~~~~~~~~~~~~~
 A flow statement allows us to select what flows you want to accelerate

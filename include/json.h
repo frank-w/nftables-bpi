@@ -83,6 +83,7 @@ json_t *queue_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 json_t *verdict_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 json_t *connlimit_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 json_t *tproxy_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
+json_t *synproxy_stmt_json(const struct stmt *stmt, struct output_ctx *octx);
 
 int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd);
 

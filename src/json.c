@@ -16,6 +16,7 @@
 #include <linux/netfilter/nf_log.h>
 #include <linux/netfilter/nf_nat.h>
 #include <linux/netfilter/nf_tables.h>
+#include <linux/netfilter/nf_synproxy.h>
 #include <linux/xfrm.h>
 #include <pwd.h>
 #include <grp.h>
@@ -1464,6 +1465,34 @@ json_t *tproxy_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 	}
 
 	return json_pack("{s:o}", "tproxy", root);
+}
+
+json_t *synproxy_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
+{
+	json_t *root = json_object(), *flags = json_array();
+
+	if (stmt->synproxy.flags & NF_SYNPROXY_OPT_MSS)
+		json_object_set_new(root, "mss",
+				    json_integer(stmt->synproxy.mss));
+	if (stmt->synproxy.flags & NF_SYNPROXY_OPT_WSCALE)
+		json_object_set_new(root, "wscale",
+				    json_integer(stmt->synproxy.wscale));
+	if (stmt->synproxy.flags & NF_SYNPROXY_OPT_TIMESTAMP)
+		json_array_append_new(flags, json_string("timestamp"));
+	if (stmt->synproxy.flags & NF_SYNPROXY_OPT_SACK_PERM)
+		json_array_append_new(flags, json_string("sack-perm"));
+
+	if (json_array_size(flags) > 0)
+		json_object_set_new(root, "flags", flags);
+	else
+		json_decref(flags);
+
+	if (!json_object_size(root)) {
+		json_decref(root);
+		root = json_null();
+	}
+
+	return json_pack("{s:o}", "synproxy", root);
 }
 
 static json_t *table_print_json_full(struct netlink_ctx *ctx,

@@ -1010,6 +1010,22 @@ out_err:
 	xfree(stmt);
 }
 
+static void netlink_parse_synproxy(struct netlink_parse_ctx *ctx,
+				   const struct location *loc,
+				   const struct nftnl_expr *nle)
+{
+	struct stmt *stmt;
+
+	stmt = synproxy_stmt_alloc(loc);
+	stmt->synproxy.mss = nftnl_expr_get_u16(nle, NFTNL_EXPR_SYNPROXY_MSS);
+	stmt->synproxy.wscale = nftnl_expr_get_u8(nle,
+						  NFTNL_EXPR_SYNPROXY_WSCALE);
+	stmt->synproxy.flags = nftnl_expr_get_u32(nle,
+						  NFTNL_EXPR_SYNPROXY_FLAGS);
+
+	ctx->stmt = stmt;
+}
+
 static void netlink_parse_tproxy(struct netlink_parse_ctx *ctx,
 			      const struct location *loc,
 			      const struct nftnl_expr *nle)
@@ -1476,6 +1492,7 @@ static const struct {
 	{ .name = "tcpopt",	.parse = netlink_parse_exthdr },
 	{ .name = "flow_offload", .parse = netlink_parse_flow_offload },
 	{ .name = "xfrm",	.parse = netlink_parse_xfrm },
+	{ .name = "synproxy",	.parse = netlink_parse_synproxy },
 };
 
 static int netlink_parse_expr(const struct nftnl_expr *nle,

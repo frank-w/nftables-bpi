@@ -23,6 +23,7 @@
 #include <linux/netfilter/nf_nat.h>
 #include <linux/netfilter/nf_log.h>
 #include <linux/netfilter/nfnetlink_osf.h>
+#include <linux/netfilter/nf_synproxy.h>
 #include <linux/xfrm.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/icmp6.h>
@@ -199,6 +200,11 @@ int nft_lex(void *, void *, void *);
 %token TPROXY			"tproxy"
 
 %token OSF			"osf"
+
+%token SYNPROXY			"synproxy"
+%token MSS			"mss"
+%token WSCALE			"wscale"
+%token SACKPERM			"sack-perm"
 
 %token HOOK			"hook"
 %token DEVICE			"device"
@@ -611,6 +617,9 @@ int nft_lex(void *, void *, void *);
 %type <val>			nf_nat_flags nf_nat_flag offset_opt
 %type <stmt>			tproxy_stmt
 %destructor { stmt_free($$); }	tproxy_stmt
+%type <stmt>			synproxy_stmt synproxy_stmt_alloc
+%destructor { stmt_free($$); }	synproxy_stmt synproxy_stmt_alloc
+
 
 %type <stmt>			queue_stmt queue_stmt_alloc
 %destructor { stmt_free($$); }	queue_stmt queue_stmt_alloc
@@ -2289,6 +2298,7 @@ stmt			:	verdict_stmt
 			|	fwd_stmt
 			|	set_stmt
 			|	map_stmt
+			|	synproxy_stmt
 			;
 
 verdict_stmt		:	verdict_expr
@@ -2716,6 +2726,43 @@ tproxy_stmt		:	TPROXY TO stmt_expr
 				$$ = tproxy_stmt_alloc(&@$);
 				$$->tproxy.family = $2;
 				$$->tproxy.port = $5;
+			}
+			;
+
+synproxy_stmt		:	synproxy_stmt_alloc
+			|	synproxy_stmt_alloc	synproxy_args
+			;
+
+synproxy_stmt_alloc	:	SYNPROXY
+			{
+				$$ = synproxy_stmt_alloc(&@$);
+			}
+			;
+
+synproxy_args		:	synproxy_arg
+			{
+				$<stmt>$	= $<stmt>0;
+			}
+			|	synproxy_args	synproxy_arg
+			;
+
+synproxy_arg		:	MSS	NUM
+			{
+				$<stmt>0->synproxy.mss = $2;
+				$<stmt>0->synproxy.flags |= NF_SYNPROXY_OPT_MSS;
+			}
+			|	WSCALE	NUM
+			{
+				$<stmt>0->synproxy.wscale = $2;
+				$<stmt>0->synproxy.flags |= NF_SYNPROXY_OPT_WSCALE;
+			}
+			|	TIMESTAMP
+			{
+				$<stmt>0->synproxy.flags |= NF_SYNPROXY_OPT_TIMESTAMP;
+			}
+			|	SACKPERM
+			{
+				$<stmt>0->synproxy.flags |= NF_SYNPROXY_OPT_SACK_PERM;
 			}
 			;
 

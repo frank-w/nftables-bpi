@@ -23,6 +23,7 @@
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
 #include <linux/netfilter/nf_log.h>
 #include <linux/netfilter/nf_nat.h>
+#include <linux/netfilter/nf_synproxy.h>
 #include <linux/netfilter/nf_tables.h>
 #include <jansson.h>
 
@@ -2180,6 +2181,98 @@ static struct stmt *json_parse_log_stmt(struct json_ctx *ctx,
 	return stmt;
 }
 
+static int json_parse_synproxy_flag(struct json_ctx *ctx,
+				    json_t *root, int *flags)
+{
+	const struct {
+		const char *flag;
+		int val;
+	} flag_tbl[] = {
+		{ "timestamp", NF_SYNPROXY_OPT_TIMESTAMP },
+		{ "sack-perm", NF_SYNPROXY_OPT_SACK_PERM },
+	};
+	const char *flag;
+	unsigned int i;
+
+	assert(flags);
+
+	if (!json_is_string(root)) {
+		json_error(ctx, "Invalid log flag type %s, expected string.",
+			   json_typename(root));
+		return 1;
+	}
+	flag = json_string_value(root);
+	for (i = 0; i < array_size(flag_tbl); i++) {
+		if (!strcmp(flag, flag_tbl[i].flag)) {
+			*flags |= flag_tbl[i].val;
+			return 0;
+		}
+	}
+	json_error(ctx, "Unknown log flag '%s'.", flag);
+	return 1;
+}
+
+static int json_parse_synproxy_flags(struct json_ctx *ctx, json_t *root)
+{
+	int flags = 0;
+	json_t *value;
+	size_t index;
+
+	if (json_is_string(root)) {
+		json_parse_synproxy_flag(ctx, root, &flags);
+		return flags;
+	} else if (!json_is_array(root)) {
+		json_error(ctx, "Invalid log flags type %s.",
+			   json_typename(root));
+		return -1;
+	}
+	json_array_foreach(root, index, value) {
+		if (json_parse_synproxy_flag(ctx, value, &flags))
+			json_error(ctx, "Parsing log flag at index %zu failed.",
+				   index);
+	}
+	return flags;
+}
+
+static struct stmt *json_parse_synproxy_stmt(struct json_ctx *ctx,
+					     const char *key, json_t *value)
+{
+	struct stmt *stmt;
+	json_t *jflags;
+	int tmp, flags;
+
+	stmt = synproxy_stmt_alloc(int_loc);
+
+	if (!json_unpack(value, "{s:i}", "mss", &tmp)) {
+		if (tmp < 0) {
+			json_error(ctx, "Invalid synproxy mss value '%d'", tmp);
+			stmt_free(stmt);
+			return NULL;
+		}
+		stmt->synproxy.mss = tmp;
+		stmt->synproxy.flags |= NF_SYNPROXY_OPT_MSS;
+	}
+	if (!json_unpack(value, "{s:i}", "wscale", &tmp)) {
+		if (tmp < 0) {
+			json_error(ctx, "Invalid synproxy wscale value '%d'", tmp);
+			stmt_free(stmt);
+			return NULL;
+		}
+		stmt->synproxy.wscale = tmp;
+		stmt->synproxy.flags |= NF_SYNPROXY_OPT_WSCALE;
+	}
+	if (!json_unpack(value, "{s:o}", "flags", &jflags)) {
+		flags = json_parse_synproxy_flags(ctx, jflags);
+
+		if (flags < 0) {
+			stmt_free(stmt);
+			return NULL;
+		}
+		stmt->synproxy.flags |= flags;
+	}
+	return stmt;
+}
+
 static struct stmt *json_parse_cthelper_stmt(struct json_ctx *ctx,
 					     const char *key, json_t *value)
 {
@@ -2375,6 +2468,7 @@ static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 		{ "queue", json_parse_queue_stmt },
 		{ "ct count", json_parse_connlimit_stmt },
 		{ "tproxy", json_parse_tproxy_stmt },
+		{ "synproxy", json_parse_synproxy_stmt },
 	};
 	const char *type;
 	unsigned int i;

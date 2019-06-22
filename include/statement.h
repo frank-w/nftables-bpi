@@ -204,6 +204,14 @@ struct map_stmt {
 
 extern struct stmt *map_stmt_alloc(const struct location *loc);
 
+struct synproxy_stmt {
+	uint16_t	mss;
+	uint8_t		wscale;
+	uint32_t	flags;
+};
+
+extern struct stmt *synproxy_stmt_alloc(const struct location *loc);
+
 struct meter_stmt {
 	struct expr		*set;
 	struct expr		*key;
@@ -271,6 +279,7 @@ extern struct stmt *xt_stmt_alloc(const struct location *loc);
  * @STMT_FLOW_OFFLOAD:	flow offload statement
  * @STMT_CONNLIMIT:	connection limit statement
  * @STMT_MAP:		map statement
+ * @STMT_SYNPROXY:	synproxy statement
  */
 enum stmt_types {
 	STMT_INVALID,
@@ -298,6 +307,7 @@ enum stmt_types {
 	STMT_FLOW_OFFLOAD,
 	STMT_CONNLIMIT,
 	STMT_MAP,
+	STMT_SYNPROXY,
 };
 
 /**
@@ -362,6 +372,7 @@ struct stmt {
 		struct objref_stmt	objref;
 		struct flow_stmt	flow;
 		struct map_stmt		map;
+		struct synproxy_stmt	synproxy;
 	};
 };
 

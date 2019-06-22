@@ -17,6 +17,7 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_arp.h>
 #include <linux/netfilter/nf_tables.h>
+#include <linux/netfilter/nf_synproxy.h>
 #include <linux/netfilter_ipv4.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/icmp6.h>
@@ -2746,6 +2747,18 @@ static int stmt_evaluate_tproxy(struct eval_ctx *ctx, struct stmt *stmt)
 	return 0;
 }
 
+static int stmt_evaluate_synproxy(struct eval_ctx *ctx, struct stmt *stmt)
+{
+	if (stmt->synproxy.flags != 0 &&
+	    !(stmt->synproxy.flags & (NF_SYNPROXY_OPT_MSS |
+				      NF_SYNPROXY_OPT_WSCALE |
+				      NF_SYNPROXY_OPT_TIMESTAMP |
+				      NF_SYNPROXY_OPT_SACK_PERM)))
+		return stmt_error(ctx, stmt, "This flags are not supported for SYNPROXY");
+
+	return 0;
+}
+
 static int stmt_evaluate_dup(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	int err;
@@ -3090,6 +3103,8 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 		return stmt_evaluate_objref(ctx, stmt);
 	case STMT_MAP:
 		return stmt_evaluate_map(ctx, stmt);
+	case STMT_SYNPROXY:
+		return stmt_evaluate_synproxy(ctx, stmt);
 	default:
 		BUG("unknown statement type %s\n", stmt->ops->name);
 	}

@@ -553,6 +553,11 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "osf"			{ return OSF; }
 
+"synproxy"		{ return SYNPROXY; }
+"mss"			{ return MSS; }
+"wscale"		{ return WSCALE; }
+"sack-perm"		{ return SACKPERM; }
+
 "notrack"		{ return NOTRACK; }
 
 "options"		{ return OPTIONS; }

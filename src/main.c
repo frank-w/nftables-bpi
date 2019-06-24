@@ -277,6 +277,9 @@ int main(int argc, char * const *argv)
 		case OPT_JSON:
 #ifdef HAVE_LIBJANSSON
 			output_flags |= NFT_CTX_OUTPUT_JSON;
+#else
+			fprintf(stderr, "JSON support not compiled-in\n");
+			exit(EXIT_FAILURE);
 #endif
 			break;
 		case OPT_GUID:

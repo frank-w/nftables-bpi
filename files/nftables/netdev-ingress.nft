@@ -1,4 +1,4 @@
-#!/usr/sbin/nft -f
+#!@sbindir@nft -f
 
 # mind the NIC, it must exists
 table netdev filter {

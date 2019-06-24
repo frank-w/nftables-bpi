@@ -1752,6 +1752,8 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	root = json_pack("{s:o}", "nftables", root);
 	json_dumpf(root, ctx->nft->output.output_fp, 0);
 	json_decref(root);
+	fprintf(ctx->nft->output.output_fp, "\n");
+	fflush(ctx->nft->output.output_fp);
 	return 0;
 }
 

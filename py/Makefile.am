@@ -22,7 +22,7 @@ clean-local:
 		$(PYTHON_BIN) setup.py clean \
 		--build-base $(abs_builddir)
 	rm -rf scripts-* lib* build dist bdist.* nftables.egg-info
-	find . -name \*.pyc -print0 | xargs -0 rm -f
+	find . -name \*.pyc -delete
 
 distclean-local:
 	rm -f version

@@ -103,11 +103,14 @@ AC_ARG_WITH([python_bin],
 	   )
 
 AS_IF([test "x$PYTHON_BIN" = "x"], [
-	AS_IF([test "x$enable_python" = "xyes"], [AC_MSG_ERROR([Python asked but not found])])
-	AS_IF([test "x$enable_python" = "xcheck"], [AC_MSG_WARN([Python not found, continuing anyway])])
+	AS_IF([test "x$enable_python" = "xyes"], [AC_MSG_ERROR([Python asked but not found])],
+	[test "x$enable_python" = "xcheck"], [
+		AC_MSG_WARN([Python not found, continuing anyway])
+		enable_python=no
 	])
+])
 
-AM_CONDITIONAL([HAVE_PYTHON], [test "x$PYTHON_BIN" != "x"])
+AM_CONDITIONAL([HAVE_PYTHON], [test "$enable_python" != "no"])
 
 AC_CONFIG_FILES([					\
 		Makefile				\
@@ -138,7 +141,7 @@ nft configuration:
   libxtables support:		${with_xtables}
   json output support:          ${with_json}"
 
-AS_IF([test "x$PYTHON_BIN" != "x"], [
+AS_IF([test "$enable_python" != "no"], [
 	echo "  enable Python:		yes (with $PYTHON_BIN)"
 	], [
 	echo "  enable Python:		no"

@@ -109,6 +109,7 @@ static void nft_exit(void)
 	mark_table_exit();
 }
 
+EXPORT_SYMBOL(nft_ctx_add_include_path);
 int nft_ctx_add_include_path(struct nft_ctx *ctx, const char *path)
 {
 	char **tmp;
@@ -127,6 +128,7 @@ int nft_ctx_add_include_path(struct nft_ctx *ctx, const char *path)
 	return 0;
 }
 
+EXPORT_SYMBOL(nft_ctx_clear_include_paths);
 void nft_ctx_clear_include_paths(struct nft_ctx *ctx)
 {
 	while (ctx->num_include_paths)
@@ -141,6 +143,7 @@ static void nft_ctx_netlink_init(struct nft_ctx *ctx)
 	ctx->nf_sock = nft_mnl_socket_open();
 }
 
+EXPORT_SYMBOL(nft_ctx_new);
 struct nft_ctx *nft_ctx_new(uint32_t flags)
 {
 	struct nft_ctx *ctx;
@@ -226,21 +229,25 @@ static int exit_cookie(struct cookie *cookie)
 	return 0;
 }
 
+EXPORT_SYMBOL(nft_ctx_buffer_output);
 int nft_ctx_buffer_output(struct nft_ctx *ctx)
 {
 	return init_cookie(&ctx->output.output_cookie);
 }
 
+EXPORT_SYMBOL(nft_ctx_unbuffer_output);
 int nft_ctx_unbuffer_output(struct nft_ctx *ctx)
 {
 	return exit_cookie(&ctx->output.output_cookie);
 }
 
+EXPORT_SYMBOL(nft_ctx_buffer_error);
 int nft_ctx_buffer_error(struct nft_ctx *ctx)
 {
 	return init_cookie(&ctx->output.error_cookie);
 }
 
+EXPORT_SYMBOL(nft_ctx_unbuffer_error);
 int nft_ctx_unbuffer_error(struct nft_ctx *ctx)
 {
 	return exit_cookie(&ctx->output.error_cookie);
@@ -262,16 +269,19 @@ static const char *get_cookie_buffer(struct cookie *cookie)
 	return cookie->buf;
 }
 
+EXPORT_SYMBOL(nft_ctx_get_output_buffer);
 const char *nft_ctx_get_output_buffer(struct nft_ctx *ctx)
 {
 	return get_cookie_buffer(&ctx->output.output_cookie);
 }
 
+EXPORT_SYMBOL(nft_ctx_get_error_buffer);
 const char *nft_ctx_get_error_buffer(struct nft_ctx *ctx)
 {
 	return get_cookie_buffer(&ctx->output.error_cookie);
 }
 
+EXPORT_SYMBOL(nft_ctx_free);
 void nft_ctx_free(struct nft_ctx *ctx)
 {
 	if (ctx->nf_sock)
@@ -287,6 +297,7 @@ void nft_ctx_free(struct nft_ctx *ctx)
 	nft_exit();
 }
 
+EXPORT_SYMBOL(nft_ctx_set_output);
 FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp)
 {
 	FILE *old = ctx->output.output_fp;
@@ -299,6 +310,7 @@ FILE *nft_ctx_set_output(struct nft_ctx *ctx, FILE *fp)
 	return old;
 }
 
+EXPORT_SYMBOL(nft_ctx_set_error);
 FILE *nft_ctx_set_error(struct nft_ctx *ctx, FILE *fp)
 {
 	FILE *old = ctx->output.error_fp;
@@ -311,30 +323,36 @@ FILE *nft_ctx_set_error(struct nft_ctx *ctx, FILE *fp)
 	return old;
 }
 
+EXPORT_SYMBOL(nft_ctx_get_dry_run);
 bool nft_ctx_get_dry_run(struct nft_ctx *ctx)
 {
 	return ctx->check;
 }
 
+EXPORT_SYMBOL(nft_ctx_set_dry_run);
 void nft_ctx_set_dry_run(struct nft_ctx *ctx, bool dry)
 {
 	ctx->check = dry;
 }
 
+EXPORT_SYMBOL(nft_ctx_output_get_flags);
 unsigned int nft_ctx_output_get_flags(struct nft_ctx *ctx)
 {
 	return ctx->output.flags;
 }
 
+EXPORT_SYMBOL(nft_ctx_output_set_flags);
 void nft_ctx_output_set_flags(struct nft_ctx *ctx, unsigned int flags)
 {
 	ctx->output.flags = flags;
 }
 
+EXPORT_SYMBOL(nft_ctx_output_get_debug);
 unsigned int nft_ctx_output_get_debug(struct nft_ctx *ctx)
 {
 	return ctx->debug_mask;
 }
+EXPORT_SYMBOL(nft_ctx_output_set_debug);
 void nft_ctx_output_set_debug(struct nft_ctx *ctx, unsigned int mask)
 {
 	ctx->debug_mask = mask;
@@ -407,6 +425,7 @@ static int nft_evaluate(struct nft_ctx *nft, struct list_head *msgs,
 	return 0;
 }
 
+EXPORT_SYMBOL(nft_run_cmd_from_buffer);
 int nft_run_cmd_from_buffer(struct nft_ctx *nft, const char *buf)
 {
 	int rc = -EINVAL, parser_rc;
@@ -458,6 +477,7 @@ err:
 	return rc;
 }
 
+EXPORT_SYMBOL(nft_run_cmd_from_filename);
 int nft_run_cmd_from_filename(struct nft_ctx *nft, const char *filename)
 {
 	struct cmd *cmd, *next;

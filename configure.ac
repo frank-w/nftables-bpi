@@ -44,6 +44,11 @@ fi
 
 AM_PROG_AR
 AM_PROG_LIBTOOL
+LT_INIT
+AM_PROG_CC_C_O
+AC_EXEEXT
+AC_DISABLE_STATIC
+CHECK_GCC_FVISIBILITY
 
 AS_IF([test "x$enable_man_doc" = "xyes"], [
        AC_CHECK_PROG(A2X, [a2x], [a2x], [no])

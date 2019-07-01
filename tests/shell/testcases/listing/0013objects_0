@@ -13,7 +13,7 @@ EXPECTED="table ip test {
 	}
 
 	ct timeout cttime {
-		protocol udp;
+		protocol udp
 		l3proto ip
 		policy = { unreplied: 15, replied: 12 }
 	}

@@ -900,7 +900,6 @@ int netlink_echo_callback(const struct nlmsghdr *nlh, void *data)
 		.ctx = ctx,
 		.loc = &netlink_location,
 		.monitor_flags = 0xffffffff,
-		.cache_needed = true,
 	};
 
 	if (!nft_output_echo(&echo_monh.ctx->nft->output))

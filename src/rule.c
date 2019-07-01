@@ -1760,7 +1760,7 @@ static void print_proto_timeout_policy(uint8_t l4, const uint32_t *timeout,
 		if (timeout[i] != timeout_protocol[l4].dflt_timeout[i]) {
 			if (comma)
 				nft_print(octx, ", ");
-			nft_print(octx, "%s: %u",
+			nft_print(octx, "%s : %u",
 				  timeout_protocol[l4].state_to_name[i],
 				  timeout[i]);
 			comma = true;

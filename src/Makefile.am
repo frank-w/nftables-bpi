@@ -62,6 +62,7 @@ libnftables_la_SOURCES =			\
 		nfnl_osf.c			\
 		tcpopt.c			\
 		socket.c			\
+		print.c				\
 		libnftables.c
 
 # yacc and lex generate dirty code

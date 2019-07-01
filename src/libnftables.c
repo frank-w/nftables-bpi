@@ -507,30 +507,3 @@ err:
 		cache_release(&nft->cache);
 	return rc;
 }
-
-int nft_print(struct output_ctx *octx, const char *fmt, ...)
-{
-	int ret;
-	va_list arg;
-
-	va_start(arg, fmt);
-	ret = vfprintf(octx->output_fp, fmt, arg);
-	va_end(arg);
-	fflush(octx->output_fp);
-
-	return ret;
-}
-
-int nft_gmp_print(struct output_ctx *octx, const char *fmt, ...)
-{
-	int ret;
-	va_list arg;
-
-	va_start(arg, fmt);
-	ret = gmp_vfprintf(octx->output_fp, fmt, arg);
-	va_end(arg);
-	fflush(octx->output_fp);
-
-	return ret;
-}
-

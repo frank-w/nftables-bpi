@@ -3516,7 +3516,7 @@ timeout_state		:	STRING	COLON	NUM
 			}
 			;
 
-ct_timeout_config	:	PROTOCOL	ct_l4protoname	SEMICOLON
+ct_timeout_config	:	PROTOCOL	ct_l4protoname	stmt_separator
 			{
 				struct ct_timeout *ct;
 				int l4proto = $2;

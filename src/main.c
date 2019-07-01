@@ -19,6 +19,7 @@
 #include <sys/types.h>
 
 #include <nftables/libnftables.h>
+#include <nftables.h>
 #include <utils.h>
 #include <cli.h>
 
@@ -302,7 +303,12 @@ int main(int argc, char * const *argv)
 		for (len = 0, i = optind; i < argc; i++)
 			len += strlen(argv[i]) + strlen(" ");
 
-		buf = xzalloc(len);
+		buf = calloc(1, len);
+		if (buf == NULL) {
+			fprintf(stderr, "%s:%u: Memory allocation failure\n",
+				__FILE__, __LINE__);
+			exit(NFT_EXIT_NOMEM);
+		}
 		for (i = optind; i < argc; i++) {
 			strcat(buf, argv[i]);
 			if (i + 1 < argc)

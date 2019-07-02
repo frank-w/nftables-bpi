@@ -608,7 +608,7 @@ int mnl_nft_chain_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELCHAIN,
 				    cmd->handle.family,
-				    NLM_F_ACK, ctx->seqnum);
+				    0, ctx->seqnum);
 	nftnl_chain_nlmsg_build_payload(nlh, nlc);
 	nftnl_chain_free(nlc);
 
@@ -716,7 +716,7 @@ int mnl_nft_table_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELTABLE,
 				    cmd->handle.family,
-				    NLM_F_ACK, ctx->seqnum);
+				    0, ctx->seqnum);
 	nftnl_table_nlmsg_build_payload(nlh, nlt);
 	nftnl_table_free(nlt);
 
@@ -927,7 +927,7 @@ mnl_nft_set_dump(struct netlink_ctx *ctx, int family, const char *table)
 		memory_allocation_error();
 
 	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETSET, family,
-				    NLM_F_DUMP | NLM_F_ACK, ctx->seqnum);
+				    NLM_F_DUMP, ctx->seqnum);
 	if (table != NULL)
 		nftnl_set_set(s, NFTNL_SET_TABLE, table);
 	nftnl_set_nlmsg_build_payload(nlh, s);
@@ -1081,7 +1081,7 @@ mnl_nft_obj_dump(struct netlink_ctx *ctx, int family,
 		 const char *table, const char *name,  uint32_t type, bool dump,
 		 bool reset)
 {
-	uint16_t nl_flags = dump ? NLM_F_DUMP : 0;
+	uint16_t nl_flags = dump ? NLM_F_DUMP : NLM_F_ACK;
 	struct nftnl_obj_list *nln_list;
 	char buf[MNL_SOCKET_BUFFER_SIZE];
 	struct nlmsghdr *nlh;
@@ -1098,7 +1098,7 @@ mnl_nft_obj_dump(struct netlink_ctx *ctx, int family,
 		memory_allocation_error();
 
 	nlh = nftnl_nlmsg_build_hdr(buf, msg_type, family,
-				    nl_flags | NLM_F_ACK, ctx->seqnum);
+				    nl_flags, ctx->seqnum);
 	if (table != NULL)
 		nftnl_obj_set_str(n, NFTNL_OBJ_TABLE, table);
 	if (name != NULL)
@@ -1288,7 +1288,7 @@ int mnl_nft_setelem_get(struct netlink_ctx *ctx, struct nftnl_set *nls)
 
 	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETSETELEM,
 				    nftnl_set_get_u32(nls, NFTNL_SET_FAMILY),
-				    NLM_F_DUMP | NLM_F_ACK, ctx->seqnum);
+				    NLM_F_DUMP, ctx->seqnum);
 	nftnl_set_elems_nlmsg_build_payload(nlh, nls);
 
 	return nft_mnl_talk(ctx, nlh, nlh->nlmsg_len, set_elem_cb, nls);
@@ -1331,7 +1331,7 @@ mnl_nft_flowtable_dump(struct netlink_ctx *ctx, int family, const char *table)
 		memory_allocation_error();
 
 	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETFLOWTABLE, family,
-				    NLM_F_DUMP | NLM_F_ACK, ctx->seqnum);
+				    NLM_F_DUMP, ctx->seqnum);
 	if (table != NULL)
 		nftnl_flowtable_set_str(n, NFTNL_FLOWTABLE_TABLE, table);
 	nftnl_flowtable_nlmsg_build_payload(nlh, n);

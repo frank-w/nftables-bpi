@@ -9,6 +9,9 @@ table inet x {
 	counter user123 {
 		packets 12 bytes 1433
 	}
+	counter user321 {
+		packets 12 bytes 1433
+	}
 	quota user123 {
 		over 2000 bytes
 	}
@@ -31,3 +34,5 @@ table inet x {
 
 set -e
 $NFT -f - <<< "$RULESET"
+
+$NFT reset counter inet x user321

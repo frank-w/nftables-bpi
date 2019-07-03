@@ -3,6 +3,10 @@ table inet x {
 		packets 12 bytes 1433
 	}
 
+	counter user321 {
+		packets 0 bytes 0
+	}
+
 	quota user123 {
 		over 2000 bytes
 	}

@@ -587,6 +587,66 @@ static struct expr *json_parse_tcp_option_expr(struct json_ctx *ctx,
 	return tcpopt_expr_alloc(int_loc, descval, fieldval);
 }
 
+static int json_parse_ip_option_type(const char *name, int *val)
+{
+	unsigned int i;
+
+	for (i = 0; i < array_size(ipopt_protocols); i++) {
+		if (ipopt_protocols[i] &&
+		    !strcmp(ipopt_protocols[i]->name, name)) {
+			if (val)
+				*val = i;
+			return 0;
+		}
+	}
+	return 1;
+}
+
+static int json_parse_ip_option_field(int type, const char *name, int *val)
+{
+	unsigned int i;
+	const struct exthdr_desc *desc = ipopt_protocols[type];
+
+	for (i = 0; i < array_size(desc->templates); i++) {
+		if (desc->templates[i].token &&
+		    !strcmp(desc->templates[i].token, name)) {
+			if (val)
+				*val = i;
+			return 0;
+		}
+	}
+	return 1;
+}
+
+static struct expr *json_parse_ip_option_expr(struct json_ctx *ctx,
+					       const char *type, json_t *root)
+{
+	const char *desc, *field;
+	int descval, fieldval;
+	struct expr *expr;
+
+	if (json_unpack_err(ctx, root, "{s:s}", "name", &desc))
+		return NULL;
+
+	if (json_parse_ip_option_type(desc, &descval)) {
+		json_error(ctx, "Unknown ip option name '%s'.", desc);
+		return NULL;
+	}
+
+	if (json_unpack(root, "{s:s}", "field", &field)) {
+		expr = ipopt_expr_alloc(int_loc, descval,
+					 IPOPT_FIELD_TYPE, 0);
+		expr->exthdr.flags = NFT_EXTHDR_F_PRESENT;
+
+		return expr;
+	}
+	if (json_parse_ip_option_field(descval, field, &fieldval)) {
+		json_error(ctx, "Unknown ip option field '%s'.", field);
+		return NULL;
+	}
+	return ipopt_expr_alloc(int_loc, descval, fieldval, 0);
+}
+
 static const struct exthdr_desc *exthdr_lookup_byname(const char *name)
 {
 	const struct exthdr_desc *exthdr_tbl[] = {
@@ -1291,6 +1351,7 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		{ "payload", json_parse_payload_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },
 		{ "exthdr", json_parse_exthdr_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP },
 		{ "tcp option", json_parse_tcp_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES },
+		{ "ip option", json_parse_ip_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES },
 		{ "meta", json_parse_meta_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP },
 		{ "osf", json_parse_osf_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_MAP },
 		{ "ipsec", json_parse_xfrm_expr, CTX_F_PRIMARY | CTX_F_MAP },

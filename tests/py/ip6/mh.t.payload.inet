@@ -2,14 +2,14 @@
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
 # mh nexthdr != 1
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ cmp neq reg 1 0x00000001 ]
 
 # mh nexthdr { udplite, ipcomp, udp, ah, sctp, esp, dccp, tcp, ipv6-icmp }
@@ -19,7 +19,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh nexthdr != { udplite, ipcomp, udp, ah, sctp, esp, dccp, tcp, ipv6-icmp }
@@ -29,42 +29,42 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # mh nexthdr icmp
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
 # mh nexthdr != icmp
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ cmp neq reg 1 0x00000001 ]
 
 # mh nexthdr 22
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ cmp eq reg 1 0x00000016 ]
 
 # mh nexthdr != 233
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ cmp neq reg 1 0x000000e9 ]
 
 # mh nexthdr 33-45
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ cmp gte reg 1 0x00000021 ]
   [ cmp lte reg 1 0x0000002d ]
 
@@ -72,7 +72,7 @@ inet test-inet input
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ range neq reg 1 0x00000021 0x0000002d ]
 
 # mh nexthdr { 33, 55, 67, 88 }
@@ -82,7 +82,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh nexthdr != { 33, 55, 67, 88 }
@@ -92,7 +92,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # mh nexthdr { 33-55 }
@@ -102,7 +102,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh nexthdr != { 33-55 }
@@ -112,28 +112,28 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 0 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 0 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # mh hdrlength 22
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 1 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 1 => reg 1 ]
   [ cmp eq reg 1 0x00000016 ]
 
 # mh hdrlength != 233
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 1 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 1 => reg 1 ]
   [ cmp neq reg 1 0x000000e9 ]
 
 # mh hdrlength 33-45
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 1 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 1 => reg 1 ]
   [ cmp gte reg 1 0x00000021 ]
   [ cmp lte reg 1 0x0000002d ]
 
@@ -141,7 +141,7 @@ inet test-inet input
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 1 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 1 => reg 1 ]
   [ range neq reg 1 0x00000021 0x0000002d ]
 
 # mh hdrlength { 33, 55, 67, 88 }
@@ -151,7 +151,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 1 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 1 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh hdrlength != { 33, 55, 67, 88 }
@@ -161,7 +161,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 1 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 1 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # mh hdrlength { 33-55 }
@@ -171,7 +171,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 1 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 1 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh hdrlength != { 33-55 }
@@ -181,7 +181,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 1 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 1 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # mh type {binding-refresh-request, home-test-init, careof-test-init, home-test, careof-test, binding-update, binding-acknowledgement, binding-error, fast-binding-update, fast-binding-acknowledgement, fast-binding-advertisement, experimental-mobility-header, home-agent-switch-message}
@@ -191,42 +191,42 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 2 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 2 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh type home-agent-switch-message
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 2 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 2 => reg 1 ]
   [ cmp eq reg 1 0x0000000c ]
 
 # mh type != home-agent-switch-message
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 2 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 2 => reg 1 ]
   [ cmp neq reg 1 0x0000000c ]
 
 # mh reserved 22
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 3 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 3 => reg 1 ]
   [ cmp eq reg 1 0x00000016 ]
 
 # mh reserved != 233
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 3 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 3 => reg 1 ]
   [ cmp neq reg 1 0x000000e9 ]
 
 # mh reserved 33-45
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 3 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 3 => reg 1 ]
   [ cmp gte reg 1 0x00000021 ]
   [ cmp lte reg 1 0x0000002d ]
 
@@ -234,7 +234,7 @@ inet test-inet input
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 3 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 3 => reg 1 ]
   [ range neq reg 1 0x00000021 0x0000002d ]
 
 # mh reserved { 33, 55, 67, 88}
@@ -244,7 +244,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 3 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 3 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh reserved != { 33, 55, 67, 88}
@@ -254,7 +254,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 3 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 3 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # mh reserved { 33-55}
@@ -264,7 +264,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 3 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 3 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh reserved != { 33-55}
@@ -274,28 +274,28 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 1b @ 135 + 3 => reg 1 ]
+  [ exthdr load ipv6 1b @ 135 + 3 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # mh checksum 22
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 2b @ 135 + 4 => reg 1 ]
+  [ exthdr load ipv6 2b @ 135 + 4 => reg 1 ]
   [ cmp eq reg 1 0x00001600 ]
 
 # mh checksum != 233
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 2b @ 135 + 4 => reg 1 ]
+  [ exthdr load ipv6 2b @ 135 + 4 => reg 1 ]
   [ cmp neq reg 1 0x0000e900 ]
 
 # mh checksum 33-45
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 2b @ 135 + 4 => reg 1 ]
+  [ exthdr load ipv6 2b @ 135 + 4 => reg 1 ]
   [ cmp gte reg 1 0x00002100 ]
   [ cmp lte reg 1 0x00002d00 ]
 
@@ -303,7 +303,7 @@ inet test-inet input
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 2b @ 135 + 4 => reg 1 ]
+  [ exthdr load ipv6 2b @ 135 + 4 => reg 1 ]
   [ range neq reg 1 0x00002100 0x00002d00 ]
 
 # mh checksum { 33, 55, 67, 88}
@@ -313,7 +313,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 2b @ 135 + 4 => reg 1 ]
+  [ exthdr load ipv6 2b @ 135 + 4 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh checksum != { 33, 55, 67, 88}
@@ -323,7 +323,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 2b @ 135 + 4 => reg 1 ]
+  [ exthdr load ipv6 2b @ 135 + 4 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # mh checksum { 33-55}
@@ -333,7 +333,7 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 2b @ 135 + 4 => reg 1 ]
+  [ exthdr load ipv6 2b @ 135 + 4 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
 # mh checksum != { 33-55}
@@ -343,6 +343,6 @@ __set%d test-inet 0
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ exthdr load 2b @ 135 + 4 => reg 1 ]
+  [ exthdr load ipv6 2b @ 135 + 4 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
 

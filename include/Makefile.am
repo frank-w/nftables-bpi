@@ -7,6 +7,7 @@ noinst_HEADERS = 	cli.h		\
 			expression.h	\
 			fib.h		\
 			hash.h		\
+			ipopt.h		\
 			json.h		\
 			mini-gmp.h	\
 			gmputil.h	\

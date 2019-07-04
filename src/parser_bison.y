@@ -309,6 +309,14 @@ int nft_lex(void *, void *, void *);
 %token PROTOCOL			"protocol"
 %token CHECKSUM			"checksum"
 
+%token PTR			"ptr"
+%token VALUE			"value"
+
+%token LSRR			"lsrr"
+%token RR			"rr"
+%token SSRR			"ssrr"
+%token RA			"ra"
+
 %token ICMP			"icmp"
 %token CODE			"code"
 %token SEQUENCE			"seq"
@@ -698,6 +706,7 @@ int nft_lex(void *, void *, void *);
 %type <expr>			ip_hdr_expr	icmp_hdr_expr		igmp_hdr_expr numgen_expr	hash_expr
 %destructor { expr_free($$); }	ip_hdr_expr	icmp_hdr_expr		igmp_hdr_expr numgen_expr	hash_expr
 %type <val>			ip_hdr_field	icmp_hdr_field		igmp_hdr_field
+%type <val>			ip_option_type	ip_option_field
 %type <expr>			ip6_hdr_expr    icmp6_hdr_expr
 %destructor { expr_free($$); }	ip6_hdr_expr	icmp6_hdr_expr
 %type <val>			ip6_hdr_field   icmp6_hdr_field
@@ -4249,6 +4258,15 @@ ip_hdr_expr		:	IP	ip_hdr_field
 			{
 				$$ = payload_expr_alloc(&@$, &proto_ip, $2);
 			}
+			|	IP	OPTION	ip_option_type ip_option_field
+			{
+				$$ = ipopt_expr_alloc(&@$, $3, $4, 0);
+			}
+			|	IP	OPTION	ip_option_type
+			{
+				$$ = ipopt_expr_alloc(&@$, $3, IPOPT_FIELD_TYPE, 0);
+				$$->exthdr.flags = NFT_EXTHDR_F_PRESENT;
+			}
 			;
 
 ip_hdr_field		:	HDRVERSION	{ $$ = IPHDR_VERSION; }
@@ -4263,6 +4281,19 @@ ip_hdr_field		:	HDRVERSION	{ $$ = IPHDR_VERSION; }
 			|	CHECKSUM	{ $$ = IPHDR_CHECKSUM; }
 			|	SADDR		{ $$ = IPHDR_SADDR; }
 			|	DADDR		{ $$ = IPHDR_DADDR; }
+			;
+
+ip_option_type		:	LSRR		{ $$ = IPOPT_LSRR; }
+			|	RR		{ $$ = IPOPT_RR; }
+			|	SSRR		{ $$ = IPOPT_SSRR; }
+			|	RA		{ $$ = IPOPT_RA; }
+			;
+
+ip_option_field		:	TYPE		{ $$ = IPOPT_FIELD_TYPE; }
+			|	LENGTH		{ $$ = IPOPT_FIELD_LENGTH; }
+			|	VALUE		{ $$ = IPOPT_FIELD_VALUE; }
+			|	PTR		{ $$ = IPOPT_FIELD_PTR; }
+			|	ADDR		{ $$ = IPOPT_FIELD_ADDR_0; }
 			;
 
 icmp_hdr_expr		:	ICMP	icmp_hdr_field

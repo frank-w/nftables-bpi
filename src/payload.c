@@ -542,6 +542,10 @@ void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 		if (payload_dependency_exists(ctx, PROTO_BASE_NETWORK_HDR))
 			payload_dependency_release(ctx);
 		break;
+	case NFT_EXTHDR_OP_IPV4:
+		if (payload_dependency_exists(ctx, PROTO_BASE_NETWORK_HDR))
+			payload_dependency_release(ctx);
+		break;
 	default:
 		break;
 	}

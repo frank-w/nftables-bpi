@@ -38,6 +38,11 @@ static void exthdr_expr_print(const struct expr *expr, struct output_ctx *octx)
 		if (offset)
 			nft_print(octx, "%d", offset);
 		nft_print(octx, " %s", expr->exthdr.tmpl->token);
+	} else if (expr->exthdr.op == NFT_EXTHDR_OP_IPV4) {
+		nft_print(octx, "ip option %s", expr->exthdr.desc->name);
+		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
+			return;
+		nft_print(octx, " %s", expr->exthdr.tmpl->token);
 	} else {
 		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
 			nft_print(octx, "exthdr %s", expr->exthdr.desc->name);
@@ -172,6 +177,8 @@ void exthdr_init_raw(struct expr *expr, uint8_t type,
 	assert(expr->etype == EXPR_EXTHDR);
 	if (op == NFT_EXTHDR_OP_TCPOPT)
 		return tcpopt_init_raw(expr, type, offset, len, flags);
+	if (op == NFT_EXTHDR_OP_IPV4)
+		return ipopt_init_raw(expr, type, offset, len, flags, true);
 
 	expr->len = len;
 	expr->exthdr.flags = flags;
@@ -222,7 +229,8 @@ bool exthdr_find_template(struct expr *expr, const struct expr *mask, unsigned i
 {
 	unsigned int off, mask_offset, mask_len;
 
-	if (expr->exthdr.tmpl != &exthdr_unknown_template)
+	if (expr->exthdr.op != NFT_EXTHDR_OP_IPV4 &&
+	    expr->exthdr.tmpl != &exthdr_unknown_template)
 		return false;
 
 	/* In case we are handling tcp options instead of the default ipv6
@@ -237,8 +245,18 @@ bool exthdr_find_template(struct expr *expr, const struct expr *mask, unsigned i
 	off = expr->exthdr.offset;
 	off += round_up(mask->len, BITS_PER_BYTE) - mask_len;
 
+	/* Handle ip options after the offset and mask have been calculated. */
+	if (expr->exthdr.op == NFT_EXTHDR_OP_IPV4) {
+		if (ipopt_find_template(expr, off, mask_len - mask_offset)) {
+			*shift = mask_offset;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	exthdr_init_raw(expr, expr->exthdr.desc->type,
-			off, mask_len - mask_offset, NFT_EXTHDR_OP_IPV6, 0);
+			off, mask_len - mask_offset, expr->exthdr.op, 0);
 
 	/* still failed to find a template... Bug. */
 	if (expr->exthdr.tmpl == &exthdr_unknown_template)

@@ -402,6 +402,14 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "protocol"		{ return PROTOCOL; }
 "checksum"		{ return CHECKSUM; }
 
+"lsrr"			{ return LSRR; }
+"rr"			{ return RR; }
+"ssrr"			{ return SSRR; }
+"ra"			{ return RA; }
+
+"value"			{ return VALUE; }
+"ptr"			{ return PTR; }
+
 "echo"			{ return ECHO; }
 "eol"			{ return EOL; }
 "maxseg"		{ return MAXSEG; }

@@ -3,6 +3,7 @@
 
 #include <proto.h>
 #include <tcpopt.h>
+#include <ipopt.h>
 
 /**
  * struct exthdr_desc - extension header description

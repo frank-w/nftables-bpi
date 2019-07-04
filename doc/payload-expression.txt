@@ -506,9 +506,9 @@ input meta iifname enp2s0 arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh
 
 EXTENSION HEADER EXPRESSIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Extension header expressions refer to data from variable-sized protocol headers, such as IPv6 extension headers and TCP options.
+Extension header expressions refer to data from variable-sized protocol headers, such as IPv6 extension headers, TCP options and IPv4 options.
 
-nftables currently supports matching (finding) a given ipv6 extension header or TCP option.
+nftables currently supports matching (finding) a given ipv6 extension header, TCP option or IPv4 option.
 [verse]
 *hbh* {*nexthdr* | *hdrlength*}
 *frag* {*nexthdr* | *frag-off* | *more-fragments* | *id*}
@@ -517,11 +517,13 @@ nftables currently supports matching (finding) a given ipv6 extension header or 
 *mh* {*nexthdr* | *hdrlength* | *checksum* | *type*}
 *srh* {*flags* | *tag* | *sid* | *seg-left*}
 *tcp option* {*eol* | *noop* | *maxseg* | *window* | *sack-permitted* | *sack* | *sack0* | *sack1* | *sack2* | *sack3* | *timestamp*} 'tcp_option_field'
+*ip option* { lsrr | ra | rr | ssrr } 'ip_option_field'
 
 The following syntaxes are valid only in a relational expression with boolean type on right-hand side for checking header existence only:
 [verse]
 *exthdr* {*hbh* | *frag* | *rt* | *dst* | *mh*}
 *tcp option* {*eol* | *noop* | *maxseg* | *window* | *sack-permitted* | *sack* | *sack0* | *sack1* | *sack2* | *sack3* | *timestamp*}
+*ip option* { lsrr | ra | rr | ssrr }
 
 .IPv6 extension headers
 [options="header"]
@@ -580,6 +582,24 @@ TCP Timestamps |
 kind, length, tsval, tsecr
 |============================
 
+.IP Options
+[options="header"]
+|==================
+|Keyword| Description | IP option fields
+|lsrr|
+Loose Source Route |
+type, length, ptr, addr
+|ra|
+Router Alert |
+type, length, value
+|rr|
+Record Route |
+type, length, ptr, addr
+|ssrr|
+Strict Source Route |
+type, length, ptr, addr
+|============================
+
 .finding TCP options
 --------------------
 filter input tcp option sack-permitted kind 1 counter
@@ -588,6 +608,11 @@ filter input tcp option sack-permitted kind 1 counter
 .matching IPv6 exthdr
 ---------------------
 ip6 filter input frag more-fragments 1 counter
+---------------------------------------
+
+.finding IP option
+------------------
+filter input ip option lsrr exists counter
 ---------------------------------------
 
 CONNTRACK EXPRESSIONS

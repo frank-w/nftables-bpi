@@ -513,6 +513,20 @@ static int __expr_evaluate_exthdr(struct eval_ctx *ctx, struct expr **exprp)
 					  totlen, max_tcpoptlen);
 		break;
 	}
+	case NFT_EXTHDR_OP_IPV4: {
+		static const unsigned int max_ipoptlen = 40 * BITS_PER_BYTE;
+		unsigned int totlen = 0;
+
+		totlen += expr->exthdr.tmpl->offset;
+		totlen += expr->exthdr.tmpl->len;
+		totlen += expr->exthdr.offset;
+
+		if (totlen > max_ipoptlen)
+			return expr_error(ctx->msgs, expr,
+					  "offset and size %u exceeds max ip option len (%u)",
+					  totlen, max_ipoptlen);
+		break;
+	}
 	default:
 		break;
 	}
@@ -536,6 +550,9 @@ static int expr_evaluate_exthdr(struct eval_ctx *ctx, struct expr **exprp)
 	case NFT_EXTHDR_OP_TCPOPT:
 		dependency = &proto_tcp;
 		pb = PROTO_BASE_TRANSPORT_HDR;
+		break;
+	case NFT_EXTHDR_OP_IPV4:
+		dependency = &proto_ip;
 		break;
 	case NFT_EXTHDR_OP_IPV6:
 	default:

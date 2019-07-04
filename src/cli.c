@@ -24,14 +24,8 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#include <nftables.h>
-#include <parser.h>
-#include <erec.h>
-#include <utils.h>
-#include <iface.h>
 #include <cli.h>
-
-#include <libmnl/libmnl.h>
+#include <list.h>
 
 #define CMDLINE_HISTFILE	".nft.history"
 

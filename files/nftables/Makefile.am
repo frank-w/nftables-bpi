@@ -3,6 +3,7 @@ dist_pkgsysconf_DATA =	all-in-one.nft		\
 			arp-filter.nft		\
 			bridge-filter.nft	\
 			inet-filter.nft		\
+			inet-nat.nft		\
 			ipv4-filter.nft		\
 			ipv4-mangle.nft		\
 			ipv4-nat.nft		\

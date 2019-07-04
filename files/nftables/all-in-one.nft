@@ -13,6 +13,7 @@ flush ruleset
 
 # native dual stack IPv4 & IPv6 family
 include "./inet-filter.nft"
+include "./inet-nat.nft"
 
 # netdev family at ingress hook. Attached to a given NIC
 include "./netdev-ingress.nft"

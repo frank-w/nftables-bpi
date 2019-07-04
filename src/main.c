@@ -329,7 +329,7 @@ int main(int argc, char * const *argv)
 		exit(EXIT_FAILURE);
 	}
 
-	xfree(buf);
+	free(buf);
 	nft_ctx_free(nft);
 
 	return rc;

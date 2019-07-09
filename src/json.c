@@ -325,6 +325,17 @@ static json_t *obj_print_json(const struct obj *obj)
 		json_object_update(root, tmp);
 		json_decref(tmp);
 		break;
+	case NFT_OBJECT_CT_EXPECT:
+		tmp = json_pack("{s:o, s:I, s:I, s:s, s:I}",
+				"protocol",
+				proto_name_json(obj->ct_expect.l4proto),
+				"dport", obj->ct_expect.dport,
+				"timeout", obj->ct_expect.timeout,
+				"size", obj->ct_expect.size,
+				"l3proto", family2str(obj->ct_expect.l3proto));
+		json_object_update(root, tmp);
+		json_decref(tmp);
+		break;
 	case NFT_OBJECT_LIMIT:
 		rate = obj->limit.rate;
 		burst = obj->limit.burst;

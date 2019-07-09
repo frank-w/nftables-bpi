@@ -63,3 +63,7 @@ ip test-ip4 output
 # ct timeout set "cttime1"
 ip test-ip4 output
   [ objref type 7 name cttime1 ]
+
+# ct expectation set "ctexpect1"
+ip test-ip4 output
+  [ objref type 9 name ctexpect1 ]

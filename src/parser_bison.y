@@ -435,6 +435,7 @@ int nft_lex(void *, void *, void *);
 %token ZONE			"zone"
 %token DIRECTION		"direction"
 %token EVENT			"event"
+%token EXPECTATION		"expectation"
 %token EXPIRATION		"expiration"
 %token HELPER			"helper"
 %token LABEL			"label"
@@ -582,7 +583,7 @@ int nft_lex(void *, void *, void *);
 %type <flowtable>		flowtable_block_alloc flowtable_block
 %destructor { flowtable_free($$); }	flowtable_block_alloc
 
-%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block limit_block secmark_block
+%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block ct_expect_block limit_block secmark_block
 %destructor { obj_free($$); }	obj_block_alloc
 
 %type <list>			stmt_list
@@ -987,6 +988,10 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc_obj_ct(CMD_ADD, NFT_OBJECT_CT_TIMEOUT, &$3, &@$, $4);
 			}
+			|	CT	EXPECTATION	obj_spec	ct_obj_alloc	'{' ct_expect_block '}'
+			{
+				$$ = cmd_alloc_obj_ct(CMD_ADD, NFT_OBJECT_CT_EXPECT, &$3, &@$, $4);
+			}
 			|	LIMIT		obj_spec	limit_obj
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_LIMIT, &$2, &@$, $3);
@@ -1075,6 +1080,10 @@ create_cmd		:	TABLE		table_spec
 			|	CT	TIMEOUT obj_spec	ct_obj_alloc	'{' ct_timeout_block '}'
 			{
 				$$ = cmd_alloc_obj_ct(CMD_CREATE, NFT_OBJECT_CT_TIMEOUT, &$3, &@$, $4);
+			}
+			|	CT	EXPECTATION obj_spec	ct_obj_alloc	'{' ct_expect_block '}'
+			{
+				$$ = cmd_alloc_obj_ct(CMD_CREATE, NFT_OBJECT_CT_EXPECT, &$3, &@$, $4);
 			}
 			|	LIMIT		obj_spec	limit_obj
 			{
@@ -1295,6 +1304,10 @@ list_cmd		:	TABLE		table_spec
 			|	CT		TIMEOUT		TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_CT_TIMEOUT, &$4, &@$, NULL);
+			}
+			|	CT		EXPECTATION		TABLE		table_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_CT_EXPECT, &$4, &@$, NULL);
 			}
 			;
 
@@ -1531,6 +1544,15 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 			{
 				$5->location = @4;
 				$5->type = NFT_OBJECT_CT_TIMEOUT;
+				handle_merge(&$5->handle, &$4);
+				handle_free(&$4);
+				list_add_tail(&$5->list, &$1->objs);
+				$$ = $1;
+			}
+			|	table_block	CT	EXPECTATION obj_identifier obj_block_alloc '{'	ct_expect_block	'}' stmt_separator
+			{
+				$5->location = @4;
+				$5->type = NFT_OBJECT_CT_EXPECT;
 				handle_merge(&$5->handle, &$4);
 				handle_free(&$4);
 				list_add_tail(&$5->list, &$1->objs);
@@ -1855,6 +1877,15 @@ ct_timeout_block	:	/*empty */	{ $$ = $<obj>-1; }
 			|	ct_timeout_block     common_block
 			|	ct_timeout_block     stmt_separator
 			|	ct_timeout_block     ct_timeout_config
+			{
+				$$ = $1;
+			}
+			;
+
+ct_expect_block		:	/*empty */	{ $$ = $<obj>-1; }
+			|	ct_expect_block     common_block
+			|	ct_expect_block     stmt_separator
+			|	ct_expect_block     ct_expect_config
 			{
 				$$ = $1;
 			}
@@ -3474,6 +3505,7 @@ secmark_obj		:	secmark_config
 
 ct_obj_type		:	HELPER		{ $$ = NFT_OBJECT_CT_HELPER; }
 			|	TIMEOUT		{ $$ = NFT_OBJECT_CT_TIMEOUT; }
+			|	EXPECTATION	{ $$ = NFT_OBJECT_CT_EXPECT; }
 			;
 
 ct_l4protoname		:	TCP	{ $$ = IPPROTO_TCP; }
@@ -3547,6 +3579,28 @@ ct_timeout_config	:	PROTOCOL	ct_l4protoname	stmt_separator
 			|	L3PROTOCOL	family_spec_explicit	stmt_separator
 			{
 				$<obj>0->ct_timeout.l3proto = $2;
+			}
+			;
+
+ct_expect_config	:	PROTOCOL	ct_l4protoname	stmt_separator
+			{
+				$<obj>0->ct_expect.l4proto = $2;
+			}
+			|	DPORT	NUM	stmt_separator
+			{
+				$<obj>0->ct_expect.dport = $2;
+			}
+			|	TIMEOUT	time_spec	stmt_separator
+			{
+				$<obj>0->ct_expect.timeout = $2;
+			}
+			|	SIZE	NUM	stmt_separator
+			{
+				$<obj>0->ct_expect.size = $2;
+			}
+			|	L3PROTOCOL	family_spec_explicit	stmt_separator
+			{
+				$<obj>0->ct_expect.l3proto = $2;
 			}
 			;
 
@@ -4168,6 +4222,12 @@ ct_stmt			:	CT	ct_key		SET	stmt_expr
 				$$->objref.type = NFT_OBJECT_CT_TIMEOUT;
 				$$->objref.expr = $4;
 
+			}
+			|	CT	EXPECTATION	SET	stmt_expr
+			{
+				$$ = objref_stmt_alloc(&@$);
+				$$->objref.type = NFT_OBJECT_CT_EXPECT;
+				$$->objref.expr = $4;
 			}
 			|	CT	ct_dir	ct_key_dir_optional SET	stmt_expr
 			{

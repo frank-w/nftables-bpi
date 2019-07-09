@@ -1442,6 +1442,7 @@ void cmd_free(struct cmd *cmd)
 		case CMD_OBJ_QUOTA:
 		case CMD_OBJ_CT_HELPER:
 		case CMD_OBJ_CT_TIMEOUT:
+		case CMD_OBJ_CT_EXPECT:
 		case CMD_OBJ_LIMIT:
 		case CMD_OBJ_SECMARK:
 			obj_free(cmd->object);
@@ -1532,6 +1533,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:
 	case CMD_OBJ_CT_TIMEOUT:
+	case CMD_OBJ_CT_EXPECT:
 	case CMD_OBJ_LIMIT:
 	case CMD_OBJ_SECMARK:
 		return mnl_nft_obj_add(ctx, cmd, flags);
@@ -1613,6 +1615,8 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_CT_HELPER);
 	case CMD_OBJ_CT_TIMEOUT:
 		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_CT_TIMEOUT);
+	case CMD_OBJ_CT_EXPECT:
+		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_CT_EXPECT);
 	case CMD_OBJ_LIMIT:
 		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_LIMIT);
 	case CMD_OBJ_SECMARK:
@@ -1841,6 +1845,30 @@ static void obj_print_data(const struct obj *obj,
 		print_proto_timeout_policy(obj->ct_timeout.l4proto,
 					   obj->ct_timeout.timeout, opts, octx);
 		break;
+	case NFT_OBJECT_CT_EXPECT:
+		nft_print(octx, " %s {", obj->handle.obj.name);
+		if (nft_output_handle(octx))
+			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+		nft_print(octx, "%s", opts->nl);
+		nft_print(octx, "%s%sprotocol ", opts->tab, opts->tab);
+		print_proto_name_proto(obj->ct_expect.l4proto, octx);
+		nft_print(octx, "%s", opts->stmt_separator);
+		nft_print(octx, "%s%sdport %d%s",
+			  opts->tab, opts->tab,
+			  obj->ct_expect.dport,
+			  opts->stmt_separator);
+		nft_print(octx, "%s%stimeout ", opts->tab, opts->tab);
+		time_print(obj->ct_expect.timeout, octx);
+		nft_print(octx, "%s", opts->stmt_separator);
+		nft_print(octx, "%s%ssize %d%s",
+			  opts->tab, opts->tab,
+			  obj->ct_expect.size,
+			  opts->stmt_separator);
+		nft_print(octx, "%s%sl3proto %s%s",
+			  opts->tab, opts->tab,
+			  family2str(obj->ct_expect.l3proto),
+			  opts->stmt_separator);
+		break;
 	case NFT_OBJECT_LIMIT: {
 		bool inv = obj->limit.flags & NFT_LIMIT_F_INV;
 		const char *data_unit;
@@ -1890,6 +1918,7 @@ static const char * const obj_type_name_array[] = {
 	[NFT_OBJECT_LIMIT]	= "limit",
 	[NFT_OBJECT_CT_TIMEOUT] = "ct timeout",
 	[NFT_OBJECT_SECMARK]	= "secmark",
+	[NFT_OBJECT_CT_EXPECT]	= "ct expectation",
 };
 
 const char *obj_type_name(enum stmt_types type)
@@ -1906,6 +1935,7 @@ static uint32_t obj_type_cmd_array[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_LIMIT]	= CMD_OBJ_LIMIT,
 	[NFT_OBJECT_CT_TIMEOUT] = CMD_OBJ_CT_TIMEOUT,
 	[NFT_OBJECT_SECMARK]	= CMD_OBJ_SECMARK,
+	[NFT_OBJECT_CT_EXPECT]	= CMD_OBJ_CT_EXPECT,
 };
 
 uint32_t obj_type_to_cmd(uint32_t type)
@@ -2264,6 +2294,8 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 		return do_list_obj(ctx, cmd, NFT_OBJECT_CT_HELPER);
 	case CMD_OBJ_CT_TIMEOUT:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_CT_TIMEOUT);
+	case CMD_OBJ_CT_EXPECT:
+		return do_list_obj(ctx, cmd, NFT_OBJECT_CT_EXPECT);
 	case CMD_OBJ_LIMIT:
 	case CMD_OBJ_LIMITS:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_LIMIT);
@@ -2454,6 +2486,9 @@ struct cmd *cmd_alloc_obj_ct(enum cmd_ops op, int type, const struct handle *h,
 		break;
 	case NFT_OBJECT_CT_TIMEOUT:
 		cmd_obj = CMD_OBJ_CT_TIMEOUT;
+		break;
+	case NFT_OBJECT_CT_EXPECT:
+		cmd_obj = CMD_OBJ_CT_EXPECT;
 		break;
 	default:
 		BUG("missing type mapping");

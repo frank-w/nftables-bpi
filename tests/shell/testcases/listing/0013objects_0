@@ -18,6 +18,14 @@ EXPECTED="table ip test {
 		policy = { unreplied : 15, replied : 12 }
 	}
 
+	ct expectation ctexpect {
+		protocol tcp
+		dport 5432
+		timeout 1h
+		size 12
+		l3proto ip
+	}
+
 	chain input {
 	}
 }"
@@ -29,6 +37,7 @@ $NFT add chain test input
 $NFT add quota test https-quota 25 mbytes
 $NFT add ct helper test cthelp { type \"sip\" protocol tcp \; }
 $NFT add ct timeout test cttime { protocol udp \; policy = {replied : 12, unreplied : 15 } \; }
+$NFT add ct expectation test ctexpect { protocol tcp \; dport 5432 \; timeout 1h \; size 12 \; }
 $NFT add table test-ip
 
 GET="$($NFT list table test)"
@@ -37,4 +46,3 @@ if [ "$EXPECTED" != "$GET" ] ; then
 	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 	exit 1
 fi
-

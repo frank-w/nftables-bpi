@@ -996,6 +996,18 @@ struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 		obj->limit.flags =
 			nftnl_obj_get_u32(nlo, NFTNL_OBJ_LIMIT_FLAGS);
 		break;
+	case NFT_OBJECT_CT_EXPECT:
+		obj->ct_expect.l3proto =
+			nftnl_obj_get_u16(nlo, NFTNL_OBJ_CT_EXPECT_L3PROTO);
+		obj->ct_expect.l4proto =
+			nftnl_obj_get_u8(nlo, NFTNL_OBJ_CT_EXPECT_L4PROTO);
+		obj->ct_expect.dport =
+			nftnl_obj_get_u16(nlo, NFTNL_OBJ_CT_EXPECT_DPORT);
+		obj->ct_expect.timeout =
+			nftnl_obj_get_u32(nlo, NFTNL_OBJ_CT_EXPECT_TIMEOUT);
+		obj->ct_expect.size =
+			nftnl_obj_get_u8(nlo, NFTNL_OBJ_CT_EXPECT_SIZE);
+		break;
 	}
 	obj->type = type;
 

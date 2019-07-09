@@ -208,6 +208,7 @@ static const char *objref_type[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_LIMIT]	= "limit",
 	[NFT_OBJECT_CT_TIMEOUT] = "ct timeout",
 	[NFT_OBJECT_SECMARK]	= "secmark",
+	[NFT_OBJECT_CT_EXPECT]	= "ct expectation",
 };
 
 const char *objref_type_name(uint32_t type)
@@ -226,6 +227,9 @@ static void objref_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 		break;
 	case NFT_OBJECT_CT_TIMEOUT:
 		nft_print(octx, "ct timeout set ");
+		break;
+	case NFT_OBJECT_CT_EXPECT:
+		nft_print(octx, "ct expectation set ");
 		break;
 	default:
 		nft_print(octx, "%s name ",

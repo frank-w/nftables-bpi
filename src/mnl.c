@@ -1003,6 +1003,19 @@ int mnl_nft_obj_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		nftnl_obj_set(nlo, NFTNL_OBJ_CT_TIMEOUT_ARRAY,
 			      obj->ct_timeout.timeout);
 		break;
+	case NFT_OBJECT_CT_EXPECT:
+		if (obj->ct_expect.l3proto)
+			nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_EXPECT_L3PROTO,
+					  obj->ct_expect.l3proto);
+		nftnl_obj_set_u8(nlo, NFTNL_OBJ_CT_EXPECT_L4PROTO,
+				 obj->ct_expect.l4proto);
+		nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_EXPECT_DPORT,
+				  obj->ct_expect.dport);
+		nftnl_obj_set_u32(nlo, NFTNL_OBJ_CT_EXPECT_TIMEOUT,
+				  obj->ct_expect.timeout);
+		nftnl_obj_set_u8(nlo, NFTNL_OBJ_CT_EXPECT_SIZE,
+				 obj->ct_expect.size);
+		break;
 	case NFT_OBJECT_SECMARK:
 		nftnl_obj_set_str(nlo, NFTNL_OBJ_SECMARK_CTX,
 				  obj->secmark.ctx);

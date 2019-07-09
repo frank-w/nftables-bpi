@@ -386,6 +386,14 @@ struct ct_timeout {
 	struct list_head timeout_list;
 };
 
+struct ct_expect {
+	uint16_t l3proto;
+	uint8_t l4proto;
+	uint16_t dport;
+	uint32_t timeout;
+	uint8_t size;
+};
+
 struct limit {
 	uint64_t	rate;
 	uint64_t	unit;
@@ -420,6 +428,7 @@ struct obj {
 		struct limit		limit;
 		struct ct_timeout	ct_timeout;
 		struct secmark		secmark;
+		struct ct_expect	ct_expect;
 	};
 };
 
@@ -554,6 +563,7 @@ enum cmd_obj {
 	CMD_OBJ_CT_TIMEOUT,
 	CMD_OBJ_SECMARK,
 	CMD_OBJ_SECMARKS,
+	CMD_OBJ_CT_EXPECT,
 };
 
 struct markup {

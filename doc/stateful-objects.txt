@@ -95,6 +95,55 @@ sport=22 dport=41360 [UNREPLIED] src=172.16.19.1 dst=172.16.19.128
 sport=41360 dport=22
 ----------------------------------
 
+CT EXPECTATION
+~~~~~~~~~~~~~~
+[verse]
+*ct expectation* 'name' *{ protocol* 'protocol' *; dport* 'dport' *; timeout* 'timeout' *; size* 'size' *; [*l3proto* 'family' *;*] *}*
+
+Ct expectation is used to create connection expectations. Expectations are
+assigned with the *ct expectation set* statement. 'protocol', 'dport',
+'timeout' and 'size' are mandatory, l3proto is derived from the table family
+by default.
+
+.conntrack expectation specifications
+[options="header"]
+|=================
+|Keyword | Description | Type
+|protocol |
+layer 4 protocol of the expectation object |
+string (e.g. ip)
+|dport |
+destination port of expected connection |
+unsigned integer
+|timeout |
+timeout value for expectation |
+unsigned integer
+|size |
+size value for expectation |
+unsigned integer
+|l3proto |
+layer 3 protocol of the expectation object |
+address family (e.g. ip)
+|=================
+
+.defining and assigning ct expectation policy
+---------------------------------------------
+table ip filter {
+	ct expectation expect {
+		protocol udp
+		dport 9876
+		timeout 2m
+		size 8
+		l3proto ip
+	}
+
+	chain input {
+		type filter hook input priority filter; policy accept;
+		ct expectation set "expect"
+	}
+}
+----------------------------------
+
 COUNTER
 ~~~~~~~
 [verse]

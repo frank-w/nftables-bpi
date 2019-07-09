@@ -41,3 +41,12 @@ limit name tcp dport map {443 : "lim1", 80 : "lim2", 22 : "lim1"};ok
 %cttime5 type ct timeout {protocol tcp; policy = { estalbished:100 } ;};fail
 
 ct timeout set "cttime1";ok
+
+# ct expectation
+%ctexpect1 type ct expectation { protocol tcp; dport 1234; timeout 2m; size 12; };ok
+%ctexpect2 type ct expectation { protocol udp; };fail
+%ctexpect3 type ct expectation { protocol tcp; dport 4321; };fail
+%ctexpect4 type ct expectation { protocol tcp; dport 4321; timeout 2m; };fail
+%ctexpect5 type ct expectation { protocol udp; dport 9876; timeout 2m; size 12; l3proto ip; };ok
+
+ct expectation set "ctexpect1";ok

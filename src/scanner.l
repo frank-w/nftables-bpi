@@ -529,6 +529,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "reply"			{ return REPLY; }
 "direction"		{ return DIRECTION; }
 "event"			{ return EVENT; }
+"expectation"		{ return EXPECTATION; }
 "expiration"		{ return EXPIRATION; }
 "helper"		{ return HELPER; }
 "helpers"		{ return HELPERS; }

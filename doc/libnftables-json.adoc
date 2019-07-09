@@ -23,7 +23,7 @@ libnftables-json - Supported JSON schema by libnftables
 
 'LIST_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
 		 'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT' |
-		 'METAINFO_OBJECT' | 'CT_TIMEOUT'
+		 'METAINFO_OBJECT' | 'CT_TIMEOUT' | 'CT_EXPECTATION'
 
 == DESCRIPTION
 libnftables supports JSON formatted input and output. This is implemented as an
@@ -118,7 +118,7 @@ ____
 
 'ADD_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
                 'FLOWTABLE' | 'COUNTER | QUOTA' | 'CT_HELPER' | 'LIMIT' |
-		'CT_TIMEOUT'
+		'CT_TIMEOUT' | 'CT_EXPECTATION'
 ____
 
 Add a new ruleset element to the kernel.
@@ -162,7 +162,8 @@ ____
 'LIST_OBJECT' := 'TABLE' | 'TABLES' | 'CHAIN' | 'CHAINS' | 'SET' | 'SETS' |
                  'MAP' | 'MAPS | COUNTER' | 'COUNTERS' | 'QUOTA' | 'QUOTAS' |
                  'CT_HELPER' | 'CT_HELPERS' | 'LIMIT' | 'LIMITS | RULESET' |
-                 'METER' | 'METERS' | 'FLOWTABLES' | 'CT_TIMEOUT'
+                 'METER' | 'METERS' | 'FLOWTABLES' | 'CT_TIMEOUT' |
+                 'CT_EXPECTATION'
 ____
 
 List ruleset elements. The plural forms are used to list all objects of that
@@ -597,6 +598,45 @@ This object represents a named conntrack timeout policy.
 *l3proto*::
 	The ct timeout object's layer 3 protocol, e.g. *"ip"* or *"ip6"*.
 
+=== CT EXPECTATION
+[verse]
+____
+*{ "ct expectation": {
+	"family":* 'STRING'*,
+	"table":* 'STRING'*,
+	"name":* 'STRING'*,
+	"handle":* 'NUMBER'*,
+	"l3proto":* 'STRING'
+	"protocol":* 'CTH_PROTO'*,
+	"dport":* 'NUMBER'*,
+	"timeout:* 'NUMBER'*,
+	"size:* 'NUMBER'*,
+*}}*
+
+'CTH_PROTO' := *"tcp"* | *"udp"* | *"dccp"* | *"sctp"* | *"gre"* | *"icmpv6"* | *"icmp"* | *"generic"*
+____
+
+This object represents a named conntrack expectation.
+
+*family*::
+	The table's family.
+*table*::
+	The table's name.
+*name*::
+	The ct expectation object's name.
+*handle*::
+	The ct expectation object's handle. In input, it is used by *delete* command only.
+*l3proto*::
+	The ct expectation object's layer 3 protocol, e.g. *"ip"* or *"ip6"*.
+*protocol*::
+	The ct expectation object's layer 4 protocol.
+*dport*::
+	The destination port of the expected connection.
+*timeout*::
+	The time in millisecond that this expectation will live.
+*size*::
+	The maximum count of expectations to be living in the same time.
+
 == STATEMENTS
 Statements are the building blocks for rules. Each rule consists of at least
 one.
@@ -1003,6 +1043,15 @@ Assign connection tracking timeout policy.
 
 *ct timeout*::
 	CT timeout reference.
+
+=== CT EXPECTATION
+[verse]
+*{ "ct expectation":* 'EXPRESSION' *}*
+
+Assign connection tracking expectation.
+
+*ct expectation*::
+	CT expectation reference.
 
 === XT
 [verse]

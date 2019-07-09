@@ -2210,6 +2210,21 @@ static struct stmt *json_parse_cttimeout_stmt(struct json_ctx *ctx,
 	return stmt;
 }
 
+static struct stmt *json_parse_ctexpect_stmt(struct json_ctx *ctx,
+					     const char *key, json_t *value)
+{
+	struct stmt *stmt = objref_stmt_alloc(int_loc);
+
+	stmt->objref.type = NFT_OBJECT_CT_EXPECT;
+	stmt->objref.expr = json_parse_stmt_expr(ctx, value);
+	if (!stmt->objref.expr) {
+		json_error(ctx, "Invalid ct expectation reference.");
+		stmt_free(stmt);
+		return NULL;
+	}
+	return stmt;
+}
+
 static struct stmt *json_parse_meter_stmt(struct json_ctx *ctx,
 					  const char *key, json_t *value)
 {
@@ -2355,6 +2370,7 @@ static struct stmt *json_parse_stmt(struct json_ctx *ctx, json_t *root)
 		{ "log", json_parse_log_stmt },
 		{ "ct helper", json_parse_cthelper_stmt },
 		{ "ct timeout", json_parse_cttimeout_stmt },
+		{ "ct expectation", json_parse_ctexpect_stmt },
 		{ "meter", json_parse_meter_stmt },
 		{ "queue", json_parse_queue_stmt },
 		{ "ct count", json_parse_connlimit_stmt },
@@ -3014,6 +3030,33 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 			return NULL;
 		}
 		break;
+	case NFT_OBJECT_CT_EXPECT:
+		cmd_obj = CMD_OBJ_CT_EXPECT;
+		obj->type = NFT_OBJECT_CT_EXPECT;
+		if (!json_unpack(root, "{s:s}", "l3proto", &tmp) &&
+		    parse_family(tmp, &l3proto)) {
+			json_error(ctx, "Invalid ct expectation l3proto '%s'.", tmp);
+			obj_free(obj);
+			return NULL;
+		}
+		obj->ct_expect.l3proto = l3proto;
+		if (!json_unpack(root, "{s:s}", "protocol", &tmp)) {
+			if (!strcmp(tmp, "tcp")) {
+				obj->ct_expect.l4proto = IPPROTO_TCP;
+			} else if (!strcmp(tmp, "udp")) {
+				obj->ct_expect.l4proto = IPPROTO_UDP;
+			} else {
+				json_error(ctx, "Invalid ct expectation protocol '%s'.", tmp);
+				obj_free(obj);
+				return NULL;
+			}
+		}
+		if (!json_unpack(root, "{s:o}", "dport", &tmp))
+			obj->ct_expect.dport = atoi(tmp);
+		json_unpack(root, "{s:I}", "timeout", &obj->ct_expect.timeout);
+		if (!json_unpack(root, "{s:o}", "size", &tmp))
+			obj->ct_expect.size = atoi(tmp);
+		break;
 	case CMD_OBJ_LIMIT:
 		obj->type = NFT_OBJECT_LIMIT;
 		if (json_unpack_err(ctx, root, "{s:I, s:s}",
@@ -3069,6 +3112,7 @@ static struct cmd *json_parse_cmd_add(struct json_ctx *ctx,
 		{ "quota", CMD_OBJ_QUOTA, json_parse_cmd_add_object },
 		{ "ct helper", NFT_OBJECT_CT_HELPER, json_parse_cmd_add_object },
 		{ "ct timeout", NFT_OBJECT_CT_TIMEOUT, json_parse_cmd_add_object },
+		{ "ct expectation", NFT_OBJECT_CT_EXPECT, json_parse_cmd_add_object },
 		{ "limit", CMD_OBJ_LIMIT, json_parse_cmd_add_object },
 		{ "secmark", CMD_OBJ_SECMARK, json_parse_cmd_add_object }
 	};
@@ -3234,6 +3278,7 @@ static struct cmd *json_parse_cmd_list(struct json_ctx *ctx,
 		{ "ct helper", NFT_OBJECT_CT_HELPER, json_parse_cmd_add_object },
 		{ "ct helpers", CMD_OBJ_CT_HELPERS, json_parse_cmd_list_multiple },
 		{ "ct timeout", NFT_OBJECT_CT_TIMEOUT, json_parse_cmd_add_object },
+		{ "ct expectation", NFT_OBJECT_CT_EXPECT, json_parse_cmd_add_object },
 		{ "limit", CMD_OBJ_LIMIT, json_parse_cmd_add_object },
 		{ "limits", CMD_OBJ_LIMIT, json_parse_cmd_list_multiple },
 		{ "ruleset", CMD_OBJ_RULESET, json_parse_cmd_list_multiple },

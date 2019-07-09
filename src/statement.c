@@ -665,6 +665,7 @@ struct stmt *nat_stmt_alloc(const struct location *loc,
 const char * const set_stmt_op_names[] = {
 	[NFT_DYNSET_OP_ADD]	= "add",
 	[NFT_DYNSET_OP_UPDATE]	= "update",
+	[NFT_DYNSET_OP_DELETE]  = "delete",
 };
 
 static void set_stmt_print(const struct stmt *stmt, struct output_ctx *octx)

@@ -3134,6 +3134,7 @@ set_stmt		:	SET	set_stmt_op	set_elem_expr_stmt	symbol_expr
 
 set_stmt_op		:	ADD	{ $$ = NFT_DYNSET_OP_ADD; }
 			|	UPDATE	{ $$ = NFT_DYNSET_OP_UPDATE; }
+			|	DELETE  { $$ = NFT_DYNSET_OP_DELETE; }
 			;
 
 map_stmt		:	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	COLON	set_elem_expr_stmt	'}'

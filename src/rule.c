@@ -1652,14 +1652,13 @@ static int do_list_sets(struct netlink_ctx *ctx, struct cmd *cmd)
 
 		list_for_each_entry(set, &table->sets, list) {
 			if (cmd->obj == CMD_OBJ_SETS &&
-			    (set->flags & NFT_SET_ANONYMOUS ||
-			    set->flags & NFT_SET_MAP))
+			    !set_is_literal(set->flags))
 				continue;
 			if (cmd->obj == CMD_OBJ_METERS &&
 			    !(set->flags & NFT_SET_EVAL))
 				continue;
 			if (cmd->obj == CMD_OBJ_MAPS &&
-			    !(set->flags & NFT_SET_MAP))
+			    !map_is_literal(set->flags))
 				continue;
 			set_print_declaration(set, &opts, &ctx->nft->output);
 			nft_print(&ctx->nft->output, "%s}%s", opts.tab, opts.nl);

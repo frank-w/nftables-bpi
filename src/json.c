@@ -1605,14 +1605,13 @@ static json_t *do_list_sets_json(struct netlink_ctx *ctx, struct cmd *cmd)
 
 		list_for_each_entry(set, &table->sets, list) {
 			if (cmd->obj == CMD_OBJ_SETS &&
-			    (set->flags & NFT_SET_ANONYMOUS ||
-			    set->flags & NFT_SET_MAP))
+			    !set_is_literal(set->flags))
 				continue;
 			if (cmd->obj == CMD_OBJ_METERS &&
 			    !(set->flags & NFT_SET_EVAL))
 				continue;
 			if (cmd->obj == CMD_OBJ_MAPS &&
-			    !(set->flags & NFT_SET_MAP))
+			    !map_is_literal(set->flags))
 				continue;
 			json_array_append_new(root, set_print_json(octx, set));
 		}

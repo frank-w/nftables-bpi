@@ -211,7 +211,7 @@ static int set_not_found(struct eval_ctx *ctx, const struct location *loc,
 	return cmd_error(ctx, loc,
 			 "%s; did you mean %s ‘%s’ in table %s ‘%s’?",
 			 strerror(ENOENT),
-			 set->flags & NFT_SET_MAP ? "map" : "set",
+			 set_is_map(set->flags) ? "map" : "set",
 			 set->handle.set.name,
 			 family2str(set->handle.family),
 			 table->handle.table.name);
@@ -3129,7 +3129,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 	if (!(set->flags & NFT_SET_INTERVAL) && set->automerge)
 		return set_error(ctx, set, "auto-merge only works with interval sets");
 
-	type = set->flags & NFT_SET_MAP ? "map" : "set";
+	type = set_is_map(set->flags) ? "map" : "set";
 
 	if (set->key == NULL)
 		return set_error(ctx, set, "%s definition does not specify key",
@@ -3560,7 +3560,7 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 			return table_not_found(ctx);
 
 		set = set_lookup(table, cmd->handle.set.name);
-		if (set == NULL || set->flags & NFT_SET_MAP)
+		if (set == NULL || set_is_map(set->flags))
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
 

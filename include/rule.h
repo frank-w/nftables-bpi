@@ -337,6 +337,21 @@ static inline bool set_is_map(uint32_t set_flags)
 	return set_is_datamap(set_flags) || set_is_objmap(set_flags);
 }
 
+static inline bool set_is_anonymous(uint32_t set_flags)
+{
+	return set_flags & NFT_SET_ANONYMOUS;
+}
+
+static inline bool set_is_literal(uint32_t set_flags)
+{
+	return !(set_is_anonymous(set_flags) || set_is_map(set_flags));
+}
+
+static inline bool map_is_literal(uint32_t set_flags)
+{
+	return !(set_is_anonymous(set_flags) || !set_is_map(set_flags));
+}
+
 #include <statement.h>
 
 struct counter {

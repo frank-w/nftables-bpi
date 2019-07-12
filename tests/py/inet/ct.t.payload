@@ -10,3 +10,11 @@ inet test-inet input
   [ ct load src_ip6 => reg 1 , dir original ]
   [ cmp eq reg 1 0x00000000 0x00000000 0x00000000 0x01000000 ]
 
+# ct original ip daddr {1.2.3.4} accept
+__set%d test-inet 3 size 1
+__set%d test-inet 0
+	element 04030201  : 0 [end]
+inet test-inet input
+  [ ct load dst_ip => reg 1 , dir original ]
+  [ lookup reg 1 set __set%d ]
+  [ immediate reg 0 accept ]

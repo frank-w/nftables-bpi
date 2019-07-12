@@ -292,13 +292,13 @@ const struct ct_template ct_templates[__NFT_CT_MAX] = {
 	[NFT_CT_EVENTMASK]	= CT_TEMPLATE("event", &ct_event_type,
 					      BYTEORDER_HOST_ENDIAN, 32),
 	[NFT_CT_SRC_IP]		= CT_TEMPLATE("ip saddr", &ipaddr_type,
-					      BYTEORDER_BIG_ENDIAN, 0),
+					      BYTEORDER_BIG_ENDIAN, 32),
 	[NFT_CT_DST_IP]		= CT_TEMPLATE("ip daddr", &ipaddr_type,
-					      BYTEORDER_BIG_ENDIAN, 0),
+					      BYTEORDER_BIG_ENDIAN, 32),
 	[NFT_CT_SRC_IP6]	= CT_TEMPLATE("ip6 saddr", &ip6addr_type,
-					      BYTEORDER_BIG_ENDIAN, 0),
+					      BYTEORDER_BIG_ENDIAN, 128),
 	[NFT_CT_DST_IP6]	= CT_TEMPLATE("ip6 daddr", &ip6addr_type,
-					      BYTEORDER_BIG_ENDIAN, 0),
+					      BYTEORDER_BIG_ENDIAN, 128),
 };
 
 static void ct_print(enum nft_ct_keys key, int8_t dir, uint8_t nfproto,

@@ -719,6 +719,9 @@ int nft_lex(void *, void *, void *);
 %type <expr>			dccp_hdr_expr	sctp_hdr_expr
 %destructor { expr_free($$); }	dccp_hdr_expr	sctp_hdr_expr
 %type <val>			dccp_hdr_field	sctp_hdr_field
+%type <expr>			th_hdr_expr
+%destructor { expr_free($$); }	th_hdr_expr
+%type <val>			th_hdr_field
 
 %type <expr>			exthdr_expr
 %destructor { expr_free($$); }	exthdr_expr
@@ -4198,6 +4201,7 @@ payload_expr		:	payload_raw_expr
 			|	tcp_hdr_expr
 			|	dccp_hdr_expr
 			|	sctp_hdr_expr
+			|	th_hdr_expr
 			;
 
 payload_raw_expr	:	AT	payload_base_spec	COMMA	NUM	COMMA	NUM
@@ -4485,6 +4489,18 @@ sctp_hdr_field		:	SPORT		{ $$ = SCTPHDR_SPORT; }
 			|	DPORT		{ $$ = SCTPHDR_DPORT; }
 			|	VTAG		{ $$ = SCTPHDR_VTAG; }
 			|	CHECKSUM	{ $$ = SCTPHDR_CHECKSUM; }
+			;
+
+th_hdr_expr		:	TRANSPORT_HDR 	th_hdr_field
+			{
+				$$ = payload_expr_alloc(&@$, &proto_th, $2);
+				if ($$)
+					$$->payload.is_raw = true;
+			}
+			;
+
+th_hdr_field		:	SPORT		{ $$ = THDR_SPORT; }
+			|	DPORT		{ $$ = THDR_DPORT; }
 			;
 
 exthdr_expr		:	hbh_hdr_expr

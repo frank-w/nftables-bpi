@@ -310,6 +310,12 @@ enum sctp_hdr_fields {
 	SCTPHDR_CHECKSUM,
 };
 
+enum th_hdr_fields {
+	THDR_INVALID,
+	THDR_SPORT,
+	THDR_DPORT,
+};
+
 extern const struct proto_desc proto_icmp;
 extern const struct proto_desc proto_igmp;
 extern const struct proto_desc proto_ah;
@@ -320,6 +326,7 @@ extern const struct proto_desc proto_udplite;
 extern const struct proto_desc proto_tcp;
 extern const struct proto_desc proto_dccp;
 extern const struct proto_desc proto_sctp;
+extern const struct proto_desc proto_th;
 extern const struct proto_desc proto_icmp6;
 
 extern const struct proto_desc proto_ip;

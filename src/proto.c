@@ -562,6 +562,18 @@ const struct proto_desc proto_sctp = {
 };
 
 /*
+ * Dummy Transpor Header (common udp/tcp/dccp/sctp fields)
+ */
+const struct proto_desc proto_th = {
+	.name		= "th",
+	.base		= PROTO_BASE_TRANSPORT_HDR,
+	.templates	= {
+		[THDR_SPORT]		= INET_SERVICE("sport", struct udphdr, source),
+		[THDR_DPORT]		= INET_SERVICE("dport", struct udphdr, dest),
+	},
+};
+
+/*
  * IPv4
  */
 

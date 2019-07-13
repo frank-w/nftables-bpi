@@ -172,10 +172,33 @@ struct expr *payload_expr_alloc(const struct location *loc,
 void payload_init_raw(struct expr *expr, enum proto_bases base,
 		      unsigned int offset, unsigned int len)
 {
+	enum th_hdr_fields thf;
+
 	expr->payload.base	= base;
 	expr->payload.offset	= offset;
 	expr->len		= len;
 	expr->dtype		= &integer_type;
+
+	if (base != PROTO_BASE_TRANSPORT_HDR)
+		return;
+	if (len != 16)
+		return;
+
+	switch (offset) {
+	case 0:
+		thf = THDR_SPORT;
+		/* fall through */
+	case 16:
+		if (offset == 16)
+			thf = THDR_DPORT;
+		expr->payload.tmpl = &proto_th.templates[thf];
+		expr->payload.desc = &proto_th;
+		expr->dtype = &inet_service_type;
+		expr->payload.desc = &proto_th;
+		break;
+	default:
+		break;
+	}
 }
 
 unsigned int payload_hdr_field(const struct expr *expr)

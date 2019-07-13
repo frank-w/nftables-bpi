@@ -498,6 +498,15 @@ Transport Header, for example TCP
 ----------------------------------------------
 inet filter input meta l4proto {tcp, udp} @th,16,16 { 53, 80 }
 -----------------------------------------------------------------
+The above can also be written as
+-----------------------------------------------------------------
+inet filter input meta l4proto {tcp, udp} th dport { 53, 80 }
+-----------------------------------------------------------------
+it is more convenient, but like the raw expression notation no
+dependencies are created or checked. It is the users responsibility
+to restrict matching to those header types that have a notion of ports.
+Otherwise, rules using raw expressions will errnously match unrelated
+packets, e.g. mis-interpreting ESP packets SPI field as a port.
 
 .Rewrite arp packet target hardware address if target protocol address matches a given address
 ----------------------------------------------------------------------------------------------

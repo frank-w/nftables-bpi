@@ -1,7 +1,5 @@
 #!/bin/bash
 
-NFT=nft
-
 set -e
 
 RULESET="add table ip x

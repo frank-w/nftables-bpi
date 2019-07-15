@@ -83,7 +83,7 @@ static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 	struct set *set;
 	struct handle h;
 
-	if (expr->set_flags & NFT_SET_MAP)
+	if (set_is_datamap(expr->set_flags))
 		key_fix_dtype_byteorder(key);
 
 	set = set_alloc(&expr->location);
@@ -1381,7 +1381,7 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 		if (expr_evaluate(ctx, &map->mappings) < 0)
 			return -1;
 		if (map->mappings->etype != EXPR_SET_REF ||
-		    !(map->mappings->set->flags & NFT_SET_MAP))
+		    !set_is_datamap(map->mappings->set->flags))
 			return expr_error(ctx->msgs, map->mappings,
 					  "Expression is not a map");
 		break;
@@ -1416,7 +1416,7 @@ static int expr_evaluate_mapping(struct eval_ctx *ctx, struct expr **expr)
 	if (set == NULL)
 		return expr_error(ctx->msgs, mapping,
 				  "mapping outside of map context");
-	if (!(set->flags & (NFT_SET_MAP | NFT_SET_OBJECT)))
+	if (!set_is_map(set->flags))
 		return set_error(ctx, set, "set is not a map");
 
 	expr_set_context(&ctx->ectx, set->key->dtype, set->key->len);
@@ -2991,7 +2991,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 		if (map->mappings->etype != EXPR_SET_REF)
 			return expr_error(ctx->msgs, map->mappings,
 					  "Expression is not a map");
-		if (!(map->mappings->set->flags & NFT_SET_OBJECT))
+		if (!set_is_objmap(map->mappings->set->flags))
 			return expr_error(ctx->msgs, map->mappings,
 					  "Expression is not a map with objects");
 		break;
@@ -3149,7 +3149,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 	    set->key->etype == EXPR_CONCAT)
 		return set_error(ctx, set, "concatenated types not supported in interval sets");
 
-	if (set->flags & NFT_SET_MAP) {
+	if (set_is_datamap(set->flags)) {
 		if (set->datatype == NULL)
 			return set_error(ctx, set, "map definition does not "
 					 "specify mapping data type");
@@ -3158,7 +3158,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 		if (set->datalen == 0 && set->datatype->type != TYPE_VERDICT)
 			return set_error(ctx, set, "unqualified mapping data "
 					 "type specified in map definition");
-	} else if (set->flags & NFT_SET_OBJECT) {
+	} else if (set_is_objmap(set->flags)) {
 		set->datatype = &string_type;
 		set->datalen  = NFT_OBJ_MAXNAMELEN * BITS_PER_BYTE;
 	}

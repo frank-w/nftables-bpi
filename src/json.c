@@ -79,10 +79,10 @@ static json_t *set_print_json(struct output_ctx *octx, const struct set *set)
 	json_t *root, *tmp;
 	const char *type, *datatype_ext = NULL;
 
-	if (set->flags & NFT_SET_MAP) {
+	if (set_is_datamap(set->flags)) {
 		type = "map";
 		datatype_ext = set->datatype->name;
-	} else if (set->flags & NFT_SET_OBJECT) {
+	} else if (set_is_objmap(set->flags)) {
 		type = "map";
 		datatype_ext = obj_type_name(set->objtype);
 	} else if (set->flags & NFT_SET_EVAL) {

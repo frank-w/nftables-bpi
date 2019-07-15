@@ -449,7 +449,7 @@ static void set_print_declaration(const struct set *set,
 	if ((set->flags & (NFT_SET_EVAL | NFT_SET_ANONYMOUS)) ==
 				(NFT_SET_EVAL | NFT_SET_ANONYMOUS))
 		type = "meter";
-	else if (set->flags & (NFT_SET_MAP | NFT_SET_OBJECT))
+	else if (set_is_map(set->flags))
 		type = "map";
 	else
 		type = "set";
@@ -469,9 +469,9 @@ static void set_print_declaration(const struct set *set,
 	nft_print(octx, "%s", opts->nl);
 	nft_print(octx, "%s%stype %s",
 		  opts->tab, opts->tab, set->key->dtype->name);
-	if (set->flags & NFT_SET_MAP)
+	if (set_is_datamap(set->flags))
 		nft_print(octx, " : %s", set->datatype->name);
-	else if (set->flags & NFT_SET_OBJECT)
+	else if (set_is_objmap(set->flags))
 		nft_print(octx, " : %s", obj_type_name(set->objtype));
 
 	nft_print(octx, "%s", opts->stmt_separator);

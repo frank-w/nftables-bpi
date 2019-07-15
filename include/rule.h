@@ -6,6 +6,7 @@
 #include <list.h>
 #include <netinet/in.h>
 #include <libnftnl/object.h>	/* For NFTNL_CTTIMEOUT_ARRAY_MAX. */
+#include <linux/netfilter/nf_tables.h>
 
 /**
  * struct handle_spec - handle ID
@@ -320,6 +321,21 @@ extern struct set *set_lookup_fuzzy(const char *set_name,
 extern const char *set_policy2str(uint32_t policy);
 extern void set_print(const struct set *set, struct output_ctx *octx);
 extern void set_print_plain(const struct set *s, struct output_ctx *octx);
+
+static inline bool set_is_datamap(uint32_t set_flags)
+{
+	return set_flags & NFT_SET_MAP;
+}
+
+static inline bool set_is_objmap(uint32_t set_flags)
+{
+	return set_flags & NFT_SET_OBJECT;
+}
+
+static inline bool set_is_map(uint32_t set_flags)
+{
+	return set_is_datamap(set_flags) || set_is_objmap(set_flags);
+}
 
 #include <statement.h>
 

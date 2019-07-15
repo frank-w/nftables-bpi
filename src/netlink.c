@@ -146,7 +146,7 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 				   nftnl_udata_buf_len(udbuf));
 		nftnl_udata_buf_free(udbuf);
 	}
-	if (set->set_flags & NFT_SET_MAP && data != NULL) {
+	if (set_is_datamap(set->set_flags) && data != NULL) {
 		netlink_gen_data(data, &nld);
 		switch (data->etype) {
 		case EXPR_VERDICT:
@@ -165,7 +165,7 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 			break;
 		}
 	}
-	if (set->set_flags & NFT_SET_OBJECT && data != NULL) {
+	if (set_is_objmap(set->set_flags) && data != NULL) {
 		netlink_gen_data(data, &nld);
 		nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_OBJREF,
 				   nld.value, nld.len);
@@ -581,7 +581,7 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	}
 
 	flags = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
-	if (flags & NFT_SET_MAP) {
+	if (set_is_datamap(flags)) {
 		data = nftnl_set_get_u32(nls, NFTNL_SET_DATA_TYPE);
 		datatype = dtype_map_from_kernel(data);
 		if (datatype == NULL) {
@@ -593,7 +593,7 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	} else
 		datatype = NULL;
 
-	if (flags & NFT_SET_OBJECT) {
+	if (set_is_objmap(flags)) {
 		objtype = nftnl_set_get_u32(nls, NFTNL_SET_OBJ_TYPE);
 		datatype = &string_type;
 	}
@@ -795,7 +795,7 @@ int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 	if (flags & NFT_SET_ELEM_INTERVAL_END)
 		expr->flags |= EXPR_F_INTERVAL_END;
 
-	if (set->flags & NFT_SET_MAP) {
+	if (set_is_datamap(set->flags)) {
 		if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_DATA)) {
 			nld.value = nftnl_set_elem_get(nlse, NFTNL_SET_ELEM_DATA,
 						       &nld.len);
@@ -817,7 +817,7 @@ int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 
 		expr = mapping_expr_alloc(&netlink_location, expr, data);
 	}
-	if (set->flags & NFT_SET_OBJECT) {
+	if (set_is_objmap(set->flags)) {
 		if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_OBJREF)) {
 			nld.value = nftnl_set_elem_get(nlse,
 						       NFTNL_SET_ELEM_OBJREF,

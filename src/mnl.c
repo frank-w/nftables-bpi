@@ -799,13 +799,13 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 			  dtype_map_to_kernel(set->key->dtype));
 	nftnl_set_set_u32(nls, NFTNL_SET_KEY_LEN,
 			  div_round_up(set->key->len, BITS_PER_BYTE));
-	if (set->flags & NFT_SET_MAP) {
+	if (set_is_datamap(set->flags)) {
 		nftnl_set_set_u32(nls, NFTNL_SET_DATA_TYPE,
 				  dtype_map_to_kernel(set->datatype));
 		nftnl_set_set_u32(nls, NFTNL_SET_DATA_LEN,
 				  set->datalen / BITS_PER_BYTE);
 	}
-	if (set->flags & NFT_SET_OBJECT)
+	if (set_is_objmap(set->flags))
 		nftnl_set_set_u32(nls, NFTNL_SET_OBJ_TYPE, set->objtype);
 
 	if (set->timeout)
@@ -833,7 +833,7 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 				 set->key->byteorder))
 		memory_allocation_error();
 
-	if (set->flags & NFT_SET_MAP &&
+	if (set_is_datamap(set->flags) &&
 	    !nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_DATABYTEORDER,
 				 set->datatype->byteorder))
 		memory_allocation_error();

@@ -529,6 +529,18 @@ static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
 		     dep->left->payload.desc == &proto_ip6) &&
 		    expr->payload.base == PROTO_BASE_TRANSPORT_HDR)
 			return false;
+		/* Do not kill
+		 *  ether type vlan and vlan type ip and ip protocol icmp
+		 * into
+		 *  ip protocol icmp
+		 * as this lacks ether type vlan.
+		 * More generally speaking, do not kill protocol type
+		 * for stacked protocols if we only have protcol type matches.
+		 */
+		if (dep->left->etype == EXPR_PAYLOAD && dep->op == OP_EQ &&
+		    expr->flags & EXPR_F_PROTOCOL &&
+		    expr->payload.base == dep->left->payload.base)
+			return false;
 		break;
 	}
 

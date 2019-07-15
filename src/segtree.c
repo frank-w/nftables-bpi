@@ -440,7 +440,7 @@ static bool segtree_needs_first_segment(const struct set *set,
 		 * 3) New empty set and, separately, new elements are added.
 		 * 4) This set is created with a number of initial elements.
 		 */
-		if ((set->flags & NFT_SET_ANONYMOUS) ||
+		if ((set_is_anonymous(set->flags)) ||
 		    (set->init && set->init->size == 0) ||
 		    (set->init == NULL && init) ||
 		    (set->init == init)) {

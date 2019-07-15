@@ -851,7 +851,7 @@ static const char *calculate_delim(const struct expr *expr, int *count)
 	const char *newline = ",\n\t\t\t     ";
 	const char *singleline = ", ";
 
-	if (expr->set_flags & NFT_SET_ANONYMOUS)
+	if (set_is_anonymous(expr->set_flags))
 		return singleline;
 
 	if (!expr->dtype)
@@ -1035,7 +1035,7 @@ struct expr *map_expr_alloc(const struct location *loc, struct expr *arg,
 
 static void set_ref_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	if (expr->set->flags & NFT_SET_ANONYMOUS) {
+	if (set_is_anonymous(expr->set->flags)) {
 		if (expr->set->flags & NFT_SET_EVAL)
 			nft_print(octx, "%s", expr->set->handle.set.name);
 		else

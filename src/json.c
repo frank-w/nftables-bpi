@@ -522,7 +522,7 @@ json_t *set_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *set_ref_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
-	if (expr->set->flags & NFT_SET_ANONYMOUS) {
+	if (set_is_anonymous(expr->set->flags)) {
 		return expr_print_json(expr->set->init, octx);
 	} else {
 		return json_pack("s+", "@", expr->set->handle.set.name);
@@ -1473,7 +1473,7 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 		json_array_append_new(root, tmp);
 	}
 	list_for_each_entry(set, &table->sets, list) {
-		if (set->flags & NFT_SET_ANONYMOUS)
+		if (set_is_anonymous(set->flags))
 			continue;
 		tmp = set_print_json(&ctx->nft->output, set);
 		json_array_append_new(root, tmp);

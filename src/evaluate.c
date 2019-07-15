@@ -1642,7 +1642,7 @@ static int __binop_transfer(struct eval_ctx *ctx,
 		}
 		break;
 	case EXPR_SET_REF:
-		if (!((*right)->set->flags & NFT_SET_ANONYMOUS))
+		if (!set_is_anonymous((*right)->set->flags))
 			return 0;
 
 		return __binop_transfer(ctx, left, &(*right)->set->init);

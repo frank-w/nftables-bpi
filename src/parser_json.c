@@ -3598,7 +3598,7 @@ static uint64_t handle_from_nlmsg(const struct nlmsghdr *nlh)
 	case NFT_MSG_NEWSET:
 		nls = netlink_set_alloc(nlh);
 		flags = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
-		if (!(flags & NFT_SET_ANONYMOUS))
+		if (!set_is_anonymous(flags))
 			handle = nftnl_set_get_u64(nls, NFTNL_SET_HANDLE);
 		nftnl_set_free(nls);
 		break;

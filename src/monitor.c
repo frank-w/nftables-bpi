@@ -275,7 +275,7 @@ static int netlink_events_set_cb(const struct nlmsghdr *nlh, int type,
 
 	nls = netlink_set_alloc(nlh);
 	flags = nftnl_set_get_u32(nls, NFTNL_SET_FLAGS);
-	if (flags & NFT_SET_ANONYMOUS)
+	if (set_is_anonymous(flags))
 		goto out;
 
 	set = netlink_delinearize_set(monh->ctx, nls);
@@ -392,7 +392,7 @@ static int netlink_events_setelem_cb(const struct nlmsghdr *nlh, int type,
 		goto out;
 	}
 
-	if (set->flags & NFT_SET_ANONYMOUS)
+	if (set_is_anonymous(set->flags))
 		goto out;
 
 	/* we want to 'delinearize' the set_elem, but don't

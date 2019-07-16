@@ -3425,14 +3425,25 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 	return 0;
 }
 
-static int obj_evaluate(struct eval_ctx *ctx, struct obj *obj)
+static int ct_expect_evaluate(struct eval_ctx *ctx, struct obj *obj)
+{
+	struct ct_expect *ct = &obj->ct_expect;
+
+	if (!ct->l4proto ||
+	    !ct->dport ||
+	    !ct->timeout ||
+	    !ct->size)
+		return __stmt_binary_error(ctx, &obj->location, NULL,
+					   "missing options");
+
+	return 0;
+}
+
+static int ct_timeout_evaluate(struct eval_ctx *ctx, struct obj *obj)
 {
 	struct ct_timeout *ct = &obj->ct_timeout;
 	struct timeout_state *ts, *next;
 	unsigned int i;
-
-	if (obj->type != NFT_OBJECT_CT_TIMEOUT)
-		return 0;
 
 	for (i = 0; i < timeout_protocol[ct->l4proto].array_size; i++)
 		ct->timeout[i] = timeout_protocol[ct->l4proto].dflt_timeout[i];
@@ -3446,6 +3457,21 @@ static int obj_evaluate(struct eval_ctx *ctx, struct obj *obj)
 		list_del(&ts->head);
 		xfree(ts);
 	}
+
+	return 0;
+}
+
+static int obj_evaluate(struct eval_ctx *ctx, struct obj *obj)
+{
+	switch (obj->type) {
+	case NFT_OBJECT_CT_TIMEOUT:
+		return ct_timeout_evaluate(ctx, obj);
+	case NFT_OBJECT_CT_EXPECT:
+		return ct_expect_evaluate(ctx, obj);
+	default:
+		break;
+	}
+
 	return 0;
 }
 

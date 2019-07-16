@@ -16,10 +16,29 @@
 static unsigned int evaluate_cache_add(struct cmd *cmd, unsigned int flags)
 {
 	switch (cmd->obj) {
+	case CMD_OBJ_CHAIN:
+	case CMD_OBJ_SET:
+	case CMD_OBJ_COUNTER:
+	case CMD_OBJ_QUOTA:
+	case CMD_OBJ_LIMIT:
+	case CMD_OBJ_SECMARK:
+	case CMD_OBJ_FLOWTABLE:
+		flags |= NFT_CACHE_TABLE;
+		break;
 	case CMD_OBJ_SETELEM:
-		flags |= NFT_CACHE_SETELEM;
+		flags |= NFT_CACHE_TABLE |
+			 NFT_CACHE_CHAIN |
+			 NFT_CACHE_SET |
+			 NFT_CACHE_OBJECT |
+			 NFT_CACHE_SETELEM;
 		break;
 	case CMD_OBJ_RULE:
+		flags |= NFT_CACHE_TABLE |
+			 NFT_CACHE_CHAIN |
+			 NFT_CACHE_SET |
+			 NFT_CACHE_OBJECT |
+			 NFT_CACHE_FLOWTABLE;
+
 		if (cmd->handle.index.id ||
 		    cmd->handle.position.id)
 			flags |= NFT_CACHE_RULE;
@@ -83,18 +102,11 @@ unsigned int cache_evaluate(struct nft_ctx *nft, struct list_head *cmds)
 		switch (cmd->op) {
 		case CMD_ADD:
 		case CMD_INSERT:
+		case CMD_CREATE:
 			if (nft_output_echo(&nft->output)) {
 				flags = NFT_CACHE_FULL;
 				break;
 			}
-
-			flags |= NFT_CACHE_TABLE |
-				 NFT_CACHE_CHAIN |
-				 NFT_CACHE_SET |
-				 NFT_CACHE_FLOWTABLE |
-				 NFT_CACHE_OBJECT;
-			/* Fall through */
-		case CMD_CREATE:
 			flags = evaluate_cache_add(cmd, flags);
 			break;
 		case CMD_REPLACE:

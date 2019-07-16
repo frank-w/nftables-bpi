@@ -1988,12 +1988,9 @@ static int stmt_evaluate_verdict(struct eval_ctx *ctx, struct stmt *stmt)
 		if (stmt->expr->chain != NULL) {
 			if (expr_evaluate(ctx, &stmt->expr->chain) < 0)
 				return -1;
-			if ((stmt->expr->chain->etype != EXPR_SYMBOL &&
-			    stmt->expr->chain->etype != EXPR_VALUE) ||
-			    stmt->expr->chain->symtype != SYMBOL_VALUE) {
-				return stmt_error(ctx, stmt,
-						  "invalid verdict chain expression %s\n",
-						  expr_name(stmt->expr->chain));
+			if (stmt->expr->chain->etype != EXPR_VALUE) {
+				return expr_error(ctx->msgs, stmt->expr->chain,
+						  "not a value expression");
 			}
 		}
 		break;

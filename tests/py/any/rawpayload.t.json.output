@@ -19,9 +19,8 @@
         "match": {
             "left": {
                 "payload": {
-                    "base": "th",
-                    "len": 16,
-                    "offset": 16
+                    "field": "dport",
+                    "protocol": "th"
                 }
             },
 	    "op": "==",

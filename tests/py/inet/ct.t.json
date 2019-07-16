@@ -39,3 +39,26 @@
     }
 ]
 
+# ct original ip daddr {1.2.3.4} accept
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "dir": "original",
+                    "key": "ip daddr"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "1.2.3.4"
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]
+

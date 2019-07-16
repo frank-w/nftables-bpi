@@ -1749,9 +1749,8 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 						stmt_separator
 			{
 				$1->key = $3;
-				$1->datatype = $5->dtype;
+				$1->data = $5;
 
-				expr_free($5);
 				$1->flags |= NFT_SET_MAP;
 				$$ = $1;
 			}

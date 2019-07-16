@@ -2826,11 +2826,15 @@ static struct cmd *json_parse_cmd_add_set(struct json_ctx *ctx, json_t *root,
 	}
 
 	if (!json_unpack(root, "{s:s}", "map", &dtype_ext)) {
+		const struct datatype *dtype;
+
 		set->objtype = string_to_nft_object(dtype_ext);
 		if (set->objtype) {
 			set->flags |= NFT_SET_OBJECT;
-		} else if (datatype_lookup_byname(dtype_ext)) {
-			set->datatype = datatype_lookup_byname(dtype_ext);
+		} else if ((dtype = datatype_lookup_byname(dtype_ext))) {
+			set->data = constant_expr_alloc(&netlink_location,
+							dtype, dtype->byteorder,
+							dtype->size, NULL);
 			set->flags |= NFT_SET_MAP;
 		} else {
 			json_error(ctx, "Invalid map type '%s'.", dtype_ext);

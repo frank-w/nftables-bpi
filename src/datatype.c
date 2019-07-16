@@ -1190,11 +1190,6 @@ const struct datatype *set_datatype_alloc(const struct datatype *orig_dtype,
 	return dtype;
 }
 
-void set_datatype_destroy(const struct datatype *dtype)
-{
-	datatype_free(dtype);
-}
-
 static struct error_record *time_unit_parse(const struct location *loc,
 					    const char *str, uint64_t *unit)
 {

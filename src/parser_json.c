@@ -2197,7 +2197,7 @@ static int json_parse_synproxy_flag(struct json_ctx *ctx,
 	assert(flags);
 
 	if (!json_is_string(root)) {
-		json_error(ctx, "Invalid log flag type %s, expected string.",
+		json_error(ctx, "Invalid synproxy flag type %s, expected string.",
 			   json_typename(root));
 		return 1;
 	}
@@ -2208,7 +2208,7 @@ static int json_parse_synproxy_flag(struct json_ctx *ctx,
 			return 0;
 		}
 	}
-	json_error(ctx, "Unknown log flag '%s'.", flag);
+	json_error(ctx, "Unknown synproxy flag '%s'.", flag);
 	return 1;
 }
 
@@ -2222,13 +2222,13 @@ static int json_parse_synproxy_flags(struct json_ctx *ctx, json_t *root)
 		json_parse_synproxy_flag(ctx, root, &flags);
 		return flags;
 	} else if (!json_is_array(root)) {
-		json_error(ctx, "Invalid log flags type %s.",
+		json_error(ctx, "Invalid synproxy flags type %s.",
 			   json_typename(root));
 		return -1;
 	}
 	json_array_foreach(root, index, value) {
 		if (json_parse_synproxy_flag(ctx, value, &flags))
-			json_error(ctx, "Parsing log flag at index %zu failed.",
+			json_error(ctx, "Parsing synproxy flag at index %zu failed.",
 				   index);
 	}
 	return flags;

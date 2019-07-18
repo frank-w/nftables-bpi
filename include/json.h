@@ -180,6 +180,7 @@ STMT_PRINT_STUB(queue)
 STMT_PRINT_STUB(verdict)
 STMT_PRINT_STUB(connlimit)
 STMT_PRINT_STUB(tproxy)
+STMT_PRINT_STUB(synproxy)
 
 #undef STMT_PRINT_STUB
 #undef EXPR_PRINT_STUB

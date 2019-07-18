@@ -266,8 +266,8 @@ static json_t *timeout_policy_json(uint8_t l4, const uint32_t *timeout)
 
 		if (!root)
 			root = json_object();
-		json_object_set(root, timeout_protocol[l4].state_to_name[i],
-				json_integer(timeout[i]));
+		json_object_set_new(root, timeout_protocol[l4].state_to_name[i],
+				    json_integer(timeout[i]));
 	}
 	return root ? : json_null();
 }

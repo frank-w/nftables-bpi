@@ -22,8 +22,12 @@ static int nft_netlink(struct nft_ctx *nft,
 		       struct mnl_socket *nf_sock)
 {
 	uint32_t batch_seqnum, seqnum = 0, num_cmds = 0;
-	struct nftnl_batch *batch;
-	struct netlink_ctx ctx;
+	struct netlink_ctx ctx = {
+		.nft  = nft,
+		.msgs = msgs,
+		.list = LIST_HEAD_INIT(ctx.list),
+		.batch = mnl_batch_init(),
+	};
 	struct cmd *cmd;
 	struct mnl_err *err, *tmp;
 	LIST_HEAD(err_list);
@@ -32,16 +36,9 @@ static int nft_netlink(struct nft_ctx *nft,
 	if (list_empty(cmds))
 		return 0;
 
-	batch = mnl_batch_init();
-
-	batch_seqnum = mnl_batch_begin(batch, mnl_seqnum_alloc(&seqnum));
+	batch_seqnum = mnl_batch_begin(ctx.batch, mnl_seqnum_alloc(&seqnum));
 	list_for_each_entry(cmd, cmds, list) {
-		memset(&ctx, 0, sizeof(ctx));
-		ctx.msgs = msgs;
 		ctx.seqnum = cmd->seqnum = mnl_seqnum_alloc(&seqnum);
-		ctx.batch = batch;
-		ctx.nft = nft;
-		init_list_head(&ctx.list);
 		ret = do_command(&ctx, cmd);
 		if (ret < 0) {
 			netlink_io_error(&ctx, &cmd->location,
@@ -52,9 +49,9 @@ static int nft_netlink(struct nft_ctx *nft,
 		num_cmds++;
 	}
 	if (!nft->check)
-		mnl_batch_end(batch, mnl_seqnum_alloc(&seqnum));
+		mnl_batch_end(ctx.batch, mnl_seqnum_alloc(&seqnum));
 
-	if (!mnl_batch_ready(batch))
+	if (!mnl_batch_ready(ctx.batch))
 		goto out;
 
 	ret = mnl_batch_talk(&ctx, &err_list, num_cmds);
@@ -83,7 +80,7 @@ static int nft_netlink(struct nft_ctx *nft,
 		}
 	}
 out:
-	mnl_batch_reset(batch);
+	mnl_batch_reset(ctx.batch);
 	return ret;
 }
 

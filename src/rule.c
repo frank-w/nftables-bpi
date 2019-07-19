@@ -240,7 +240,6 @@ int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs
 		.list		= LIST_HEAD_INIT(ctx.list),
 		.nft		= nft,
 		.msgs		= msgs,
-		.nft		= nft,
 	};
 	struct nft_cache *cache = &nft->cache;
 	uint32_t genid, genid_stop;

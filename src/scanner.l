@@ -36,23 +36,28 @@
  */
 #define YY_INPUT(buf,result,max_size)						\
 {										\
-	long n = 0;								\
+	result = 0;								\
 	errno = 0;								\
-	while ((result = fread(buf, 1, max_size, yyin)) == 0 &&			\
-		ferror(yyin)) {							\
-		if (errno != EINTR) {						\
-			YY_FATAL_ERROR("input in flex scanner failed");		\
-			break;							\
+										\
+	while (result < max_size) {						\
+		int chr = fgetc(yyin);						\
+										\
+		if (chr != EOF) {						\
+			buf[result++] = chr;					\
+			if (chr == '\n' || chr == ' ')				\
+				break;						\
+			continue;						\
 		}								\
-		errno = 0;							\
-		clearerr(yyin);							\
-	}									\
-	if (result > 1 && !feof(yyin)) {					\
-		while (result > 1 && 						\
-		       (buf[result - 1] != '\n' &&  buf[result - 1] != ' '))	\
-			result--, n++;						\
-		result--, n++;							\
-		fseek(yyin, -n, SEEK_CUR);					\
+										\
+		if (ferror(yyin)) {						\
+			if (errno != EINTR) {					\
+				YY_FATAL_ERROR("input in flex scanner failed");	\
+				break;						\
+			}							\
+			errno = 0;						\
+			clearerr(yyin);						\
+		}								\
+		break;								\
 	}									\
 }
 

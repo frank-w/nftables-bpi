@@ -3564,6 +3564,7 @@ static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 	}
 	list_for_each_entry(chain, &table->chains, list) {
 		handle_merge(&chain->handle, &table->handle);
+		ctx->cmd->handle.chain.location = chain->location;
 		if (chain_evaluate(ctx, chain) < 0)
 			return -1;
 	}

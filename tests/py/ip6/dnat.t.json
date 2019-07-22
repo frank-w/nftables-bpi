@@ -76,3 +76,30 @@
     }
 ]
 
+# dnat to [2001:838:35f:1::]/64
+[
+    {
+        "dnat": {
+            "addr": {
+                "range": [
+                    "2001:838:35f:1::",
+                    "2001:838:35f:1:ffff:ffff:ffff:ffff"
+                ]
+            }
+        }
+    }
+]
+
+# dnat to 2001:838:35f:1::-2001:838:35f:1:ffff:ffff:ffff:ffff
+[
+    {
+        "dnat": {
+            "addr": {
+                "range": [
+                    "2001:838:35f:1::",
+                    "2001:838:35f:1:ffff:ffff:ffff:ffff"
+                ]
+            }
+        }
+    }
+]

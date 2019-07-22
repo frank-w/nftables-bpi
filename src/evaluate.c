@@ -1933,6 +1933,52 @@ static int stmt_evaluate_expr(struct eval_ctx *ctx, struct stmt *stmt)
 	return expr_evaluate(ctx, &stmt->expr);
 }
 
+static int stmt_prefix_conversion(struct eval_ctx *ctx, struct expr **expr,
+				  enum byteorder byteorder)
+{
+	struct expr *mask, *and, *or, *prefix, *base, *range;
+	int ret;
+
+	prefix = *expr;
+	base = prefix->prefix;
+
+	if (base->etype != EXPR_VALUE)
+		return expr_error(ctx->msgs, prefix,
+				  "you cannot specify a prefix here, "
+				  "unknown type %s", base->dtype->name);
+
+	if (!expr_is_constant(base))
+		return expr_error(ctx->msgs, prefix,
+				  "Prefix expression is undefined for "
+				  "non-constant expressions");
+
+	if (expr_basetype(base)->type != TYPE_INTEGER)
+		return expr_error(ctx->msgs, prefix,
+				  "Prefix expression expected integer value");
+
+	mask = constant_expr_alloc(&prefix->location, expr_basetype(base),
+				   BYTEORDER_HOST_ENDIAN, base->len, NULL);
+
+	mpz_prefixmask(mask->value, base->len, prefix->prefix_len);
+	and = binop_expr_alloc(&prefix->location, OP_AND, expr_get(base), mask);
+
+	mask = constant_expr_alloc(&prefix->location, expr_basetype(base),
+				   BYTEORDER_HOST_ENDIAN, base->len, NULL);
+	mpz_bitmask(mask->value, prefix->len - prefix->prefix_len);
+	or = binop_expr_alloc(&prefix->location, OP_OR, expr_get(base), mask);
+
+	range = range_expr_alloc(&prefix->location, and, or);
+	ret = expr_evaluate(ctx, &range);
+	if (ret < 0) {
+		expr_free(range);
+		return ret;
+	}
+
+	expr_free(*expr);
+	*expr = range;
+	return 0;
+}
+
 static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
 			     const struct datatype *dtype, unsigned int len,
 			     enum byteorder byteorder, struct expr **expr)
@@ -1969,6 +2015,8 @@ static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
 					 "unknown value to use");
 	case EXPR_RT:
 		return byteorder_conversion(ctx, expr, byteorder);
+	case EXPR_PREFIX:
+		return stmt_prefix_conversion(ctx, expr, byteorder);
 	default:
 		break;
 	}

@@ -81,7 +81,7 @@ static char *nf_osf_strchr(char *ptr, char c)
 	if (tmp)
 		*tmp = '\0';
 
-	while (tmp && tmp + 1 && isspace(*(tmp + 1)))
+	while (tmp && isspace(*(tmp + 1)))
 		tmp++;
 
 	return tmp;
@@ -98,7 +98,6 @@ static void nf_osf_parse_opt(struct nf_osf_opt *opt, __u16 *optnum, char *obuf,
 	i = 0;
 	while (ptr != NULL && i < olen && *ptr != 0) {
 		val = 0;
-		op = 0;
 		wc = OSF_WSS_PLAIN;
 		switch (obuf[i]) {
 		case 'N':
@@ -289,32 +288,34 @@ static int osf_load_line(char *buffer, int len, int del,
 	pend = nf_osf_strchr(pbeg, OSFPDEL);
 	if (pend) {
 		*pend = '\0';
-		cnt = snprintf(obuf, sizeof(obuf), "%s,", pbeg);
+		i = sizeof(obuf);
+		snprintf(obuf, i, "%.*s,", i - 2, pbeg);
 		pbeg = pend + 1;
 	}
 
 	pend = nf_osf_strchr(pbeg, OSFPDEL);
 	if (pend) {
 		*pend = '\0';
+		i = sizeof(f.genre);
 		if (pbeg[0] == '@' || pbeg[0] == '*')
-			cnt = snprintf(f.genre, sizeof(f.genre), "%s", pbeg + 1);
-		else
-			cnt = snprintf(f.genre, sizeof(f.genre), "%s", pbeg);
+			pbeg++;
+		snprintf(f.genre, i, "%.*s", i - 1, pbeg);
 		pbeg = pend + 1;
 	}
 
 	pend = nf_osf_strchr(pbeg, OSFPDEL);
 	if (pend) {
 		*pend = '\0';
-		cnt = snprintf(f.version, sizeof(f.version), "%s", pbeg);
+		i = sizeof(f.version);
+		snprintf(f.version, i, "%.*s", i - 1, pbeg);
 		pbeg = pend + 1;
 	}
 
 	pend = nf_osf_strchr(pbeg, OSFPDEL);
 	if (pend) {
 		*pend = '\0';
-		cnt =
-		    snprintf(f.subtype, sizeof(f.subtype), "%s", pbeg);
+		i = sizeof(f.subtype);
+		snprintf(f.subtype, i, "%.*s", i - 1, pbeg);
 		pbeg = pend + 1;
 	}
 

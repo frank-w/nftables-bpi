@@ -3394,11 +3394,10 @@ static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule,
 		return -1;
 	}
 
-	/* add rules to cache only if it is complete enough to contain them */
-	if (!cache_is_complete(&ctx->nft->cache, NFT_CACHE_RULE))
-		return 0;
+	if (cache_needs_update(&ctx->nft->cache))
+		return rule_cache_update(ctx, op);
 
-	return rule_cache_update(ctx, op);
+	return 0;
 }
 
 static uint32_t str2hooknum(uint32_t family, const char *hook)
@@ -3824,7 +3823,6 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_RULESET:
-		cache_flush(ctx->nft, ctx->msgs);
 		break;
 	case CMD_OBJ_TABLE:
 		/* Flushing a table does not empty the sets in the table nor remove

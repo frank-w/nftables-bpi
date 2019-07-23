@@ -30,6 +30,8 @@ enum cache_level_flags {
 				  NFT_CACHE_CHAIN_BIT |
 				  NFT_CACHE_RULE_BIT,
 	NFT_CACHE_FULL		= __NFT_CACHE_MAX_BIT - 1,
+	NFT_CACHE_UPDATE	= (1 << 30),
+	NFT_CACHE_FLUSHED	= (1 << 31),
 };
 
 #endif /* _NFT_CACHE_H_ */

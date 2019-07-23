@@ -208,9 +208,9 @@ enum expr_flags {
  * @flags:	mask of enum expr_flags
  * @dtype:	data type of expression
  * @byteorder:	byteorder of expression
- * @len:	length of expression
- * @ops:	expression ops
+ * @etype:	expression type
  * @op:		operation for unary, binary and relational expressions
+ * @len:	length of expression
  * @union:	type specific data
  */
 struct expr {

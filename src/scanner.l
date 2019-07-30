@@ -385,6 +385,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "saddr"			{ return SADDR; }
 "daddr"			{ return DADDR; }
 "type"			{ return TYPE; }
+"typeof"		{ return TYPEOF; }
 
 "vlan"			{ return VLAN; }
 "id"			{ return ID; }

@@ -223,6 +223,8 @@ int nft_lex(void *, void *, void *);
 %token WSCALE			"wscale"
 %token SACKPERM			"sack-perm"
 
+%token TYPEOF			"typeof"
+
 %token HOOK			"hook"
 %token DEVICE			"device"
 %token DEVICES			"devices"
@@ -658,8 +660,8 @@ int nft_lex(void *, void *, void *);
 
 %type <expr>			symbol_expr verdict_expr integer_expr variable_expr chain_expr policy_expr
 %destructor { expr_free($$); }	symbol_expr verdict_expr integer_expr variable_expr chain_expr policy_expr
-%type <expr>			primary_expr shift_expr and_expr
-%destructor { expr_free($$); }	primary_expr shift_expr and_expr
+%type <expr>			primary_expr shift_expr and_expr typeof_expr
+%destructor { expr_free($$); }	primary_expr shift_expr and_expr typeof_expr
 %type <expr>			exclusive_or_expr inclusive_or_expr
 %destructor { expr_free($$); }	exclusive_or_expr inclusive_or_expr
 %type <expr>			basic_expr
@@ -1671,6 +1673,22 @@ chain_block		:	/* empty */	{ $$ = $<chain>-1; }
 			}
 			;
 
+typeof_expr		:	primary_expr
+			{
+				$$ = $1;
+			}
+			|	typeof_expr		DOT		primary_expr
+			{
+				struct location rhs[] = {
+					[1]	= @2,
+					[2]	= @3,
+				};
+
+				$$ = handle_concat_expr(&@$, $$, $1, $3, rhs);
+			}
+			;
+
+
 set_block_alloc		:	/* empty */
 			{
 				$$ = set_alloc(NULL);
@@ -1683,6 +1701,12 @@ set_block		:	/* empty */	{ $$ = $<set>-1; }
 			|	set_block	TYPE		data_type_expr	stmt_separator
 			{
 				$1->key = $3;
+				$$ = $1;
+			}
+			|	set_block	TYPEOF		typeof_expr	stmt_separator
+			{
+				$1->key = $3;
+				datatype_set($1->key, $3->dtype);
 				$$ = $1;
 			}
 			|	set_block	FLAGS		set_flag_list	stmt_separator
@@ -1749,6 +1773,17 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 						stmt_separator
 			{
 				$1->key = $3;
+				$1->data = $5;
+
+				$1->flags |= NFT_SET_MAP;
+				$$ = $1;
+			}
+			|	map_block	TYPEOF
+						typeof_expr	COLON	typeof_expr
+						stmt_separator
+			{
+				$1->key = $3;
+				datatype_set($1->key, $3->dtype);
 				$1->data = $5;
 
 				$1->flags |= NFT_SET_MAP;

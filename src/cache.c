@@ -75,7 +75,6 @@ static unsigned int evaluate_cache_flush(struct cmd *cmd, unsigned int flags)
 		flags |= NFT_CACHE_FLUSHED;
 		break;
 	default:
-		flags = NFT_CACHE_EMPTY;
 		break;
 	}
 

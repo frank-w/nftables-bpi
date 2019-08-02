@@ -370,6 +370,7 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 {
 	struct chain *chain;
 	int priority;
+	int policy;
 
 	chain = chain_alloc(nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME));
 	chain->handle.family =
@@ -396,7 +397,12 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 						    &priority);
 		chain->type          =
 			xstrdup(nftnl_chain_get_str(nlc, NFTNL_CHAIN_TYPE));
-		chain->policy          =
+		policy = nftnl_chain_get_u32(nlc, NFTNL_CHAIN_POLICY);
+		chain->policy = constant_expr_alloc(&netlink_location,
+						    &integer_type,
+						    BYTEORDER_HOST_ENDIAN,
+						    sizeof(int) * BITS_PER_BYTE,
+						    &policy);
 			nftnl_chain_get_u32(nlc, NFTNL_CHAIN_POLICY);
 		if (nftnl_chain_is_set(nlc, NFTNL_CHAIN_DEV)) {
 			chain->dev	=

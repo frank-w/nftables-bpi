@@ -1292,3 +1292,33 @@ const struct datatype priority_type = {
 	.desc		= "priority type",
 	.parse		= priority_type_parse,
 };
+
+static struct error_record *policy_type_parse(struct parse_ctx *ctx,
+					      const struct expr *sym,
+					      struct expr **res)
+{
+	int policy;
+
+	if (!strcmp(sym->identifier, "accept"))
+		policy = NF_ACCEPT;
+	else if (!strcmp(sym->identifier, "drop"))
+		policy = NF_DROP;
+	else
+		return error(&sym->location, "wrong policy");
+
+	*res = constant_expr_alloc(&sym->location, &integer_type,
+				   BYTEORDER_HOST_ENDIAN,
+				   sizeof(int) * BITS_PER_BYTE, &policy);
+	return NULL;
+}
+
+/* This datatype is not registered via datatype_register()
+ * since this datatype should not ever be used from either
+ * rules or elements.
+ */
+const struct datatype policy_type = {
+	.type		= TYPE_STRING,
+	.name		= "policy",
+	.desc		= "policy type",
+	.parse		= policy_type_parse,
+};

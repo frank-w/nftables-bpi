@@ -2530,13 +2530,20 @@ static struct cmd *json_parse_cmd_add_table(struct json_ctx *ctx, json_t *root,
 	return cmd_alloc(op, obj, &h, int_loc, NULL);
 }
 
-static int parse_policy(const char *policy)
+static struct expr *parse_policy(const char *policy)
 {
+	int policy_num;
+
 	if (!strcmp(policy, "accept"))
-		return NF_ACCEPT;
-	if (!strcmp(policy, "drop"))
-		return NF_DROP;
-	return -1;
+		policy_num = NF_ACCEPT;
+	else if (!strcmp(policy, "drop"))
+		policy_num = NF_DROP;
+	else
+		return NULL;
+
+	return constant_expr_alloc(int_loc, &integer_type,
+				   BYTEORDER_HOST_ENDIAN,
+				   sizeof(int) * BITS_PER_BYTE, &policy_num);
 }
 
 static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,

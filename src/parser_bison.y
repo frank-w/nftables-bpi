@@ -636,8 +636,8 @@ int nft_lex(void *, void *, void *);
 %type <stmt>			meter_stmt meter_stmt_alloc flow_stmt_legacy_alloc
 %destructor { stmt_free($$); }	meter_stmt meter_stmt_alloc flow_stmt_legacy_alloc
 
-%type <expr>			symbol_expr verdict_expr integer_expr variable_expr chain_expr
-%destructor { expr_free($$); }	symbol_expr verdict_expr integer_expr variable_expr chain_expr
+%type <expr>			symbol_expr verdict_expr integer_expr variable_expr chain_expr policy_expr
+%destructor { expr_free($$); }	symbol_expr verdict_expr integer_expr variable_expr chain_expr policy_expr
 %type <expr>			primary_expr shift_expr and_expr
 %destructor { expr_free($$); }	primary_expr shift_expr and_expr
 %type <expr>			exclusive_or_expr inclusive_or_expr
@@ -2033,14 +2033,29 @@ dev_spec		:	DEVICE	string		{ $$ = $2; }
 			|	/* empty */		{ $$ = NULL; }
 			;
 
-policy_spec		:	POLICY		chain_policy
+policy_spec		:	POLICY		policy_expr
 			{
-				if ($<chain>0->policy != -1) {
+				if ($<chain>0->policy) {
 					erec_queue(error(&@$, "you cannot set chain policy twice"),
 						   state->msgs);
+					expr_free($2);
 					YYERROR;
 				}
 				$<chain>0->policy	= $2;
+			}
+			;
+
+policy_expr		:	variable_expr
+			{
+				datatype_set($1->sym->expr, &policy_type);
+				$$ = $1;
+			}
+			|	chain_policy
+			{
+				$$ = constant_expr_alloc(&@$, &integer_type,
+							 BYTEORDER_HOST_ENDIAN,
+							 sizeof(int) *
+							 BITS_PER_BYTE, &$1);
 			}
 			;
 

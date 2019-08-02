@@ -224,6 +224,7 @@ static json_t *chain_print_json(const struct chain *chain)
 {
 	json_t *root, *tmp;
 	int priority;
+	int policy;
 
 	root = json_pack("{s:s, s:s, s:s, s:I}",
 			 "family", family2str(chain->handle.family),
@@ -234,12 +235,14 @@ static json_t *chain_print_json(const struct chain *chain)
 	if (chain->flags & CHAIN_F_BASECHAIN) {
 		mpz_export_data(&priority, chain->priority.expr->value,
 				BYTEORDER_HOST_ENDIAN, sizeof(int));
+		mpz_export_data(&policy, chain->policy->value,
+				BYTEORDER_HOST_ENDIAN, sizeof(int));
 		tmp = json_pack("{s:s, s:s, s:i, s:s}",
 				"type", chain->type,
 				"hook", hooknum2str(chain->handle.family,
 						    chain->hooknum),
 				"prio", priority,
-				"policy", chain_policy2str(chain->policy));
+				"policy", chain_policy2str(policy));
 		if (chain->dev)
 			json_object_set_new(tmp, "dev", json_string(chain->dev));
 		json_object_update(root, tmp);

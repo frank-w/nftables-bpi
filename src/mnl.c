@@ -519,6 +519,7 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 	struct nftnl_chain *nlc;
 	struct nlmsghdr *nlh;
 	int priority;
+	int policy;
 
 	nlc = nftnl_chain_alloc();
 	if (nlc == NULL)
@@ -539,9 +540,11 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 			nftnl_chain_set_str(nlc, NFTNL_CHAIN_TYPE,
 					    cmd->chain->type);
 		}
-		if (cmd->chain->policy != -1)
-			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_POLICY,
-					    cmd->chain->policy);
+		if (cmd->chain->policy) {
+			mpz_export_data(&policy, cmd->chain->policy->value,
+					BYTEORDER_HOST_ENDIAN, sizeof(int));
+			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_POLICY, policy);
+		}
 		if (cmd->chain->dev != NULL)
 			nftnl_chain_set_str(nlc, NFTNL_CHAIN_DEV,
 					    cmd->chain->dev);

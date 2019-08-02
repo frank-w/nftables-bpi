@@ -798,7 +798,7 @@ struct chain *chain_alloc(const char *name)
 	if (name != NULL)
 		chain->handle.chain.name = xstrdup(name);
 
-	chain->policy = -1;
+	chain->policy = NULL;
 	return chain;
 }
 
@@ -822,6 +822,7 @@ void chain_free(struct chain *chain)
 	if (chain->dev != NULL)
 		xfree(chain->dev);
 	expr_free(chain->priority.expr);
+	expr_free(chain->policy);
 	xfree(chain);
 }
 
@@ -1098,12 +1099,15 @@ static void chain_print_declaration(const struct chain *chain,
 				    struct output_ctx *octx)
 {
 	char priobuf[STD_PRIO_BUFSIZE];
+	int policy;
 
 	nft_print(octx, "\tchain %s {", chain->handle.chain.name);
 	if (nft_output_handle(octx))
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
 	nft_print(octx, "\n");
 	if (chain->flags & CHAIN_F_BASECHAIN) {
+		mpz_export_data(&policy, chain->policy->value,
+				BYTEORDER_HOST_ENDIAN, sizeof(int));
 		nft_print(octx, "\t\ttype %s hook %s", chain->type,
 			  hooknum2str(chain->handle.family, chain->hooknum));
 		if (chain->dev != NULL)
@@ -1112,7 +1116,7 @@ static void chain_print_declaration(const struct chain *chain,
 			  prio2str(octx, priobuf, sizeof(priobuf),
 				   chain->handle.family, chain->hooknum,
 				   chain->priority.expr),
-			  chain_policy2str(chain->policy));
+			  chain_policy2str(policy));
 	}
 }
 
@@ -1133,17 +1137,20 @@ static void chain_print(const struct chain *chain, struct output_ctx *octx)
 void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 {
 	char priobuf[STD_PRIO_BUFSIZE];
+	int policy;
 
 	nft_print(octx, "chain %s %s %s", family2str(chain->handle.family),
 		  chain->handle.table.name, chain->handle.chain.name);
 
 	if (chain->flags & CHAIN_F_BASECHAIN) {
+		mpz_export_data(&policy, chain->policy->value,
+				BYTEORDER_HOST_ENDIAN, sizeof(int));
 		nft_print(octx, " { type %s hook %s priority %s; policy %s; }",
 			  chain->type, chain->hookstr,
 			  prio2str(octx, priobuf, sizeof(priobuf),
 				   chain->handle.family, chain->hooknum,
 				   chain->priority.expr),
-			  chain_policy2str(chain->policy));
+			  chain_policy2str(policy));
 	}
 	if (nft_output_handle(octx))
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);

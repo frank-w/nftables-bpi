@@ -206,7 +206,7 @@ struct chain {
 	const char		*hookstr;
 	unsigned int		hooknum;
 	struct prio_spec	priority;
-	int			policy;
+	struct expr		*policy;
 	const char		*type;
 	const char		*dev;
 	struct scope		scope;

@@ -518,6 +518,7 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 {
 	struct nftnl_chain *nlc;
 	struct nlmsghdr *nlh;
+	int priority;
 
 	nlc = nftnl_chain_alloc();
 	if (nlc == NULL)
@@ -531,8 +532,10 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		if (cmd->chain->flags & CHAIN_F_BASECHAIN) {
 			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_HOOKNUM,
 					    cmd->chain->hooknum);
-			nftnl_chain_set_s32(nlc, NFTNL_CHAIN_PRIO,
-					    cmd->chain->priority.num);
+			mpz_export_data(&priority,
+					cmd->chain->priority.expr->value,
+					BYTEORDER_HOST_ENDIAN, sizeof(int));
+			nftnl_chain_set_s32(nlc, NFTNL_CHAIN_PRIO, priority);
 			nftnl_chain_set_str(nlc, NFTNL_CHAIN_TYPE,
 					    cmd->chain->type);
 		}
@@ -1371,6 +1374,7 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 	const char *dev_array[8];
 	struct nlmsghdr *nlh;
 	struct expr *expr;
+	int priority;
 	int i = 0;
 
 	flo = nftnl_flowtable_alloc();
@@ -1385,8 +1389,9 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 				cmd->handle.flowtable);
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM,
 				cmd->flowtable->hooknum);
-	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO,
-				cmd->flowtable->priority.num);
+	mpz_export_data(&priority, cmd->flowtable->priority.expr->value,
+			BYTEORDER_HOST_ENDIAN, sizeof(int));
+	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, priority);
 
 	list_for_each_entry(expr, &cmd->flowtable->dev_expr->expressions, list)
 		dev_array[i++] = expr->identifier;

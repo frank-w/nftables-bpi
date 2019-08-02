@@ -174,14 +174,11 @@ enum chain_flags {
  * struct prio_spec - extendend priority specification for mixed
  *                    textual/numerical parsing.
  *
- * @str:  name of the standard priority value
- * @num:  Numerical value. This MUST contain the parsed value of str after
- *        evaluation.
+ * @expr:  expr of the standard priority value
  */
 struct prio_spec {
-	const char  *str;
-	int          num;
 	struct location loc;
+	struct expr	*expr;
 };
 
 /**

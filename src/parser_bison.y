@@ -1972,27 +1972,55 @@ extended_prio_name	:	OUT
 extended_prio_spec	:	int_num
 			{
 				struct prio_spec spec = {0};
-				spec.num = $1;
+
+				spec.expr = constant_expr_alloc(&@$, &integer_type,
+								BYTEORDER_HOST_ENDIAN,
+								sizeof(int) *
+								BITS_PER_BYTE, &$1);
+				$$ = spec;
+			}
+			|	variable_expr
+			{
+				struct prio_spec spec = {0};
+
+				datatype_set($1->sym->expr, &priority_type);
+				spec.expr = $1;
 				$$ = spec;
 			}
 			|	extended_prio_name
 			{
 				struct prio_spec spec = {0};
-				spec.str = $1;
+
+				spec.expr = constant_expr_alloc(&@$, &string_type,
+								BYTEORDER_HOST_ENDIAN,
+								strlen($1) * BITS_PER_BYTE,
+								$1);
+				xfree($1);
 				$$ = spec;
 			}
 			|	extended_prio_name PLUS NUM
 			{
 				struct prio_spec spec = {0};
-				spec.num = $3;
-				spec.str = $1;
+
+				char str[NFT_NAME_MAXLEN];
+				snprintf(str, sizeof(str), "%s + %" PRIu64, $1, $3);
+				spec.expr = constant_expr_alloc(&@$, &string_type,
+								BYTEORDER_HOST_ENDIAN,
+								strlen(str) * BITS_PER_BYTE,
+								str);
+				xfree($1);
 				$$ = spec;
 			}
 			|	extended_prio_name DASH NUM
 			{
 				struct prio_spec spec = {0};
-				spec.num = -$3;
-				spec.str = $1;
+				char str[NFT_NAME_MAXLEN];
+
+				snprintf(str, sizeof(str), "%s - %" PRIu64, $1, $3);
+				spec.expr = constant_expr_alloc(&@$, &string_type,
+								BYTEORDER_HOST_ENDIAN,
+								strlen(str) * BITS_PER_BYTE,
+								str);
 				$$ = spec;
 			}
 			;

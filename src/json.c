@@ -223,6 +223,7 @@ static json_t *rule_print_json(struct output_ctx *octx,
 static json_t *chain_print_json(const struct chain *chain)
 {
 	json_t *root, *tmp;
+	int priority;
 
 	root = json_pack("{s:s, s:s, s:s, s:I}",
 			 "family", family2str(chain->handle.family),
@@ -231,11 +232,13 @@ static json_t *chain_print_json(const struct chain *chain)
 			 "handle", chain->handle.handle.id);
 
 	if (chain->flags & CHAIN_F_BASECHAIN) {
+		mpz_export_data(&priority, chain->priority.expr->value,
+				BYTEORDER_HOST_ENDIAN, sizeof(int));
 		tmp = json_pack("{s:s, s:s, s:i, s:s}",
 				"type", chain->type,
 				"hook", hooknum2str(chain->handle.family,
 						    chain->hooknum),
-				"prio", chain->priority.num,
+				"prio", priority,
 				"policy", chain_policy2str(chain->policy));
 		if (chain->dev)
 			json_object_set_new(tmp, "dev", json_string(chain->dev));
@@ -373,14 +376,16 @@ static json_t *obj_print_json(const struct obj *obj)
 static json_t *flowtable_print_json(const struct flowtable *ftable)
 {
 	json_t *root, *devs = NULL;
-	int i;
+	int i, priority;
 
+	mpz_export_data(&priority, ftable->priority.expr->value,
+			BYTEORDER_HOST_ENDIAN, sizeof(int));
 	root = json_pack("{s:s, s:s, s:s, s:s, s:i}",
 			"family", family2str(ftable->handle.family),
 			"name", ftable->handle.flowtable,
 			"table", ftable->handle.table.name,
 			"hook", hooknum2str(NFPROTO_NETDEV, ftable->hooknum),
-			"prio", ftable->priority.num);
+			"prio", priority);
 
 	for (i = 0; i < ftable->dev_array_len; i++) {
 		const char *dev = ftable->dev_array[i];

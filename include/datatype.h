@@ -262,6 +262,7 @@ extern const struct datatype icmpx_code_type;
 extern const struct datatype igmp_type_type;
 extern const struct datatype time_type;
 extern const struct datatype boolean_type;
+extern const struct datatype priority_type;
 
 void inet_service_type_print(const struct expr *expr, struct output_ctx *octx);
 

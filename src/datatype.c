@@ -1256,3 +1256,39 @@ const struct datatype boolean_type = {
 	.sym_tbl	= &boolean_tbl,
 	.json		= boolean_type_json,
 };
+
+static struct error_record *priority_type_parse(struct parse_ctx *ctx,
+						const struct expr *sym,
+						struct expr **res)
+{
+	struct error_record *erec;
+	int num;
+
+	erec = integer_type_parse(ctx, sym, res);
+	if (!erec) {
+		num = atoi(sym->identifier);
+		expr_free(*res);
+		*res = constant_expr_alloc(&sym->location, &integer_type,
+					   BYTEORDER_HOST_ENDIAN,
+					   sizeof(int) * BITS_PER_BYTE, &num);
+	} else {
+		erec_destroy(erec);
+		*res = constant_expr_alloc(&sym->location, &string_type,
+					   BYTEORDER_HOST_ENDIAN,
+					   strlen(sym->identifier) * BITS_PER_BYTE,
+					   sym->identifier);
+	}
+
+	return NULL;
+}
+
+/* This datatype is not registered via datatype_register()
+ * since this datatype should not ever be used from either
+ * rules or elements.
+ */
+const struct datatype priority_type = {
+	.type		= TYPE_STRING,
+	.name		= "priority",
+	.desc		= "priority type",
+	.parse		= priority_type_parse,
+};

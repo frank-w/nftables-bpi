@@ -3243,19 +3243,52 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 	return 0;
 }
 
-static bool evaluate_priority(struct prio_spec *prio, int family, int hook)
+static bool evaluate_priority(struct eval_ctx *ctx, struct prio_spec *prio,
+			      int family, int hook)
 {
+	char prio_str[NFT_NAME_MAXLEN];
+	char prio_fst[NFT_NAME_MAXLEN];
+	struct location loc;
 	int priority;
+	int prio_snd;
+	char op;
 
-	/* A numeric value has been used to specify priority. */
-	if (prio->str == NULL)
+	ctx->ectx.dtype = &priority_type;
+	ctx->ectx.len = NFT_NAME_MAXLEN * BITS_PER_BYTE;
+	if (expr_evaluate(ctx, &prio->expr) < 0)
+		return false;
+	if (prio->expr->etype != EXPR_VALUE) {
+		expr_error(ctx->msgs, prio->expr, "%s is not a valid "
+			   "priority expression", expr_name(prio->expr));
+		return false;
+	}
+	if (prio->expr->dtype->type == TYPE_INTEGER)
 		return true;
 
-	priority = std_prio_lookup(prio->str, family, hook);
-	if (priority == NF_IP_PRI_LAST)
-		return false;
-	prio->num += priority;
+	mpz_export_data(prio_str, prio->expr->value, BYTEORDER_HOST_ENDIAN,
+			NFT_NAME_MAXLEN);
+	loc = prio->expr->location;
+	expr_free(prio->expr);
 
+	if (sscanf(prio_str, "%s %c %d", prio_fst, &op, &prio_snd) < 3) {
+		priority = std_prio_lookup(prio_str, family, hook);
+		if (priority == NF_IP_PRI_LAST)
+			return false;
+	} else {
+		priority = std_prio_lookup(prio_fst, family, hook);
+		if (priority == NF_IP_PRI_LAST)
+			return false;
+		if (op == '+')
+			priority += prio_snd;
+		else if (op == '-')
+			priority -= prio_snd;
+		else
+			return false;
+	}
+	prio->expr = constant_expr_alloc(&loc, &integer_type,
+					 BYTEORDER_HOST_ENDIAN,
+					 sizeof(int) * BITS_PER_BYTE,
+					 &priority);
 	return true;
 }
 
@@ -3273,10 +3306,10 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 	if (ft->hooknum == NF_INET_NUMHOOKS)
 		return chain_error(ctx, ft, "invalid hook %s", ft->hookstr);
 
-	if (!evaluate_priority(&ft->priority, NFPROTO_NETDEV, ft->hooknum))
+	if (!evaluate_priority(ctx, &ft->priority, NFPROTO_NETDEV, ft->hooknum))
 		return __stmt_binary_error(ctx, &ft->priority.loc, NULL,
-					   "'%s' is invalid priority.",
-					   ft->priority.str);
+					   "invalid priority expression %s.",
+					   expr_name(ft->priority.expr));
 
 	if (!ft->dev_expr)
 		return chain_error(ctx, ft, "Unbound flowtable not allowed (must specify devices)");
@@ -3471,11 +3504,11 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 			return chain_error(ctx, chain, "invalid hook %s",
 					   chain->hookstr);
 
-		if (!evaluate_priority(&chain->priority, chain->handle.family,
-				       chain->hooknum))
+		if (!evaluate_priority(ctx, &chain->priority,
+				       chain->handle.family, chain->hooknum))
 			return __stmt_binary_error(ctx, &chain->priority.loc, NULL,
-						   "'%s' is invalid priority in this context.",
-						   chain->priority.str);
+						   "invalid priority expression %s in this context.",
+						   expr_name(chain->priority.expr));
 	}
 
 	list_for_each_entry(rule, &chain->rules, list) {

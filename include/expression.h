@@ -10,6 +10,7 @@
 #include <utils.h>
 #include <list.h>
 #include <json.h>
+#include <libnftnl/udata.h>
 
 /**
  * enum expr_types
@@ -166,6 +167,9 @@ struct expr_ops {
 				       const struct expr *e2);
 	void			(*pctx_update)(struct proto_ctx *ctx,
 					       const struct expr *expr);
+	int			(*build_udata)(struct nftnl_udata_buf *udbuf,
+					       const struct expr *expr);
+	struct expr *		(*parse_udata)(const struct nftnl_udata *ud);
 };
 
 const struct expr_ops *expr_ops(const struct expr *e);

@@ -438,6 +438,38 @@ const char *set_policy2str(uint32_t policy)
 	}
 }
 
+static void set_print_key(const struct expr *expr, struct output_ctx *octx)
+{
+	const struct datatype *dtype = expr->dtype;
+
+	if (dtype->size || dtype->type == TYPE_VERDICT)
+		nft_print(octx, "%s", dtype->name);
+	else
+		expr_print(expr, octx);
+}
+
+static void set_print_key_and_data(const struct set *set, struct output_ctx *octx)
+{
+	bool use_typeof = set->key_typeof_valid;
+
+	nft_print(octx, "%s ", use_typeof ? "typeof" : "type");
+
+	if (use_typeof)
+		expr_print(set->key, octx);
+	else
+		set_print_key(set->key, octx);
+
+	if (set_is_datamap(set->flags)) {
+		nft_print(octx, " : ");
+		if (use_typeof)
+			expr_print(set->data, octx);
+		else
+			set_print_key(set->data, octx);
+	} else if (set_is_objmap(set->flags)) {
+		nft_print(octx, " : %s", obj_type_name(set->objtype));
+	}
+}
+
 static void set_print_declaration(const struct set *set,
 				  struct print_fmt_options *opts,
 				  struct output_ctx *octx)
@@ -465,13 +497,9 @@ static void set_print_declaration(const struct set *set,
 
 	if (nft_output_handle(octx))
 		nft_print(octx, " # handle %" PRIu64, set->handle.handle.id);
-	nft_print(octx, "%s", opts->nl);
-	nft_print(octx, "%s%stype %s",
-		  opts->tab, opts->tab, set->key->dtype->name);
-	if (set_is_datamap(set->flags))
-		nft_print(octx, " : %s", set->data->dtype->name);
-	else if (set_is_objmap(set->flags))
-		nft_print(octx, " : %s", obj_type_name(set->objtype));
+	nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
+
+	set_print_key_and_data(set, octx);
 
 	nft_print(octx, "%s", opts->stmt_separator);
 

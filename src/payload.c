@@ -105,6 +105,79 @@ static void payload_expr_pctx_update(struct proto_ctx *ctx,
 	proto_ctx_update(ctx, desc->base, &expr->location, desc);
 }
 
+#define NFTNL_UDATA_SET_KEY_PAYLOAD_DESC 0
+#define NFTNL_UDATA_SET_KEY_PAYLOAD_TYPE 1
+#define NFTNL_UDATA_SET_KEY_PAYLOAD_MAX 2
+
+static unsigned int expr_payload_type(const struct proto_desc *desc,
+				      const struct proto_hdr_template *tmpl)
+{
+	return (unsigned int)(tmpl - &desc->templates[0]);
+}
+
+static int payload_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				    const struct expr *expr)
+{
+	const struct proto_hdr_template *tmpl = expr->payload.tmpl;
+	const struct proto_desc *desc = expr->payload.desc;
+	unsigned int type = expr_payload_type(desc, tmpl);
+
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_KEY_PAYLOAD_DESC, desc->id);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_KEY_PAYLOAD_TYPE, type);
+
+	return 0;
+}
+
+static const struct proto_desc *find_proto_desc(const struct nftnl_udata *ud)
+{
+	return proto_find_desc(nftnl_udata_get_u32(ud));
+}
+
+static int payload_parse_udata(const struct nftnl_udata *attr, void *data)
+{
+	const struct nftnl_udata **ud = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+	case NFTNL_UDATA_SET_KEY_PAYLOAD_DESC:
+	case NFTNL_UDATA_SET_KEY_PAYLOAD_TYPE:
+		if (len != sizeof(uint32_t))
+			return -1;
+		break;
+	default:
+		return 0;
+	}
+
+	ud[type] = attr;
+	return 0;
+}
+
+static struct expr *payload_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	const struct nftnl_udata *ud[NFTNL_UDATA_SET_KEY_PAYLOAD_MAX + 1] = {};
+	const struct proto_desc *desc;
+	unsigned int type;
+	int err;
+
+	err = nftnl_udata_parse(nftnl_udata_get(attr), nftnl_udata_len(attr),
+				payload_parse_udata, ud);
+	if (err < 0)
+		return NULL;
+
+	if (!ud[NFTNL_UDATA_SET_KEY_PAYLOAD_DESC] ||
+	    !ud[NFTNL_UDATA_SET_KEY_PAYLOAD_TYPE])
+		return NULL;
+
+	desc = find_proto_desc(ud[NFTNL_UDATA_SET_KEY_PAYLOAD_DESC]);
+	if (!desc)
+		return NULL;
+
+	type = nftnl_udata_get_u32(ud[NFTNL_UDATA_SET_KEY_PAYLOAD_TYPE]);
+
+	return payload_expr_alloc(&internal_location, desc, type);
+}
+
 const struct expr_ops payload_expr_ops = {
 	.type		= EXPR_PAYLOAD,
 	.name		= "payload",
@@ -113,6 +186,8 @@ const struct expr_ops payload_expr_ops = {
 	.cmp		= payload_expr_cmp,
 	.clone		= payload_expr_clone,
 	.pctx_update	= payload_expr_pctx_update,
+	.build_udata	= payload_expr_build_udata,
+	.parse_udata	= payload_expr_parse_udata,
 };
 
 /*

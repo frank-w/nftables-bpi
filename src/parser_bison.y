@@ -1675,6 +1675,13 @@ chain_block		:	/* empty */	{ $$ = $<chain>-1; }
 
 typeof_expr		:	primary_expr
 			{
+				if (expr_ops($1)->build_udata == NULL) {
+					erec_queue(error(&@1, "primary expression type '%s' lacks typeof serialization", expr_ops($1)->name),
+						   state->msgs);
+					expr_free($1);
+					YYERROR;
+				}
+
 				$$ = $1;
 			}
 			|	typeof_expr		DOT		primary_expr

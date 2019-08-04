@@ -307,6 +307,7 @@ struct set {
 	uint32_t		policy;
 	bool			root;
 	bool			automerge;
+	bool			key_typeof_valid;
 	struct {
 		uint32_t	size;
 	} desc;

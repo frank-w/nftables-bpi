@@ -811,6 +811,26 @@ err:
 	return NULL;
 }
 
+static void set_key_expression(struct netlink_ctx *ctx,
+				struct expr *expr, uint32_t set_flags,
+				struct nftnl_udata_buf *udbuf,
+				unsigned int type)
+{
+	struct nftnl_udata *nest1, *nest2;
+
+	if (expr->flags & EXPR_F_CONSTANT ||
+	    set_flags & NFT_SET_ANONYMOUS ||
+	    !expr_ops(expr)->build_udata)
+		return;
+
+	nest1 = nftnl_udata_nest_start(udbuf, type);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_TYPEOF_EXPR, expr->etype);
+	nest2 = nftnl_udata_nest_start(udbuf, NFTNL_UDATA_SET_TYPEOF_DATA);
+	expr_ops(expr)->build_udata(udbuf, expr);
+	nftnl_udata_nest_end(udbuf, nest2);
+	nftnl_udata_nest_end(udbuf, nest1);
+}
+
 /*
  * Set
  */
@@ -880,6 +900,10 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 	    !nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_MERGE_ELEMENTS,
 				 set->automerge))
 		memory_allocation_error();
+
+	set_key_expression(ctx, set->key, set->flags, udbuf, NFTNL_UDATA_SET_KEY_TYPEOF);
+	if (set->data)
+		set_key_expression(ctx, set->data, set->flags, udbuf, NFTNL_UDATA_SET_DATA_TYPEOF);
 
 	nftnl_set_set_data(nls, NFTNL_SET_USERDATA, nftnl_udata_buf_data(udbuf),
 			   nftnl_udata_buf_len(udbuf));

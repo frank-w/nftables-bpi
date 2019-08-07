@@ -223,6 +223,7 @@ static int set_not_found(struct eval_ctx *ctx, const struct location *loc,
  */
 static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 {
+	struct parse_ctx parse_ctx = { .tbl = &ctx->nft->output.tbl, };
 	struct error_record *erec;
 	struct table *table;
 	struct set *set;
@@ -231,7 +232,7 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 	switch ((*expr)->symtype) {
 	case SYMBOL_VALUE:
 		datatype_set(*expr, ctx->ectx.dtype);
-		erec = symbol_parse(*expr, &new);
+		erec = symbol_parse(&parse_ctx, *expr, &new);
 		if (erec != NULL) {
 			erec_queue(erec, ctx->msgs);
 			return -1;
@@ -2541,10 +2542,11 @@ static int stmt_evaluate_reject_default(struct eval_ctx *ctx,
 
 static int stmt_evaluate_reject_icmp(struct eval_ctx *ctx, struct stmt *stmt)
 {
+	struct parse_ctx parse_ctx = { .tbl = &ctx->nft->output.tbl, };
 	struct error_record *erec;
 	struct expr *code;
 
-	erec = symbol_parse(stmt->reject.expr, &code);
+	erec = symbol_parse(&parse_ctx, stmt->reject.expr, &code);
 	if (erec != NULL) {
 		erec_queue(erec, ctx->msgs);
 		return -1;

@@ -15,6 +15,13 @@ struct cookie {
 	size_t pos;
 };
 
+struct symbol_tables {
+	const struct symbol_table	*mark;
+	const struct symbol_table	*devgroup;
+	const struct symbol_table	*ct_label;
+	const struct symbol_table	*realm;
+};
+
 struct output_ctx {
 	unsigned int flags;
 	union {
@@ -25,6 +32,7 @@ struct output_ctx {
 		FILE *error_fp;
 		struct cookie error_cookie;
 	};
+	struct symbol_tables tbl;
 };
 
 static inline bool nft_output_reversedns(const struct output_ctx *octx)

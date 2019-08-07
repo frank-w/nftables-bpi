@@ -40,10 +40,11 @@ static void realm_type_print(const struct expr *expr, struct output_ctx *octx)
 	return symbolic_constant_print(realm_tbl, expr, true, octx);
 }
 
-static struct error_record *realm_type_parse(const struct expr *sym,
+static struct error_record *realm_type_parse(struct parse_ctx *ctx,
+					     const struct expr *sym,
 					     struct expr **res)
 {
-	return symbolic_constant_parse(sym, realm_tbl, res);
+	return symbolic_constant_parse(ctx, sym, realm_tbl, res);
 }
 
 const struct datatype realm_type = {

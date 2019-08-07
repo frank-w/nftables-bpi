@@ -171,7 +171,8 @@ static void ct_label_type_print(const struct expr *expr,
 	nft_print(octx, "%lu", bit);
 }
 
-static struct error_record *ct_label_type_parse(const struct expr *sym,
+static struct error_record *ct_label_type_parse(struct parse_ctx *ctx,
+						const struct expr *sym,
 						struct expr **res)
 {
 	const struct symbolic_constant *s;

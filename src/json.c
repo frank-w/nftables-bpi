@@ -1006,18 +1006,18 @@ json_t *inet_service_type_json(const struct expr *expr, struct output_ctx *octx)
 
 json_t *mark_type_json(const struct expr *expr, struct output_ctx *octx)
 {
-	return symbolic_constant_json(mark_tbl, expr, octx);
+	return symbolic_constant_json(octx->tbl.mark, expr, octx);
 }
 
 json_t *devgroup_type_json(const struct expr *expr, struct output_ctx *octx)
 {
-	return symbolic_constant_json(devgroup_tbl, expr, octx);
+	return symbolic_constant_json(octx->tbl.devgroup, expr, octx);
 }
 
 json_t *ct_label_type_json(const struct expr *expr, struct output_ctx *octx)
 {
 	unsigned long bit = mpz_scan1(expr->value, 0);
-	const char *labelstr = ct_label2str(bit);
+	const char *labelstr = ct_label2str(octx->tbl.ct_label, bit);
 
 	if (labelstr)
 		return json_string(labelstr);

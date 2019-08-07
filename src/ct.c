@@ -141,11 +141,10 @@ static const struct datatype ct_event_type = {
 	.sym_tbl	= &ct_events_tbl,
 };
 
-static struct symbol_table *ct_label_tbl;
-
 #define CT_LABEL_BIT_SIZE 128
 
-const char *ct_label2str(unsigned long value)
+const char *ct_label2str(const struct symbol_table *ct_label_tbl,
+			 unsigned long value)
 {
 	const struct symbolic_constant *s;
 
@@ -161,7 +160,7 @@ static void ct_label_type_print(const struct expr *expr,
 				 struct output_ctx *octx)
 {
 	unsigned long bit = mpz_scan1(expr->value, 0);
-	const char *labelstr = ct_label2str(bit);
+	const char *labelstr = ct_label2str(octx->tbl.ct_label, bit);
 
 	if (labelstr) {
 		nft_print(octx, "\"%s\"", labelstr);
@@ -181,7 +180,7 @@ static struct error_record *ct_label_type_parse(struct parse_ctx *ctx,
 	uint64_t bit;
 	mpz_t value;
 
-	for (s = ct_label_tbl->symbols; s->identifier != NULL; s++) {
+	for (s = ctx->tbl->ct_label->symbols; s->identifier != NULL; s++) {
 		if (!strcmp(sym->identifier, s->identifier))
 			break;
 	}
@@ -230,14 +229,14 @@ static const struct datatype ct_label_type = {
 	.parse		= ct_label_type_parse,
 };
 
-void ct_label_table_init(void)
+void ct_label_table_init(struct nft_ctx *ctx)
 {
-	ct_label_tbl = rt_symbol_table_init(CONNLABEL_CONF);
+	ctx->output.tbl.ct_label = rt_symbol_table_init(CONNLABEL_CONF);
 }
 
-void ct_label_table_exit(void)
+void ct_label_table_exit(struct nft_ctx *ctx)
 {
-	rt_symbol_table_free(ct_label_tbl);
+	rt_symbol_table_free(ctx->output.tbl.ct_label);
 }
 
 #ifndef NF_CT_HELPER_NAME_LEN

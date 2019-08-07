@@ -42,6 +42,4 @@ extern const struct datatype devgroup_type;
 extern const struct datatype pkttype_type;
 extern const struct datatype ifname_type;
 
-extern struct symbol_table *devgroup_tbl;
-
 #endif /* NFTABLES_META_H */

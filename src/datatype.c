@@ -779,7 +779,7 @@ out:
 	return tbl;
 }
 
-void rt_symbol_table_free(struct symbol_table *tbl)
+void rt_symbol_table_free(const struct symbol_table *tbl)
 {
 	const struct symbolic_constant *s;
 
@@ -788,28 +788,26 @@ void rt_symbol_table_free(struct symbol_table *tbl)
 	xfree(tbl);
 }
 
-struct symbol_table *mark_tbl = NULL;
-
-void mark_table_init(void)
+void mark_table_init(struct nft_ctx *ctx)
 {
-	mark_tbl = rt_symbol_table_init("/etc/iproute2/rt_marks");
+	ctx->output.tbl.mark = rt_symbol_table_init("/etc/iproute2/rt_marks");
 }
 
-void mark_table_exit(void)
+void mark_table_exit(struct nft_ctx *ctx)
 {
-	rt_symbol_table_free(mark_tbl);
+	rt_symbol_table_free(ctx->output.tbl.mark);
 }
 
 static void mark_type_print(const struct expr *expr, struct output_ctx *octx)
 {
-	return symbolic_constant_print(mark_tbl, expr, true, octx);
+	return symbolic_constant_print(octx->tbl.mark, expr, true, octx);
 }
 
 static struct error_record *mark_type_parse(struct parse_ctx *ctx,
 					    const struct expr *sym,
 					    struct expr **res)
 {
-	return symbolic_constant_parse(ctx, sym, mark_tbl, res);
+	return symbolic_constant_parse(ctx, sym, ctx->tbl->mark, res);
 }
 
 const struct datatype mark_type = {

@@ -33,7 +33,8 @@ extern struct stmt *notrack_stmt_alloc(const struct location *loc);
 extern struct stmt *flow_offload_stmt_alloc(const struct location *loc,
 					    const char *table_name);
 extern const char *ct_dir2str(int dir);
-extern const char *ct_label2str(unsigned long value);
+extern const char *ct_label2str(const struct symbol_table *tbl,
+				unsigned long value);
 
 extern const struct datatype ct_dir_type;
 extern const struct datatype ct_state_type;

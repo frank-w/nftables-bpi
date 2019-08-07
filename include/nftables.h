@@ -184,19 +184,17 @@ struct input_descriptor {
 	off_t				line_offset;
 };
 
-void ct_label_table_init(void);
-void mark_table_init(void);
+void ct_label_table_init(struct nft_ctx *ctx);
+void mark_table_init(struct nft_ctx *ctx);
 void gmp_init(void);
-void realm_table_rt_init(void);
-void devgroup_table_init(void);
-void realm_table_meta_init(void);
+void realm_table_rt_init(struct nft_ctx *ctx);
+void devgroup_table_init(struct nft_ctx *ctx);
 void xt_init(void);
 
-void ct_label_table_exit(void);
-void mark_table_exit(void);
-void realm_table_meta_exit(void);
-void devgroup_table_exit(void);
-void realm_table_rt_exit(void);
+void ct_label_table_exit(struct nft_ctx *ctx);
+void mark_table_exit(struct nft_ctx *ctx);
+void devgroup_table_exit(struct nft_ctx *ctx);
+void realm_table_rt_exit(struct nft_ctx *ctx);
 
 int nft_print(struct output_ctx *octx, const char *fmt, ...)
 	__attribute__((format(printf, 2, 3)));

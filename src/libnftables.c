@@ -84,26 +84,25 @@ out:
 	return ret;
 }
 
-static void nft_init(void)
+static void nft_init(struct nft_ctx *ctx)
 {
-	mark_table_init();
-	realm_table_rt_init();
-	devgroup_table_init();
-	realm_table_meta_init();
-	ct_label_table_init();
+	mark_table_init(ctx);
+	realm_table_rt_init(ctx);
+	devgroup_table_init(ctx);
+	ct_label_table_init(ctx);
+
 	gmp_init();
 #ifdef HAVE_LIBXTABLES
 	xt_init();
 #endif
 }
 
-static void nft_exit(void)
+static void nft_exit(struct nft_ctx *ctx)
 {
-	ct_label_table_exit();
-	realm_table_rt_exit();
-	devgroup_table_exit();
-	realm_table_meta_exit();
-	mark_table_exit();
+	ct_label_table_exit(ctx);
+	realm_table_rt_exit(ctx);
+	devgroup_table_exit(ctx);
+	mark_table_exit(ctx);
 }
 
 EXPORT_SYMBOL(nft_ctx_add_include_path);
@@ -145,10 +144,10 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 {
 	struct nft_ctx *ctx;
 
-	nft_init();
 	ctx = xzalloc(sizeof(struct nft_ctx));
-	ctx->state = xzalloc(sizeof(struct parser_state));
+	nft_init(ctx);
 
+	ctx->state = xzalloc(sizeof(struct parser_state));
 	nft_ctx_add_include_path(ctx, DEFAULT_INCLUDE_PATH);
 	ctx->parser_max_errors	= 10;
 	init_list_head(&ctx->cache.list);
@@ -291,7 +290,7 @@ void nft_ctx_free(struct nft_ctx *ctx)
 	nft_ctx_clear_include_paths(ctx);
 	xfree(ctx->state);
 	xfree(ctx);
-	nft_exit();
+	nft_exit(ctx);
 }
 
 EXPORT_SYMBOL(nft_ctx_set_output);

@@ -24,27 +24,26 @@
 #include <rule.h>
 #include <json.h>
 
-static struct symbol_table *realm_tbl;
-void realm_table_rt_init(void)
+void realm_table_rt_init(struct nft_ctx *ctx)
 {
-	realm_tbl = rt_symbol_table_init("/etc/iproute2/rt_realms");
+	ctx->output.tbl.realm = rt_symbol_table_init("/etc/iproute2/rt_realms");
 }
 
-void realm_table_rt_exit(void)
+void realm_table_rt_exit(struct nft_ctx *ctx)
 {
-	rt_symbol_table_free(realm_tbl);
+	rt_symbol_table_free(ctx->output.tbl.realm);
 }
 
 static void realm_type_print(const struct expr *expr, struct output_ctx *octx)
 {
-	return symbolic_constant_print(realm_tbl, expr, true, octx);
+	return symbolic_constant_print(octx->tbl.realm, expr, true, octx);
 }
 
 static struct error_record *realm_type_parse(struct parse_ctx *ctx,
 					     const struct expr *sym,
 					     struct expr **res)
 {
-	return symbolic_constant_parse(ctx, sym, realm_tbl, res);
+	return symbolic_constant_parse(ctx, sym, ctx->tbl->realm, res);
 }
 
 const struct datatype realm_type = {

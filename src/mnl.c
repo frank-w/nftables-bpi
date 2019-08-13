@@ -240,7 +240,7 @@ static void mnl_set_sndbuffer(const struct mnl_socket *nl,
 
 static unsigned int nlsndbufsiz;
 
-static int mnl_set_rcvbuffer(const struct mnl_socket *nl, size_t bufsiz)
+static int mnl_set_rcvbuffer(const struct mnl_socket *nl, socklen_t bufsiz)
 {
 	socklen_t len = sizeof(nlsndbufsiz);
 	int ret;

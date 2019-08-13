@@ -244,10 +244,25 @@ const struct datatype invalid_type = {
 	.print		= invalid_type_print,
 };
 
-static void verdict_type_print(const struct expr *expr, struct output_ctx *octx)
+static void verdict_jump_chain_print(const char *what, const struct expr *e,
+				     struct output_ctx *octx)
 {
 	char chain[NFT_CHAIN_MAXNAMELEN];
+	unsigned int len;
 
+	memset(chain, 0, sizeof(chain));
+
+	len = e->len / BITS_PER_BYTE;
+	if (len >= sizeof(chain))
+		BUG("verdict expression length %u is too large (%lu bits max)",
+		    e->len, (unsigned long)sizeof(chain) * BITS_PER_BYTE);
+
+	mpz_export_data(chain, e->value, BYTEORDER_HOST_ENDIAN, len);
+	nft_print(octx, "%s %s", what, chain);
+}
+
+static void verdict_type_print(const struct expr *expr, struct output_ctx *octx)
+{
 	switch (expr->verdict) {
 	case NFT_CONTINUE:
 		nft_print(octx, "continue");
@@ -257,10 +272,7 @@ static void verdict_type_print(const struct expr *expr, struct output_ctx *octx)
 		break;
 	case NFT_JUMP:
 		if (expr->chain->etype == EXPR_VALUE) {
-			mpz_export_data(chain, expr->chain->value,
-					BYTEORDER_HOST_ENDIAN,
-					NFT_CHAIN_MAXNAMELEN);
-			nft_print(octx, "jump %s", chain);
+			verdict_jump_chain_print("jump", expr->chain, octx);
 		} else {
 			nft_print(octx, "jump ");
 			expr_print(expr->chain, octx);
@@ -268,10 +280,7 @@ static void verdict_type_print(const struct expr *expr, struct output_ctx *octx)
 		break;
 	case NFT_GOTO:
 		if (expr->chain->etype == EXPR_VALUE) {
-			mpz_export_data(chain, expr->chain->value,
-					BYTEORDER_HOST_ENDIAN,
-					NFT_CHAIN_MAXNAMELEN);
-			nft_print(octx, "goto %s", chain);
+			verdict_jump_chain_print("goto", expr->chain, octx);
 		} else {
 			nft_print(octx, "goto ");
 			expr_print(expr->chain, octx);

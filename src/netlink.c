@@ -222,17 +222,27 @@ static void netlink_gen_verdict(const struct expr *expr,
 				struct nft_data_linearize *data)
 {
 	char chain[NFT_CHAIN_MAXNAMELEN];
+	unsigned int len;
 
 	data->verdict = expr->verdict;
 
 	switch (expr->verdict) {
 	case NFT_JUMP:
 	case NFT_GOTO:
+		len = expr->chain->len / BITS_PER_BYTE;
+
+		if (!len)
+			BUG("chain length is 0");
+
+		if (len > sizeof(chain))
+			BUG("chain is too large (%u, %u max)",
+			    len, (unsigned int)sizeof(chain));
+
+		memset(chain, 0, sizeof(chain));
+
 		mpz_export_data(chain, expr->chain->value,
-				BYTEORDER_HOST_ENDIAN,
-				NFT_CHAIN_MAXNAMELEN);
+				BYTEORDER_HOST_ENDIAN, len);
 		snprintf(data->chain, NFT_CHAIN_MAXNAMELEN, "%s", chain);
-		data->chain[NFT_CHAIN_MAXNAMELEN-1] = '\0';
 		break;
 	}
 }

@@ -134,6 +134,7 @@ int nft_lex(void *, void *, void *);
 
 %union {
 	uint64_t		val;
+	uint32_t		val32;
 	const char *		string;
 
 	struct list_head	*list;
@@ -561,7 +562,8 @@ int nft_lex(void *, void *, void *);
 %destructor { handle_free(&$$); } table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec index_spec
 %type <handle>			set_spec setid_spec set_identifier flowtable_identifier obj_spec objid_spec obj_identifier
 %destructor { handle_free(&$$); } set_spec setid_spec set_identifier obj_spec objid_spec obj_identifier
-%type <val>			family_spec family_spec_explicit chain_policy int_num
+%type <val>			family_spec family_spec_explicit
+%type <val32>			int_num	chain_policy
 %type <prio_spec>		extended_prio_spec prio_spec
 %type <string>			extended_prio_name
 %destructor { xfree($$); }	extended_prio_name
@@ -2025,7 +2027,7 @@ extended_prio_spec	:	int_num
 			}
 			;
 
-int_num		:	NUM			{ $$ = $1; }
+int_num			:	NUM			{ $$ = $1; }
 			|	DASH	NUM		{ $$ = -$2; }
 			;
 

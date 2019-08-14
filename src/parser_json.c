@@ -304,7 +304,7 @@ static struct expr *json_parse_constant(struct json_ctx *ctx, const char *name)
 		return constant_expr_alloc(int_loc,
 					   constant_tbl[i].dtype,
 					   BYTEORDER_HOST_ENDIAN,
-					   8 * BITS_PER_BYTE,
+					   BITS_PER_BYTE,
 					   &constant_tbl[i].data);
 	}
 	json_error(ctx, "Unknown constant '%s'.", name);

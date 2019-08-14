@@ -503,7 +503,8 @@ static const struct proto_desc *proto_lookup_byname(const char *name)
 		&proto_udplite,
 		&proto_tcp,
 		&proto_dccp,
-		&proto_sctp
+		&proto_sctp,
+		&proto_th,
 	};
 	unsigned int i;
 
@@ -519,11 +520,10 @@ static struct expr *json_parse_payload_expr(struct json_ctx *ctx,
 {
 	const char *protocol, *field, *base;
 	int offset, len, val;
+	struct expr *expr;
 
 	if (!json_unpack(root, "{s:s, s:i, s:i}",
 			 "base", &base, "offset", &offset, "len", &len)) {
-		struct expr *expr;
-
 		if (!strcmp(base, "ll")) {
 			val = PROTO_BASE_LL_HDR;
 		} else if (!strcmp(base, "nh")) {
@@ -553,7 +553,12 @@ static struct expr *json_parse_payload_expr(struct json_ctx *ctx,
 				   protocol, field);
 			return NULL;
 		}
-		return payload_expr_alloc(int_loc, proto, val);
+		expr = payload_expr_alloc(int_loc, proto, val);
+
+		if (proto == &proto_th)
+			expr->payload.is_raw = true;
+
+		return expr;
 	}
 	json_error(ctx, "Invalid payload expression properties.");
 	return NULL;

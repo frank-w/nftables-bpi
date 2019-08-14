@@ -52,12 +52,31 @@ extern uint32_t mpz_get_be32(const mpz_t op);
 extern uint16_t mpz_get_be16(const mpz_t op);
 
 enum byteorder;
-extern void *mpz_export_data(void *data, const mpz_t op,
-			     enum byteorder byteorder,
-			     unsigned int len);
-extern void mpz_import_data(mpz_t rop, const void *data,
-			    enum byteorder byteorder,
-			    unsigned int len);
-extern void mpz_switch_byteorder(mpz_t rop, unsigned int len);
+extern void *__mpz_export_data(void *data, const mpz_t op,
+			       enum byteorder byteorder, unsigned int len);
+extern void __mpz_import_data(mpz_t rop, const void *data,
+			      enum byteorder byteorder, unsigned int len);
+extern void __mpz_switch_byteorder(mpz_t rop, unsigned int len);
+
+#include <assert.h>
+#include <datatype.h>
+
+#define mpz_export_data(data, op, byteorder, len)		\
+{								\
+	assert(len > 0);					\
+	__mpz_export_data(data, op, byteorder, len); 		\
+}
+
+#define mpz_import_data(rop, data, byteorder, len)		\
+{								\
+	assert(len > 0);					\
+	__mpz_import_data(rop, data, byteorder, len);		\
+}
+
+#define mpz_switch_byteorder(rop, len)				\
+{								\
+	assert(len > 0);					\
+	__mpz_switch_byteorder(rop, len);			\
+}
 
 #endif /* NFTABLES_GMPUTIL_H */

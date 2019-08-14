@@ -87,9 +87,8 @@ uint16_t mpz_get_be16(const mpz_t op)
 	return mpz_get_type(uint16_t, MPZ_BIG_ENDIAN, op);
 }
 
-void *mpz_export_data(void *data, const mpz_t op,
-		      enum byteorder byteorder,
-		      unsigned int len)
+void *__mpz_export_data(void *data, const mpz_t op, enum byteorder byteorder,
+			unsigned int len)
 {
 	enum mpz_word_order order;
 	enum mpz_byte_order endian;
@@ -111,9 +110,8 @@ void *mpz_export_data(void *data, const mpz_t op,
 	return data;
 }
 
-void mpz_import_data(mpz_t rop, const void *data,
-		     enum byteorder byteorder,
-		     unsigned int len)
+void __mpz_import_data(mpz_t rop, const void *data, enum byteorder byteorder,
+		       unsigned int len)
 {
 	enum mpz_word_order order;
 	enum mpz_byte_order endian;
@@ -133,12 +131,12 @@ void mpz_import_data(mpz_t rop, const void *data,
 	mpz_import(rop, len, order, 1, endian, 0, data);
 }
 
-void mpz_switch_byteorder(mpz_t rop, unsigned int len)
+void __mpz_switch_byteorder(mpz_t rop, unsigned int len)
 {
 	char data[len];
 
-	mpz_export_data(data, rop, BYTEORDER_BIG_ENDIAN, len);
-	mpz_import_data(rop, data, BYTEORDER_HOST_ENDIAN, len);
+	__mpz_export_data(data, rop, BYTEORDER_BIG_ENDIAN, len);
+	__mpz_import_data(rop, data, BYTEORDER_HOST_ENDIAN, len);
 }
 
 #ifndef HAVE_LIBGMP

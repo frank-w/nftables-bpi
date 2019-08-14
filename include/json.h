@@ -15,6 +15,10 @@ struct stmt;
 struct symbol_table;
 struct table;
 struct netlink_mon_handler;
+struct nft_ctx;
+struct location;
+struct output_ctx;
+struct list_head;
 
 #ifdef HAVE_LIBJANSSON
 

@@ -2,7 +2,7 @@ if BUILD_MAN
 man_MANS = nft.8 libnftables-json.5 libnftables.3
 endif
 
-A2X_OPTS_MANPAGE = --doctype manpage --format manpage -D ${builddir}
+A2X_OPTS_MANPAGE = -L --doctype manpage --format manpage -D ${builddir}
 
 ASCIIDOC_MAIN = nft.txt
 ASCIIDOC_INCLUDES = \

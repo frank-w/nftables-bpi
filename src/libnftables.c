@@ -90,11 +90,6 @@ static void nft_init(struct nft_ctx *ctx)
 	realm_table_rt_init(ctx);
 	devgroup_table_init(ctx);
 	ct_label_table_init(ctx);
-
-	gmp_init();
-#ifdef HAVE_LIBXTABLES
-	xt_init();
-#endif
 }
 
 static void nft_exit(struct nft_ctx *ctx)
@@ -142,7 +137,16 @@ static void nft_ctx_netlink_init(struct nft_ctx *ctx)
 EXPORT_SYMBOL(nft_ctx_new);
 struct nft_ctx *nft_ctx_new(uint32_t flags)
 {
+	static bool init_once;
 	struct nft_ctx *ctx;
+
+	if (!init_once) {
+		init_once = true;
+		gmp_init();
+#ifdef HAVE_LIBXTABLES
+		xt_init();
+#endif
+	}
 
 	ctx = xzalloc(sizeof(struct nft_ctx));
 	nft_init(ctx);

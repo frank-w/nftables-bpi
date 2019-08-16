@@ -138,6 +138,7 @@ def color_differences(rule, other, color):
     rlen = len(rule)
     olen = len(other)
     out = ""
+    i = 0
 
     # find equal part at start
     for i in range(rlen):

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# support for strings and integers in named maps.
+# without typeof, this is 'type string' and 'type integer',
+# but neither could be used because it lacks size information.
+
+EXPECTED="table inet t {
+	map m1 {
+		typeof osf name : ct mark
+		elements = { "Linux" : 0x00000001 }
+	}
+
+	map m2 {
+		typeof vlan id : mark
+		elements = { 1 : 0x1,
+			     4095 : 0x4095 }
+	}
+
+	chain c {
+		ct mark set osf name map @m1
+		ether type vlan meta mark set vlan id map @m2
+	}
+}"
+
+set -e
+$NFT -f - <<< $EXPECTED
+

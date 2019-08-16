@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# support for strings/typeof in named sets.
+# s1 and s2 are identical, they just use different
+# ways for declaration.
+
+EXPECTED="table inet t {
+	set s1 {
+		typeof osf name
+		elements = { \"Linux\" }
+	}
+
+	set s2 {
+		typeof vlan id
+		elements = { 2, 3, 103 }
+	}
+
+	chain c1 {
+		osf name @s1 accept
+	}
+
+	chain c2 {
+		ether type vlan vlan id @s2 accept
+	}
+}"
+
+set -e
+$NFT -f - <<< $EXPECTED
+

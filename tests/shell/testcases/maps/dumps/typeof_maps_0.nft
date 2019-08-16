@@ -1,0 +1,16 @@
+table inet t {
+	map m1 {
+		typeof osf name : ct mark
+		elements = { "Linux" : 0x00000001 }
+	}
+
+	map m2 {
+		typeof vlan id : meta mark
+		elements = { 1 : 0x00000001, 4095 : 0x00004095 }
+	}
+
+	chain c {
+		ct mark set osf name map @m1
+		meta mark set vlan id map @m2
+	}
+}

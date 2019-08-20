@@ -1820,7 +1820,7 @@ static void obj_print_data(const struct obj *obj,
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
-		nft_print(octx, "%s", obj->secmark.ctx);
+		nft_print(octx, "\"%s\"%s", obj->secmark.ctx, opts->nl);
 		break;
 	case NFT_OBJECT_CT_HELPER:
 		nft_print(octx, " %s {", obj->handle.obj.name);

@@ -203,3 +203,18 @@ meta iif . meta oif vmap { "lo" . "lo" : drop };ok;iif . oif vmap { "lo" . "lo" 
 
 meta random eq 1;ok;meta random 1
 meta random gt 1000000;ok;meta random > 1000000
+
+meta time "1970-05-23 21:07:14" drop;ok
+meta time 12341234 drop;ok;meta time "1970-05-23 21:07:14" drop
+meta time "2019-06-21 17:00:00" drop;ok
+meta time "2019-07-01 00:00:00" drop;ok
+meta time "2019-07-01 00:01:00" drop;ok
+meta time "2019-07-01 00:00:01" drop;ok
+meta day "Saturday" drop;ok
+meta day 6 drop;ok;meta day "Saturday" drop
+meta day "Satturday" drop;fail
+meta hour "17:00" drop;ok
+meta hour "17:00:00" drop;ok;meta hour "17:00" drop
+meta hour "17:00:01" drop;ok
+meta hour "00:00" drop;ok
+meta hour "00:01" drop;ok

@@ -1047,3 +1047,80 @@ ip test-ip4 input
   [ byteorder reg 1 = hton(reg 1, 4, 4) ]
   [ lookup reg 1 set __set%d 0x1 ]
 
+# meta time "1970-05-23 21:07:14" drop
+ip meta-test input
+  [ meta load time => reg 1 ]
+  [ cmp eq reg 1 0x74a8f400 0x002bd849 ]
+  [ immediate reg 0 drop ]
+
+# meta time 12341234 drop
+ip meta-test input
+  [ meta load time => reg 1 ]
+  [ cmp eq reg 1 0x74a8f400 0x002bd849 ]
+  [ immediate reg 0 drop ]
+
+# meta time "2019-06-21 17:00:00" drop
+ip meta-test input
+  [ meta load time => reg 1 ]
+  [ cmp eq reg 1 0x767d6000 0x15aa3ebc ]
+  [ immediate reg 0 drop ]
+
+# meta time "2019-07-01 00:00:00" drop
+ip meta-test input
+  [ meta load time => reg 1 ]
+  [ cmp eq reg 1 0xe750c000 0x15ad18e0 ]
+  [ immediate reg 0 drop ]
+
+# meta time "2019-07-01 00:01:00" drop
+ip meta-test input
+  [ meta load time => reg 1 ]
+  [ cmp eq reg 1 0xdf981800 0x15ad18ee ]
+  [ immediate reg 0 drop ]
+
+# meta time "2019-07-01 00:00:01" drop
+ip meta-test input
+  [ meta load time => reg 1 ]
+  [ cmp eq reg 1 0x22eb8a00 0x15ad18e1 ]
+  [ immediate reg 0 drop ]
+
+# meta day "Saturday" drop
+ip test-ip4 input
+  [ meta load day => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ immediate reg 0 drop ]
+
+# meta day 6 drop
+ip test-ip4 input
+  [ meta load day => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ immediate reg 0 drop ]
+
+# meta hour "17:00" drop
+ip test-ip4 input
+  [ meta load hour => reg 1 ]
+  [ cmp eq reg 1 0x0000d2f0 ]
+  [ immediate reg 0 drop ]
+
+# meta hour "17:00:00" drop
+ip test-ip4 input
+  [ meta load hour => reg 1 ]
+  [ cmp eq reg 1 0x0000d2f0 ]
+  [ immediate reg 0 drop ]
+
+# meta hour "17:00:01" drop
+ip meta-test input
+  [ meta load hour => reg 1 ]
+  [ cmp eq reg 1 0x0000d2f1 ]
+  [ immediate reg 0 drop ]
+
+# meta hour "00:00" drop
+ip meta-test input
+  [ meta load hour => reg 1 ]
+  [ cmp eq reg 1 0x00013560 ]
+  [ immediate reg 0 drop ]
+
+# meta hour "00:01" drop
+ip meta-test input
+  [ meta load hour => reg 1 ]
+  [ cmp eq reg 1 0x0001359c ]
+  [ immediate reg 0 drop ]

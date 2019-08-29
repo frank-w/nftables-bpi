@@ -2473,3 +2473,236 @@
     }
 ]
 
+# meta time "1970-05-23 21:07:14" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "time"
+                }
+            },
+            "op": "==",
+            "right": "1970-05-23 21:07:14"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta time 12341234 drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "time"
+                }
+            },
+            "op": "==",
+            "right": "12341234"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta time "2019-06-21 17:00:00" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "time"
+                }
+            },
+            "op": "==",
+            "right": "2019-06-21 17:00:00"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta time "2019-07-01 00:00:00" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "time"
+                }
+            },
+            "op": "==",
+            "right": "2019-07-01 00:00:00"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta time "2019-07-01 00:01:00" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "time"
+                }
+            },
+            "op": "==",
+            "right": "2019-07-01 00:01:00"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta time "2019-07-01 00:00:01" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "time"
+                }
+            },
+            "op": "==",
+            "right": "2019-07-01 00:00:01"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta day "Saturday" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "day"
+                }
+            },
+            "op": "==",
+            "right": "Saturday"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta day 6 drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "day"
+                }
+            },
+            "op": "==",
+            "right": "6"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta hour "17:00" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "hour"
+                }
+            },
+            "op": "==",
+            "right": "17:00"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta hour "17:00:00" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "hour"
+                }
+            },
+            "op": "==",
+            "right": "17:00"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta hour "17:00:01" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "hour"
+                }
+            },
+            "op": "==",
+            "right": "17:00:01"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta hour "00:00" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "hour"
+                }
+            },
+            "op": "==",
+            "right": "00:00"
+        }
+    },
+    {
+        "drop": null
+    }
+]
+
+# meta hour "00:01" drop
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "hour"
+                }
+            },
+            "op": "==",
+            "right": "00:01"
+        }
+    },
+    {
+        "drop": null
+    }
+]

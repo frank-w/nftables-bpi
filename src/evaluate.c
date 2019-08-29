@@ -1863,11 +1863,20 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 {
 	struct expr *meta = *exprp;
 
-	if (ctx->pctx.family != NFPROTO_INET &&
-	    meta->flags & EXPR_F_PROTOCOL &&
-	    meta->meta.key == NFT_META_NFPROTO)
-		return expr_error(ctx->msgs, meta,
+	switch (meta->meta.key) {
+	case NFT_META_NFPROTO:
+		if (ctx->pctx.family != NFPROTO_INET &&
+		    meta->flags & EXPR_F_PROTOCOL)
+			return expr_error(ctx->msgs, meta,
 					  "meta nfproto is only useful in the inet family");
+		break;
+	case NFT_META_TIME_DAY:
+		__expr_set_context(&ctx->ectx, meta->dtype, meta->byteorder,
+				   meta->len, 6);
+		return 0;
+	default:
+		break;
+	}
 
 	return expr_evaluate_primary(ctx, exprp);
 }

@@ -218,3 +218,7 @@ meta hour "17:00:00" drop;ok;meta hour "17:00" drop
 meta hour "17:00:01" drop;ok
 meta hour "00:00" drop;ok
 meta hour "00:01" drop;ok
+
+meta time "meh";fail
+meta hour "24:00" drop;fail
+meta day 7 drop;fail

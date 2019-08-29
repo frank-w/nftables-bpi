@@ -426,6 +426,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "sack3"			{ return SACK3; }
 "sack-permitted"	{ return SACK_PERMITTED; }
 "timestamp"		{ return TIMESTAMP; }
+"time"			{ return TIME; }
 
 "kind"			{ return KIND; }
 "count"			{ return COUNT; }

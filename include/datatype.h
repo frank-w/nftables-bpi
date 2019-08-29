@@ -45,6 +45,9 @@
  * @TYPE_DSCP:		Differentiated Services Code Point (integer subtype)
  * @TYPE_IFNAME:	interface name (string subtype)
  * @TYPE_IGMP:		IGMP type (integer subtype)
+ * @TYPE_TIME_DATA	Date type (integer subtype)
+ * @TYPE_TIME_HOUR	Hour type (integer subtype)
+ * @TYPE_TIME_DAY	Day type (integer subtype)
  */
 enum datatypes {
 	TYPE_INVALID,
@@ -90,6 +93,9 @@ enum datatypes {
 	TYPE_CT_EVENTBIT,
 	TYPE_IFNAME,
 	TYPE_IGMP_TYPE,
+	TYPE_TIME_DATE,
+	TYPE_TIME_HOUR,
+	TYPE_TIME_DAY,
 	__TYPE_MAX
 };
 #define TYPE_MAX		(__TYPE_MAX - 1)

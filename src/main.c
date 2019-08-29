@@ -42,9 +42,10 @@ enum opt_vals {
 	OPT_GUID		= 'u',
 	OPT_NUMERIC_PRIO	= 'y',
 	OPT_NUMERIC_PROTO	= 'p',
+	OPT_NUMERIC_TIME	= 't',
 	OPT_INVALID		= '?',
 };
-#define OPTSTRING	"hvcf:iI:jvnsNaeSupyp"
+#define OPTSTRING	"hvcf:iI:jvnsNaeSupypt"
 
 static const struct option options[] = {
 	{
@@ -115,6 +116,10 @@ static const struct option options[] = {
 		.val		= OPT_NUMERIC_PRIO,
 	},
 	{
+		.name		= "numeric-time",
+		.val		= OPT_NUMERIC_TIME,
+	},
+	{
 		.name		= NULL
 	}
 };
@@ -140,6 +145,7 @@ static void show_help(const char *name)
 "  -S, --service			Translate ports to service names as described in /etc/services.\n"
 "  -p, --numeric-protocol	Print layer 4 protocols numerically.\n"
 "  -y, --numeric-priority	Print chain priority numerically.\n"
+"  -t, --numeric-time		Print time values numerically.\n"
 "  -a, --handle			Output rule handle.\n"
 "  -e, --echo			Echo what has been added, inserted or replaced.\n"
 "  -I, --includepath <directory>	Add <directory> to the paths searched for include files. Default is: %s\n"
@@ -229,6 +235,7 @@ int main(int argc, char * const *argv)
 			break;
 		case OPT_NUMERIC:
 			output_flags |= NFT_CTX_OUTPUT_NUMERIC_ALL;
+			output_flags |= NFT_CTX_OUTPUT_NUMERIC_TIME;
 			break;
 		case OPT_STATELESS:
 			output_flags |= NFT_CTX_OUTPUT_STATELESS;
@@ -290,6 +297,9 @@ int main(int argc, char * const *argv)
 			break;
 		case OPT_NUMERIC_PROTO:
 			output_flags |= NFT_CTX_OUTPUT_NUMERIC_PROTO;
+			break;
+		case OPT_NUMERIC_TIME:
+			output_flags |= NFT_CTX_OUTPUT_NUMERIC_TIME;
 			break;
 		case OPT_INVALID:
 			exit(EXIT_FAILURE);

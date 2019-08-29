@@ -1683,13 +1683,67 @@ static int binop_transfer(struct eval_ctx *ctx, struct expr **expr)
 	return 0;
 }
 
+static bool lhs_is_meta_hour(const struct expr *meta)
+{
+	if (meta->etype != EXPR_META)
+		return false;
+
+	return meta->meta.key == NFT_META_TIME_HOUR ||
+	       meta->meta.key == NFT_META_TIME_DAY;
+}
+
+static void swap_values(struct expr *range)
+{
+	struct expr *left_tmp;
+
+	left_tmp = range->left;
+	range->left = range->right;
+	range->right = left_tmp;
+}
+
+static bool range_needs_swap(const struct expr *range)
+{
+	const struct expr *right = range->right;
+	const struct expr *left = range->left;
+
+	return mpz_cmp(left->value, right->value) > 0;
+}
+
 static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 {
 	struct expr *rel = *expr, *left, *right;
+	struct expr *range;
+	int ret;
 
 	if (expr_evaluate(ctx, &rel->left) < 0)
 		return -1;
 	left = rel->left;
+
+	if (rel->right->etype == EXPR_RANGE && lhs_is_meta_hour(rel->left)) {
+		ret = __expr_evaluate_range(ctx, &rel->right);
+		if (ret)
+			return ret;
+
+		range = rel->right;
+
+		/*
+		 * We may need to do this for proper cross-day ranges,
+		 * e.g. meta hour 23:15-03:22
+		 */
+		if (range_needs_swap(range)) {
+			if (ctx->nft->debug_mask & NFT_DEBUG_EVALUATION)
+				nft_print(&ctx->nft->output,
+					  "Inverting range values for cross-day hour matching\n\n");
+
+			if (rel->op == OP_EQ || rel->op == OP_IMPLICIT) {
+				swap_values(range);
+				rel->op = OP_NEQ;
+			} else if (rel->op == OP_NEQ) {
+				swap_values(range);
+				rel->op = OP_EQ;
+			}
+		}
+	}
 
 	if (expr_evaluate(ctx, &rel->right) < 0)
 		return -1;

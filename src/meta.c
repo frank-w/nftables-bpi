@@ -37,6 +37,10 @@
 #include <iface.h>
 #include <json.h>
 
+#define _XOPEN_SOURCE
+#define __USE_XOPEN
+#include <time.h>
+
 static void tchandle_type_print(const struct expr *expr,
 				struct output_ctx *octx)
 {
@@ -375,6 +379,254 @@ const struct datatype ifname_type = {
 	.basetype	= &string_type,
 };
 
+static void date_type_print(const struct expr *expr, struct output_ctx *octx)
+{
+	uint64_t tstamp = mpz_get_uint64(expr->value);
+	struct tm *tm, *cur_tm;
+	char timestr[21];
+
+	/* Convert from nanoseconds to seconds */
+	tstamp /= 1000000000L;
+
+	if (!nft_output_seconds(octx)) {
+		/* Obtain current tm, to add tm_gmtoff to the timestamp */
+		cur_tm = localtime((time_t *) &tstamp);
+
+		if (cur_tm)
+			tstamp += cur_tm->tm_gmtoff;
+
+		if ((tm = gmtime((time_t *) &tstamp)) != NULL &&
+			strftime(timestr, sizeof(timestr) - 1, "%F %T", tm))
+			nft_print(octx, "\"%s\"", timestr);
+		else
+			nft_print(octx, "Error converting timestamp to printed time");
+
+		return;
+	}
+
+	/*
+	 * Do our own printing. The default print function will print in
+	 * nanoseconds, which is ugly.
+	 */
+	nft_print(octx, "%lu", tstamp);
+}
+
+static time_t parse_iso_date(const char *sym)
+{
+	struct tm tm, *cur_tm;
+	time_t ts;
+
+	memset(&tm, 0, sizeof(struct tm));
+
+	if (strptime(sym, "%F %T", &tm))
+		goto success;
+	if (strptime(sym, "%F %R", &tm))
+		goto success;
+	if (strptime(sym, "%F", &tm))
+		goto success;
+
+	return -1;
+
+success:
+	/*
+	 * Overwriting TZ is problematic if we're parsing hour types in this same process,
+	 * hence I'd rather use timegm() which doesn't take into account the TZ env variable,
+	 * even though it's Linux-specific.
+	 */
+	ts = timegm(&tm);
+
+	/* Obtain current tm as well (at the specified time), so that we can substract tm_gmtoff */
+	cur_tm = localtime(&ts);
+
+	if (ts == (time_t) -1 || cur_tm == NULL)
+		return ts;
+
+	/* Substract tm_gmtoff to get the current time */
+	return ts - cur_tm->tm_gmtoff;
+}
+
+static struct error_record *date_type_parse(struct parse_ctx *ctx,
+					    const struct expr *sym,
+					    struct expr **res)
+{
+	const char *endptr = sym->identifier;
+	time_t tstamp;
+
+	if ((tstamp = parse_iso_date(sym->identifier)) != -1)
+		goto success;
+
+	tstamp = strtoul(sym->identifier, (char **) &endptr, 10);
+	if (*endptr == '\0' && endptr != sym->identifier)
+		goto success;
+
+	return error(&sym->location, "Cannot parse date");
+
+success:
+	/* Convert to nanoseconds */
+	tstamp *= 1000000000L;
+	*res = constant_expr_alloc(&sym->location, sym->dtype,
+				   BYTEORDER_HOST_ENDIAN,
+				   sizeof(uint64_t) * BITS_PER_BYTE,
+				   &tstamp);
+	return NULL;
+}
+
+static const struct symbol_table day_type_tbl = {
+	.base		= BASE_DECIMAL,
+	.symbols	= {
+		SYMBOL("Sunday", 0),
+		SYMBOL("Monday", 1),
+		SYMBOL("Tuesday", 2),
+		SYMBOL("Wednesday", 3),
+		SYMBOL("Thursday", 4),
+		SYMBOL("Friday", 5),
+		SYMBOL("Saturday", 6),
+		SYMBOL_LIST_END,
+	},
+};
+
+static void day_type_print(const struct expr *expr, struct output_ctx *octx)
+{
+	return symbolic_constant_print(&day_type_tbl, expr, true, octx);
+}
+
+static void __hour_type_print_r(int hours, int minutes, int seconds, char *out, size_t buflen)
+{
+	if (minutes == 60)
+		return __hour_type_print_r(++hours, 0, seconds, out, buflen);
+	else if (minutes > 60)
+		return __hour_type_print_r((int) (minutes / 60), minutes % 60, seconds, out, buflen);
+
+	if (seconds == 60)
+		return __hour_type_print_r(hours, ++minutes, 0, out, buflen);
+	else if (seconds > 60)
+		return __hour_type_print_r(hours, (int) (seconds / 60), seconds % 60, out, buflen);
+
+	if (seconds == 0)
+		snprintf(out, buflen, "%02d:%02d", hours, minutes);
+	else
+		snprintf(out, buflen, "%02d:%02d:%02d", hours, minutes, seconds);
+}
+
+static void hour_type_print(const struct expr *expr, struct output_ctx *octx)
+{
+	uint32_t seconds = mpz_get_uint32(expr->value);
+	struct tm *cur_tm;
+	char out[32];
+	time_t ts;
+
+	if (!nft_output_seconds(octx)) {
+		/* Obtain current tm, so that we can add tm_gmtoff */
+		ts = time(NULL);
+		cur_tm = localtime(&ts);
+
+		if (cur_tm)
+			seconds = (seconds + cur_tm->tm_gmtoff) % 86400;
+
+		__hour_type_print_r(0, 0, seconds, out, sizeof(out));
+		nft_print(octx, "\"%s\"", out);
+
+		return;
+	}
+
+	expr_basetype(expr)->print(expr, octx);
+}
+
+static struct error_record *hour_type_parse(struct parse_ctx *ctx,
+					    const struct expr *sym,
+					    struct expr **res)
+{
+	struct error_record *er;
+	struct tm tm, *cur_tm;
+	uint64_t result = 0;
+	char *endptr;
+	time_t ts;
+
+	memset(&tm, 0, sizeof(struct tm));
+
+	/* First, try to parse it as a number */
+	result = strtoul(sym->identifier, (char **) &endptr, 10);
+	if (*endptr == '\0' && endptr != sym->identifier)
+		goto success;
+
+	result = 0;
+
+	/* Obtain current tm, so that we can substract tm_gmtoff */
+	ts = time(NULL);
+	cur_tm = localtime(&ts);
+
+	endptr = strptime(sym->identifier, "%T", &tm);
+	if (endptr && *endptr == '\0')
+		goto convert;
+
+	endptr = strptime(sym->identifier, "%R", &tm);
+	if (endptr && *endptr == '\0')
+		goto convert;
+
+	if (endptr && *endptr)
+		return error(&sym->location, "Can't parse trailing input: \"%s\"\n", endptr);
+
+	if ((er = time_parse(&sym->location, sym->identifier, &result)) == NULL) {
+		result /= 1000;
+		goto convert;
+	}
+
+	return er;
+
+convert:
+	/* Convert the hour to the number of seconds since midnight */
+	if (result == 0)
+		result = tm.tm_hour * 3600 + tm.tm_min * 60 + tm.tm_sec;
+
+	/* Substract tm_gmtoff to get the current time */
+	if (cur_tm) {
+		if ((long int) result >= cur_tm->tm_gmtoff)
+			result = (result - cur_tm->tm_gmtoff) % 86400;
+		else
+			result = 86400 - cur_tm->tm_gmtoff + result;
+	}
+
+success:
+	*res = constant_expr_alloc(&sym->location, sym->dtype,
+				   BYTEORDER_HOST_ENDIAN,
+				   sizeof(uint32_t) * BITS_PER_BYTE,
+				   &result);
+	return NULL;
+}
+
+const struct datatype date_type = {
+	.type = TYPE_TIME_DATE,
+	.name = "time",
+	.desc = "Relative time of packet reception",
+	.byteorder = BYTEORDER_HOST_ENDIAN,
+	.size = sizeof(uint64_t) * BITS_PER_BYTE,
+	.basetype = &integer_type,
+	.print = date_type_print,
+	.parse = date_type_parse,
+};
+
+const struct datatype day_type = {
+	.type = TYPE_TIME_DAY,
+	.name = "day",
+	.desc = "Day of week of packet reception",
+	.byteorder = BYTEORDER_HOST_ENDIAN,
+	.size = 1 * BITS_PER_BYTE,
+	.basetype = &integer_type,
+	.print = day_type_print,
+	.sym_tbl = &day_type_tbl,
+};
+
+const struct datatype hour_type = {
+	.type = TYPE_TIME_HOUR,
+	.name = "hour",
+	.desc = "Hour of day of packet reception",
+	.byteorder = BYTEORDER_HOST_ENDIAN,
+	.size = sizeof(uint64_t) * BITS_PER_BYTE,
+	.basetype = &integer_type,
+	.print = hour_type_print,
+	.parse = hour_type_parse,
+};
+
 const struct meta_template meta_templates[] = {
 	[NFT_META_LEN]		= META_TEMPLATE("length",    &integer_type,
 						4 * 8, BYTEORDER_HOST_ENDIAN),
@@ -448,6 +700,15 @@ const struct meta_template meta_templates[] = {
 	[NFT_META_BRI_IIFVPROTO] = META_TEMPLATE("ibrvproto",   &ethertype_type,
 						 2 * BITS_PER_BYTE,
 						 BYTEORDER_BIG_ENDIAN),
+	[NFT_META_TIME_NS]	= META_TEMPLATE("time",   &date_type,
+						8 * BITS_PER_BYTE,
+						BYTEORDER_HOST_ENDIAN),
+	[NFT_META_TIME_DAY]	= META_TEMPLATE("day", &day_type,
+						1 * BITS_PER_BYTE,
+						BYTEORDER_HOST_ENDIAN),
+	[NFT_META_TIME_HOUR]	= META_TEMPLATE("hour", &hour_type,
+						4 * BITS_PER_BYTE,
+						BYTEORDER_HOST_ENDIAN),
 };
 
 static bool meta_key_is_unqualified(enum nft_meta_keys key)

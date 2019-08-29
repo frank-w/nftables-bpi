@@ -91,3 +91,28 @@
     }
 ]
 
+# delete @set5 { ip6 saddr . ip6 daddr }
+[
+    {
+        "set": {
+            "elem": {
+                "concat": [
+                    {
+                        "payload": {
+                            "field": "saddr",
+                            "protocol": "ip6"
+                        }
+                    },
+                    {
+                        "payload": {
+                            "field": "daddr",
+                            "protocol": "ip6"
+                        }
+                    }
+                ]
+            },
+            "op": "delete",
+            "set": "@set5"
+        }
+    }
+]

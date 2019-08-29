@@ -23,3 +23,9 @@ ip6 test-ip6 input
   [ payload load 16b @ network header + 24 => reg 2 ]
   [ dynset add reg_key 1 set set5 ]
 
+# delete @set5 { ip6 saddr . ip6 daddr }
+ip6 test-ip6 input
+  [ payload load 16b @ network header + 8 => reg 1 ]
+  [ payload load 16b @ network header + 24 => reg 2 ]
+  [ dynset delete reg_key 1 set set5 ]
+

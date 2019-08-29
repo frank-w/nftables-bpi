@@ -2055,6 +2055,8 @@ static struct stmt *json_parse_set_stmt(struct json_ctx *ctx,
 		op = NFT_DYNSET_OP_ADD;
 	} else if (!strcmp(opstr, "update")) {
 		op = NFT_DYNSET_OP_UPDATE;
+	} else if (!strcmp(opstr, "delete")) {
+		op = NFT_DYNSET_OP_DELETE;
 	} else {
 		json_error(ctx, "Unknown set statement op '%s'.", opstr);
 		return NULL;

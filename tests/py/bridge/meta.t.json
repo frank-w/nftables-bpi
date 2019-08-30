@@ -23,3 +23,29 @@
         }
     }
 ]
+
+# meta ibrvproto vlan
+[
+    {
+        "match": {
+            "left": {
+                "meta": { "key": "ibrvproto" }
+            },
+	    "op": "==",
+            "right": "vlan"
+        }
+    }
+]
+
+# meta ibrpvid 100
+[
+    {
+        "match": {
+            "left": {
+                "meta": { "key": "ibrpvid" }
+            },
+	    "op": "==",
+            "right": 100
+        }
+    }
+]

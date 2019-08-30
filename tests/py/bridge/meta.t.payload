@@ -8,3 +8,12 @@ bridge test-bridge input
   [ meta load bri_iifname => reg 1 ]
   [ cmp eq reg 1 0x00307262 0x00000000 0x00000000 0x00000000 ]
 
+# meta ibrvproto vlan
+bridge test-bridge input
+  [ meta load bri_iifvproto => reg 1 ]
+  [ cmp eq reg 1 0x00000081 ]
+
+# meta ibrpvid 100
+bridge test-bridge input
+  [ meta load bri_iifpvid => reg 1 ]
+  [ cmp eq reg 1 0x00000064 ]

@@ -2963,6 +2963,7 @@ static int stmt_evaluate_fwd(struct eval_ctx *ctx, struct stmt *stmt)
 	default:
 		return stmt_error(ctx, stmt, "unsupported family");
 	}
+	stmt->flags |= STMT_F_TERMINAL;
 	return 0;
 }
 
@@ -2982,6 +2983,7 @@ static int stmt_evaluate_queue(struct eval_ctx *ctx, struct stmt *stmt)
 					  "fanout requires a range to be "
 					  "specified");
 	}
+	stmt->flags |= STMT_F_TERMINAL;
 	return 0;
 }
 

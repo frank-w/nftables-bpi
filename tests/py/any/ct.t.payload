@@ -493,3 +493,9 @@ ip test-ip4 output
   [ ct load mark => reg 9 ]
   [ lookup reg 1 set __map%d dreg 0 ]
 
+# ct mark set ct mark or 0x00000001
+ip test-ip4 output
+  [ ct load mark => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0xfffffffe ) ^ 0x00000001 ]
+  [ ct set mark with reg 1 ]
+

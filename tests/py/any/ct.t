@@ -38,6 +38,7 @@ ct mark and 0x23 == 0x11;ok;ct mark & 0x00000023 == 0x00000011
 ct mark and 0x3 != 0x1;ok;ct mark & 0x00000003 != 0x00000001
 ct mark xor 0x23 == 0x11;ok;ct mark 0x00000032
 ct mark xor 0x3 != 0x1;ok;ct mark != 0x00000002
+ct mark set ct mark or 0x00000001;ok;ct mark set ct mark | 0x00000001
 
 ct mark 0x00000032;ok
 ct mark != 0x00000032;ok

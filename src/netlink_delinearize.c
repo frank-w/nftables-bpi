@@ -2550,7 +2550,8 @@ static void rule_parse_postprocess(struct netlink_parse_ctx *ctx, struct rule *r
 			if (stmt->ct.expr != NULL) {
 				expr_postprocess(&rctx, &stmt->ct.expr);
 
-				if (stmt->ct.expr->etype == EXPR_BINOP)
+				if (stmt->ct.expr->etype == EXPR_BINOP &&
+				    stmt->ct.key == NFT_CT_EVENTMASK)
 					stmt->ct.expr = binop_tree_to_list(NULL,
 									   stmt->ct.expr);
 			}

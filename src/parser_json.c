@@ -3258,7 +3258,11 @@ static struct cmd *json_parse_cmd_add(struct json_ctx *ctx,
 static struct cmd *json_parse_cmd_replace(struct json_ctx *ctx,
 					  json_t *root, enum cmd_ops op)
 {
-	struct handle h = { 0 };
+	struct handle h = {
+		.table.location = *int_loc,
+		.chain.location = *int_loc,
+		.index.location = *int_loc,
+	};
 	json_t *tmp, *value;
 	const char *family;
 	struct rule *rule;

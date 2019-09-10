@@ -6,9 +6,10 @@ $NFT flush ruleset
 $NFT add table inet test
 $NFT add chain inet test c
 
+RULE_COUNT=3000
 RULESET=$(
-for ((i = 0; i < 3000; i++)); do
+for ((i = 0; i < ${RULE_COUNT}; i++)); do
 	echo "add rule inet test c accept comment rule$i"
 done
 )
-$NFT -e -f - <<< "$RULESET" >/dev/null
+test $($NFT -e -a -f - <<< "$RULESET" |grep "#[ ]\+handle[ ]\+[0-9]\+" |wc -l) -eq ${RULE_COUNT} || exit 1

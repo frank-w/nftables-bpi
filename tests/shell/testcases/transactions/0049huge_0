@@ -13,3 +13,19 @@ for ((i = 0; i < ${RULE_COUNT}; i++)); do
 done
 )
 test $($NFT -e -a -f - <<< "$RULESET" |grep "#[ ]\+handle[ ]\+[0-9]\+" |wc -l) -eq ${RULE_COUNT} || exit 1
+
+# same thing, but with JSON rules
+#
+$NFT flush ruleset
+$NFT add table inet test
+$NFT add chain inet test c
+
+RULESET=$(
+echo '{"nftables": ['
+for ((i = 0; i < $((${RULE_COUNT} - 1)); i++)); do
+	echo '{"add": {"rule": {"family": "inet", "table": "test", "chain": "c", "expr": [{"accept": null}], "comment": "rule'$i'"}}},'
+done
+	echo '{"add": {"rule": {"family": "inet", "table": "test", "chain": "c", "expr": [{"accept": null}], "comment": "rule'$((${RULE_COUNT} - 1))'"}}}'
+echo ']}'
+)
+test $($NFT -j -e -a -f - <<< "$RULESET" |sed 's/\({"add":\)/\n\1/g' |grep '"handle"' |wc -l) -eq ${RULE_COUNT} || exit 1

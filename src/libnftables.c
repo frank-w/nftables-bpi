@@ -293,8 +293,8 @@ void nft_ctx_free(struct nft_ctx *ctx)
 	cache_release(&ctx->cache);
 	nft_ctx_clear_include_paths(ctx);
 	xfree(ctx->state);
-	xfree(ctx);
 	nft_exit(ctx);
+	xfree(ctx);
 }
 
 EXPORT_SYMBOL(nft_ctx_set_output);

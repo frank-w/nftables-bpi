@@ -67,3 +67,13 @@ ip test-ip4 output
 # ct expectation set "ctexpect1"
 ip test-ip4 output
   [ objref type 9 name ctexpect1 ]
+
+# synproxy name tcp dport map {443 : "synproxy1", 80 : "synproxy2"}
+__objmap%d test-ip4 43 size 2
+__objmap%d test-ip4 0
+	element 0000bb01  : 0 [end]	element 00005000  : 0 [end]
+ip test-ip4 output
+  [ meta load l4proto => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ payload load 2b @ transport header + 2 => reg 1 ]
+  [ objref sreg 1 set __objmap%d ]

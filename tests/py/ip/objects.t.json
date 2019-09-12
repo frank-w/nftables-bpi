@@ -200,3 +200,30 @@
     }
 ]
 
+# synproxy name tcp dport map {443 : "synproxy1", 80 : "synproxy2"}
+[
+    {
+        "synproxy": {
+            "map": {
+                "key": {
+                    "payload": {
+                        "field": "dport",
+                        "protocol": "tcp"
+                    }
+                },
+                "data": {
+                    "set": [
+                        [
+                            80,
+                            "synproxy2"
+                        ],
+                        [
+                            443,
+                            "synproxy1"
+                        ]
+                    ]
+                }
+            }
+        }
+    }
+]

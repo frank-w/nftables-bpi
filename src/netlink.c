@@ -1030,6 +1030,14 @@ struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 		obj->ct_expect.size =
 			nftnl_obj_get_u8(nlo, NFTNL_OBJ_CT_EXPECT_SIZE);
 		break;
+	case NFT_OBJECT_SYNPROXY:
+		obj->synproxy.mss =
+			nftnl_obj_get_u16(nlo, NFTNL_OBJ_SYNPROXY_MSS);
+		obj->synproxy.wscale =
+			nftnl_obj_get_u8(nlo, NFTNL_OBJ_SYNPROXY_WSCALE);
+		obj->synproxy.flags =
+			nftnl_obj_get_u32(nlo, NFTNL_OBJ_SYNPROXY_FLAGS);
+		break;
 	}
 	obj->type = type;
 

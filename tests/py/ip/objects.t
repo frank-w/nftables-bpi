@@ -50,3 +50,9 @@ ct timeout set "cttime1";ok
 %ctexpect5 type ct expectation { protocol udp; dport 9876; timeout 2m; size 12; l3proto ip; };ok
 
 ct expectation set "ctexpect1";ok
+
+# synproxy
+%synproxy1 type synproxy mss 1460 wscale 7;ok
+%synproxy2 type synproxy mss 1460 wscale 7 timestamp sack-perm;ok
+
+synproxy name tcp dport map {443 : "synproxy1", 80 : "synproxy2"};ok

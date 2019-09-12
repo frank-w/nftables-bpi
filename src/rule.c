@@ -32,6 +32,7 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_arp.h>
 #include <linux/netfilter_ipv4.h>
+#include <linux/netfilter/nf_synproxy.h>
 #include <net/if.h>
 #include <linux/netfilter_bridge.h>
 
@@ -1451,6 +1452,7 @@ void cmd_free(struct cmd *cmd)
 		case CMD_OBJ_CT_EXPECT:
 		case CMD_OBJ_LIMIT:
 		case CMD_OBJ_SECMARK:
+		case CMD_OBJ_SYNPROXY:
 			obj_free(cmd->object);
 			break;
 		case CMD_OBJ_FLOWTABLE:
@@ -1542,6 +1544,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_CT_EXPECT:
 	case CMD_OBJ_LIMIT:
 	case CMD_OBJ_SECMARK:
+	case CMD_OBJ_SYNPROXY:
 		return mnl_nft_obj_add(ctx, cmd, flags);
 	case CMD_OBJ_FLOWTABLE:
 		return mnl_nft_flowtable_add(ctx, cmd, flags);
@@ -1627,6 +1630,8 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_LIMIT);
 	case CMD_OBJ_SECMARK:
 		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_SECMARK);
+	case CMD_OBJ_SYNPROXY:
+		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_SYNPROXY);
 	case CMD_OBJ_FLOWTABLE:
 		return mnl_nft_flowtable_del(ctx, cmd);
 	default:
@@ -1778,6 +1783,22 @@ static void print_proto_timeout_policy(uint8_t l4, const uint32_t *timeout,
 	nft_print(octx, " }%s", opts->stmt_separator);
 }
 
+static const char *synproxy_sack_to_str(const uint32_t flags)
+{
+        if (flags & NF_SYNPROXY_OPT_SACK_PERM)
+                return "sack-perm";
+
+        return "";
+}
+
+static const char *synproxy_timestamp_to_str(const uint32_t flags)
+{
+        if (flags & NF_SYNPROXY_OPT_TIMESTAMP)
+                return "timestamp";
+
+        return "";
+}
+
 static void obj_print_data(const struct obj *obj,
 			   struct print_fmt_options *opts,
 			   struct output_ctx *octx)
@@ -1911,6 +1932,30 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, "%s", opts->nl);
 		}
 		break;
+	case NFT_OBJECT_SYNPROXY: {
+		uint32_t flags = obj->synproxy.flags;
+		const char *sack_str = synproxy_sack_to_str(flags);
+		const char *ts_str = synproxy_timestamp_to_str(flags);
+
+		nft_print(octx, " %s {", obj->handle.obj.name);
+		if (nft_output_handle(octx))
+			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		if (flags & NF_SYNPROXY_OPT_MSS) {
+			nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
+			nft_print(octx, "mss %u", obj->synproxy.mss);
+		}
+		if (flags & NF_SYNPROXY_OPT_WSCALE) {
+			nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
+			nft_print(octx, "wscale %u", obj->synproxy.wscale);
+		}
+		if (flags & (NF_SYNPROXY_OPT_TIMESTAMP | NF_SYNPROXY_OPT_SACK_PERM)) {
+			nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
+			nft_print(octx, "%s %s", ts_str, sack_str);
+		}
+		nft_print(octx, "%s", opts->stmt_separator);
+		}
+		break;
 	default:
 		nft_print(octx, " unknown {%s", opts->nl);
 		break;
@@ -1924,6 +1969,7 @@ static const char * const obj_type_name_array[] = {
 	[NFT_OBJECT_LIMIT]	= "limit",
 	[NFT_OBJECT_CT_TIMEOUT] = "ct timeout",
 	[NFT_OBJECT_SECMARK]	= "secmark",
+	[NFT_OBJECT_SYNPROXY]	= "synproxy",
 	[NFT_OBJECT_CT_EXPECT]	= "ct expectation",
 };
 
@@ -1941,6 +1987,7 @@ static uint32_t obj_type_cmd_array[NFT_OBJECT_MAX + 1] = {
 	[NFT_OBJECT_LIMIT]	= CMD_OBJ_LIMIT,
 	[NFT_OBJECT_CT_TIMEOUT] = CMD_OBJ_CT_TIMEOUT,
 	[NFT_OBJECT_SECMARK]	= CMD_OBJ_SECMARK,
+	[NFT_OBJECT_SYNPROXY]	= CMD_OBJ_SYNPROXY,
 	[NFT_OBJECT_CT_EXPECT]	= CMD_OBJ_CT_EXPECT,
 };
 
@@ -2308,6 +2355,9 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SECMARK:
 	case CMD_OBJ_SECMARKS:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_SECMARK);
+	case CMD_OBJ_SYNPROXY:
+	case CMD_OBJ_SYNPROXYS:
+		return do_list_obj(ctx, cmd, NFT_OBJECT_SYNPROXY);
 	case CMD_OBJ_FLOWTABLES:
 		return do_list_flowtables(ctx, cmd);
 	default:

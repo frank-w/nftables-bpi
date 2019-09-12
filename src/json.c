@@ -282,8 +282,8 @@ static json_t *obj_print_json(const struct obj *obj)
 {
 	const char *rate_unit = NULL, *burst_unit = NULL;
 	const char *type = obj_type_name(obj->type);
+	json_t *root, *tmp, *flags;
 	uint64_t rate, burst;
-	json_t *root, *tmp;
 
 	root = json_pack("{s:s, s:s, s:s, s:I}",
 			"family", family2str(obj->handle.family),
@@ -367,6 +367,24 @@ static json_t *obj_print_json(const struct obj *obj)
 				json_object_set_new(tmp, "burst_unit",
 						    json_string(burst_unit));
 		}
+
+		json_object_update(root, tmp);
+		json_decref(tmp);
+		break;
+	case NFT_OBJECT_SYNPROXY:
+		flags = json_array();
+		tmp = json_pack("{s:i, s:i}",
+				"mss", obj->synproxy.mss,
+				"wscale", obj->synproxy.wscale);
+		if (obj->synproxy.flags & NF_SYNPROXY_OPT_TIMESTAMP)
+			json_array_append_new(flags, json_string("timestamp"));
+		if (obj->synproxy.flags & NF_SYNPROXY_OPT_SACK_PERM)
+			json_array_append_new(flags, json_string("sack-perm"));
+
+		if (json_array_size(flags) > 0)
+			json_object_set_new(tmp, "flags", flags);
+		else
+			json_decref(flags);
 
 		json_object_update(root, tmp);
 		json_decref(tmp);

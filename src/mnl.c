@@ -1036,6 +1036,14 @@ int mnl_nft_obj_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		nftnl_obj_set_str(nlo, NFTNL_OBJ_SECMARK_CTX,
 				  obj->secmark.ctx);
 		break;
+	case NFT_OBJECT_SYNPROXY:
+		nftnl_obj_set_u16(nlo, NFTNL_OBJ_SYNPROXY_MSS,
+				  obj->synproxy.mss);
+		nftnl_obj_set_u8(nlo, NFTNL_OBJ_SYNPROXY_WSCALE,
+				 obj->synproxy.wscale);
+		nftnl_obj_set_u32(nlo, NFTNL_OBJ_SYNPROXY_FLAGS,
+				  obj->synproxy.flags);
+		break;
 	default:
 		BUG("Unknown type %d\n", obj->type);
 		break;

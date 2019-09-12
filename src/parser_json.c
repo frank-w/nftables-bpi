@@ -2244,13 +2244,18 @@ static int json_parse_synproxy_flags(struct json_ctx *ctx, json_t *root)
 static struct stmt *json_parse_synproxy_stmt(struct json_ctx *ctx,
 					     const char *key, json_t *value)
 {
-	struct stmt *stmt;
+	struct stmt *stmt = NULL;
 	json_t *jflags;
 	int tmp, flags;
 
-	stmt = synproxy_stmt_alloc(int_loc);
+	if (json_typeof(value) == JSON_NULL) {
+		stmt = synproxy_stmt_alloc(int_loc);
+		return stmt;
+	}
 
 	if (!json_unpack(value, "{s:i}", "mss", &tmp)) {
+		if (!stmt)
+			stmt = synproxy_stmt_alloc(int_loc);
 		if (tmp < 0) {
 			json_error(ctx, "Invalid synproxy mss value '%d'", tmp);
 			stmt_free(stmt);
@@ -2260,6 +2265,8 @@ static struct stmt *json_parse_synproxy_stmt(struct json_ctx *ctx,
 		stmt->synproxy.flags |= NF_SYNPROXY_OPT_MSS;
 	}
 	if (!json_unpack(value, "{s:i}", "wscale", &tmp)) {
+		if (!stmt)
+			stmt = synproxy_stmt_alloc(int_loc);
 		if (tmp < 0) {
 			json_error(ctx, "Invalid synproxy wscale value '%d'", tmp);
 			stmt_free(stmt);
@@ -2269,6 +2276,8 @@ static struct stmt *json_parse_synproxy_stmt(struct json_ctx *ctx,
 		stmt->synproxy.flags |= NF_SYNPROXY_OPT_WSCALE;
 	}
 	if (!json_unpack(value, "{s:o}", "flags", &jflags)) {
+		if (!stmt)
+			stmt = synproxy_stmt_alloc(int_loc);
 		flags = json_parse_synproxy_flags(ctx, jflags);
 
 		if (flags < 0) {
@@ -2276,6 +2285,17 @@ static struct stmt *json_parse_synproxy_stmt(struct json_ctx *ctx,
 			return NULL;
 		}
 		stmt->synproxy.flags |= flags;
+	}
+
+	if (!stmt) {
+		stmt = objref_stmt_alloc(int_loc);
+		stmt->objref.type = NFT_OBJECT_SYNPROXY;
+		stmt->objref.expr = json_parse_stmt_expr(ctx, value);
+		if (!stmt->objref.expr) {
+			json_error(ctx, "Invalid synproxy reference");
+			stmt_free(stmt);
+			return NULL;
+		}
 	}
 	return stmt;
 }
@@ -3019,8 +3039,9 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 	const char *family, *tmp, *rate_unit = "packets", *burst_unit = "bytes";
 	uint32_t l3proto = NFPROTO_UNSPEC;
 	struct handle h = { 0 };
+	int inv = 0, flags = 0;
 	struct obj *obj;
-	int inv = 0;
+	json_t *jflags;
 
 	if (json_unpack_err(ctx, root, "{s:s, s:s}",
 			    "family", &family,
@@ -3195,6 +3216,25 @@ static struct cmd *json_parse_cmd_add_object(struct json_ctx *ctx,
 		}
 		obj->limit.unit = seconds_from_unit(tmp);
 		obj->limit.flags = inv ? NFT_LIMIT_F_INV : 0;
+		break;
+	case CMD_OBJ_SYNPROXY:
+		obj->type = NFT_OBJECT_SYNPROXY;
+		if (json_unpack_err(ctx, root, "{s:i, s:i}",
+				    "mss", &obj->synproxy.mss,
+				    "wscale", &obj->synproxy.wscale)) {
+			obj_free(obj);
+			return NULL;
+		}
+		obj->synproxy.flags |= NF_SYNPROXY_OPT_MSS;
+		obj->synproxy.flags |= NF_SYNPROXY_OPT_WSCALE;
+		if (!json_unpack(root, "{s:o}", "flags", &jflags)) {
+			flags = json_parse_synproxy_flags(ctx, jflags);
+			if (flags < 0) {
+				obj_free(obj);
+				return NULL;
+			}
+			obj->synproxy.flags |= flags;
+		}
 		break;
 	default:
 		BUG("Invalid CMD '%d'", cmd_obj);

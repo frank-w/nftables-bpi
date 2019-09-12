@@ -151,6 +151,7 @@ int nft_lex(void *, void *, void *);
 	struct counter		*counter;
 	struct quota		*quota;
 	struct secmark		*secmark;
+	struct synproxy		*synproxy;
 	struct ct		*ct;
 	struct limit		*limit;
 	const struct datatype	*datatype;
@@ -461,6 +462,7 @@ int nft_lex(void *, void *, void *);
 %token COUNTERS			"counters"
 %token QUOTAS			"quotas"
 %token LIMITS			"limits"
+%token SYNPROXYS		"synproxys"
 %token HELPERS			"helpers"
 
 %token LOG			"log"
@@ -592,7 +594,7 @@ int nft_lex(void *, void *, void *);
 %type <flowtable>		flowtable_block_alloc flowtable_block
 %destructor { flowtable_free($$); }	flowtable_block_alloc
 
-%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block ct_expect_block limit_block secmark_block
+%type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block ct_expect_block limit_block secmark_block synproxy_block
 %destructor { obj_free($$); }	obj_block_alloc
 
 %type <list>			stmt_list
@@ -700,8 +702,8 @@ int nft_lex(void *, void *, void *);
 %type <expr>			and_rhs_expr exclusive_or_rhs_expr inclusive_or_rhs_expr
 %destructor { expr_free($$); }	and_rhs_expr exclusive_or_rhs_expr inclusive_or_rhs_expr
 
-%type <obj>			counter_obj quota_obj ct_obj_alloc limit_obj secmark_obj
-%destructor { obj_free($$); }	counter_obj quota_obj ct_obj_alloc limit_obj secmark_obj
+%type <obj>			counter_obj quota_obj ct_obj_alloc limit_obj secmark_obj synproxy_obj
+%destructor { obj_free($$); }	counter_obj quota_obj ct_obj_alloc limit_obj secmark_obj synproxy_obj
 
 %type <expr>			relational_expr
 %destructor { expr_free($$); }	relational_expr
@@ -787,6 +789,9 @@ int nft_lex(void *, void *, void *);
 %destructor { xfree($$); }	limit_config
 %type <secmark>			secmark_config
 %destructor { xfree($$); }	secmark_config
+%type <synproxy>		synproxy_config
+%destructor { xfree($$); }	synproxy_config
+%type <val>			synproxy_ts	synproxy_sack
 
 %type <expr>			tcp_hdr_expr
 %destructor { expr_free($$); }	tcp_hdr_expr
@@ -1012,6 +1017,10 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SECMARK, &$2, &@$, $3);
 			}
+			|	SYNPROXY	obj_spec	synproxy_obj
+			{
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SYNPROXY, &$2, &@$, $3);
+			}
 			;
 
 replace_cmd		:	RULE		ruleid_spec	rule
@@ -1105,6 +1114,10 @@ create_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_SECMARK, &$2, &@$, $3);
 			}
+			|	SYNPROXY	obj_spec	synproxy_obj
+			{
+				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_SYNPROXY, &$2, &@$, $3);
+			}
 			;
 
 insert_cmd		:	RULE		rule_position	rule
@@ -1189,6 +1202,14 @@ delete_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SECMARK, &$2, &@$, NULL);
 			}
+			|	SYNPROXY	obj_spec
+			{
+				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SYNPROXY, &$2, &@$, NULL);
+			}
+			|	SYNPROXY	objid_spec
+			{
+				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SYNPROXY, &$2, &@$, NULL);
+			}
 			;
 
 get_cmd			:	ELEMENT		set_spec	set_block_expr
@@ -1272,6 +1293,18 @@ list_cmd		:	TABLE		table_spec
 			|	SECMARK		obj_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SECMARK, &$2, &@$, NULL);
+			}
+			|	SYNPROXYS	ruleset_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SYNPROXYS, &$2, &@$, NULL);
+			}
+			|	SYNPROXYS	TABLE	table_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SYNPROXYS, &$3, &@$, NULL);
+			}
+			|	SYNPROXY	obj_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SYNPROXY, &$2, &@$, NULL);
 			}
 			|	RULESET		ruleset_spec
 			{
@@ -1587,6 +1620,17 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 			{
 				$4->location = @3;
 				$4->type = NFT_OBJECT_SECMARK;
+				handle_merge(&$4->handle, &$3);
+				handle_free(&$3);
+				list_add_tail(&$4->list, &$1->objs);
+				$$ = $1;
+			}
+			|	table_block	SYNPROXY	obj_identifier
+					obj_block_alloc '{'	synproxy_block	'}'
+					stmt_separator
+			{
+				$4->location = @3;
+				$4->type = NFT_OBJECT_SYNPROXY;
 				handle_merge(&$4->handle, &$3);
 				handle_free(&$3);
 				list_add_tail(&$4->list, &$1->objs);
@@ -1924,6 +1968,16 @@ secmark_block		:	/* empty */	{ $$ = $<obj>-1; }
 			|       secmark_block     secmark_config
 			{
 				$1->secmark = *$2;
+				$$ = $1;
+			}
+			;
+
+synproxy_block		:	/* empty */	{ $$ = $<obj>-1; }
+			|	synproxy_block	common_block
+			|	synproxy_block	stmt_separator
+			|	synproxy_block	synproxy_config
+			{
+				$1->synproxy = *$2;
 				$$ = $1;
 			}
 			;
@@ -2788,6 +2842,12 @@ synproxy_stmt_alloc	:	SYNPROXY
 			{
 				$$ = synproxy_stmt_alloc(&@$);
 			}
+			|	SYNPROXY	NAME	stmt_expr
+			{
+				$$ = objref_stmt_alloc(&@$);
+				$$->objref.type = NFT_OBJECT_SYNPROXY;
+				$$->objref.expr = $3;
+			}
 			;
 
 synproxy_args		:	synproxy_arg
@@ -2814,6 +2874,64 @@ synproxy_arg		:	MSS	NUM
 			|	SACKPERM
 			{
 				$<stmt>0->synproxy.flags |= NF_SYNPROXY_OPT_SACK_PERM;
+			}
+			;
+
+synproxy_config		:	MSS	NUM	WSCALE	NUM	synproxy_ts	synproxy_sack
+			{
+				struct synproxy *synproxy;
+				uint32_t flags = 0;
+
+				synproxy = xzalloc(sizeof(*synproxy));
+				synproxy->mss = $2;
+				flags |= NF_SYNPROXY_OPT_MSS;
+				synproxy->wscale = $4;
+				flags |= NF_SYNPROXY_OPT_WSCALE;
+				if ($5)
+					flags |= $5;
+				if ($6)
+					flags |= $6;
+				synproxy->flags = flags;
+				$$ = synproxy;
+			}
+			|	MSS	NUM	stmt_separator	WSCALE	NUM	stmt_separator	synproxy_ts	synproxy_sack
+			{
+				struct synproxy *synproxy;
+				uint32_t flags = 0;
+
+				synproxy = xzalloc(sizeof(*synproxy));
+				synproxy->mss = $2;
+				flags |= NF_SYNPROXY_OPT_MSS;
+				synproxy->wscale = $5;
+				flags |= NF_SYNPROXY_OPT_WSCALE;
+				if ($7)
+					flags |= $7;
+				if ($8)
+					flags |= $8;
+				synproxy->flags = flags;
+				$$ = synproxy;
+			}
+			;
+
+synproxy_obj		:	synproxy_config
+			{
+				$$ = obj_alloc(&@$);
+				$$->type = NFT_OBJECT_SYNPROXY;
+				$$->synproxy = *$1;
+			}
+			;
+
+synproxy_ts		:	/* empty */	{ $$ = 0; }
+			|	TIMESTAMP
+			{
+				$$ = NF_SYNPROXY_OPT_TIMESTAMP;
+			}
+			;
+
+synproxy_sack		:	/* empty */	{ $$ = 0; }
+			|	SACKPERM
+			{
+				$$ = NF_SYNPROXY_OPT_SACK_PERM;
 			}
 			;
 

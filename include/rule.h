@@ -399,6 +399,12 @@ struct limit {
 	uint32_t	flags;
 };
 
+struct synproxy {
+	uint16_t	mss;
+	uint8_t		wscale;
+	uint32_t	flags;
+};
+
 struct secmark {
 	char		ctx[NFT_SECMARK_CTX_MAXLEN];
 };
@@ -426,6 +432,7 @@ struct obj {
 		struct ct_timeout	ct_timeout;
 		struct secmark		secmark;
 		struct ct_expect	ct_expect;
+		struct synproxy		synproxy;
 	};
 };
 
@@ -529,6 +536,8 @@ enum cmd_ops {
  * @CMD_OBJ_FLOWTABLES:	flow tables
  * @CMD_OBJ_SECMARK:	secmark
  * @CMD_OBJ_SECMARKS:	multiple secmarks
+ * @CMD_OBJ_SYNPROXY:	synproxy
+ * @CMD_OBJ_SYNPROXYS:	multiple synproxys
  */
 enum cmd_obj {
 	CMD_OBJ_INVALID,
@@ -561,6 +570,8 @@ enum cmd_obj {
 	CMD_OBJ_SECMARK,
 	CMD_OBJ_SECMARKS,
 	CMD_OBJ_CT_EXPECT,
+	CMD_OBJ_SYNPROXY,
+	CMD_OBJ_SYNPROXYS,
 };
 
 struct markup {

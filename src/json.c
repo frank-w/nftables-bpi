@@ -333,7 +333,7 @@ static json_t *obj_print_json(const struct obj *obj)
 		json_decref(tmp);
 		break;
 	case NFT_OBJECT_CT_EXPECT:
-		tmp = json_pack("{s:o, s:I, s:I, s:s, s:I}",
+		tmp = json_pack("{s:o, s:I, s:I, s:I, s:s}",
 				"protocol",
 				proto_name_json(obj->ct_expect.l4proto),
 				"dport", obj->ct_expect.dport,

@@ -135,6 +135,7 @@ int nft_lex(void *, void *, void *);
 %union {
 	uint64_t		val;
 	uint32_t		val32;
+	uint8_t			val8;
 	const char *		string;
 
 	struct list_head	*list;
@@ -800,7 +801,7 @@ int nft_lex(void *, void *, void *);
 
 %type <expr>			boolean_expr
 %destructor { expr_free($$); }	boolean_expr
-%type <val>			boolean_keys
+%type <val8>			boolean_keys
 
 %type <expr>			exthdr_exists_expr
 %destructor { expr_free($$); }	exthdr_exists_expr
@@ -3964,7 +3965,7 @@ boolean_expr		:	boolean_keys
 			{
 				$$ = constant_expr_alloc(&@$, &boolean_type,
 							 BYTEORDER_HOST_ENDIAN,
-							 1, &$1);
+							 sizeof($1) * BITS_PER_BYTE, &$1);
 			}
 			;
 

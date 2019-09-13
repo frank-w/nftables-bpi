@@ -351,7 +351,8 @@ static struct expr *json_parse_immediate(struct json_ctx *ctx, json_t *root)
 	case JSON_FALSE:
 		buf[0] = json_is_true(root);
 		return constant_expr_alloc(int_loc, &boolean_type,
-					   BYTEORDER_HOST_ENDIAN, 1, buf);
+					   BYTEORDER_HOST_ENDIAN,
+					   BITS_PER_BYTE, buf);
 	default:
 		json_error(ctx, "Unexpected JSON type %s for immediate value.",
 			   json_typename(root));

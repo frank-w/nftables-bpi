@@ -196,7 +196,7 @@
 # ct expectation set "ctexpect1"
 [
     {
-        "ct expect": "ctexpect1"
+        "ct expectation": "ctexpect1"
     }
 ]
 

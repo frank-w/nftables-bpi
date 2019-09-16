@@ -4,7 +4,6 @@
 #include <nftables/libnftables.h>
 #include <config.h>
 
-struct parser_state;
 #ifdef HAVE_LIBREADLINE
 extern int cli_init(struct nft_ctx *nft);
 #else

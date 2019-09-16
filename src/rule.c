@@ -1107,17 +1107,21 @@ static void chain_print_declaration(const struct chain *chain,
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
 	nft_print(octx, "\n");
 	if (chain->flags & CHAIN_F_BASECHAIN) {
-		mpz_export_data(&policy, chain->policy->value,
-				BYTEORDER_HOST_ENDIAN, sizeof(int));
 		nft_print(octx, "\t\ttype %s hook %s", chain->type,
 			  hooknum2str(chain->handle.family, chain->hooknum));
 		if (chain->dev != NULL)
 			nft_print(octx, " device \"%s\"", chain->dev);
-		nft_print(octx, " priority %s; policy %s;\n",
+		nft_print(octx, " priority %s;",
 			  prio2str(octx, priobuf, sizeof(priobuf),
 				   chain->handle.family, chain->hooknum,
-				   chain->priority.expr),
-			  chain_policy2str(policy));
+				   chain->priority.expr));
+		if (chain->policy) {
+			mpz_export_data(&policy, chain->policy->value,
+					BYTEORDER_HOST_ENDIAN, sizeof(int));
+			nft_print(octx, " policy %s;",
+				  chain_policy2str(policy));
+		}
+		nft_print(octx, "\n");
 	}
 }
 

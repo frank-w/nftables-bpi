@@ -75,7 +75,6 @@ AC_CHECK_LIB([readline], [readline], ,
 	     AC_MSG_ERROR([No suitable version of libreadline found]))
 AC_DEFINE([HAVE_LIBREADLINE], [1], [])
 ])
-AC_SUBST(with_cli)
 AM_CONDITIONAL([BUILD_CLI], [test "x$with_cli" != xno])
 
 AC_ARG_WITH([xtables], [AS_HELP_STRING([--with-xtables],
@@ -95,7 +94,6 @@ AC_CHECK_LIB([jansson], [json_object], ,
 	AC_MSG_ERROR([No suitable version of libjansson found]))
 AC_DEFINE([HAVE_LIBJANSSON], [1], [Define if you have libjansson])
 ])
-AC_SUBST(with_json)
 AM_CONDITIONAL([BUILD_JSON], [test "x$with_json" != xno])
 
 AC_ARG_ENABLE(python,

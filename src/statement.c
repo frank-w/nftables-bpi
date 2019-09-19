@@ -128,7 +128,7 @@ static void meter_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	stmt_print(stmt->meter.stmt, octx);
 	octx->flags = flags;
 
-	nft_print(octx, "} ");
+	nft_print(octx, " }");
 
 }
 

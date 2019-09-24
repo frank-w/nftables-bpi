@@ -21,16 +21,36 @@
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
+#ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>
 #include <readline/history.h>
+#else
+#include <linenoise.h>
+#endif
 
 #include <cli.h>
 #include <list.h>
 
 #define CMDLINE_HISTFILE	".nft.history"
+#define CMDLINE_PROMPT		"nft> "
+#define CMDLINE_QUIT		"quit"
+
+static char histfile[PATH_MAX];
+
+static void
+init_histfile(void)
+{
+	const char *home;
+
+	home = getenv("HOME");
+	if (home == NULL)
+		home = "";
+	snprintf(histfile, sizeof(histfile), "%s/%s", home, CMDLINE_HISTFILE);
+}
+
+#ifdef HAVE_LIBREADLINE
 
 static struct nft_ctx *cli_nft;
-static char histfile[PATH_MAX];
 static char *multiline;
 
 static char *cli_append_multiline(char *line)
@@ -100,7 +120,7 @@ static void cli_complete(char *line)
 	if (*c == '\0')
 		return;
 
-	if (!strcmp(line, "quit")) {
+	if (!strcmp(line, CMDLINE_QUIT)) {
 		cli_exit();
 		exit(0);
 	}
@@ -121,20 +141,15 @@ static char **cli_completion(const char *text, int start, int end)
 
 int cli_init(struct nft_ctx *nft)
 {
-	const char *home;
-
 	cli_nft = nft;
 	rl_readline_name = "nft";
 	rl_instream  = stdin;
 	rl_outstream = stdout;
 
-	rl_callback_handler_install("nft> ", cli_complete);
+	rl_callback_handler_install(CMDLINE_PROMPT, cli_complete);
 	rl_attempted_completion_function = cli_completion;
 
-	home = getenv("HOME");
-	if (home == NULL)
-		home = "";
-	snprintf(histfile, sizeof(histfile), "%s/%s", home, CMDLINE_HISTFILE);
+	init_histfile();
 
 	read_history(histfile);
 	history_set_pos(history_length);
@@ -150,3 +165,34 @@ void cli_exit(void)
 	rl_deprep_terminal();
 	write_history(histfile);
 }
+
+#else /* !HAVE_LIBREADLINE */
+
+int cli_init(struct nft_ctx *nft)
+{
+	int quit = 0;
+	char *line;
+
+	init_histfile();
+	linenoiseHistoryLoad(histfile);
+	linenoiseSetMultiLine(1);
+
+	while (!quit && (line = linenoise(CMDLINE_PROMPT)) != NULL) {
+		if (strcmp(line, CMDLINE_QUIT) == 0) {
+			quit = 1;
+		} else if (line[0] != '\0') {
+			linenoiseHistoryAdd(line);
+			nft_run_cmd_from_buffer(nft, line);
+		}
+		linenoiseFree(line);
+	}
+	cli_exit();
+	exit(0);
+}
+
+void cli_exit(void)
+{
+	linenoiseHistorySave(histfile);
+}
+
+#endif /* HAVE_LIBREADLINE */

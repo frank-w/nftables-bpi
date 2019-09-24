@@ -2,8 +2,8 @@
 
 log_file="`pwd`/tests.log"
 dir=../..
-argument=( --without-cli --enable-debug --with-mini-gmp --enable-man-doc
-	    --with-xtables --with-json)
+argument=( --without-cli --with-cli=linenoise --enable-debug --with-mini-gmp
+	   --enable-man-doc --with-xtables --with-json)
 ok=0
 failed=0
 

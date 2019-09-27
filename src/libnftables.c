@@ -34,7 +34,7 @@ static int nft_netlink(struct nft_ctx *nft,
 	int ret = 0;
 
 	if (list_empty(cmds))
-		return 0;
+		goto out;
 
 	batch_seqnum = mnl_batch_begin(ctx.batch, mnl_seqnum_alloc(&seqnum));
 	list_for_each_entry(cmd, cmds, list) {

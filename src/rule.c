@@ -106,6 +106,7 @@ void handle_free(struct handle *h)
 	xfree(h->chain.name);
 	xfree(h->set.name);
 	xfree(h->flowtable);
+	xfree(h->obj.name);
 }
 
 void handle_merge(struct handle *dst, const struct handle *src)

@@ -9,3 +9,5 @@ add element ip x y { 1.1.1.1 timeout 30s expires 15s }"
 test_output=$($NFT -e -f - <<< "$RULESET" 2>&1)
 
 diff -u <(echo "$test_output") <(echo "$RULESET")
+
+$NFT "add chain ip x c; add rule ip x c ip saddr @y"

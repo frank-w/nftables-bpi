@@ -12,4 +12,4 @@ EXPECTED='table inet t {
 }'
 
 set -e
-$NFT -f - <<< $EXPECTED
+$NFT -f - <<< "$EXPECTED"

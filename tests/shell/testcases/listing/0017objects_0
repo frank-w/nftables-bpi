@@ -8,7 +8,7 @@ EXPECTED="table inet filter {
 
 set -e
 
-$NFT -f - <<< $EXPECTED
+$NFT -f - <<< "$EXPECTED"
 $NFT flush map inet filter countermap
 
 GET="$($NFT list map inet filter countermap)"

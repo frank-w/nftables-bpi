@@ -8,7 +8,7 @@ EXPECTED="table inet filter {
 
 set -e
 
-$NFT -f - <<< $EXPECTED
+$NFT -f - <<< "$EXPECTED"
 $NFT flush set inet filter ipset
 
 GET="$($NFT list set inet filter ipset)"

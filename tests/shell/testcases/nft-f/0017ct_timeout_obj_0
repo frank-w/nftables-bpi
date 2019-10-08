@@ -13,4 +13,4 @@ EXPECTED='table ip filter {
 }'
 
 set -e
-$NFT -f - <<< $EXPECTED
+$NFT -f - <<< "$EXPECTED"

@@ -12,7 +12,7 @@ EXPECTED="table ip filter {
 
 set -e
 
-$NFT -f - <<< $EXPECTED
+$NFT -f - <<< "$EXPECTED"
 
 GET="$($NFT list set ip filter test_set)"
 if [ "$EXPECTED" != "$GET" ] ; then

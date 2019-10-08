@@ -40,7 +40,7 @@ RULESET=$(for family in $FAMILIES ; do
 	generate1 $family
 done)
 
-$NFT -f - <<< $RULESET
+$NFT -f - <<< "$RULESET"
 if [ $? -ne 0 ] ; then
 	echo "E: unable to load ruleset 1" >&2
 	exit 1

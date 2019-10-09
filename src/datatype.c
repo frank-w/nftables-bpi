@@ -216,8 +216,8 @@ void symbol_table_print(const struct symbol_table *tbl,
 			enum byteorder byteorder,
 			struct output_ctx *octx)
 {
+	unsigned int len = div_round_up(dtype->size, BITS_PER_BYTE);
 	const struct symbolic_constant *s;
-	unsigned int len = dtype->size / BITS_PER_BYTE;
 	uint64_t value;
 
 	for (s = tbl->symbols; s->identifier != NULL; s++) {

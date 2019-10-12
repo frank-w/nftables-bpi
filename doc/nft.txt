@@ -642,9 +642,11 @@ representation of symbolic values and type compatibility with other expressions.
 DESCRIBE COMMAND
 ~~~~~~~~~~~~~~~~
 [verse]
-*describe* 'expression'
+*describe* 'expression' | 'data type'
 
 The *describe* command shows information about the type of an expression and its data type.
+A data type may also be given, in which nft will display more information
+about the type.
 
 .The describe command
 ---------------------
@@ -670,6 +672,17 @@ and type compatibility of expressions. A number of global data types exist, in
 addition some expression types define further data types specific to the
 expression type. Most data types have a fixed size, some however may have a
 dynamic size, f.i. the string type. +
+Some types also have predefined symbolic constants.  Those can be listed
+using the nft *describe* command:
+
+---------------------
+$ nft describe ct_state
+datatype ct_state (conntrack state) (basetype bitmask, integer), 32 bits
+
+pre-defined symbolic constants (in hexadecimal):
+invalid                         0x00000001
+new ...
+---------------------
 
 Types may be derived from lower order types, f.i. the IPv4 address type is
 derived from the integer type, meaning an IPv4 address can also be specified as

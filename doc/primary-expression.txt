@@ -292,6 +292,8 @@ Address type |
 fib_addrtype
 |=======================
 
+Use *nft* *describe* *fib_addrtype* to get a list of all address types.
+
 .Using fib expressions
 ----------------------
 # drop packets without a reverse path

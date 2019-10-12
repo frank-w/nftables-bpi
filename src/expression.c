@@ -122,11 +122,24 @@ const char *expr_name(const struct expr *e)
 
 void expr_describe(const struct expr *expr, struct output_ctx *octx)
 {
-	const struct datatype *dtype = expr->dtype;
+	const struct datatype *dtype = expr->dtype, *edtype = NULL;
+	unsigned int len = expr->len;
 	const char *delim = "";
 
-	nft_print(octx, "%s expression, datatype %s (%s)",
-		  expr_name(expr), dtype->name, dtype->desc);
+	if (dtype == &invalid_type &&
+	    expr->etype == EXPR_SYMBOL)
+		edtype = datatype_lookup_byname(expr->identifier);
+
+	if (edtype) {
+		dtype = edtype;
+		nft_print(octx, "datatype %s (%s)",
+			  dtype->name, dtype->desc);
+		len = dtype->size;
+	} else {
+		nft_print(octx, "%s expression, datatype %s (%s)",
+			  expr_name(expr), dtype->name, dtype->desc);
+	}
+
 	if (dtype->basetype != NULL) {
 		nft_print(octx, " (basetype ");
 		for (dtype = dtype->basetype; dtype != NULL;
@@ -138,23 +151,26 @@ void expr_describe(const struct expr *expr, struct output_ctx *octx)
 	}
 
 	if (expr_basetype(expr)->type == TYPE_STRING) {
-		if (expr->len)
+		if (len)
 			nft_print(octx, ", %u characters",
-				  expr->len / BITS_PER_BYTE);
+				  len / BITS_PER_BYTE);
 		else
 			nft_print(octx, ", dynamic length");
 	} else
-		nft_print(octx, ", %u bits", expr->len);
+		nft_print(octx, ", %u bits", len);
+
+	if (!edtype)
+		edtype = expr->dtype;
 
 	nft_print(octx, "\n");
 
-	if (expr->dtype->sym_tbl != NULL) {
+	if (edtype->sym_tbl != NULL) {
 		nft_print(octx, "\npre-defined symbolic constants ");
-		if (expr->dtype->sym_tbl->base == BASE_DECIMAL)
+		if (edtype->sym_tbl->base == BASE_DECIMAL)
 			nft_print(octx, "(in decimal):\n");
 		else
 			nft_print(octx, "(in hexadecimal):\n");
-		symbol_table_print(expr->dtype->sym_tbl, expr->dtype,
+		symbol_table_print(edtype->sym_tbl, edtype,
 				   expr->byteorder, octx);
 	}
 }

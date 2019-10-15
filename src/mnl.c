@@ -945,7 +945,7 @@ mnl_nft_set_dump(struct netlink_ctx *ctx, int family, const char *table)
 	nlh = nftnl_nlmsg_build_hdr(buf, NFT_MSG_GETSET, family,
 				    NLM_F_DUMP, ctx->seqnum);
 	if (table != NULL)
-		nftnl_set_set(s, NFTNL_SET_TABLE, table);
+		nftnl_set_set_str(s, NFTNL_SET_TABLE, table);
 	nftnl_set_nlmsg_build_payload(nlh, s);
 	nftnl_set_free(s);
 

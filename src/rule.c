@@ -1869,7 +1869,7 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, "%s", opts->nl);
 		nft_print(octx, "%s%sprotocol ", opts->tab, opts->tab);
 		print_proto_name_proto(obj->ct_timeout.l4proto, octx);
-		nft_print(octx, "%s", opts->nl);
+		nft_print(octx, "%s", opts->stmt_separator);
 		nft_print(octx, "%s%sl3proto %s%s",
 			  opts->tab, opts->tab,
 			  family2str(obj->ct_timeout.l3proto),

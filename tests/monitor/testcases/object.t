@@ -37,7 +37,7 @@ I delete ct helper ip t cth
 O -
 J {"delete": {"ct helper": {"family": "ip", "name": "cth", "table": "t", "handle": 0, "type": "sip", "protocol": "tcp", "l3proto": "ip"}}}
 
-I add ct timeout ip t ctt { protocol udp; l3proto ip; policy = { unreplied: 15, replied: 12 }; }
+I add ct timeout ip t ctt { protocol udp; l3proto ip; policy = { unreplied : 15, replied : 12 }; }
 O -
 J {"add": {"ct timeout": {"family": "ip", "name": "ctt", "table": "t", "handle": 0, "protocol": "udp", "l3proto": "ip", "policy": {"unreplied": 15, "replied": 12}}}}
 

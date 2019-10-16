@@ -388,7 +388,7 @@ static int netlink_events_setelem_cb(const struct nlmsghdr *nlh, int type,
 
 	set = set_lookup_global(family, table, setname, &monh->ctx->nft->cache);
 	if (set == NULL) {
-		fprintf(stderr, "W: Received event for an unknown set.");
+		fprintf(stderr, "W: Received event for an unknown set.\n");
 		goto out;
 	}
 

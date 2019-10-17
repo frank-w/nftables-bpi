@@ -609,6 +609,12 @@ static void netlink_events_cache_addset(struct netlink_mon_handler *monh,
 		goto out;
 	}
 
+	if (nft_output_echo(&monh->ctx->nft->output) &&
+	    !set_is_anonymous(s->flags)) {
+		set_free(s);
+		goto out;
+	}
+
 	set_add_hash(s, t);
 out:
 	nftnl_set_free(nls);
@@ -635,6 +641,10 @@ static void netlink_events_cache_addsetelem(struct netlink_mon_handler *monh,
 			"W: Unable to cache set_elem. Set not found.\n");
 		goto out;
 	}
+
+	if (nft_output_echo(&monh->ctx->nft->output) &&
+	    !set_is_anonymous(set->flags))
+		goto out;
 
 	nlsei = nftnl_set_elems_iter_create(nls);
 	if (nlsei == NULL)
@@ -744,7 +754,8 @@ out:
 static void netlink_events_cache_update(struct netlink_mon_handler *monh,
 					const struct nlmsghdr *nlh, int type)
 {
-	if (!monh->cache_needed)
+	if (nft_output_echo(&monh->ctx->nft->output) &&
+	    type != NFT_MSG_NEWSET && type != NFT_MSG_NEWSETELEM)
 		return;
 
 	switch (type) {

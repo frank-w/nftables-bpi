@@ -171,7 +171,6 @@ struct netlink_mon_handler {
 	struct netlink_ctx	*ctx;
 	const struct location	*loc;
 	unsigned int		debug_mask;
-	bool			cache_needed;
 	struct nft_cache	*cache;
 };
 

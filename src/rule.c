@@ -2502,23 +2502,6 @@ static int do_command_rename(struct netlink_ctx *ctx, struct cmd *cmd)
 	return 0;
 }
 
-static bool need_cache(const struct cmd *cmd)
-{
-	/*
-	 *  - new rules in default format
-	 *  - new elements
-	 */
-	if (((cmd->monitor->flags & (1 << NFT_MSG_NEWRULE)) &&
-	    (cmd->monitor->format == NFTNL_OUTPUT_DEFAULT)) ||
-	    (cmd->monitor->flags & (1 << NFT_MSG_NEWSETELEM)))
-		return true;
-
-	if (cmd->monitor->flags & (1 << NFT_MSG_TRACE))
-		return true;
-
-	return false;
-}
-
 static int do_command_monitor(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct netlink_mon_handler monhandler = {
@@ -2532,8 +2515,6 @@ static int do_command_monitor(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	if (nft_output_json(&ctx->nft->output))
 		monhandler.format = NFTNL_OUTPUT_JSON;
-
-	monhandler.cache_needed = need_cache(cmd);
 
 	return netlink_monitor(&monhandler, ctx->nft->nf_sock);
 }

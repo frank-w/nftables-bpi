@@ -1842,6 +1842,7 @@ flowtable_expr_member	:	STRING
 				$$ = symbol_expr_alloc(&@$, SYMBOL_VALUE,
 						       current_scope(state),
 						       $1);
+				xfree($1);
 			}
 			;
 

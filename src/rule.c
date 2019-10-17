@@ -1180,6 +1180,7 @@ struct table *table_alloc(void)
 void table_free(struct table *table)
 {
 	struct chain *chain, *next;
+	struct flowtable *ft, *nft;
 	struct set *set, *nset;
 	struct obj *obj, *nobj;
 
@@ -1189,6 +1190,8 @@ void table_free(struct table *table)
 		chain_free(chain);
 	list_for_each_entry_safe(set, nset, &table->sets, list)
 		set_free(set);
+	list_for_each_entry_safe(ft, nft, &table->flowtables, list)
+		flowtable_free(ft);
 	list_for_each_entry_safe(obj, nobj, &table->objs, list)
 		obj_free(obj);
 	handle_free(&table->handle);
@@ -2104,10 +2107,19 @@ struct flowtable *flowtable_get(struct flowtable *flowtable)
 
 void flowtable_free(struct flowtable *flowtable)
 {
+	int i;
+
 	if (--flowtable->refcnt > 0)
 		return;
 	handle_free(&flowtable->handle);
 	expr_free(flowtable->priority.expr);
+	expr_free(flowtable->dev_expr);
+
+	if (flowtable->dev_array != NULL) {
+		for (i = 0; i < flowtable->dev_array_len; i++)
+			xfree(flowtable->dev_array[i]);
+		xfree(flowtable->dev_array);
+	}
 	xfree(flowtable);
 }
 

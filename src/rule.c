@@ -538,7 +538,8 @@ static void do_set_print(const struct set *set, struct print_fmt_options *opts,
 {
 	set_print_declaration(set, opts, octx);
 
-	if (set->flags & NFT_SET_EVAL && nft_output_stateless(octx)) {
+	if ((set->flags & NFT_SET_EVAL && nft_output_stateless(octx)) ||
+	    nft_output_terse(octx)) {
 		nft_print(octx, "%s}%s", opts->tab, opts->nl);
 		return;
 	}

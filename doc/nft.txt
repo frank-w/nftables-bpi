@@ -97,6 +97,10 @@ For a full summary of options, run *nft --help*.
 *--numeric-time*::
 	Show time, day and hour values in numeric format.
 
+*-t*::
+*--terse*::
+	Omit contents of sets from output.
+
 INPUT FILE FORMATS
 ------------------
 LEXICAL CONVENTIONS

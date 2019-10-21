@@ -56,6 +56,7 @@ enum {
 	NFT_CTX_OUTPUT_NUMERIC_ALL	= (NFT_CTX_OUTPUT_NUMERIC_PROTO |
 					   NFT_CTX_OUTPUT_NUMERIC_PRIO |
 					   NFT_CTX_OUTPUT_NUMERIC_SYMBOL),
+	NFT_CTX_OUTPUT_TERSE		= (1 << 11),
 };
 
 unsigned int nft_ctx_output_get_flags(struct nft_ctx *ctx);

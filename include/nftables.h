@@ -90,6 +90,11 @@ static inline bool nft_output_numeric_symbol(const struct output_ctx *octx)
 	return octx->flags & NFT_CTX_OUTPUT_NUMERIC_SYMBOL;
 }
 
+static inline bool nft_output_terse(const struct output_ctx *octx)
+{
+	return octx->flags & NFT_CTX_OUTPUT_TERSE;
+}
+
 struct nft_cache {
 	uint32_t		genid;
 	struct list_head	list;

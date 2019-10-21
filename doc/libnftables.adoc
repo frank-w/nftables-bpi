@@ -80,16 +80,17 @@ The flags setting controls the output format.
 
 ----
 enum {
-        NFT_CTX_OUTPUT_REVERSEDNS  = (1 << 0),
-        NFT_CTX_OUTPUT_SERVICE     = (1 << 1),
-        NFT_CTX_OUTPUT_STATELESS   = (1 << 2),
-        NFT_CTX_OUTPUT_HANDLE      = (1 << 3),
-        NFT_CTX_OUTPUT_JSON        = (1 << 4),
-        NFT_CTX_OUTPUT_ECHO        = (1 << 5),
-        NFT_CTX_OUTPUT_GUID        = (1 << 6),
-        NFT_CTX_OUTPUT_NUMERIC_PROTO = (1 << 7),
-        NFT_CTX_OUTPUT_NUMERIC_PRIO = (1 << 8),
+        NFT_CTX_OUTPUT_REVERSEDNS     = (1 << 0),
+        NFT_CTX_OUTPUT_SERVICE        = (1 << 1),
+        NFT_CTX_OUTPUT_STATELESS      = (1 << 2),
+        NFT_CTX_OUTPUT_HANDLE         = (1 << 3),
+        NFT_CTX_OUTPUT_JSON           = (1 << 4),
+        NFT_CTX_OUTPUT_ECHO           = (1 << 5),
+        NFT_CTX_OUTPUT_GUID           = (1 << 6),
+        NFT_CTX_OUTPUT_NUMERIC_PROTO  = (1 << 7),
+        NFT_CTX_OUTPUT_NUMERIC_PRIO   = (1 << 8),
         NFT_CTX_OUTPUT_NUMERIC_SYMBOL = (1 << 9),
+        NFT_CTX_OUTPUT_TERSE          = (1 << 11),
 };
 ----
 
@@ -123,6 +124,8 @@ NFT_CTX_OUTPUT_NUMERIC_SYMBOL::
 	Display expression datatype as numeric value.
 NFT_CTX_OUTPUT_NUMERIC_ALL::
 	Display all numerically.
+NFT_CTX_OUTPUT_TERSE::
+	If terse output has been requested, then the contents of sets are not printed.
 
 The *nft_ctx_output_get_flags*() function returns the output flags setting's value in 'ctx'.
 

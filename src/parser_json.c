@@ -2630,7 +2630,7 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 		chain->dev = xstrdup(chain->dev);
 	if (!json_unpack(root, "{s:s}", "policy", &policy)) {
 		chain->policy = parse_policy(policy);
-		if (chain->policy < 0) {
+		if (!chain->policy) {
 			json_error(ctx, "Unknown policy '%s'.", policy);
 			chain_free(chain);
 			return NULL;

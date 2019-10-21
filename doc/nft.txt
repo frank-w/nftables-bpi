@@ -93,7 +93,7 @@ For a full summary of options, run *nft --help*.
 	Read input from an interactive readline CLI. You can use quit to exit, or use the EOF marker,
 	normally this is CTRL-D.
 
-*-t*::
+*-T*::
 *--numeric-time*::
 	Show time, day and hour values in numeric format.
 

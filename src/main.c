@@ -42,10 +42,10 @@ enum opt_vals {
 	OPT_GUID		= 'u',
 	OPT_NUMERIC_PRIO	= 'y',
 	OPT_NUMERIC_PROTO	= 'p',
-	OPT_NUMERIC_TIME	= 't',
+	OPT_NUMERIC_TIME	= 'T',
 	OPT_INVALID		= '?',
 };
-#define OPTSTRING	"+hvcf:iI:jvnsNaeSupypt"
+#define OPTSTRING	"+hvcf:iI:jvnsNaeSupypT"
 
 static const struct option options[] = {
 	{
@@ -145,7 +145,7 @@ static void show_help(const char *name)
 "  -S, --service			Translate ports to service names as described in /etc/services.\n"
 "  -p, --numeric-protocol	Print layer 4 protocols numerically.\n"
 "  -y, --numeric-priority	Print chain priority numerically.\n"
-"  -t, --numeric-time		Print time values numerically.\n"
+"  -T, --numeric-time		Print time values numerically.\n"
 "  -a, --handle			Output rule handle.\n"
 "  -e, --echo			Echo what has been added, inserted or replaced.\n"
 "  -I, --includepath <directory>	Add <directory> to the paths searched for include files. Default is: %s\n"

@@ -245,7 +245,6 @@ int main(int argc, char * const *argv)
 			break;
 		case OPT_NUMERIC:
 			output_flags |= NFT_CTX_OUTPUT_NUMERIC_ALL;
-			output_flags |= NFT_CTX_OUTPUT_NUMERIC_TIME;
 			break;
 		case OPT_STATELESS:
 			output_flags |= NFT_CTX_OUTPUT_STATELESS;

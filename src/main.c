@@ -117,6 +117,10 @@ static const struct option options[] = {
 		.val		= OPT_NUMERIC_PRIO,
 	},
 	{
+		.name		= "numeric-protocol",
+		.val		= OPT_NUMERIC_PROTO,
+	},
+	{
 		.name		= "numeric-time",
 		.val		= OPT_NUMERIC_TIME,
 	},

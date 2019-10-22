@@ -90,6 +90,10 @@ enum {
         NFT_CTX_OUTPUT_NUMERIC_PROTO  = (1 << 7),
         NFT_CTX_OUTPUT_NUMERIC_PRIO   = (1 << 8),
         NFT_CTX_OUTPUT_NUMERIC_SYMBOL = (1 << 9),
+        NFT_CTX_OUTPUT_NUMERIC_TIME   = (1 << 10),
+        NFT_CTX_OUTPUT_NUMERIC_ALL    = (NFT_CTX_OUTPUT_NUMERIC_PROTO |
+                                         NFT_CTX_OUTPUT_NUMERIC_PRIO  |
+                                         NFT_CTX_OUTPUT_NUMERIC_TIME),
         NFT_CTX_OUTPUT_TERSE          = (1 << 11),
 };
 ----
@@ -122,6 +126,8 @@ NFT_CTX_OUTPUT_NUMERIC_PRIO::
 	Display base chain priority numerically.
 NFT_CTX_OUTPUT_NUMERIC_SYMBOL::
 	Display expression datatype as numeric value.
+NFT_CTX_OUTPUT_NUMERIC_TIME::
+	Display time, day and hour values in numeric format.
 NFT_CTX_OUTPUT_NUMERIC_ALL::
 	Display all numerically.
 NFT_CTX_OUTPUT_TERSE::

@@ -58,6 +58,8 @@ class Nftables:
         "numeric_proto":  (1 << 7),
         "numeric_prio":   (1 << 8),
         "numeric_symbol": (1 << 9),
+        "numeric_time":   (1 << 10),
+        "terse":          (1 << 11),
     }
 
     validator = None
@@ -304,6 +306,39 @@ class Nftables:
         Returns the previous value.
         """
         return self.__set_output_flag("numeric_symbol", val)
+
+    def get_numeric_time_output(self):
+        """Get current status of numeric times output flag.
+
+        Returns a boolean value indicating the status.
+        """
+        return self.__get_output_flag("numeric_time")
+
+    def set_numeric_time_output(self, val):
+        """Set numeric times output flag.
+
+        Accepts a boolean turning numeric representation of time values
+        in output either on or off.
+
+        Returns the previous value.
+        """
+        return self.__set_output_flag("numeric_time", val)
+
+    def get_terse_output(self):
+        """Get the current state of terse output.
+
+        Returns a boolean indicating whether terse output is active or not.
+        """
+        return self.__get_output_flag("terse")
+
+    def set_terse_output(self, val):
+        """Enable or disable terse output.
+
+        Accepts a boolean turning terse output either on or off.
+
+        Returns the previous value.
+        """
+        return self.__set_output_flag("terse", val)
 
     def get_debug(self):
         """Get currently active debug flags.

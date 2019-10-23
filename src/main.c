@@ -46,7 +46,7 @@ enum opt_vals {
 	OPT_TERSE		= 't',
 	OPT_INVALID		= '?',
 };
-#define OPTSTRING	"+hvcf:iI:jvnsNaeSupypTt"
+#define OPTSTRING	"hvcf:iI:jvnsNaeSupypTt"
 
 static const struct option options[] = {
 	{

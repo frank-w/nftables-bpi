@@ -1411,11 +1411,11 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 			  unsigned int flags)
 {
 	struct nftnl_flowtable *flo;
-	const char *dev_array[8];
+	const char **dev_array;
 	struct nlmsghdr *nlh;
+	int i = 0, len = 1;
 	struct expr *expr;
 	int priority;
-	int i = 0;
 
 	flo = nftnl_flowtable_alloc();
 	if (!flo)
@@ -1434,10 +1434,15 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, priority);
 
 	list_for_each_entry(expr, &cmd->flowtable->dev_expr->expressions, list)
+		len++;
+
+	dev_array = calloc(len, sizeof(char *));
+	list_for_each_entry(expr, &cmd->flowtable->dev_expr->expressions, list)
 		dev_array[i++] = expr->identifier;
 
 	dev_array[i] = NULL;
 	nftnl_flowtable_set(flo, NFTNL_FLOWTABLE_DEVICES, dev_array);
+	free(dev_array);
 
 	netlink_dump_flowtable(flo, ctx);
 

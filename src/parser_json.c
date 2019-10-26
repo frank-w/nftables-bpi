@@ -17,6 +17,7 @@
 #include <netinet/icmp6.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
+#include <net/if.h>
 #include <linux/xfrm.h>
 
 #include <linux/netfilter.h>
@@ -2581,8 +2582,9 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 		.table.location = *int_loc,
 	};
 	const char *family = "", *policy = "", *type, *hookstr;
-	int prio;
+	const char name[IFNAMSIZ];
 	struct chain *chain;
+	int prio;
 
 	if (json_unpack_err(ctx, root, "{s:s, s:s}",
 			    "family", &family,
@@ -2626,8 +2628,18 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 		return NULL;
 	}
 
-	if (!json_unpack(root, "{s:s}", "dev", &chain->dev))
-		chain->dev = xstrdup(chain->dev);
+	if (!json_unpack(root, "{s:s}", "dev", &name)) {
+		struct expr *dev_expr, *expr;
+
+		dev_expr = compound_expr_alloc(int_loc, EXPR_LIST);
+		expr = constant_expr_alloc(int_loc, &integer_type,
+					   BYTEORDER_HOST_ENDIAN,
+					   strlen(name) * BITS_PER_BYTE,
+					   name);
+		compound_expr_add(dev_expr, expr);
+		chain->dev_expr = dev_expr;
+	}
+
 	if (!json_unpack(root, "{s:s}", "policy", &policy)) {
 		chain->policy = parse_policy(policy);
 		if (!chain->policy) {

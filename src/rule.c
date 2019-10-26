@@ -814,6 +814,7 @@ struct chain *chain_get(struct chain *chain)
 void chain_free(struct chain *chain)
 {
 	struct rule *rule, *next;
+	int i;
 
 	if (--chain->refcnt > 0)
 		return;
@@ -822,8 +823,10 @@ void chain_free(struct chain *chain)
 	handle_free(&chain->handle);
 	scope_release(&chain->scope);
 	xfree(chain->type);
-	if (chain->dev != NULL)
-		xfree(chain->dev);
+	expr_free(chain->dev_expr);
+	for (i = 0; i < chain->dev_array_len; i++)
+		xfree(chain->dev_array[i]);
+	xfree(chain->dev_array);
 	expr_free(chain->priority.expr);
 	expr_free(chain->policy);
 	xfree(chain);
@@ -1102,7 +1105,7 @@ static void chain_print_declaration(const struct chain *chain,
 				    struct output_ctx *octx)
 {
 	char priobuf[STD_PRIO_BUFSIZE];
-	int policy;
+	int policy, i;
 
 	nft_print(octx, "\tchain %s {", chain->handle.chain.name);
 	if (nft_output_handle(octx))
@@ -1111,8 +1114,17 @@ static void chain_print_declaration(const struct chain *chain,
 	if (chain->flags & CHAIN_F_BASECHAIN) {
 		nft_print(octx, "\t\ttype %s hook %s", chain->type,
 			  hooknum2str(chain->handle.family, chain->hooknum));
-		if (chain->dev != NULL)
-			nft_print(octx, " device \"%s\"", chain->dev);
+		if (chain->dev_array_len == 1) {
+			nft_print(octx, " device \"%s\"", chain->dev_array[0]);
+		} else if (chain->dev_array_len > 1) {
+			nft_print(octx, " devices = { ");
+			for (i = 0; i < chain->dev_array_len; i++) {
+				nft_print(octx, "%s", chain->dev_array[i]);
+					if (i + 1 != chain->dev_array_len)
+						nft_print(octx, ", ");
+			}
+			nft_print(octx, " }");
+		}
 		nft_print(octx, " priority %s;",
 			  prio2str(octx, priobuf, sizeof(priobuf),
 				   chain->handle.family, chain->hooknum,

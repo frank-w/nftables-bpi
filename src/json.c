@@ -222,9 +222,9 @@ static json_t *rule_print_json(struct output_ctx *octx,
 
 static json_t *chain_print_json(const struct chain *chain)
 {
+	int priority, policy, n = 0;
+	struct expr *dev, *expr;
 	json_t *root, *tmp;
-	int priority;
-	int policy;
 
 	root = json_pack("{s:s, s:s, s:s, s:I}",
 			 "family", family2str(chain->handle.family),
@@ -243,8 +243,17 @@ static json_t *chain_print_json(const struct chain *chain)
 						    chain->hooknum),
 				"prio", priority,
 				"policy", chain_policy2str(policy));
-		if (chain->dev)
-			json_object_set_new(tmp, "dev", json_string(chain->dev));
+		if (chain->dev_expr) {
+			list_for_each_entry(expr, &chain->dev_expr->expressions, list) {
+				dev = expr;
+				n++;
+			}
+		}
+
+		if (n == 1) {
+			json_object_set_new(tmp, "dev",
+					    json_string(dev->identifier));
+		}
 		json_object_update(root, tmp);
 		json_decref(tmp);
 	}

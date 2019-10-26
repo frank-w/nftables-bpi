@@ -564,11 +564,11 @@ int nft_lex(void *, void *, void *);
 %type <val>			family_spec family_spec_explicit
 %type <val32>			int_num	chain_policy
 %type <prio_spec>		extended_prio_spec prio_spec
-%type <string>			extended_prio_name
-%destructor { xfree($$); }	extended_prio_name
+%type <string>			extended_prio_name quota_unit
+%destructor { xfree($$); }	extended_prio_name quota_unit
 
-%type <string>			dev_spec quota_unit
-%destructor { xfree($$); }	dev_spec quota_unit
+%type <expr>			dev_spec
+%destructor { xfree($$); }	dev_spec
 
 %type <table>			table_block_alloc table_block
 %destructor { close_scope(state); table_free($$); }	table_block_alloc
@@ -1992,7 +1992,7 @@ hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	prio_spec
 				}
 				xfree($4);
 
-				$<chain>0->dev		= $5;
+				$<chain>0->dev_expr	= $5;
 				$<chain>0->priority	= $6;
 				$<chain>0->flags	|= CHAIN_F_BASECHAIN;
 			}
@@ -2072,7 +2072,21 @@ int_num			:	NUM			{ $$ = $1; }
 			|	DASH	NUM		{ $$ = -$2; }
 			;
 
-dev_spec		:	DEVICE	string		{ $$ = $2; }
+dev_spec		:	DEVICE	string
+			{
+				struct expr *expr;
+
+				expr = constant_expr_alloc(&@$, &string_type,
+							   BYTEORDER_HOST_ENDIAN,
+							   strlen($2) * BITS_PER_BYTE, $2);
+				$$ = compound_expr_alloc(&@$, EXPR_LIST);
+				compound_expr_add($$, expr);
+
+			}
+			|	DEVICES		'='	flowtable_expr
+			{
+				$$ = $3;
+			}
 			|	/* empty */		{ $$ = NULL; }
 			;
 

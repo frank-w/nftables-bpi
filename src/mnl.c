@@ -526,10 +526,12 @@ err:
 int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		      unsigned int flags)
 {
+	int priority, policy, i = 0;
 	struct nftnl_chain *nlc;
+	const char **dev_array;
 	struct nlmsghdr *nlh;
-	int priority;
-	int policy;
+	struct expr *expr;
+	int dev_array_len;
 
 	nlc = nftnl_chain_alloc();
 	if (nlc == NULL)
@@ -555,9 +557,26 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 					BYTEORDER_HOST_ENDIAN, sizeof(int));
 			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_POLICY, policy);
 		}
-		if (cmd->chain->dev != NULL)
-			nftnl_chain_set_str(nlc, NFTNL_CHAIN_DEV,
-					    cmd->chain->dev);
+		if (cmd->chain->dev_expr) {
+			dev_array = xmalloc(sizeof(char *) * 8);
+			dev_array_len = 8;
+			list_for_each_entry(expr, &cmd->chain->dev_expr->expressions, list) {
+				dev_array[i++] = expr->identifier;
+				if (i == dev_array_len) {
+					dev_array_len *= 2;
+					dev_array = xrealloc(dev_array,
+							     dev_array_len * sizeof(char *));
+				}
+			}
+
+			dev_array[i] = NULL;
+			if (i == 1)
+				nftnl_chain_set_str(nlc, NFTNL_CHAIN_DEV, dev_array[0]);
+			else if (i > 1)
+				nftnl_chain_set(nlc, NFTNL_CHAIN_DEVICES, dev_array);
+
+			xfree(dev_array);
+		}
 	}
 	netlink_dump_chain(nlc, ctx);
 

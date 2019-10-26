@@ -208,7 +208,9 @@ struct chain {
 	struct prio_spec	priority;
 	struct expr		*policy;
 	const char		*type;
-	const char		*dev;
+	const char		**dev_array;
+	struct expr		*dev_expr;
+	int			dev_array_len;
 	struct scope		scope;
 	struct list_head	rules;
 };

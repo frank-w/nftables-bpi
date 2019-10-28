@@ -573,7 +573,8 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 			if (i == 1)
 				nftnl_chain_set_str(nlc, NFTNL_CHAIN_DEV, dev_array[0]);
 			else if (i > 1)
-				nftnl_chain_set(nlc, NFTNL_CHAIN_DEVICES, dev_array);
+				nftnl_chain_set_data(nlc, NFTNL_CHAIN_DEVICES, dev_array,
+						     sizeof(char *) * dev_array_len);
 
 			xfree(dev_array);
 		}
@@ -714,7 +715,7 @@ int mnl_nft_table_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		memory_allocation_error();
 
 	nftnl_table_set_u32(nlt, NFTNL_TABLE_FAMILY, cmd->handle.family);
-	nftnl_table_set(nlt, NFTNL_TABLE_NAME, cmd->handle.table.name);
+	nftnl_table_set_str(nlt, NFTNL_TABLE_NAME, cmd->handle.table.name);
 	if (cmd->table)
 		nftnl_table_set_u32(nlt, NFTNL_TABLE_FLAGS, cmd->table->flags);
 	else
@@ -743,7 +744,8 @@ int mnl_nft_table_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 
 	nftnl_table_set_u32(nlt, NFTNL_TABLE_FAMILY, cmd->handle.family);
 	if (cmd->handle.table.name)
-		nftnl_table_set(nlt, NFTNL_TABLE_NAME, cmd->handle.table.name);
+		nftnl_table_set_str(nlt, NFTNL_TABLE_NAME,
+				    cmd->handle.table.name);
 	else if (cmd->handle.handle.id)
 		nftnl_table_set_u64(nlt, NFTNL_TABLE_HANDLE,
 				    cmd->handle.handle.id);
@@ -1035,8 +1037,9 @@ int mnl_nft_obj_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		if (obj->ct_timeout.l3proto)
 			nftnl_obj_set_u16(nlo, NFTNL_OBJ_CT_TIMEOUT_L3PROTO,
 					  obj->ct_timeout.l3proto);
-		nftnl_obj_set(nlo, NFTNL_OBJ_CT_TIMEOUT_ARRAY,
-			      obj->ct_timeout.timeout);
+		nftnl_obj_set_data(nlo, NFTNL_OBJ_CT_TIMEOUT_ARRAY,
+				   obj->ct_timeout.timeout,
+				   sizeof(obj->ct_timeout.timeout));
 		break;
 	case NFT_OBJECT_CT_EXPECT:
 		if (obj->ct_expect.l3proto)
@@ -1441,7 +1444,8 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		dev_array[i++] = expr->identifier;
 
 	dev_array[i] = NULL;
-	nftnl_flowtable_set(flo, NFTNL_FLOWTABLE_DEVICES, dev_array);
+	nftnl_flowtable_set_data(flo, NFTNL_FLOWTABLE_DEVICES,
+				 dev_array, sizeof(char *) * len);
 	free(dev_array);
 
 	netlink_dump_flowtable(flo, ctx);

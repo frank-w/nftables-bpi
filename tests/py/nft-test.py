@@ -115,12 +115,12 @@ def print_msg(reason, errstr, filename=None, lineno=None, color=None):
     '''
     Prints a message with nice colors, indicating file and line number.
     '''
+    color_errstr = "%s%s%s" % (color, errstr, Colors.ENDC)
     if filename and lineno:
-        sys.stderr.write(filename + ": " + color + errstr + Colors.ENDC + \
-              " line %d: %s" % (lineno + 1, reason))
+        sys.stderr.write("%s: %s line %d: %s\n" %
+                         (filename, color_errstr, lineno + 1, reason))
     else:
-        sys.stderr.write(color + errstr + Colors.ENDC + " %s" % reason)
-    sys.stderr.write("\n")
+        sys.stderr.write("%s %s\n" % (color_errstr, reason))
     sys.stderr.flush() # So that the message stay in the right place.
 
 

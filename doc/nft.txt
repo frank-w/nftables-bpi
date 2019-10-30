@@ -264,7 +264,7 @@ TABLES
 [verse]
 {*add* | *create*} *table* ['family'] 'table' [*{ flags* 'flags' *; }*]
 {*delete* | *list* | *flush*} *table* ['family'] 'table'
-*list tables*
+*list tables* ['family']
 *delete table* ['family'] *handle* 'handle'
 
 Tables are containers for chains, sets and stateful objects. They are identified
@@ -317,7 +317,7 @@ CHAINS
 [verse]
 {*add* | *create*} *chain* ['family'] 'table' 'chain' [*{ type* 'type' *hook* 'hook' [*device* 'device'] *priority* 'priority' *;* [*policy* 'policy' *;*] *}*]
 {*delete* | *list* | *flush*} *chain* ['family'] 'table' 'chain'
-*list chains*
+*list chains* ['family']
 *delete chain* ['family'] 'table' *handle* 'handle'
 *rename chain* ['family'] 'table' 'chain' 'newname'
 
@@ -495,7 +495,7 @@ section describes nft set syntax in more detail.
 [verse]
 *add set* ['family'] 'table' 'set' *{ type* 'type' *;* [*flags* 'flags' *;*] [*timeout* 'timeout' *;*] [*gc-interval* 'gc-interval' *;*] [*elements = {* 'element'[*,* ...] *} ;*] [*size* 'size' *;*] [*policy* 'policy' *;*] [*auto-merge ;*] *}*
 {*delete* | *list* | *flush*} *set* ['family'] 'table' 'set'
-*list sets*
+*list sets* ['family']
 *delete set* ['family'] 'table' *handle* 'handle'
 {*add* | *delete*} *element* ['family'] 'table' 'set' *{* 'element'[*,* ...] *}*
 
@@ -547,7 +547,7 @@ MAPS
 [verse]
 *add map* ['family'] 'table' 'map' *{ type* 'type' [*flags* 'flags' *;*] [*elements = {* 'element'[*,* ...] *} ;*] [*size* 'size' *;*] [*policy* 'policy' *;*] *}*
 {*delete* | *list* | *flush*} *map* ['family'] 'table' 'map'
-*list maps*
+*list maps* ['family']
 {*add* | *delete*} *element* ['family'] 'table' 'map' *{ elements = {* 'element'[*,* ...] *} ; }*
 
 Maps store data based on some specific key used as input. They are uniquely identified by a user-defined name and attached to tables.
@@ -586,6 +586,7 @@ FLOWTABLES
 -----------
 [verse]
 {*add* | *create*} *flowtable* ['family'] 'table' 'flowtable' *{ hook* 'hook' *priority* 'priority' *; devices = {* 'device'[*,* ...] *} ; }*
+*list flowtables* ['family']
 {*delete* | *list*} *flowtable* ['family'] 'table' 'flowtable'
 
 Flowtables allow you to accelerate packet forwarding in software. Flowtables
@@ -617,8 +618,8 @@ STATEFUL OBJECTS
 [verse]
 {*add* | *delete* | *list* | *reset*} 'type' ['family'] 'table' 'object'
 *delete* 'type' ['family'] 'table' *handle* 'handle'
-*list counters*
-*list quotas*
+*list counters* ['family']
+*list quotas* ['family']
 
 Stateful objects are attached to tables and are identified by an unique name.
 They group stateful information from rules, to reference them in rules the

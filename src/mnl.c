@@ -1429,7 +1429,7 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_TABLE,
 				cmd->handle.table.name);
 	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_NAME,
-				cmd->handle.flowtable);
+				cmd->handle.flowtable.name);
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM,
 				cmd->flowtable->hooknum);
 	mpz_export_data(&priority, cmd->flowtable->priority.expr->value,
@@ -1475,7 +1475,7 @@ int mnl_nft_flowtable_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_TABLE,
 				cmd->handle.table.name);
 	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_NAME,
-				cmd->handle.flowtable);
+				cmd->handle.flowtable.name);
 
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELFLOWTABLE, cmd->handle.family,

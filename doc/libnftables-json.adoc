@@ -117,7 +117,7 @@ ____
 *{ "add":* 'ADD_OBJECT' *}*
 
 'ADD_OBJECT' := 'TABLE' | 'CHAIN' | 'RULE' | 'SET' | 'MAP' | 'ELEMENT' |
-                'FLOWTABLE' | 'COUNTER | QUOTA' | 'CT_HELPER' | 'LIMIT' |
+                'FLOWTABLE' | 'COUNTER' | 'QUOTA' | 'CT_HELPER' | 'LIMIT' |
 		'CT_TIMEOUT' | 'CT_EXPECTATION'
 ____
 
@@ -161,9 +161,9 @@ ____
 
 'LIST_OBJECT' := 'TABLE' | 'TABLES' | 'CHAIN' | 'CHAINS' | 'SET' | 'SETS' |
                  'MAP' | 'MAPS | COUNTER' | 'COUNTERS' | 'QUOTA' | 'QUOTAS' |
-                 'CT_HELPER' | 'CT_HELPERS' | 'LIMIT' | 'LIMITS | RULESET' |
-                 'METER' | 'METERS' | 'FLOWTABLES' | 'CT_TIMEOUT' |
-                 'CT_EXPECTATION'
+                 'CT_HELPER' | 'CT_HELPERS' | 'LIMIT' | 'LIMITS' | 'RULESET' |
+                 'METER' | 'METERS' | 'FLOWTABLE' | 'FLOWTABLES' |
+                 'CT_TIMEOUT' | 'CT_EXPECTATION'
 ____
 
 List ruleset elements. The plural forms are used to list all objects of that

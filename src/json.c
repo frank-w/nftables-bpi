@@ -412,7 +412,7 @@ static json_t *flowtable_print_json(const struct flowtable *ftable)
 			BYTEORDER_HOST_ENDIAN, sizeof(int));
 	root = json_pack("{s:s, s:s, s:s, s:s, s:i}",
 			"family", family2str(ftable->handle.family),
-			"name", ftable->handle.flowtable,
+			"name", ftable->handle.flowtable.name,
 			"table", ftable->handle.table.name,
 			"hook", hooknum2str(NFPROTO_NETDEV, ftable->hooknum),
 			"prio", priority);
@@ -1724,6 +1724,21 @@ static json_t *do_list_obj_json(struct netlink_ctx *ctx,
 	return root;
 }
 
+static json_t *do_list_flowtable_json(struct netlink_ctx *ctx,
+				      struct cmd *cmd, struct table *table)
+{
+	json_t *root = json_array();
+	struct flowtable *ft;
+
+	ft = flowtable_lookup(table, cmd->handle.flowtable.name);
+	if (ft == NULL)
+		return json_null();
+
+	json_array_append_new(root, flowtable_print_json(ft));
+
+	return root;
+}
+
 static json_t *do_list_flowtables_json(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	json_t *root = json_array(), *tmp;
@@ -1814,6 +1829,9 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SECMARK:
 	case CMD_OBJ_SECMARKS:
 		root = do_list_obj_json(ctx, cmd, NFT_OBJECT_SECMARK);
+		break;
+	case CMD_OBJ_FLOWTABLE:
+		root = do_list_flowtable_json(ctx, cmd, table);
 		break;
 	case CMD_OBJ_FLOWTABLES:
 		root = do_list_flowtables_json(ctx, cmd);

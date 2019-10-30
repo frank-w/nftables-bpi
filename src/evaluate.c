@@ -218,6 +218,23 @@ static int set_not_found(struct eval_ctx *ctx, const struct location *loc,
 			 table->handle.table.name);
 }
 
+static int flowtable_not_found(struct eval_ctx *ctx, const struct location *loc,
+			       const char *ft_name)
+{
+	const struct table *table;
+	struct flowtable *ft;
+
+	ft = flowtable_lookup_fuzzy(ft_name, &ctx->nft->cache, &table);
+	if (ft == NULL)
+		return cmd_error(ctx, loc, "%s", strerror(ENOENT));
+
+	return cmd_error(ctx, loc,
+			"%s; did you mean flowtable ‘%s’ in table %s ‘%s’?",
+			strerror(ENOENT), ft->handle.flowtable.name,
+			family2str(ft->handle.family),
+			table->handle.table.name);
+}
+
 /*
  * Symbol expression: parse symbol and evaluate resulting expression.
  */
@@ -3834,6 +3851,7 @@ static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 
 static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 {
+	struct flowtable *ft;
 	struct table *table;
 	struct set *set;
 
@@ -3897,6 +3915,17 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 
 		if (chain_lookup(table, &cmd->handle) == NULL)
 			return chain_not_found(ctx);
+
+		return 0;
+	case CMD_OBJ_FLOWTABLE:
+		table = table_lookup(&cmd->handle, &ctx->nft->cache);
+		if (table == NULL)
+			return table_not_found(ctx);
+
+		ft = flowtable_lookup(table, cmd->handle.flowtable.name);
+		if (ft == NULL)
+			return flowtable_not_found(ctx, &ctx->cmd->handle.flowtable.location,
+						   ctx->cmd->handle.flowtable.name);
 
 		return 0;
 	case CMD_OBJ_QUOTA:

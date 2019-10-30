@@ -1315,6 +1315,10 @@ list_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_FLOWTABLES, &$2, &@$, NULL);
 			}
+			|	FLOWTABLE	flowtable_spec
+			{
+				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_FLOWTABLE, &$2, &@$, NULL);
+			}
 			|	MAPS		ruleset_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_MAPS, &$2, &@$, NULL);
@@ -2224,15 +2228,17 @@ set_identifier		:	identifier
 
 flowtable_spec		:	table_spec	identifier
 			{
-				$$		= $1;
-				$$.flowtable	= $2;
+				$$			= $1;
+				$$.flowtable.name	= $2;
+				$$.flowtable.location	= @2;
 			}
 			;
 
 flowtable_identifier	:	identifier
 			{
 				memset(&$$, 0, sizeof($$));
-				$$.flowtable	= $1;
+				$$.flowtable.name	= $1;
+				$$.flowtable.location	= @1;
 			}
 			;
 

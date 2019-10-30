@@ -2967,7 +2967,7 @@ static struct cmd *json_parse_cmd_add_flowtable(struct json_ctx *ctx,
 	if (json_unpack_err(ctx, root, "{s:s, s:s, s:s}",
 			    "family", &family,
 			    "table", &h.table.name,
-			    "name", &h.flowtable))
+			    "name", &h.flowtable.name))
 		return NULL;
 
 	if (parse_family(family, &h.family)) {
@@ -2975,7 +2975,7 @@ static struct cmd *json_parse_cmd_add_flowtable(struct json_ctx *ctx,
 		return NULL;
 	}
 	h.table.name = xstrdup(h.table.name);
-	h.flowtable = xstrdup(h.flowtable);
+	h.flowtable.name = xstrdup(h.flowtable.name);
 
 	if (op == CMD_DELETE)
 		return cmd_alloc(op, cmd_obj, &h, int_loc, NULL);

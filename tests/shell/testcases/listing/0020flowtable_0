@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# list only the flowtable asked for with table
+
+EXPECTED="table inet filter {
+	flowtable f {
+		hook ingress priority filter
+		devices = { lo }
+	}
+}"
+
+set -e
+
+$NFT -f - <<< "$EXPECTED"
+
+GET="$($NFT list flowtable inet filter f)"
+if [ "$EXPECTED" != "$GET" ] ; then
+	DIFF="$(which diff)"
+	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	exit 1
+fi

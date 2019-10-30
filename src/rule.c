@@ -105,7 +105,7 @@ void handle_free(struct handle *h)
 	xfree(h->table.name);
 	xfree(h->chain.name);
 	xfree(h->set.name);
-	xfree(h->flowtable);
+	xfree(h->flowtable.name);
 	xfree(h->obj.name);
 }
 
@@ -125,8 +125,8 @@ void handle_merge(struct handle *dst, const struct handle *src)
 		dst->set.name = xstrdup(src->set.name);
 		dst->set.location = src->set.location;
 	}
-	if (dst->flowtable == NULL && src->flowtable != NULL)
-		dst->flowtable = xstrdup(src->flowtable);
+	if (dst->flowtable.name == NULL && src->flowtable.name != NULL)
+		dst->flowtable.name = xstrdup(src->flowtable.name);
 	if (dst->obj.name == NULL && src->obj.name != NULL)
 		dst->obj.name = xstrdup(src->obj.name);
 	if (dst->handle.id == 0)
@@ -2156,7 +2156,7 @@ static void flowtable_print_declaration(const struct flowtable *flowtable,
 	if (opts->table != NULL)
 		nft_print(octx, " %s", opts->table);
 
-	nft_print(octx, " %s {%s", flowtable->handle.flowtable, opts->nl);
+	nft_print(octx, " %s {%s", flowtable->handle.flowtable.name, opts->nl);
 
 	nft_print(octx, "%s%shook %s priority %s%s",
 		  opts->tab, opts->tab,
@@ -2191,6 +2191,60 @@ void flowtable_print(const struct flowtable *s, struct output_ctx *octx)
 	};
 
 	do_flowtable_print(s, &opts, octx);
+}
+
+struct flowtable *flowtable_lookup(const struct table *table, const char *name)
+{
+	struct flowtable *ft;
+
+	list_for_each_entry(ft, &table->flowtables, list) {
+		if (!strcmp(ft->handle.flowtable.name, name))
+			return ft;
+	}
+	return NULL;
+}
+
+struct flowtable *flowtable_lookup_fuzzy(const char *ft_name,
+					 const struct nft_cache *cache,
+					 const struct table **t)
+{
+	struct string_misspell_state st;
+	struct table *table;
+	struct flowtable *ft;
+
+	string_misspell_init(&st);
+
+	list_for_each_entry(table, &cache->list, list) {
+		list_for_each_entry(ft, &table->flowtables, list) {
+			if (!strcmp(ft->handle.flowtable.name, ft_name)) {
+				*t = table;
+				return ft;
+			}
+			if (string_misspell_update(ft->handle.flowtable.name,
+						   ft_name, ft, &st))
+				*t = table;
+		}
+	}
+	return st.obj;
+}
+
+static int do_list_flowtable(struct netlink_ctx *ctx, struct cmd *cmd,
+			     struct table *table)
+{
+	struct flowtable *ft;
+
+	ft = flowtable_lookup(table, cmd->handle.flowtable.name);
+	if (ft == NULL)
+		return -1;
+
+	nft_print(&ctx->nft->output, "table %s %s {\n",
+		  family2str(table->handle.family),
+		  table->handle.table.name);
+
+	flowtable_print(ft, &ctx->nft->output);
+	nft_print(&ctx->nft->output, "}\n");
+
+	return 0;
 }
 
 static int do_list_flowtables(struct netlink_ctx *ctx, struct cmd *cmd)
@@ -2388,6 +2442,8 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SYNPROXY:
 	case CMD_OBJ_SYNPROXYS:
 		return do_list_obj(ctx, cmd, NFT_OBJECT_SYNPROXY);
+	case CMD_OBJ_FLOWTABLE:
+		return do_list_flowtable(ctx, cmd, table);
 	case CMD_OBJ_FLOWTABLES:
 		return do_list_flowtables(ctx, cmd);
 	default:

@@ -97,8 +97,10 @@ struct scope {
 	struct list_head	symbols;
 };
 
+extern struct scope *scope_alloc(void);
 extern struct scope *scope_init(struct scope *scope, const struct scope *parent);
 extern void scope_release(const struct scope *scope);
+extern void scope_free(struct scope *scope);
 
 /**
  * struct symbol

@@ -42,13 +42,13 @@
 #include "parser_bison.h"
 
 void parser_init(struct nft_ctx *nft, struct parser_state *state,
-		 struct list_head *msgs, struct list_head *cmds)
+		 struct list_head *msgs, struct list_head *cmds,
+		 struct scope *top_scope)
 {
 	memset(state, 0, sizeof(*state));
-	init_list_head(&state->top_scope.symbols);
 	state->msgs = msgs;
 	state->cmds = cmds;
-	state->scopes[0] = scope_init(&state->top_scope, NULL);
+	state->scopes[0] = scope_init(top_scope, NULL);
 	init_list_head(&state->indesc_list);
 }
 

@@ -645,6 +645,15 @@ struct rule *rule_lookup_by_index(const struct chain *chain, uint64_t index)
 	return NULL;
 }
 
+struct scope *scope_alloc(void)
+{
+	struct scope *scope = xzalloc(sizeof(struct scope));
+
+	init_list_head(&scope->symbols);
+
+	return scope;
+}
+
 struct scope *scope_init(struct scope *scope, const struct scope *parent)
 {
 	scope->parent = parent;
@@ -662,6 +671,12 @@ void scope_release(const struct scope *scope)
 		expr_free(sym->expr);
 		xfree(sym);
 	}
+}
+
+void scope_free(struct scope *scope)
+{
+	scope_release(scope);
+	xfree(scope);
 }
 
 void symbol_bind(struct scope *scope, const char *identifier, struct expr *expr)

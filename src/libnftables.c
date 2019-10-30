@@ -155,6 +155,7 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 	nft_ctx_add_include_path(ctx, DEFAULT_INCLUDE_PATH);
 	ctx->parser_max_errors	= 10;
 	init_list_head(&ctx->cache.list);
+	ctx->top_scope = scope_alloc();
 	ctx->flags = flags;
 	ctx->output.output_fp = stdout;
 	ctx->output.error_fp = stderr;
@@ -292,6 +293,7 @@ void nft_ctx_free(struct nft_ctx *ctx)
 	iface_cache_release();
 	cache_release(&ctx->cache);
 	nft_ctx_clear_include_paths(ctx);
+	scope_free(ctx->top_scope);
 	xfree(ctx->state);
 	nft_exit(ctx);
 	xfree(ctx);
@@ -368,7 +370,7 @@ static int nft_parse_bison_buffer(struct nft_ctx *nft, const char *buf,
 {
 	int ret;
 
-	parser_init(nft, nft->state, msgs, cmds);
+	parser_init(nft, nft->state, msgs, cmds, nft->top_scope);
 	nft->scanner = scanner_init(nft->state);
 	scanner_push_buffer(nft->scanner, &indesc_cmdline, buf);
 
@@ -384,7 +386,7 @@ static int nft_parse_bison_filename(struct nft_ctx *nft, const char *filename,
 {
 	int ret;
 
-	parser_init(nft, nft->state, msgs, cmds);
+	parser_init(nft, nft->state, msgs, cmds, nft->top_scope);
 	nft->scanner = scanner_init(nft->state);
 	if (scanner_read_file(nft, filename, &internal_location) < 0)
 		return -1;

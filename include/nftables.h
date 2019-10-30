@@ -104,6 +104,7 @@ struct nft_cache {
 
 struct mnl_socket;
 struct parser_state;
+struct scope;
 
 #define MAX_INCLUDE_DEPTH	16
 
@@ -119,6 +120,7 @@ struct nft_ctx {
 	uint32_t		flags;
 	struct parser_state	*state;
 	void			*scanner;
+	struct scope		*top_scope;
 	void			*json_root;
 	FILE			*f[MAX_INCLUDE_DEPTH];
 };

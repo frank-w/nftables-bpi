@@ -410,10 +410,11 @@ static json_t *flowtable_print_json(const struct flowtable *ftable)
 
 	mpz_export_data(&priority, ftable->priority.expr->value,
 			BYTEORDER_HOST_ENDIAN, sizeof(int));
-	root = json_pack("{s:s, s:s, s:s, s:s, s:i}",
+	root = json_pack("{s:s, s:s, s:s, s:I, s:s, s:i}",
 			"family", family2str(ftable->handle.family),
 			"name", ftable->handle.flowtable.name,
 			"table", ftable->handle.table.name,
+			"handle", ftable->handle.handle.id,
 			"hook", hooknum2str(NFPROTO_NETDEV, ftable->hooknum),
 			"prio", priority);
 

@@ -409,6 +409,7 @@ ____
 	"family":* 'STRING'*,
 	"table":* 'STRING'*,
 	"name":* 'STRING'*,
+	"handle":* 'NUMBER'*,
 	"hook":* 'STRING'*,
 	"prio":* 'NUMBER'*,
 	"dev":* 'FT_INTERFACE'
@@ -426,6 +427,8 @@ This object represents a named flowtable.
 	The table's name.
 *name*::
 	The flow table's name.
+*handle*::
+	The flow table's handle. In input, it is used by the *delete* command only.
 *hook*::
 	The flow table's hook.
 *prio*::

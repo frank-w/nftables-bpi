@@ -2964,20 +2964,30 @@ static struct cmd *json_parse_cmd_add_flowtable(struct json_ctx *ctx,
 	json_t *devs;
 	int prio;
 
-	if (json_unpack_err(ctx, root, "{s:s, s:s, s:s}",
+	if (json_unpack_err(ctx, root, "{s:s, s:s}",
 			    "family", &family,
-			    "table", &h.table.name,
-			    "name", &h.flowtable.name))
+			    "table", &h.table.name))
 		return NULL;
+
+	if (op != CMD_DELETE &&
+	    json_unpack_err(ctx, root, "{s:s}", "name", &h.flowtable.name)) {
+		return NULL;
+	} else if (op == CMD_DELETE &&
+		   json_unpack(root, "{s:s}", "name", &h.flowtable.name) &&
+		   json_unpack(root, "{s:I}", "handle", &h.handle.id)) {
+		json_error(ctx, "Either name or handle required to delete a flowtable.");
+		return NULL;
+	}
 
 	if (parse_family(family, &h.family)) {
 		json_error(ctx, "Unknown family '%s'.", family);
 		return NULL;
 	}
 	h.table.name = xstrdup(h.table.name);
-	h.flowtable.name = xstrdup(h.flowtable.name);
+	if (h.flowtable.name)
+		h.flowtable.name = xstrdup(h.flowtable.name);
 
-	if (op == CMD_DELETE)
+	if (op == CMD_DELETE || op == CMD_LIST)
 		return cmd_alloc(op, cmd_obj, &h, int_loc, NULL);
 
 	if (json_unpack_err(ctx, root, "{s:s, s:I, s:o}",

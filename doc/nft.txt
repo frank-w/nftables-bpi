@@ -588,6 +588,7 @@ FLOWTABLES
 {*add* | *create*} *flowtable* ['family'] 'table' 'flowtable' *{ hook* 'hook' *priority* 'priority' *; devices = {* 'device'[*,* ...] *} ; }*
 *list flowtables* ['family']
 {*delete* | *list*} *flowtable* ['family'] 'table' 'flowtable'
+*delete* *flowtable* ['family'] 'table' *handle* 'handle'
 
 Flowtables allow you to accelerate packet forwarding in software. Flowtables
 entries are represented through a tuple that is composed of the input interface,

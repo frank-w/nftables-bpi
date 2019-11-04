@@ -1474,8 +1474,12 @@ int mnl_nft_flowtable_del(struct netlink_ctx *ctx, const struct cmd *cmd)
 				cmd->handle.family);
 	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_TABLE,
 				cmd->handle.table.name);
-	nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_NAME,
-				cmd->handle.flowtable.name);
+	if (cmd->handle.flowtable.name)
+		nftnl_flowtable_set_str(flo, NFTNL_FLOWTABLE_NAME,
+					cmd->handle.flowtable.name);
+	else if (cmd->handle.handle.id)
+		nftnl_flowtable_set_u64(flo, NFTNL_FLOWTABLE_HANDLE,
+				        cmd->handle.handle.id);
 
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELFLOWTABLE, cmd->handle.family,

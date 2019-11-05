@@ -85,8 +85,7 @@ For a full summary of options, run *nft --help*.
 
 *-f*::
 *--file 'filename'*::
-	Read input from 'filename'. If 'filename' is -, read from stdin. +
-	nft scripts must start *#!/usr/sbin/nft -f*
+	Read input from 'filename'. If 'filename' is -, read from stdin.
 
 *-i*::
 *--interactive*::

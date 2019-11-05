@@ -86,7 +86,7 @@ static json_t *set_print_json(struct output_ctx *octx, const struct set *set)
 	} else if (set_is_objmap(set->flags)) {
 		type = "map";
 		datatype_ext = obj_type_name(set->objtype);
-	} else if (set->flags & NFT_SET_EVAL) {
+	} else if (set_is_meter(set->flags)) {
 		type = "meter";
 	} else {
 		type = "set";
@@ -1684,7 +1684,7 @@ static json_t *do_list_sets_json(struct netlink_ctx *ctx, struct cmd *cmd)
 			    !set_is_literal(set->flags))
 				continue;
 			if (cmd->obj == CMD_OBJ_METERS &&
-			    !(set->flags & NFT_SET_EVAL))
+			    !set_is_meter(set->flags))
 				continue;
 			if (cmd->obj == CMD_OBJ_MAPS &&
 			    !map_is_literal(set->flags))

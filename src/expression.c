@@ -1051,14 +1051,12 @@ struct expr *map_expr_alloc(const struct location *loc, struct expr *arg,
 
 static void set_ref_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
-	if (set_is_anonymous(expr->set->flags)) {
-		if (expr->set->flags & NFT_SET_EVAL)
-			nft_print(octx, "%s", expr->set->handle.set.name);
-		else
-			expr_print(expr->set->init, octx);
-	} else {
+	if (set_is_meter(expr->set->flags))
+		nft_print(octx, "%s", expr->set->handle.set.name);
+	else if (set_is_anonymous(expr->set->flags))
+		expr_print(expr->set->init, octx);
+	else
 		nft_print(octx, "@%s", expr->set->handle.set.name);
-	}
 }
 
 static void set_ref_expr_clone(struct expr *new, const struct expr *expr)

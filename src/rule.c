@@ -446,8 +446,7 @@ static void set_print_declaration(const struct set *set,
 	const char *type;
 	uint32_t flags;
 
-	if ((set->flags & (NFT_SET_EVAL | NFT_SET_ANONYMOUS)) ==
-				(NFT_SET_EVAL | NFT_SET_ANONYMOUS))
+	if (set_is_meter(set->flags))
 		type = "meter";
 	else if (set_is_map(set->flags))
 		type = "map";
@@ -534,11 +533,11 @@ static void set_print_declaration(const struct set *set,
 }
 
 static void do_set_print(const struct set *set, struct print_fmt_options *opts,
-			  struct output_ctx *octx)
+			 struct output_ctx *octx)
 {
 	set_print_declaration(set, opts, octx);
 
-	if ((set->flags & NFT_SET_EVAL && nft_output_stateless(octx)) ||
+	if ((set_is_meter(set->flags) && nft_output_stateless(octx)) ||
 	    nft_output_terse(octx)) {
 		nft_print(octx, "%s}%s", opts->tab, opts->nl);
 		return;
@@ -1691,7 +1690,7 @@ static int do_list_sets(struct netlink_ctx *ctx, struct cmd *cmd)
 			    !set_is_literal(set->flags))
 				continue;
 			if (cmd->obj == CMD_OBJ_METERS &&
-			    !(set->flags & NFT_SET_EVAL))
+			    !set_is_meter(set->flags))
 				continue;
 			if (cmd->obj == CMD_OBJ_MAPS &&
 			    !map_is_literal(set->flags))

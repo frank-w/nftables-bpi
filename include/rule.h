@@ -356,6 +356,11 @@ static inline bool map_is_literal(uint32_t set_flags)
 	return !(set_is_anonymous(set_flags) || !set_is_map(set_flags));
 }
 
+static inline bool set_is_meter(uint32_t set_flags)
+{
+	return set_is_anonymous(set_flags) && (set_flags & NFT_SET_EVAL);
+}
+
 #include <statement.h>
 
 struct counter {

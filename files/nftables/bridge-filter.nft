@@ -1,5 +1,3 @@
-#!@sbindir@nft -f
-
 table bridge filter {
 	chain input		{ type filter hook input priority -200; }
 	chain forward		{ type filter hook forward priority -200; }

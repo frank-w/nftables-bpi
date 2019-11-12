@@ -490,46 +490,35 @@ static void day_type_print(const struct expr *expr, struct output_ctx *octx)
 	return symbolic_constant_print(&day_type_tbl, expr, true, octx);
 }
 
-static void __hour_type_print_r(int hours, int minutes, int seconds, char *out, size_t buflen)
-{
-	if (minutes == 60)
-		return __hour_type_print_r(++hours, 0, seconds, out, buflen);
-	else if (minutes > 60)
-		return __hour_type_print_r((int) (minutes / 60), minutes % 60, seconds, out, buflen);
-
-	if (seconds == 60)
-		return __hour_type_print_r(hours, ++minutes, 0, out, buflen);
-	else if (seconds > 60)
-		return __hour_type_print_r(hours, (int) (seconds / 60), seconds % 60, out, buflen);
-
-	if (seconds == 0)
-		snprintf(out, buflen, "%02d:%02d", hours, minutes);
-	else
-		snprintf(out, buflen, "%02d:%02d:%02d", hours, minutes, seconds);
-}
+#define SECONDS_PER_DAY	(60 * 60 * 24)
 
 static void hour_type_print(const struct expr *expr, struct output_ctx *octx)
 {
-	uint32_t seconds = mpz_get_uint32(expr->value);
+	uint32_t seconds = mpz_get_uint32(expr->value), minutes, hours;
 	struct tm *cur_tm;
-	char out[32];
 	time_t ts;
 
-	if (!nft_output_seconds(octx)) {
-		/* Obtain current tm, so that we can add tm_gmtoff */
-		ts = time(NULL);
-		cur_tm = localtime(&ts);
-
-		if (cur_tm)
-			seconds = (seconds + cur_tm->tm_gmtoff) % 86400;
-
-		__hour_type_print_r(0, 0, seconds, out, sizeof(out));
-		nft_print(octx, "\"%s\"", out);
-
+	if (nft_output_seconds(octx)) {
+		expr_basetype(expr)->print(expr, octx);
 		return;
 	}
 
-	expr_basetype(expr)->print(expr, octx);
+	/* Obtain current tm, so that we can add tm_gmtoff */
+	ts = time(NULL);
+	cur_tm = localtime(&ts);
+
+	if (cur_tm)
+		seconds = (seconds + cur_tm->tm_gmtoff) % SECONDS_PER_DAY;
+
+	minutes = seconds / 60;
+	seconds %= 60;
+	hours = minutes / 60;
+	minutes %= 60;
+
+	nft_print(octx, "\"%02d:%02d", hours, minutes);
+	if (seconds)
+		nft_print(octx, ":%02d", seconds);
+	nft_print(octx, "\"");
 }
 
 static struct error_record *hour_type_parse(struct parse_ctx *ctx,

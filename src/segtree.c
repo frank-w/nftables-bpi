@@ -334,6 +334,13 @@ static unsigned int expr_to_intervals(const struct expr *set,
 	return n;
 }
 
+static bool intervals_match(const struct elementary_interval *e1,
+			    const struct elementary_interval *e2)
+{
+	return mpz_cmp(e1->left, e2->left) == 0 &&
+	       mpz_cmp(e1->right, e2->right) == 0;
+}
+
 /* This function checks for overlaps in two ways:
  *
  * 1) A new interval end intersects an existing interval.
@@ -343,8 +350,7 @@ static unsigned int expr_to_intervals(const struct expr *set,
 static bool interval_overlap(const struct elementary_interval *e1,
 			     const struct elementary_interval *e2)
 {
-	if (mpz_cmp(e1->left, e2->left) == 0 &&
-	    mpz_cmp(e1->right, e2->right) == 0)
+	if (intervals_match(e1, e2))
 		return false;
 
 	return (mpz_cmp(e1->left, e2->left) >= 0 &&
@@ -356,7 +362,7 @@ static bool interval_overlap(const struct elementary_interval *e1,
 }
 
 static int set_overlap(struct list_head *msgs, const struct set *set,
-		       struct expr *init, unsigned int keylen)
+		       struct expr *init, unsigned int keylen, bool add)
 {
 	struct elementary_interval *new_intervals[init->size];
 	struct elementary_interval *intervals[set->init->size];
@@ -367,15 +373,28 @@ static int set_overlap(struct list_head *msgs, const struct set *set,
 	m = expr_to_intervals(set->init, keylen, intervals);
 
 	for (i = 0; i < n; i++) {
-		for (j = 0; j < m; j++) {
-			if (!interval_overlap(new_intervals[i], intervals[j]))
-				continue;
+		bool found = false;
 
+		for (j = 0; j < m; j++) {
+			if (add && interval_overlap(new_intervals[i],
+						    intervals[j])) {
+				expr_error(msgs, new_intervals[i]->expr,
+					   "interval overlaps with an existing one");
+				errno = EEXIST;
+				ret = -1;
+				goto out;
+			} else if (!add && intervals_match(new_intervals[i],
+							   intervals[j])) {
+				found = true;
+				break;
+			}
+		}
+		if (!add && !found) {
 			expr_error(msgs, new_intervals[i]->expr,
-				   "interval overlaps with an existing one");
-			errno = EEXIST;
+				   "interval not found in set");
+			errno = ENOENT;
 			ret = -1;
-			goto out;
+			break;
 		}
 	}
 out:
@@ -399,8 +418,8 @@ static int set_to_segtree(struct list_head *msgs, struct set *set,
 	/* We are updating an existing set with new elements, check if the new
 	 * interval overlaps with any of the existing ones.
 	 */
-	if (add && set->init && set->init != init) {
-		err = set_overlap(msgs, set, init, tree->keylen);
+	if (set->init && set->init != init) {
+		err = set_overlap(msgs, set, init, tree->keylen, add);
 		if (err < 0)
 			return err;
 	}

@@ -622,12 +622,12 @@ int set_to_intervals(struct list_head *errs, struct set *set,
 }
 
 static void set_elem_add(const struct set *set, struct expr *init, mpz_t value,
-			 uint32_t flags)
+			 uint32_t flags, enum byteorder byteorder)
 {
 	struct expr *expr;
 
 	expr = constant_expr_alloc(&internal_location, set->key->dtype,
-				   set->key->byteorder, set->key->len, NULL);
+				   byteorder, set->key->len, NULL);
 	mpz_set(expr->value, value);
 	expr = set_elem_expr_alloc(&internal_location, expr);
 	expr->flags = flags;
@@ -649,14 +649,16 @@ struct expr *get_set_intervals(const struct set *set, const struct expr *init)
 	list_for_each_entry(i, &init->expressions, list) {
 		switch (i->key->etype) {
 		case EXPR_VALUE:
-			set_elem_add(set, new_init, i->key->value, i->flags);
+			set_elem_add(set, new_init, i->key->value,
+				     i->flags, i->byteorder);
 			break;
 		default:
 			range_expr_value_low(low, i);
-			set_elem_add(set, new_init, low, 0);
+			set_elem_add(set, new_init, low, 0, i->byteorder);
 			range_expr_value_high(high, i);
 			mpz_add_ui(high, high, 1);
-			set_elem_add(set, new_init, high, EXPR_F_INTERVAL_END);
+			set_elem_add(set, new_init, high,
+				     EXPR_F_INTERVAL_END, i->byteorder);
 			break;
 		}
 	}

@@ -116,6 +116,7 @@ digit		[0-9]
 hexdigit	[0-9a-fA-F]
 decstring	{digit}+
 hexstring	0[xX]{hexdigit}+
+numberstring	({decstring}|{hexstring})
 letter		[a-zA-Z]
 string		({letter}|[_.])({letter}|{digit}|[/\-_\.])*
 quotedstring	\"[^"]*\"
@@ -608,17 +609,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 				return STRING;
 			}
 
-{decstring}		{
-				errno = 0;
-				yylval->val = strtoull(yytext, NULL, 0);
-				if (errno != 0) {
-					yylval->string = xstrdup(yytext);
-					return STRING;
-				}
-				return NUM;
-			}
-
-{hexstring}		{
+{numberstring}		{
 				errno = 0;
 				yylval->val = strtoull(yytext, NULL, 0);
 				if (errno != 0) {

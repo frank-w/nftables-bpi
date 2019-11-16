@@ -645,6 +645,8 @@ int nft_lex(void *, void *, void *);
 %destructor { expr_free($$); }	exclusive_or_expr inclusive_or_expr
 %type <expr>			basic_expr
 %destructor { expr_free($$); }	basic_expr
+%type <expr>			set_ref_expr set_ref_symbol_expr
+%destructor { expr_free($$); }	set_ref_expr set_ref_symbol_expr
 
 %type <expr>			multiton_rhs_expr
 %destructor { expr_free($$); }	multiton_rhs_expr
@@ -2439,13 +2441,7 @@ verdict_map_expr	:	'{'	verdict_map_list_expr	'}'
 				$2->location = @$;
 				$$ = $2;
 			}
-			|	AT	identifier
-			{
-				$$ = symbol_expr_alloc(&@$, SYMBOL_SET,
-						       current_scope(state),
-						       $2);
-				xfree($2);
-			}
+			|	set_ref_expr
 			;
 
 verdict_map_list_expr	:	verdict_map_list_member_expr
@@ -3014,7 +3010,7 @@ concat_stmt_expr	:	basic_stmt_expr
 			;
 
 map_stmt_expr_set	:	set_expr
-			|	symbol_expr
+			|	set_ref_expr
 			;
 
 map_stmt_expr		:	concat_stmt_expr	MAP	map_stmt_expr_set
@@ -3241,21 +3237,21 @@ set_elem_expr_stmt_alloc:	concat_expr
 			}
 			;
 
-set_stmt		:	SET	set_stmt_op	set_elem_expr_stmt	symbol_expr
+set_stmt		:	SET	set_stmt_op	set_elem_expr_stmt	set_ref_expr
 			{
 				$$ = set_stmt_alloc(&@$);
 				$$->set.op  = $2;
 				$$->set.key = $3;
 				$$->set.set = $4;
 			}
-			|	set_stmt_op	symbol_expr	'{' set_elem_expr_stmt	'}'
+			|	set_stmt_op	set_ref_expr	'{' set_elem_expr_stmt	'}'
 			{
 				$$ = set_stmt_alloc(&@$);
 				$$->set.op  = $1;
 				$$->set.key = $4;
 				$$->set.set = $2;
 			}
-			|	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	stateful_stmt	'}'
+			|	set_stmt_op	set_ref_expr '{' set_elem_expr_stmt	stateful_stmt	'}'
 			{
 				$$ = set_stmt_alloc(&@$);
 				$$->set.op  = $1;
@@ -3270,7 +3266,7 @@ set_stmt_op		:	ADD	{ $$ = NFT_DYNSET_OP_ADD; }
 			|	DELETE  { $$ = NFT_DYNSET_OP_DELETE; }
 			;
 
-map_stmt		:	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	COLON	set_elem_expr_stmt	'}'
+map_stmt		:	set_stmt_op	set_ref_expr '{' set_elem_expr_stmt	COLON	set_elem_expr_stmt	'}'
 			{
 				$$ = map_stmt_alloc(&@$);
 				$$->map.op  = $1;
@@ -3278,7 +3274,7 @@ map_stmt		:	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	COLON	set_elem_expr_s
 				$$->map.data = $6;
 				$$->map.set = $2;
 			}
-			|	set_stmt_op	symbol_expr '{'	set_elem_expr_stmt	stateful_stmt COLON	set_elem_expr_stmt	'}'
+			|	set_stmt_op	set_ref_expr '{' set_elem_expr_stmt	stateful_stmt COLON	set_elem_expr_stmt	'}'
 			{
 				$$ = map_stmt_alloc(&@$);
 				$$->map.op  = $1;
@@ -3378,7 +3374,13 @@ symbol_expr		:	variable_expr
 						       $1);
 				xfree($1);
 			}
-			|	AT	identifier
+			;
+
+set_ref_expr		:	set_ref_symbol_expr
+			|	variable_expr
+			;
+
+set_ref_symbol_expr	:	AT	identifier
 			{
 				$$ = symbol_expr_alloc(&@$, SYMBOL_SET,
 						       current_scope(state),
@@ -3903,6 +3905,7 @@ list_rhs_expr		:	basic_rhs_expr		COMMA		basic_rhs_expr
 rhs_expr		:	concat_rhs_expr		{ $$ = $1; }
 			|	multiton_rhs_expr	{ $$ = $1; }
 			|	set_expr		{ $$ = $1; }
+			|	set_ref_symbol_expr	{ $$ = $1; }
 			;
 
 shift_rhs_expr		:	primary_rhs_expr

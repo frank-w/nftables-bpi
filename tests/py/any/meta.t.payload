@@ -1050,7 +1050,7 @@ ip test-ip4 input
 # meta time "1970-05-23 21:07:14" drop
 ip meta-test input
   [ meta load time => reg 1 ]
-  [ cmp eq reg 1 0x74a8f400 0x002bd849 ]
+  [ cmp eq reg 1 0x43f05400 0x002bd503 ]
   [ immediate reg 0 drop ]
 
 # meta time 12341234 drop

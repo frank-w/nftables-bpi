@@ -24,6 +24,7 @@ import tempfile
 
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(TESTS_PATH, '../../py/'))
+os.environ['TZ'] = 'UTC-2'
 
 from nftables import Nftables
 

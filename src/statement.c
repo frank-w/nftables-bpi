@@ -233,6 +233,9 @@ static void objref_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 	case NFT_OBJECT_CT_EXPECT:
 		nft_print(octx, "ct expectation set ");
 		break;
+	case NFT_OBJECT_SECMARK:
+		nft_print(octx, "meta secmark set ");
+		break;
 	default:
 		nft_print(octx, "%s name ",
 			  objref_type_name(stmt->objref.type));

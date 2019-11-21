@@ -1511,6 +1511,14 @@ static int __do_add_setelems(struct netlink_ctx *ctx, struct set *set,
 	if (mnl_nft_setelem_add(ctx, set, expr, flags) < 0)
 		return -1;
 
+	if (set->init != NULL &&
+	    set->flags & NFT_SET_INTERVAL) {
+		interval_map_decompose(expr);
+		list_splice_tail_init(&expr->expressions, &set->init->expressions);
+		set->init->size += expr->size;
+		expr->size = 0;
+	}
+
 	return 0;
 }
 

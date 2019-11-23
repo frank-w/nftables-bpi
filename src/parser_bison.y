@@ -4190,9 +4190,16 @@ meta_stmt		:	META	meta_key	SET	stmt_expr
 			{
 				switch ($2) {
 				case NFT_META_SECMARK:
-					$$ = objref_stmt_alloc(&@$);
-					$$->objref.type = NFT_OBJECT_SECMARK;
-					$$->objref.expr = $4;
+					switch ($4->etype) {
+					case EXPR_CT:
+						$$ = meta_stmt_alloc(&@$, $2, $4);
+						break;
+					default:
+						$$ = objref_stmt_alloc(&@$);
+						$$->objref.type = NFT_OBJECT_SECMARK;
+						$$->objref.expr = $4;
+						break;
+					}
 					break;
 				default:
 					$$ = meta_stmt_alloc(&@$, $2, $4);
@@ -4388,6 +4395,7 @@ ct_key			:	L3PROTOCOL	{ $$ = NFT_CT_L3PROTOCOL; }
 			|	PROTO_DST	{ $$ = NFT_CT_PROTO_DST; }
 			|	LABEL		{ $$ = NFT_CT_LABELS; }
 			|	EVENT		{ $$ = NFT_CT_EVENTMASK; }
+			|	SECMARK		{ $$ = NFT_CT_SECMARK; }
 			|	ct_key_dir_optional
 			;
 

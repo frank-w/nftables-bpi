@@ -698,6 +698,8 @@ const struct meta_template meta_templates[] = {
 	[NFT_META_TIME_HOUR]	= META_TEMPLATE("hour", &hour_type,
 						4 * BITS_PER_BYTE,
 						BYTEORDER_HOST_ENDIAN),
+	[NFT_META_SECMARK]	= META_TEMPLATE("secmark", &integer_type,
+						32, BYTEORDER_HOST_ENDIAN),
 };
 
 static bool meta_key_is_unqualified(enum nft_meta_keys key)

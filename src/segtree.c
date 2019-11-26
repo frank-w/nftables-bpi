@@ -516,7 +516,7 @@ static void segtree_linearize(struct list_head *list, const struct set *set,
 			 */
 			mpz_add_ui(p, prev->right, 1);
 			if (mpz_cmp(p, ei->left) < 0 ||
-			    !(set->flags & NFT_SET_ANONYMOUS)) {
+			    (!(set->flags & NFT_SET_ANONYMOUS) && !merge)) {
 				mpz_sub_ui(q, ei->left, 1);
 				nei = ei_alloc(p, q, NULL, EI_F_INTERVAL_END);
 				list_add_tail(&nei->list, list);

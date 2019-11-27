@@ -397,3 +397,29 @@ ipv4_addr/ipv6_addr
 Destination address of the tunnel|
 ipv4_addr/ipv6_addr
 |=================================
+
+NUMGEN EXPRESSION
+~~~~~~~~~~~~~~~~~
+
+[verse]
+*numgen* {*inc* | *random*} *mod* 'NUM' [ *offset* 'NUM' ]
+
+Create a number generator. The *inc* or *random* keywords control its
+operation mode: In *inc* mode, the last returned value is simply incremented.
+In *random* mode, a new random number is returned. The value after *mod*
+keyword specifies an upper boundary (read: modulus) which is not reached by
+returned numbers. The optional *offset* allows to increment the returned value
+by a fixed offset.
+
+A typical use-case for *numgen* is load-balancing:
+
+.Using numgen expression
+------------------------
+# round-robin between 192.168.10.100 and 192.168.20.200:
+add rule nat prerouting dnat to numgen inc mod 2 map \
+	{ 0 : 192.168.10.100, 1 : 192.168.20.200 }
+
+# probability-based with odd bias using intervals:
+add rule nat prerouting dnat to numgen random mod 10 map \
+        { 0-2 : 192.168.10.100, 3-9 : 192.168.20.200 }
+------------------------

@@ -324,10 +324,10 @@ NAT STATEMENTS
 ____
 *snat to* 'address' [*:*'port'] ['PRF_FLAGS']
 *snat to* 'address' *-* 'address' [*:*'port' *-* 'port'] ['PRF_FLAGS']
-*snat to* { *ip* | *ip6* } 'address' *-* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
+*snat* { *ip* | *ip6* } *to* 'address' *-* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
 *dnat to* 'address' [*:*'port'] ['PRF_FLAGS']
 *dnat to* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
-*dnat to* { *ip* | *ip6* } 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
+*dnat* { *ip* | *ip6* } *to* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
 *masquerade to* [*:*'port'] ['PRF_FLAGS']
 *masquerade to* [*:*'port' *-* 'port'] ['PRF_FLAGS']
 *redirect to* [*:*'port'] ['PRF_FLAGS']

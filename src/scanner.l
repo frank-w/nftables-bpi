@@ -672,16 +672,12 @@ static void scanner_pop_buffer(yyscan_t scanner)
 	state->indesc = state->indescs[--state->indesc_idx];
 }
 
-static struct error_record *scanner_push_file(struct nft_ctx *nft, void *scanner,
-					      const char *filename, const struct location *loc)
+static void scanner_push_file(struct nft_ctx *nft, void *scanner,
+			      const char *filename, const struct location *loc)
 {
 	struct parser_state *state = yyget_extra(scanner);
 	struct input_descriptor *indesc;
 	YY_BUFFER_STATE b;
-
-	if (state->indesc_idx == MAX_INCLUDE_DEPTH)
-		return error(loc, "Include nested too deeply, max %u levels",
-			     MAX_INCLUDE_DEPTH);
 
 	b = yy_create_buffer(nft->f[state->indesc_idx], YY_BUF_SIZE, scanner);
 	yypush_buffer_state(b, scanner);
@@ -697,8 +693,6 @@ static struct error_record *scanner_push_file(struct nft_ctx *nft, void *scanner
 	state->indescs[state->indesc_idx] = indesc;
 	state->indesc = state->indescs[state->indesc_idx++];
 	list_add_tail(&indesc->list, &state->indesc_list);
-
-	return NULL;
 }
 
 static int include_file(struct nft_ctx *nft, void *scanner,
@@ -708,6 +702,12 @@ static int include_file(struct nft_ctx *nft, void *scanner,
 	struct error_record *erec;
 	FILE *f;
 
+	if (state->indesc_idx == MAX_INCLUDE_DEPTH) {
+		erec = error(loc, "Include nested too deeply, max %u levels",
+			     MAX_INCLUDE_DEPTH);
+		goto err;
+	}
+
 	f = fopen(filename, "r");
 	if (f == NULL) {
 		erec = error(loc, "Could not open file \"%s\": %s\n",
@@ -715,10 +715,7 @@ static int include_file(struct nft_ctx *nft, void *scanner,
 		goto err;
 	}
 	nft->f[state->indesc_idx] = f;
-
-	erec = scanner_push_file(nft, scanner, filename, loc);
-	if (erec != NULL)
-		goto err;
+	scanner_push_file(nft, scanner, filename, loc);
 	return 0;
 err:
 	erec_queue(erec, state->msgs);

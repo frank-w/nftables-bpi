@@ -669,10 +669,15 @@ SET STATEMENT
 ~~~~~~~~~~~~~
 The set statement is used to dynamically add or update elements in a set from
 the packet path. The set setname must already exist in the given table and must
-have been created with the dynamic flag. Furthermore, these sets must specify
-both a maximum set size (to prevent memory exhaustion) and a timeout (so that
-number of entries in set will not grow indefinitely). The set statement can be
-used to e.g. create dynamic blacklists.
+have been created with one or both of the dynamic and the timeout flags. The
+dynamic flag is required if the set statement expression includes a stateful
+object. The timeout flag is implied if the set is created with a timeout, and is
+required if the set statement updates elements, rather than adding them.
+Furthermore, these sets should specify both a maximum set size (to prevent
+memory exhaustion), and their elements should have a timeout (so their number
+will not grow indefinitely) either from the set definition or from the statement
+that adds or updates them. The set statement can be used to e.g. create dynamic
+blacklists.
 
 [verse]
 {*add* | *update*} *@*'setname' *{* 'expression' [*timeout* 'timeout'] [*comment* 'string'] *}*

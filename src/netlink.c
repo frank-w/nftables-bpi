@@ -415,7 +415,7 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 						    &policy);
 			nftnl_chain_get_u32(nlc, NFTNL_CHAIN_POLICY);
 		if (nftnl_chain_is_set(nlc, NFTNL_CHAIN_DEV)) {
-			chain->dev_array = xmalloc(sizeof(char *));
+			chain->dev_array = xmalloc(sizeof(char *) * 2);
 			chain->dev_array_len = 1;
 			chain->dev_array[0] =
 				xstrdup(nftnl_chain_get_str(nlc, NFTNL_CHAIN_DEV));
@@ -425,7 +425,7 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 			while (dev_array[len])
 				len++;
 
-			chain->dev_array = xmalloc(len * sizeof(char *));
+			chain->dev_array = xmalloc((len + 1)* sizeof(char *));
 			for (i = 0; i < len; i++)
 				chain->dev_array[i] = xstrdup(dev_array[i]);
 

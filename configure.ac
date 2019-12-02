@@ -1,5 +1,5 @@
-AC_INIT([nftables], [0.9.2], [netfilter-devel@vger.kernel.org])
-AC_DEFINE([RELEASE_NAME], ["Scram"], [Release name])
+AC_INIT([nftables], [0.9.3], [netfilter-devel@vger.kernel.org])
+AC_DEFINE([RELEASE_NAME], ["Topsy"], [Release name])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])

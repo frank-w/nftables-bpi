@@ -307,6 +307,7 @@ struct set {
 	struct expr		*init;
 	struct expr		*rg_cache;
 	uint32_t		policy;
+	bool			root;
 	bool			automerge;
 	struct {
 		uint32_t	size;

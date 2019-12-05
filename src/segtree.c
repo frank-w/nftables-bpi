@@ -451,7 +451,7 @@ static int set_to_segtree(struct list_head *msgs, struct set *set,
 static bool segtree_needs_first_segment(const struct set *set,
 					const struct expr *init, bool add)
 {
-	if (add) {
+	if (add && !set->root) {
 		/* Add the first segment in four situations:
 		 *
 		 * 1) This is an anonymous set.
@@ -465,12 +465,6 @@ static bool segtree_needs_first_segment(const struct set *set,
 		    (set->init == init)) {
 			return true;
 		}
-	} else {
-		/* If the set is empty after the removal, we have to
-		 * remove the first non-matching segment too.
-		 */
-		if (set->init && set->init->size - init->size == 0)
-			return true;
 	}
 	/* This is an update for a set that already contains elements, so don't
 	 * add the first non-matching elements otherwise we hit EEXIST.

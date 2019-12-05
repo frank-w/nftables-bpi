@@ -790,7 +790,7 @@ static void set_elem_parse_udata(struct nftnl_set_elem *nlse,
 }
 
 int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
-				const struct set *set, struct nft_cache *cache)
+				struct set *set, struct nft_cache *cache)
 {
 	struct nft_data_delinearize nld;
 	struct expr *expr, *key, *data;
@@ -828,8 +828,11 @@ int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 		nle = nftnl_set_elem_get(nlse, NFTNL_SET_ELEM_EXPR, NULL);
 		expr->stmt = netlink_parse_set_expr(set, cache, nle);
 	}
-	if (flags & NFT_SET_ELEM_INTERVAL_END)
+	if (flags & NFT_SET_ELEM_INTERVAL_END) {
 		expr->flags |= EXPR_F_INTERVAL_END;
+		if (mpz_cmp_ui(set->key->value, 0) == 0)
+			set->root = true;
+	}
 
 	if (set_is_datamap(set->flags)) {
 		if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_DATA)) {

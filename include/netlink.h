@@ -133,7 +133,7 @@ extern int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 			       const struct location *loc, struct table *table,
 			       struct set *set, struct expr *init);
 extern int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
-				       const struct set *set,
+				       struct set *set,
 				       struct nft_cache *cache);
 
 extern int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h);

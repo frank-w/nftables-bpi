@@ -171,8 +171,9 @@ ____
 
 A reject statement is used to send back an error packet in response to the
 matched packet otherwise it is equivalent to drop so it is a terminating
-statement, ending rule traversal. This statement is only valid in the input,
-forward and output chains, and user-defined chains which are only called from
+statement, ending rule traversal. This statement is only valid in base chains
+using the *input*,
+*forward* or *output* hooks, and user-defined chains which are only called from
 those chains.
 
 .different ICMP reject variants are meant for use in different table families

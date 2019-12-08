@@ -305,13 +305,7 @@ If no route was found for the source address/input interface combination, the ou
 In case the input interface is specified as part of the input key, the output interface index is always the same as the input interface index or zero.
 If only 'saddr oif' is given, then oif can be any interface index or zero.
 
-In this example, 'saddr . iif' lookups up routing information based on the source address and the input interface.
-oif picks the output interface index from the routing information.
-If no route was found for the source address/input interface combination, the output interface index is zero.
-In case the input interface is specified as part of the input key, the output interface index is always the same as the input interface index or zero.
-If only 'saddr oif' is given, then oif can be any interface index or zero.
-
-# drop packets to address not configured on ininterface
+# drop packets to address not configured on incoming interface
 filter prerouting fib daddr . iif type != { local, broadcast, multicast } drop
 
 # perform lookup in a specific 'blackhole' table (0xdead, needs ip appropriate ip rule)

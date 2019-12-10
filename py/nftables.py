@@ -64,7 +64,7 @@ class Nftables:
 
     validator = None
 
-    def __init__(self, sofile="libnftables.so"):
+    def __init__(self, sofile="libnftables.so.1"):
         """Instantiate a new Nftables class object.
 
         Accepts a shared object file to open, by default standard search path

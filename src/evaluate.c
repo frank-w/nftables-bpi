@@ -3307,6 +3307,20 @@ static int setelem_evaluate(struct eval_ctx *ctx, struct expr **expr)
 	return 0;
 }
 
+static int set_key_data_error(struct eval_ctx *ctx, const struct set *set,
+			      const struct datatype *dtype,
+			      const char *name)
+{
+	const char *hint = "";
+
+	if (dtype->size == 0)
+		hint = ". Try \"typeof expression\" instead of \"type datatype\".";
+
+	return set_error(ctx, set, "unqualified type %s "
+			 "specified in %s definition%s",
+			 dtype->name, name, hint);
+}
+
 static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 {
 	struct table *table;
@@ -3331,9 +3345,8 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 			return -1;
 
 		if (set->key->len == 0)
-			return set_error(ctx, set, "unqualified key type %s "
-					 "specified in %s definition",
-					 set->key->dtype->name, type);
+			return set_key_data_error(ctx, set,
+						  set->key->dtype, type);
 	}
 	if (set->flags & NFT_SET_INTERVAL &&
 	    set->key->etype == EXPR_CONCAT)
@@ -3345,8 +3358,8 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 					 "specify mapping data type");
 
 		if (set->data->len == 0 && set->data->dtype->type != TYPE_VERDICT)
-			return set_error(ctx, set, "unqualified mapping data "
-					 "type specified in map definition");
+			return set_key_data_error(ctx, set,
+						  set->data->dtype, type);
 	} else if (set_is_objmap(set->flags)) {
 		if (set->data) {
 			assert(set->data->etype == EXPR_VALUE);

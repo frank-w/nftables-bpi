@@ -7,7 +7,7 @@ set -e
 $NFT add table inet t
 $NFT add flowtable inet t f { hook ingress priority filter\; devices = { lo }\; }
 
-FH=$($NFT list ruleset -a | awk '/flowtable f/ { print $NF }')
+FH=$($NFT -a list ruleset | awk '/flowtable f/ { print $NF }')
 
 $NFT delete flowtable inet t handle $FH
 

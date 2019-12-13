@@ -46,7 +46,7 @@ enum opt_vals {
 	OPT_TERSE		= 't',
 	OPT_INVALID		= '?',
 };
-#define OPTSTRING	"hvcf:iI:jvnsNaeSupypTt"
+#define OPTSTRING	"+hvcf:iI:jvnsNaeSupypTt"
 
 static const struct option options[] = {
 	{
@@ -202,6 +202,47 @@ static const struct {
 	},
 };
 
+static void nft_options_error(int argc, char * const argv[], int pos)
+{
+	int i;
+
+	fprintf(stderr, "Error: syntax error, options must be specified before commands\n");
+	for (i = 0; i < argc; i++)
+		fprintf(stderr, "%s ", argv[i]);
+	printf("\n%4c%*s\n", '^', pos - 2, "~~");
+}
+
+static bool nft_options_check(int argc, char * const argv[])
+{
+	bool skip = false, nonoption = false;
+	int pos = 0, i;
+
+	for (i = 1; i < argc; i++) {
+		pos += strlen(argv[i - 1]) + 1;
+		if (argv[i][0] == '{') {
+			break;
+		} else if (skip) {
+			skip = false;
+			continue;
+		} else if (argv[i][0] == '-') {
+			if (nonoption) {
+				nft_options_error(argc, argv, pos);
+				return false;
+			} else if (argv[i][1] == 'I' ||
+				   argv[i][1] == 'f' ||
+				   !strcmp(argv[i], "--includepath") ||
+				   !strcmp(argv[i], "--file")) {
+				skip = true;
+				continue;
+			}
+		} else if (argv[i][0] != '-') {
+			nonoption = true;
+		}
+	}
+
+	return true;
+}
+
 int main(int argc, char * const *argv)
 {
 	char *buf = NULL, *filename = NULL;
@@ -210,6 +251,9 @@ int main(int argc, char * const *argv)
 	unsigned int debug_mask;
 	unsigned int len;
 	int i, val, rc;
+
+	if (!nft_options_check(argc, argv))
+		exit(EXIT_FAILURE);
 
 	nft = nft_ctx_new(NFT_CTX_DEFAULT);
 

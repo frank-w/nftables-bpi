@@ -5,4 +5,4 @@
 $NFT add table test
 $NFT add chain test test
 $NFT add rule test test tcp dport 22 counter accept
-$NFT list table test -a | grep 'accept # handle '[[:digit:]]$ >/dev/null
+$NFT -a list table test | grep 'accept # handle '[[:digit:]]$ >/dev/null

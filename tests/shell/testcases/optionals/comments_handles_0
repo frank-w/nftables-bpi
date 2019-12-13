@@ -6,5 +6,5 @@ $NFT add table test
 $NFT add chain test test
 $NFT add rule test test tcp dport 22 counter accept comment test_comment
 set -e
-$NFT list table test -a | grep 'accept comment \"test_comment\" # handle '[[:digit:]]$ >/dev/null
+$NFT -a list table test | grep 'accept comment \"test_comment\" # handle '[[:digit:]]$ >/dev/null
 $NFT list table test | grep 'accept comment \"test_comment\"' | grep -v '# handle '[[:digit:]]$ >/dev/null

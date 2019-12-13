@@ -10,8 +10,8 @@ $NFT add chain ip6 test-ip6 x
 $NFT add chain ip6 test-ip6 y
 $NFT add chain ip6 test-ip6 z
 
-chain_y_handle=$($NFT list ruleset -a | awk -v n=1 '/chain y/ && !--n {print $NF; exit}');
-chain_z_handle=$($NFT list ruleset -a | awk -v n=2 '/chain z/ && !--n {print $NF; exit}');
+chain_y_handle=$($NFT -a list ruleset | awk -v n=1 '/chain y/ && !--n {print $NF; exit}');
+chain_z_handle=$($NFT -a list ruleset | awk -v n=2 '/chain z/ && !--n {print $NF; exit}');
 
 $NFT delete chain test-ip handle $chain_y_handle
 $NFT delete chain ip6 test-ip6 handle $chain_z_handle

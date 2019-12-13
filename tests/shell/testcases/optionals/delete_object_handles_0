@@ -10,8 +10,8 @@ $NFT add quota ip6 test-ip6 http-quota over 25 mbytes
 $NFT add counter ip6 test-ip6 http-traffic
 $NFT add quota ip6 test-ip6 ssh-quota 10 mbytes
 
-counter_handle=$($NFT list ruleset -a | awk '/https-traffic/{print $NF}')
-quota_handle=$($NFT list ruleset -a | awk '/ssh-quota/{print $NF}')
+counter_handle=$($NFT -a list ruleset | awk '/https-traffic/{print $NF}')
+quota_handle=$($NFT -a list ruleset | awk '/ssh-quota/{print $NF}')
 $NFT delete counter test-ip handle $counter_handle
 $NFT delete quota ip6 test-ip6 handle $quota_handle
 

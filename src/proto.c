@@ -227,6 +227,7 @@ void proto_ctx_update(struct proto_ctx *ctx, enum proto_bases base,
 
 const struct proto_desc proto_ah = {
 	.name		= "ah",
+	.id		= PROTO_DESC_AH,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.protocol_key	= AHHDR_NEXTHDR,
 	.protocols	= {
@@ -263,6 +264,7 @@ const struct proto_desc proto_ah = {
 
 const struct proto_desc proto_esp = {
 	.name		= "esp",
+	.id		= PROTO_DESC_ESP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.templates	= {
 		[ESPHDR_SPI]		= ESPHDR_FIELD("spi", spi),
@@ -279,6 +281,7 @@ const struct proto_desc proto_esp = {
 
 const struct proto_desc proto_comp = {
 	.name		= "comp",
+	.id		= PROTO_DESC_COMP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.protocol_key	= COMPHDR_NEXTHDR,
 	.protocols	= {
@@ -343,6 +346,7 @@ const struct datatype icmp_type_type = {
 
 const struct proto_desc proto_icmp = {
 	.name		= "icmp",
+	.id		= PROTO_DESC_ICMP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.checksum_key	= ICMPHDR_CHECKSUM,
 	.templates	= {
@@ -395,6 +399,7 @@ const struct datatype igmp_type_type = {
 
 const struct proto_desc proto_igmp = {
 	.name		= "igmp",
+	.id		= PROTO_DESC_IGMP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.checksum_key	= IGMPHDR_CHECKSUM,
 	.templates	= {
@@ -415,6 +420,7 @@ const struct proto_desc proto_igmp = {
 
 const struct proto_desc proto_udp = {
 	.name		= "udp",
+	.id		= PROTO_DESC_UDP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.checksum_key	= UDPHDR_CHECKSUM,
 	.templates	= {
@@ -427,6 +433,7 @@ const struct proto_desc proto_udp = {
 
 const struct proto_desc proto_udplite = {
 	.name		= "udplite",
+	.id		= PROTO_DESC_UDPLITE,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.templates	= {
 		[UDPHDR_SPORT]		= INET_SERVICE("sport", struct udphdr, source),
@@ -472,6 +479,7 @@ const struct datatype tcp_flag_type = {
 
 const struct proto_desc proto_tcp = {
 	.name		= "tcp",
+	.id		= PROTO_DESC_TCP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.checksum_key	= TCPHDR_CHECKSUM,
 	.templates	= {
@@ -534,6 +542,7 @@ const struct datatype dccp_pkttype_type = {
 
 const struct proto_desc proto_dccp = {
 	.name		= "dccp",
+	.id		= PROTO_DESC_DCCP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.templates	= {
 		[DCCPHDR_SPORT]		= INET_SERVICE("sport", struct dccp_hdr, dccph_sport),
@@ -552,6 +561,7 @@ const struct proto_desc proto_dccp = {
 
 const struct proto_desc proto_sctp = {
 	.name		= "sctp",
+	.id		= PROTO_DESC_SCTP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.templates	= {
 		[SCTPHDR_SPORT]		= INET_SERVICE("sport", struct sctphdr, source),
@@ -566,6 +576,7 @@ const struct proto_desc proto_sctp = {
  */
 const struct proto_desc proto_th = {
 	.name		= "th",
+	.id		= PROTO_DESC_TH,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.templates	= {
 		[THDR_SPORT]		= INET_SERVICE("sport", struct udphdr, source),
@@ -648,6 +659,7 @@ const struct datatype ecn_type = {
 
 const struct proto_desc proto_ip = {
 	.name		= "ip",
+	.id		= PROTO_DESC_IP,
 	.base		= PROTO_BASE_NETWORK_HDR,
 	.checksum_key	= IPHDR_CHECKSUM,
 	.protocols	= {
@@ -744,6 +756,7 @@ const struct datatype icmp6_type_type = {
 
 const struct proto_desc proto_icmp6 = {
 	.name		= "icmpv6",
+	.id		= PROTO_DESC_ICMPV6,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
 	.checksum_key	= ICMP6HDR_CHECKSUM,
 	.templates	= {
@@ -771,6 +784,7 @@ const struct proto_desc proto_icmp6 = {
 
 const struct proto_desc proto_ip6 = {
 	.name		= "ip6",
+	.id		= PROTO_DESC_IP6,
 	.base		= PROTO_BASE_NETWORK_HDR,
 	.protocols	= {
 		PROTO_LINK(IPPROTO_ESP,		&proto_esp),
@@ -892,6 +906,7 @@ const struct datatype arpop_type = {
 
 const struct proto_desc proto_arp = {
 	.name		= "arp",
+	.id		= PROTO_DESC_ARP,
 	.base		= PROTO_BASE_NETWORK_HDR,
 	.templates	= {
 		[ARPHDR_HRD]		= ARPHDR_FIELD("htype",	htype),
@@ -925,6 +940,7 @@ const struct proto_desc proto_arp = {
 
 const struct proto_desc proto_vlan = {
 	.name		= "vlan",
+	.id		= PROTO_DESC_VLAN,
 	.base		= PROTO_BASE_LL_HDR,
 	.protocol_key	= VLANHDR_TYPE,
 	.length		= sizeof(struct vlan_hdr) * BITS_PER_BYTE,
@@ -996,6 +1012,7 @@ const struct datatype ethertype_type = {
 
 const struct proto_desc proto_eth = {
 	.name		= "ether",
+	.id		= PROTO_DESC_ETHER,
 	.base		= PROTO_BASE_LL_HDR,
 	.protocol_key	= ETHHDR_TYPE,
 	.length		= sizeof(struct ether_header) * BITS_PER_BYTE,
@@ -1034,3 +1051,32 @@ const struct proto_desc proto_netdev = {
 		[0]	= PROTO_META_TEMPLATE("protocol", &ethertype_type, NFT_META_PROTOCOL, 16),
 	},
 };
+
+static const struct proto_desc *proto_definitions[PROTO_DESC_MAX + 1] = {
+	[PROTO_DESC_AH]		= &proto_ah,
+	[PROTO_DESC_ESP]	= &proto_esp,
+	[PROTO_DESC_COMP]	= &proto_comp,
+	[PROTO_DESC_ICMP]	= &proto_icmp,
+	[PROTO_DESC_IGMP]	= &proto_igmp,
+	[PROTO_DESC_UDP]	= &proto_udp,
+	[PROTO_DESC_UDPLITE]	= &proto_udplite,
+	[PROTO_DESC_TCP]	= &proto_tcp,
+	[PROTO_DESC_DCCP]	= &proto_dccp,
+	[PROTO_DESC_SCTP]	= &proto_sctp,
+	[PROTO_DESC_TH]		= &proto_th,
+	[PROTO_DESC_IP]		= &proto_ip,
+	[PROTO_DESC_IP6]	= &proto_ip6,
+	[PROTO_DESC_ICMPV6]	= &proto_icmp6,
+	[PROTO_DESC_ARP]	= &proto_arp,
+	[PROTO_DESC_VLAN]	= &proto_vlan,
+	[PROTO_DESC_ETHER]	= &proto_eth,
+};
+
+const struct proto_desc *proto_find_desc(enum proto_desc_id desc_id)
+{
+	if (desc_id >= PROTO_DESC_UNKNOWN &&
+	    desc_id <= PROTO_DESC_MAX)
+		return proto_definitions[desc_id];
+
+	return NULL;
+}

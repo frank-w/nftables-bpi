@@ -63,10 +63,34 @@ struct proto_hdr_template {
 #define PROTO_UPPER_MAX		16
 #define PROTO_HDRS_MAX		20
 
+enum proto_desc_id {
+	PROTO_DESC_UNKNOWN	= 0,
+	PROTO_DESC_AH,
+	PROTO_DESC_ESP,
+	PROTO_DESC_COMP,
+	PROTO_DESC_ICMP,
+	PROTO_DESC_IGMP,
+	PROTO_DESC_UDP,
+	PROTO_DESC_UDPLITE,
+	PROTO_DESC_TCP,
+	PROTO_DESC_DCCP,
+	PROTO_DESC_SCTP,
+	PROTO_DESC_TH,
+	PROTO_DESC_IP,
+	PROTO_DESC_IP6,
+	PROTO_DESC_ICMPV6,
+	PROTO_DESC_ARP,
+	PROTO_DESC_VLAN,
+	PROTO_DESC_ETHER,
+	__PROTO_DESC_MAX
+};
+#define PROTO_DESC_MAX	(__PROTO_DESC_MAX - 1)
+
 /**
  * struct proto_desc - protocol header description
  *
  * @name:	protocol name
+ * @id:		protocol identifier
  * @base:	header base
  * @checksum_key: key of template containing checksum
  * @protocol_key: key of template containing upper layer protocol description
@@ -77,6 +101,7 @@ struct proto_hdr_template {
  */
 struct proto_desc {
 	const char			*name;
+	enum proto_desc_id		id;
 	enum proto_bases		base;
 	unsigned int			checksum_key;
 	unsigned int			protocol_key;
@@ -159,6 +184,8 @@ extern const struct proto_desc *proto_find_upper(const struct proto_desc *base,
 						 unsigned int num);
 extern int proto_find_num(const struct proto_desc *base,
 			  const struct proto_desc *desc);
+
+extern const struct proto_desc *proto_find_desc(enum proto_desc_id desc_id);
 
 enum eth_hdr_fields {
 	ETHHDR_INVALID,

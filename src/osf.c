@@ -37,6 +37,17 @@ static bool osf_expr_cmp(const struct expr *e1, const struct expr *e2)
 	       (e1->osf.flags == e2->osf.flags);
 }
 
+static int osf_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				 const struct expr *expr)
+{
+	return 0;
+}
+
+static struct expr *osf_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	return osf_expr_alloc(&internal_location, 0, 0);
+}
+
 const struct expr_ops osf_expr_ops = {
 	.type		= EXPR_OSF,
 	.name		= "osf",
@@ -44,6 +55,8 @@ const struct expr_ops osf_expr_ops = {
 	.clone		= osf_expr_clone,
 	.cmp		= osf_expr_cmp,
 	.json		= osf_expr_json,
+	.parse_udata	= osf_expr_parse_udata,
+	.build_udata	= osf_expr_build_udata,
 };
 
 struct expr *osf_expr_alloc(const struct location *loc, const uint8_t ttl,

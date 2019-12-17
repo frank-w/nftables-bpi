@@ -5,6 +5,20 @@
 #include <tcpopt.h>
 #include <ipopt.h>
 
+enum exthdr_desc_id {
+	EXTHDR_DESC_UNKNOWN	= 0,
+	EXTHDR_DESC_HBH,
+	EXTHDR_DESC_RT,
+	EXTHDR_DESC_RT0,
+	EXTHDR_DESC_RT2,
+	EXTHDR_DESC_SRH,
+	EXTHDR_DESC_FRAG,
+	EXTHDR_DESC_DST,
+	EXTHDR_DESC_MH,
+	__EXTHDR_DESC_MAX
+};
+#define EXTHDR_DESC_MAX	(__EXTHDR_DESC_MAX - 1)
+
 /**
  * struct exthdr_desc - extension header description
  *
@@ -14,6 +28,7 @@
  */
 struct exthdr_desc {
 	const char			*name;
+	enum exthdr_desc_id		id;
 	uint8_t				type;
 	int				proto_key;
 	struct proto_hdr_template	templates[10];

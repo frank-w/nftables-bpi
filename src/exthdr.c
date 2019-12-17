@@ -23,6 +23,26 @@
 #include <expression.h>
 #include <statement.h>
 
+static const struct exthdr_desc *exthdr_definitions[PROTO_DESC_MAX + 1] = {
+	[EXTHDR_DESC_HBH]	= &exthdr_hbh,
+	[EXTHDR_DESC_RT]	= &exthdr_rt,
+	[EXTHDR_DESC_RT0]	= &exthdr_rt0,
+	[EXTHDR_DESC_RT2]	= &exthdr_rt2,
+	[EXTHDR_DESC_SRH]	= &exthdr_rt4,
+	[EXTHDR_DESC_FRAG]	= &exthdr_frag,
+	[EXTHDR_DESC_DST]	= &exthdr_dst,
+	[EXTHDR_DESC_MH]	= &exthdr_mh,
+};
+
+static const struct exthdr_desc *exthdr_find_desc(enum exthdr_desc_id desc_id)
+{
+	if (desc_id >= EXTHDR_DESC_UNKNOWN &&
+	    desc_id <= EXTHDR_DESC_MAX)
+		return exthdr_definitions[desc_id];
+
+	return NULL;
+}
+
 static void exthdr_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	if (expr->exthdr.op == NFT_EXTHDR_OP_TCPOPT) {
@@ -281,6 +301,7 @@ bool exthdr_find_template(struct expr *expr, const struct expr *mask, unsigned i
 
 const struct exthdr_desc exthdr_hbh = {
 	.name		= "hbh",
+	.id		= EXTHDR_DESC_HBH,
 	.type		= IPPROTO_HOPOPTS,
 	.templates	= {
 		[HBHHDR_NEXTHDR]	= HBH_FIELD("nexthdr", ip6h_nxt, &inet_protocol_type),
@@ -294,6 +315,7 @@ const struct exthdr_desc exthdr_hbh = {
 
 const struct exthdr_desc exthdr_rt2 = {
 	.name           = "rt2",
+	.id		= EXTHDR_DESC_RT2,
 	.type           = IPPROTO_ROUTING,
 	.proto_key	= 2,
 	.templates	= {
@@ -307,6 +329,7 @@ const struct exthdr_desc exthdr_rt2 = {
 
 const struct exthdr_desc exthdr_rt0 = {
 	.name           = "rt0",
+	.id		= EXTHDR_DESC_RT0,
 	.type           = IPPROTO_ROUTING,
 	.proto_key      = 0,
 	.templates	= {
@@ -322,6 +345,7 @@ const struct exthdr_desc exthdr_rt0 = {
 
 const struct exthdr_desc exthdr_rt4 = {
 	.name		= "srh",
+	.id		= EXTHDR_DESC_SRH,
 	.type		= IPPROTO_ROUTING,
 	.proto_key	= 4,
 	.templates      = {
@@ -340,6 +364,7 @@ const struct exthdr_desc exthdr_rt4 = {
 
 const struct exthdr_desc exthdr_rt = {
 	.name		= "rt",
+	.id		= EXTHDR_DESC_RT,
 	.type		= IPPROTO_ROUTING,
 	.proto_key      = -1,
 #if 0
@@ -366,6 +391,7 @@ const struct exthdr_desc exthdr_rt = {
 
 const struct exthdr_desc exthdr_frag = {
 	.name		= "frag",
+	.id		= EXTHDR_DESC_FRAG,
 	.type		= IPPROTO_FRAGMENT,
 	.templates	= {
 		[FRAGHDR_NEXTHDR]	= FRAG_FIELD("nexthdr", ip6f_nxt, &inet_protocol_type),
@@ -392,6 +418,7 @@ const struct exthdr_desc exthdr_frag = {
 
 const struct exthdr_desc exthdr_dst = {
 	.name		= "dst",
+	.id		= EXTHDR_DESC_DST,
 	.type		= IPPROTO_DSTOPTS,
 	.templates	= {
 		[DSTHDR_NEXTHDR]	= DST_FIELD("nexthdr", ip6d_nxt, &inet_protocol_type),
@@ -438,6 +465,7 @@ const struct datatype mh_type_type = {
 
 const struct exthdr_desc exthdr_mh = {
 	.name		= "mh",
+	.id		= EXTHDR_DESC_MH,
 	.type		= IPPROTO_MH,
 	.templates	= {
 		[MHHDR_NEXTHDR]		= MH_FIELD("nexthdr", ip6mh_proto, &inet_protocol_type),

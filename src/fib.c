@@ -1,7 +1,7 @@
 /*
  * FIB expression.
  *
- * Copyright (c) Red Hat GmbH.  Author: Florian Westphal <fw@strlen.de>
+ * Copyright (c) Red Hat GmbH.	Author: Florian Westphal <fw@strlen.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -91,7 +91,7 @@ static void fib_expr_print(const struct expr *expr, struct output_ctx *octx)
 
 static bool fib_expr_cmp(const struct expr *e1, const struct expr *e2)
 {
-	return  e1->fib.result == e2->fib.result &&
+	return	e1->fib.result == e2->fib.result &&
 		e1->fib.flags == e2->fib.flags;
 }
 
@@ -101,6 +101,60 @@ static void fib_expr_clone(struct expr *new, const struct expr *expr)
 	new->fib.flags= expr->fib.flags;
 }
 
+#define NFTNL_UDATA_FIB_RESULT 0
+#define NFTNL_UDATA_FIB_FLAGS 1
+#define NFTNL_UDATA_FIB_MAX 2
+
+static int fib_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				 const struct expr *expr)
+{
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_FIB_RESULT, expr->fib.result);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_FIB_FLAGS, expr->fib.flags);
+
+	return 0;
+}
+
+static int fib_parse_udata(const struct nftnl_udata *attr, void *data)
+{
+	const struct nftnl_udata **ud = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+	case NFTNL_UDATA_FIB_RESULT:
+	case NFTNL_UDATA_FIB_FLAGS:
+		if (len != sizeof(uint32_t))
+			return -1;
+		break;
+	default:
+		return 0;
+	}
+
+	ud[type] = attr;
+	return 0;
+}
+
+static struct expr *fib_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	const struct nftnl_udata *ud[NFTNL_UDATA_FIB_MAX + 1] = {};
+	uint32_t flags, result;
+	int err;
+
+	err = nftnl_udata_parse(nftnl_udata_get(attr), nftnl_udata_len(attr),
+				fib_parse_udata, ud);
+	if (err < 0)
+		return NULL;
+
+	if (!ud[NFTNL_UDATA_FIB_RESULT] ||
+	    !ud[NFTNL_UDATA_FIB_FLAGS])
+		return NULL;
+
+	result = nftnl_udata_get_u32(ud[NFTNL_UDATA_FIB_RESULT]);
+	flags = nftnl_udata_get_u32(ud[NFTNL_UDATA_FIB_FLAGS]);
+
+	return fib_expr_alloc(&internal_location, flags, result);
+}
+
 const struct expr_ops fib_expr_ops = {
 	.type		= EXPR_FIB,
 	.name		= "fib",
@@ -108,6 +162,8 @@ const struct expr_ops fib_expr_ops = {
 	.json		= fib_expr_json,
 	.cmp		= fib_expr_cmp,
 	.clone		= fib_expr_clone,
+	.parse_udata	= fib_expr_parse_udata,
+	.build_udata	= fib_expr_build_udata,
 };
 
 struct expr *fib_expr_alloc(const struct location *loc,

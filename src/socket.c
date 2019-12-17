@@ -43,6 +43,55 @@ static void socket_expr_clone(struct expr *new, const struct expr *expr)
 	new->socket.key = expr->socket.key;
 }
 
+#define NFTNL_UDATA_SOCKET_KEY 0
+#define NFTNL_UDATA_SOCKET_MAX 1
+
+static int socket_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				 const struct expr *expr)
+{
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SOCKET_KEY, expr->socket.key);
+
+	return 0;
+}
+
+static int socket_parse_udata(const struct nftnl_udata *attr, void *data)
+{
+	const struct nftnl_udata **ud = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+	case NFTNL_UDATA_SOCKET_KEY:
+		if (len != sizeof(uint32_t))
+			return -1;
+		break;
+	default:
+		return 0;
+	}
+
+	ud[type] = attr;
+	return 0;
+}
+
+static struct expr *socket_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	const struct nftnl_udata *ud[NFTNL_UDATA_SOCKET_MAX + 1] = {};
+	uint32_t key;
+	int err;
+
+	err = nftnl_udata_parse(nftnl_udata_get(attr), nftnl_udata_len(attr),
+				socket_parse_udata, ud);
+	if (err < 0)
+		return NULL;
+
+	if (!ud[NFTNL_UDATA_SOCKET_KEY])
+		return NULL;
+
+	key = nftnl_udata_get_u32(ud[NFTNL_UDATA_SOCKET_KEY]);
+
+	return socket_expr_alloc(&internal_location, key);
+}
+
 const struct expr_ops socket_expr_ops = {
 	.type		= EXPR_SOCKET,
 	.name		= "socket",
@@ -50,6 +99,8 @@ const struct expr_ops socket_expr_ops = {
 	.json		= socket_expr_json,
 	.cmp		= socket_expr_cmp,
 	.clone		= socket_expr_clone,
+	.build_udata	= socket_expr_build_udata,
+	.parse_udata	= socket_expr_parse_udata,
 };
 
 struct expr *socket_expr_alloc(const struct location *loc, enum nft_socket_keys key)

@@ -1226,8 +1226,8 @@ const struct expr_ops *expr_ops(const struct expr *e)
 const struct expr_ops *expr_ops_by_type(enum expr_types etype)
 {
 	switch (etype) {
-	case EXPR_PAYLOAD:
-		return &payload_expr_ops;
+	case EXPR_PAYLOAD: return &payload_expr_ops;
+	case EXPR_META: return &meta_expr_ops;
 	default:
 		break;
 	}

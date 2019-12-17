@@ -51,6 +51,66 @@ static void numgen_expr_clone(struct expr *new, const struct expr *expr)
 	new->numgen.offset = expr->numgen.offset;
 }
 
+#define NFTNL_UDATA_NUMGEN_TYPE 0
+#define NFTNL_UDATA_NUMGEN_MOD 1
+#define NFTNL_UDATA_NUMGEN_OFFSET 2
+#define NFTNL_UDATA_NUMGEN_MAX 3
+
+static int numgen_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				   const struct expr *expr)
+{
+        nftnl_udata_put_u32(udbuf, NFTNL_UDATA_NUMGEN_TYPE, expr->numgen.type);
+        nftnl_udata_put_u32(udbuf, NFTNL_UDATA_NUMGEN_MOD, expr->numgen.mod);
+        nftnl_udata_put_u32(udbuf, NFTNL_UDATA_NUMGEN_OFFSET, expr->numgen.offset);
+
+        return 0;
+}
+
+static int numgen_parse_udata(const struct nftnl_udata *attr, void *data)
+{
+        const struct nftnl_udata **ud = data;
+        uint8_t type = nftnl_udata_type(attr);
+        uint8_t len = nftnl_udata_len(attr);
+
+        switch (type) {
+        case NFTNL_UDATA_NUMGEN_TYPE:
+        case NFTNL_UDATA_NUMGEN_MOD:
+        case NFTNL_UDATA_NUMGEN_OFFSET:
+                if (len != sizeof(uint32_t))
+                        return -1;
+                break;
+        default:
+                return 0;
+        }
+
+        ud[type] = attr;
+        return 0;
+}
+
+static struct expr *numgen_expr_parse_udata(const struct nftnl_udata *attr)
+{
+        const struct nftnl_udata *ud[NFTNL_UDATA_NUMGEN_MAX + 1] = {};
+	enum nft_ng_types type;
+	uint32_t mod, offset;
+        int err;
+
+        err = nftnl_udata_parse(nftnl_udata_get(attr), nftnl_udata_len(attr),
+                                numgen_parse_udata, ud);
+        if (err < 0)
+                return NULL;
+
+        if (!ud[NFTNL_UDATA_NUMGEN_TYPE] ||
+	    !ud[NFTNL_UDATA_NUMGEN_MOD] ||
+	    !ud[NFTNL_UDATA_NUMGEN_OFFSET])
+                return NULL;
+
+	type = nftnl_udata_get_u32(ud[NFTNL_UDATA_NUMGEN_TYPE]);
+	mod = nftnl_udata_get_u32(ud[NFTNL_UDATA_NUMGEN_MOD]);
+	offset = nftnl_udata_get_u32(ud[NFTNL_UDATA_NUMGEN_OFFSET]);
+
+	return numgen_expr_alloc(&internal_location, type, mod, offset);
+}
+
 const struct expr_ops numgen_expr_ops = {
 	.type		= EXPR_NUMGEN,
 	.name		= "numgen",
@@ -58,6 +118,8 @@ const struct expr_ops numgen_expr_ops = {
 	.json		= numgen_expr_json,
 	.cmp		= numgen_expr_cmp,
 	.clone		= numgen_expr_clone,
+	.parse_udata	= numgen_expr_parse_udata,
+	.build_udata	= numgen_expr_build_udata,
 };
 
 struct expr *numgen_expr_alloc(const struct location *loc,

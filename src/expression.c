@@ -1232,6 +1232,7 @@ const struct expr_ops *expr_ops_by_type(enum expr_types etype)
 	case EXPR_SOCKET: return &socket_expr_ops;
 	case EXPR_OSF: return &osf_expr_ops;
 	case EXPR_CT: return &ct_expr_ops;
+	case EXPR_NUMGEN: return &numgen_expr_ops;
 	default:
 		break;
 	}

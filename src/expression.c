@@ -1236,6 +1236,7 @@ const struct expr_ops *expr_ops_by_type(enum expr_types etype)
 	case EXPR_HASH: return &hash_expr_ops;
 	case EXPR_RT: return &rt_expr_ops;
 	case EXPR_FIB: return &fib_expr_ops;
+	case EXPR_XFRM: return &xfrm_expr_ops;
 	default:
 		break;
 	}

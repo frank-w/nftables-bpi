@@ -91,6 +91,65 @@ static void xfrm_expr_clone(struct expr *new, const struct expr *expr)
 	memcpy(&new->xfrm, &expr->xfrm, sizeof(new->xfrm));
 }
 
+#define NFTNL_UDATA_XFRM_KEY 0
+#define NFTNL_UDATA_XFRM_SPNUM 1
+#define NFTNL_UDATA_XFRM_DIR 2
+#define NFTNL_UDATA_XFRM_MAX 3
+
+static int xfrm_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				 const struct expr *expr)
+{
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_XFRM_KEY, expr->xfrm.key);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_XFRM_SPNUM, expr->xfrm.spnum);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_XFRM_DIR, expr->xfrm.direction);
+
+	return 0;
+}
+
+static int xfrm_parse_udata(const struct nftnl_udata *attr, void *data)
+{
+	const struct nftnl_udata **ud = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+	case NFTNL_UDATA_XFRM_KEY:
+	case NFTNL_UDATA_XFRM_SPNUM:
+	case NFTNL_UDATA_XFRM_DIR:
+		if (len != sizeof(uint32_t))
+			return -1;
+		break;
+	default:
+		return 0;
+	}
+
+	ud[type] = attr;
+	return 0;
+}
+
+static struct expr *xfrm_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	const struct nftnl_udata *ud[NFTNL_UDATA_XFRM_MAX + 1] = {};
+	uint32_t key, dir, spnum;
+	int err;
+
+	err = nftnl_udata_parse(nftnl_udata_get(attr), nftnl_udata_len(attr),
+				xfrm_parse_udata, ud);
+	if (err < 0)
+		return NULL;
+
+	if (!ud[NFTNL_UDATA_XFRM_KEY] ||
+	    !ud[NFTNL_UDATA_XFRM_DIR] ||
+	    !ud[NFTNL_UDATA_XFRM_SPNUM])
+		return NULL;
+
+	key = nftnl_udata_get_u32(ud[NFTNL_UDATA_XFRM_KEY]);
+	dir = nftnl_udata_get_u32(ud[NFTNL_UDATA_XFRM_DIR]);
+	spnum = nftnl_udata_get_u32(ud[NFTNL_UDATA_XFRM_SPNUM]);
+
+	return xfrm_expr_alloc(&internal_location, dir, spnum, key);
+}
+
 const struct expr_ops xfrm_expr_ops = {
 	.type		= EXPR_XFRM,
 	.name		= "xfrm",
@@ -98,6 +157,8 @@ const struct expr_ops xfrm_expr_ops = {
 	.json		= xfrm_expr_json,
 	.cmp		= xfrm_expr_cmp,
 	.clone		= xfrm_expr_clone,
+	.parse_udata	= xfrm_expr_parse_udata,
+	.build_udata	= xfrm_expr_build_udata,
 };
 
 struct expr *xfrm_expr_alloc(const struct location *loc,

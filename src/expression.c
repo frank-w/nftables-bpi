@@ -1234,6 +1234,7 @@ const struct expr_ops *expr_ops_by_type(enum expr_types etype)
 	case EXPR_CT: return &ct_expr_ops;
 	case EXPR_NUMGEN: return &numgen_expr_ops;
 	case EXPR_HASH: return &hash_expr_ops;
+	case EXPR_RT: return &rt_expr_ops;
 	default:
 		break;
 	}

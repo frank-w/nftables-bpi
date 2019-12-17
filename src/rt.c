@@ -114,6 +114,55 @@ static void rt_expr_clone(struct expr *new, const struct expr *expr)
 	new->rt.key = expr->rt.key;
 }
 
+#define NFTNL_UDATA_RT_KEY 0
+#define NFTNL_UDATA_RT_MAX 1
+
+static int rt_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				 const struct expr *expr)
+{
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_RT_KEY, expr->rt.key);
+
+	return 0;
+}
+
+static int rt_parse_udata(const struct nftnl_udata *attr, void *data)
+{
+	const struct nftnl_udata **ud = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+	case NFTNL_UDATA_RT_KEY:
+		if (len != sizeof(uint32_t))
+			return -1;
+		break;
+	default:
+		return 0;
+	}
+
+	ud[type] = attr;
+	return 0;
+}
+
+static struct expr *rt_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	const struct nftnl_udata *ud[NFTNL_UDATA_RT_MAX + 1] = {};
+	uint32_t key;
+	int err;
+
+	err = nftnl_udata_parse(nftnl_udata_get(attr), nftnl_udata_len(attr),
+				rt_parse_udata, ud);
+	if (err < 0)
+		return NULL;
+
+	if (!ud[NFTNL_UDATA_RT_KEY])
+		return NULL;
+
+	key = nftnl_udata_get_u32(ud[NFTNL_UDATA_RT_KEY]);
+
+	return rt_expr_alloc(&internal_location, key, false);
+}
+
 const struct expr_ops rt_expr_ops = {
 	.type		= EXPR_RT,
 	.name		= "rt",
@@ -121,6 +170,8 @@ const struct expr_ops rt_expr_ops = {
 	.json		= rt_expr_json,
 	.cmp		= rt_expr_cmp,
 	.clone		= rt_expr_clone,
+	.parse_udata	= rt_expr_parse_udata,
+	.build_udata	= rt_expr_build_udata,
 };
 
 struct expr *rt_expr_alloc(const struct location *loc, enum nft_rt_keys key,

@@ -61,6 +61,76 @@ static void hash_expr_destroy(struct expr *expr)
 	expr_free(expr->hash.expr);
 }
 
+#define NFTNL_UDATA_HASH_TYPE 0
+#define NFTNL_UDATA_HASH_OFFSET 1
+#define NFTNL_UDATA_HASH_MOD 2
+#define NFTNL_UDATA_HASH_SEED 3
+#define NFTNL_UDATA_HASH_SEED_SET 4
+#define NFTNL_UDATA_HASH_MAX 5
+
+static int hash_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				 const struct expr *expr)
+{
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_HASH_TYPE, expr->hash.type);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_HASH_OFFSET, expr->hash.offset);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_HASH_MOD, expr->hash.mod);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_HASH_SEED, expr->hash.seed);
+	nftnl_udata_put_u32(udbuf, NFTNL_UDATA_HASH_SEED_SET, expr->hash.seed_set);
+
+	return 0;
+}
+
+static int hash_parse_udata(const struct nftnl_udata *attr, void *data)
+{
+	const struct nftnl_udata **ud = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+	case NFTNL_UDATA_HASH_TYPE:
+	case NFTNL_UDATA_HASH_OFFSET:
+	case NFTNL_UDATA_HASH_SEED:
+	case NFTNL_UDATA_HASH_SEED_SET:
+	case NFTNL_UDATA_HASH_MOD:
+		if (len != sizeof(uint32_t))
+			return -1;
+		break;
+	default:
+		return 0;
+	}
+
+	ud[type] = attr;
+	return 0;
+}
+
+static struct expr *hash_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	const struct nftnl_udata *ud[NFTNL_UDATA_HASH_MAX + 1] = {};
+	uint32_t type, seed, seed_set, mod, offset;
+	int err;
+
+	err = nftnl_udata_parse(nftnl_udata_get(attr), nftnl_udata_len(attr),
+				hash_parse_udata, ud);
+	if (err < 0)
+		return NULL;
+
+	if (!ud[NFTNL_UDATA_HASH_TYPE] ||
+	    !ud[NFTNL_UDATA_HASH_OFFSET] ||
+	    !ud[NFTNL_UDATA_HASH_SEED] ||
+	    !ud[NFTNL_UDATA_HASH_MOD] ||
+	    !ud[NFTNL_UDATA_HASH_SEED_SET])
+		return NULL;
+
+	type = nftnl_udata_get_u32(ud[NFTNL_UDATA_HASH_TYPE]);
+	offset = nftnl_udata_get_u32(ud[NFTNL_UDATA_HASH_OFFSET]);
+	seed = nftnl_udata_get_u32(ud[NFTNL_UDATA_HASH_SEED]);
+	seed_set = nftnl_udata_get_u32(ud[NFTNL_UDATA_HASH_SEED_SET]);
+	mod = nftnl_udata_get_u32(ud[NFTNL_UDATA_HASH_MOD]);
+
+	return hash_expr_alloc(&internal_location, mod, seed_set, seed,
+			       offset, type);
+}
+
 const struct expr_ops hash_expr_ops = {
 	.type		= EXPR_HASH,
 	.name		= "hash",
@@ -69,6 +139,8 @@ const struct expr_ops hash_expr_ops = {
 	.cmp		= hash_expr_cmp,
 	.clone		= hash_expr_clone,
 	.destroy	= hash_expr_destroy,
+	.parse_udata	= hash_expr_parse_udata,
+	.build_udata	= hash_expr_build_udata,
 };
 
 struct expr *hash_expr_alloc(const struct location *loc,

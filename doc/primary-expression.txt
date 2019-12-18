@@ -76,6 +76,12 @@ ifname
 |oiftype|
 Output interface hardware type|
 iface_type
+|sdif|
+Slave device input interface index |
+iface_index
+|sdifname|
+Slave device interface name|
+ifname
 |skuid|
 UID associated with originating socket|
 uid

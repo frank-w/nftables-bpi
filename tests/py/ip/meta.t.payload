@@ -33,3 +33,14 @@ ip test-ip4 input
   [ payload load 1b @ transport header + 0 => reg 1 ]
   [ cmp eq reg 1 0x00000086 ]
 
+# meta sdif "lo" accept
+ip6 test-ip4 input
+  [ meta load sdif => reg 1 ]
+  [ cmp eq reg 1 0x00000001 ]
+  [ immediate reg 0 accept ]
+
+# meta sdifname != "vrf1" accept
+ip6 test-ip4 input
+  [ meta load sdifname => reg 1 ]
+  [ cmp neq reg 1 0x31667276 0x00000000 0x00000000 0x00000000 ]
+  [ immediate reg 0 accept ]

@@ -700,6 +700,12 @@ const struct meta_template meta_templates[] = {
 						BYTEORDER_HOST_ENDIAN),
 	[NFT_META_SECMARK]	= META_TEMPLATE("secmark", &integer_type,
 						32, BYTEORDER_HOST_ENDIAN),
+	[NFT_META_SDIF]		= META_TEMPLATE("sdif", &ifindex_type,
+						sizeof(int) * BITS_PER_BYTE,
+						BYTEORDER_HOST_ENDIAN),
+	[NFT_META_SDIFNAME]	= META_TEMPLATE("sdifname", &ifname_type,
+						IFNAMSIZ * BITS_PER_BYTE,
+						BYTEORDER_HOST_ENDIAN),
 };
 
 static bool meta_key_is_unqualified(enum nft_meta_keys key)

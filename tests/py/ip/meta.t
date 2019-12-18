@@ -10,3 +10,6 @@ icmpv6 type nd-router-advert;ok
 
 meta ibrname "br0";fail
 meta obrname "br0";fail
+
+meta sdif "lo" accept;ok
+meta sdifname != "vrf1" accept;ok

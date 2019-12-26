@@ -184,7 +184,7 @@ igmp_type
 IGMP maximum response time field |
 integer (8 bit)
 |checksum|
-ICMP checksum field |
+IGMP checksum field |
 integer (16 bit)
 |group|
 Group address|

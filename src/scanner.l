@@ -665,12 +665,29 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 %%
 
+static void scanner_push_indesc(struct parser_state *state,
+				struct input_descriptor *indesc)
+{
+	state->indescs[state->indesc_idx] = indesc;
+	state->indesc = state->indescs[state->indesc_idx++];
+}
+
+static void scanner_pop_indesc(struct parser_state *state)
+{
+	state->indesc_idx--;
+
+	if (state->indesc_idx > 0)
+		state->indesc = state->indescs[state->indesc_idx - 1];
+	else
+		state->indesc = NULL;
+}
+
 static void scanner_pop_buffer(yyscan_t scanner)
 {
 	struct parser_state *state = yyget_extra(scanner);
 
 	yypop_buffer_state(scanner);
-	state->indesc = state->indescs[--state->indesc_idx];
+	scanner_pop_indesc(state);
 }
 
 static void scanner_push_file(struct nft_ctx *nft, void *scanner,
@@ -691,8 +708,7 @@ static void scanner_push_file(struct nft_ctx *nft, void *scanner,
 	indesc->name	= xstrdup(filename);
 	init_pos(indesc);
 
-	state->indescs[state->indesc_idx] = indesc;
-	state->indesc = state->indescs[state->indesc_idx++];
+	scanner_push_indesc(state, indesc);
 	list_add_tail(&indesc->list, &state->indesc_list);
 }
 

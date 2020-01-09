@@ -46,7 +46,7 @@ enum opt_vals {
 	OPT_TERSE		= 't',
 	OPT_INVALID		= '?',
 };
-#define OPTSTRING	"+hvcf:iI:jvnsNaeSupypTt"
+#define OPTSTRING	"+hvd:cf:iI:jvnsNaeSupypTt"
 
 static const struct option options[] = {
 	{
@@ -228,8 +228,10 @@ static bool nft_options_check(int argc, char * const argv[])
 			if (nonoption) {
 				nft_options_error(argc, argv, pos);
 				return false;
-			} else if (argv[i][1] == 'I' ||
+			} else if (argv[i][1] == 'd' ||
+				   argv[i][1] == 'I' ||
 				   argv[i][1] == 'f' ||
+				   !strcmp(argv[i], "--debug") ||
 				   !strcmp(argv[i], "--includepath") ||
 				   !strcmp(argv[i], "--file")) {
 				skip = true;

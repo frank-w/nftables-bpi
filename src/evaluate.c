@@ -1299,13 +1299,10 @@ static int expr_evaluate_set_elem(struct eval_ctx *ctx, struct expr **expr)
 	    !(ctx->set->flags & (NFT_SET_ANONYMOUS | NFT_SET_INTERVAL))) {
 		switch (elem->key->etype) {
 		case EXPR_PREFIX:
-			return expr_error(ctx->msgs, elem,
-					  "Set member cannot be prefix, "
-					  "missing interval flag on declaration");
 		case EXPR_RANGE:
 			return expr_error(ctx->msgs, elem,
-					  "Set member cannot be range, "
-					  "missing interval flag on declaration");
+					  "You must add 'flags interval' to your %s declaration if you want to add %s elements",
+					  set_is_map(ctx->set->flags) ? "map" : "set", expr_name(elem->key));
 		default:
 			break;
 		}

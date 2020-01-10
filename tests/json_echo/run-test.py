@@ -4,6 +4,7 @@ from __future__ import print_function
 import sys
 import os
 import json
+import argparse
 
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(TESTS_PATH, '../../py/'))
@@ -13,12 +14,26 @@ from nftables import Nftables
 # Change working directory to repository root
 os.chdir(TESTS_PATH + "/../..")
 
-if not os.path.exists('src/.libs/libnftables.so'):
-    print("The nftables library does not exist. "
-          "You need to build the project.")
+parser = argparse.ArgumentParser(description='Run JSON echo tests')
+parser.add_argument('-H', '--host', action='store_true',
+                    help='Run tests against installed libnftables.so.1')
+parser.add_argument('-l', '--library', default=None,
+                    help='Path to libntables.so, overrides --host')
+args = parser.parse_args()
+
+check_lib_path = True
+if args.library is None:
+    if args.host:
+        args.library = 'libnftables.so.1'
+        check_lib_path = False
+    else:
+        args.library = 'src/.libs/libnftables.so.1'
+
+if check_lib_path and not os.path.exists(args.library):
+    print("Library not found at '%s'." % args.library)
     sys.exit(1)
 
-nftables = Nftables(sofile = 'src/.libs/libnftables.so')
+nftables = Nftables(sofile = args.library)
 nftables.set_echo_output(True)
 
 # various commands to work with

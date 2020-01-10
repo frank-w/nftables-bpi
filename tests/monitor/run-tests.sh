@@ -108,6 +108,7 @@ echo_run_test() {
 	touch $output_file
 }
 
+testcases=""
 while [ -n "$1" ]; do
 	case "$1" in
 	-d|--debug)
@@ -118,11 +119,15 @@ while [ -n "$1" ]; do
 		test_json=true
 		shift
 		;;
+	testcases/*.t)
+		testcases+=" $1"
+		shift
+		;;
 	*)
 		echo "unknown option '$1'"
 		;&
 	-h|--help)
-		echo "Usage: $(basename $0) [-j|--json] [-d|--debug]"
+		echo "Usage: $(basename $0) [-j|--json] [-d|--debug] [testcase ...]"
 		exit 1
 		;;
 	esac
@@ -138,7 +143,7 @@ for variant in $variants; do
 	run_test=${variant}_run_test
 	output_append=${variant}_output_append
 
-	for testcase in testcases/*.t; do
+	for testcase in ${testcases:-testcases/*.t}; do
 		echo "$variant: running tests from file $(basename $testcase)"
 		# files are like this:
 		#

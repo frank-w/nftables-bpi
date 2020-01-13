@@ -18,3 +18,8 @@ J {"add": {"element": {"family": "ip", "table": "t", "name": "s", "elem": {"set"
 I add rule ip t c tcp dport @s
 O -
 J {"add": {"rule": {"family": "ip", "table": "t", "chain": "c", "handle": 0, "expr": [{"match": {"op": "==", "left": {"payload": {"protocol": "tcp", "field": "dport"}}, "right": "@s"}}]}}}
+
+# test anonymous interval sets as well
+I add rule ip t c tcp dport { 20, 30-40 }
+O -
+J {"add": {"rule": {"family": "ip", "table": "t", "chain": "c", "handle": 0, "expr": [{"match": {"op": "==", "left": {"payload": {"protocol": "tcp", "field": "dport"}}, "right": {"set": [20, {"range": [30, 40]}]}}}]}}}

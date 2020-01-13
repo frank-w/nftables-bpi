@@ -501,7 +501,7 @@ static int netlink_events_obj_cb(const struct nlmsghdr *nlh, int type,
 
 static void rule_map_decompose_cb(struct set *s, void *data)
 {
-	if (s->flags & (NFT_SET_INTERVAL & NFT_SET_ANONYMOUS))
+	if (set_is_interval(s->flags) && set_is_anonymous(s->flags))
 		interval_map_decompose(s->init);
 }
 

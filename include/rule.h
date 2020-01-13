@@ -363,6 +363,11 @@ static inline bool set_is_meter(uint32_t set_flags)
 	return set_is_anonymous(set_flags) && (set_flags & NFT_SET_EVAL);
 }
 
+static inline bool set_is_interval(uint32_t set_flags)
+{
+	return set_flags & NFT_SET_INTERVAL;
+}
+
 #include <statement.h>
 
 struct counter {

@@ -39,7 +39,7 @@ const struct xfrm_template xfrm_templates[] = {
 	[NFT_XFRM_KEY_DADDR_IP6]	= XFRM_TEMPLATE_BE("daddr", &ip6addr_type, 16 * BITS_PER_BYTE),
 	[NFT_XFRM_KEY_SADDR_IP6]	= XFRM_TEMPLATE_BE("saddr", &ip6addr_type, 16 * BITS_PER_BYTE),
 	[NFT_XFRM_KEY_REQID]		= XFRM_TEMPLATE_HE("reqid", &integer_type, 4 * BITS_PER_BYTE),
-	[NFT_XFRM_KEY_SPI]		= XFRM_TEMPLATE_HE("spi", &integer_type, 4 * BITS_PER_BYTE),
+	[NFT_XFRM_KEY_SPI]		= XFRM_TEMPLATE_BE("spi", &integer_type, 4 * BITS_PER_BYTE),
 };
 
 static void xfrm_expr_print(const struct expr *expr, struct output_ctx *octx)

@@ -16,7 +16,6 @@ ip ipsec-ip4 ipsec-input
 # ipsec out spi 1-561
 inet ipsec-inet ipsec-post
   [ xfrm load out 0 spi => reg 1 ]
-  [ byteorder reg 1 = hton(reg 1, 4, 4) ]
   [ cmp gte reg 1 0x01000000 ]
   [ cmp lte reg 1 0x31020000 ]
 

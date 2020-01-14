@@ -17,15 +17,13 @@ $NFT add table test-ip
 
 GET="$($NFT list quotas)"
 if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 	exit 1
 fi
 
 GET="$($NFT list quota test https-quota)"
 if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 	exit 1
 fi
 

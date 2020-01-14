@@ -14,7 +14,6 @@ fi
 
 KERNEL_RULESET="$($NFT list ruleset)"
 if [ "" != "$KERNEL_RULESET" ] ; then
-	DIFF="$(which diff)"
 	echo "Got a ruleset, but expected empty: "
 	echo "$KERNEL_RULESET"
 	exit 1
@@ -42,7 +41,6 @@ $NFT -f - <<< "$RULESETFAIL" && exit 2
 
 KERNEL_RULESET="$($NFT list ruleset)"
 if [ "$RULESET" != "$KERNEL_RULESET" ] ; then
-        DIFF="$(which diff)"
-        [ -x $DIFF ] && $DIFF -u <(echo "$RULESET") <(echo "$KERNEL_RULESET")
+        $DIFF -u <(echo "$RULESET") <(echo "$KERNEL_RULESET")
         exit 1
 fi

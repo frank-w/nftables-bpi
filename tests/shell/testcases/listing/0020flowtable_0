@@ -15,7 +15,6 @@ $NFT -f - <<< "$EXPECTED"
 
 GET="$($NFT list flowtable inet filter f)"
 if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 	exit 1
 fi

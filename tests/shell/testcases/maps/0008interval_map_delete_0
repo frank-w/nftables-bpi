@@ -26,7 +26,6 @@ $NFT add element filter m { 127.0.0.2 : 0x2 }
 
 GET=$($NFT -s list ruleset)
 if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 	exit 1
 fi

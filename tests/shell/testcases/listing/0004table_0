@@ -12,8 +12,7 @@ $NFT add table test2
 
 GET="$($NFT list table test)"
 if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 	exit 1
 fi
 

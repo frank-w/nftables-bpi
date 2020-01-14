@@ -97,8 +97,7 @@ function test_netns()
 	KERNEL_RULESET="$($IP netns exec $NETNS_NAME $NFT list ruleset)"
 	if [ "$RULESET" != "$KERNEL_RULESET" ] ; then
 		echo "E: ruleset in netns $NETNS_NAME differs from the loaded" >&2
-	        DIFF="$(which diff)"
-	        [ -x $DIFF ] && $DIFF -u <(echo "$RULESET") <(echo "$KERNEL_RULESET")
+	        $DIFF -u <(echo "$RULESET") <(echo "$KERNEL_RULESET")
 		$IP netns del $NETNS_NAME
 	        exit 1
 	fi

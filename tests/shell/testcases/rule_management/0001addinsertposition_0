@@ -30,8 +30,7 @@ for arg in "position 2" "handle 2" "index 0"; do
 
 	GET="$($NFT list ruleset)"
 	if [ "$EXPECTED" != "$GET" ] ; then
-		DIFF="$(which diff)"
-		[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+		$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 		exit 1
 	fi
 done
@@ -42,8 +41,7 @@ for arg in "position 3" "handle 3" "index 1"; do
 
 	GET="$($NFT list ruleset)"
 	if [ "$EXPECTED" != "$GET" ] ; then
-		DIFF="$(which diff)"
-		[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+		$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 		exit 1
 	fi
 done
@@ -62,8 +60,7 @@ for arg in "position 3" "handle 3" "index 1"; do
 
 	GET="$($NFT list ruleset)"
 	if [ "$EXPECTED" != "$GET" ] ; then
-		DIFF="$(which diff)"
-		[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+		$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 		exit 1
 	fi
 done
@@ -82,8 +79,7 @@ for arg in "position 2" "handle 2" "index 0"; do
 
 	GET="$($NFT list ruleset)"
 	if [ "$EXPECTED" != "$GET" ] ; then
-		DIFF="$(which diff)"
-		[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+		$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 		exit 1
 	fi
 done

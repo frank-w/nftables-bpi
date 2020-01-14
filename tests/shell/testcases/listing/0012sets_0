@@ -33,7 +33,6 @@ $NFT add set inet filter set2 { type icmpv6_type \; }
 
 GET="$($NFT list sets inet)"
 if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 	exit 1
 fi

@@ -38,7 +38,6 @@ $NFT add rule inet filter test tcp dport {80, 443}
 GET="$($NFT list sets)"
 
 if [ "$EXPECTED" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
 	exit 1
 fi

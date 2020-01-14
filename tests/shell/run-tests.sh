@@ -43,6 +43,11 @@ if [ ! -x "$MODPROBE" ] ; then
 	msg_error "no modprobe binary found"
 fi
 
+DIFF="$(which diff)"
+if [ ! -x "$DIFF" ] ; then
+	DIFF=true
+fi
+
 if [ "$1" == "-v" ] ; then
 	VERBOSE=y
 	shift
@@ -96,7 +101,7 @@ do
 	kernel_cleanup
 
 	msg_info "[EXECUTING]	$testfile"
-	test_output=$(NFT=$NFT ${testfile} 2>&1)
+	test_output=$(NFT=$NFT DIFF=$DIFF ${testfile} 2>&1)
 	rc_got=$?
 	echo -en "\033[1A\033[K" # clean the [EXECUTING] foobar line
 

@@ -29,8 +29,7 @@ fi
 GET="$($NFT list ruleset)"
 
 if [ "$RULESET" != "$GET" ] ; then
-	DIFF="$(which diff)"
-	[ -x $DIFF ] && $DIFF -u <(echo "$RULESET") <(echo "$GET")
+	$DIFF -u <(echo "$RULESET") <(echo "$GET")
 	exit 1
 fi
 

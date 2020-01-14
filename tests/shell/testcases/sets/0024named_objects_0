@@ -35,4 +35,14 @@ table inet x {
 set -e
 $NFT -f - <<< "$RULESET"
 
-$NFT reset counter inet x user321
+EXPECTED="table inet x {
+	counter user321 {
+		packets 12 bytes 1433
+	}
+}"
+
+GET="$($NFT reset counter inet x user321)"
+if [ "$EXPECTED" != "$GET" ] ; then
+	$DIFF -u <(echo "$EXPECTED") <(echo "$GET")
+	exit 1
+fi

@@ -2582,7 +2582,8 @@ static int do_command_reset(struct netlink_ctx *ctx, struct cmd *cmd)
 	ret = netlink_reset_objs(ctx, cmd, type, dump);
 	list_for_each_entry_safe(obj, next, &ctx->list, list) {
 		table = table_lookup(&obj->handle, &ctx->nft->cache);
-		list_move(&obj->list, &table->objs);
+		if (!obj_lookup(table, obj->handle.obj.name, obj->type))
+			list_move(&obj->list, &table->objs);
 	}
 	if (ret < 0)
 		return ret;

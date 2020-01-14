@@ -138,8 +138,10 @@ unsigned int cache_evaluate(struct nft_ctx *nft, struct list_head *cmds)
 		case CMD_GET:
 			flags = evaluate_cache_get(cmd, flags);
 			break;
-		case CMD_LIST:
 		case CMD_RESET:
+			flags |= NFT_CACHE_TABLE;
+			break;
+		case CMD_LIST:
 		case CMD_EXPORT:
 		case CMD_MONITOR:
 			flags |= NFT_CACHE_FULL;

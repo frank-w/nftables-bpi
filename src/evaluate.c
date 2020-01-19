@@ -2340,14 +2340,13 @@ static int stmt_evaluate_meta(struct eval_ctx *ctx, struct stmt *stmt)
 static int stmt_evaluate_ct(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	if (stmt_evaluate_arg(ctx, stmt,
-				 stmt->ct.tmpl->dtype,
-				 stmt->ct.tmpl->len,
-				 stmt->ct.tmpl->byteorder,
-				 &stmt->ct.expr) < 0)
+			      stmt->ct.tmpl->dtype,
+			      stmt->ct.tmpl->len,
+			      stmt->ct.tmpl->byteorder,
+			      &stmt->ct.expr) < 0)
 		return -1;
 
-	if (stmt->ct.key == NFT_CT_SECMARK &&
-	    expr_is_constant(stmt->ct.expr))
+	if (stmt->ct.key == NFT_CT_SECMARK && expr_is_constant(stmt->ct.expr))
 		return stmt_error(ctx, stmt,
 				  "ct secmark must not be set to constant value");
 

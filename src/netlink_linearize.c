@@ -1243,7 +1243,7 @@ static void netlink_gen_queue_stmt(struct netlink_linearize_ctx *ctx,
 }
 
 static void netlink_gen_ct_stmt(struct netlink_linearize_ctx *ctx,
-				  const struct stmt *stmt)
+				const struct stmt *stmt)
 {
 	struct nftnl_expr *nle;
 	enum nft_registers sreg;

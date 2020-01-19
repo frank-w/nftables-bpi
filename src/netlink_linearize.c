@@ -545,9 +545,36 @@ static void combine_binop(mpz_t mask, mpz_t xor, const mpz_t m, const mpz_t x)
 	mpz_and(mask, mask, m);
 }
 
-static void netlink_gen_binop(struct netlink_linearize_ctx *ctx,
+static void netlink_gen_shift(struct netlink_linearize_ctx *ctx,
 			      const struct expr *expr,
 			      enum nft_registers dreg)
+{
+	enum nft_bitwise_ops op = expr->op == OP_LSHIFT ?
+		NFT_BITWISE_LSHIFT : NFT_BITWISE_RSHIFT;
+	unsigned int len = div_round_up(expr->len, BITS_PER_BYTE);
+	struct nft_data_linearize nld;
+	struct nftnl_expr *nle;
+
+	netlink_gen_expr(ctx, expr->left, dreg);
+
+	nle = alloc_nft_expr("bitwise");
+	netlink_put_register(nle, NFTNL_EXPR_BITWISE_SREG, dreg);
+	netlink_put_register(nle, NFTNL_EXPR_BITWISE_DREG, dreg);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_BITWISE_OP, op);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_BITWISE_LEN, len);
+
+	netlink_gen_raw_data(expr->right->value, expr->right->byteorder,
+			     sizeof(uint32_t), &nld);
+
+	nftnl_expr_set(nle, NFTNL_EXPR_BITWISE_DATA, nld.value,
+		       nld.len);
+
+	nftnl_rule_add_expr(ctx->nlr, nle);
+}
+
+static void netlink_gen_bitwise(struct netlink_linearize_ctx *ctx,
+				const struct expr *expr,
+				enum nft_registers dreg)
 {
 	struct nftnl_expr *nle;
 	struct nft_data_linearize nld;
@@ -562,8 +589,9 @@ static void netlink_gen_binop(struct netlink_linearize_ctx *ctx,
 	mpz_init(val);
 	mpz_init(tmp);
 
-	binops[n++] = left = (void *)expr;
-	while (left->etype == EXPR_BINOP && left->left != NULL)
+	binops[n++] = left = (struct expr *) expr;
+	while (left->etype == EXPR_BINOP && left->left != NULL &&
+	       (left->op == OP_AND || left->op == OP_OR || left->op == OP_XOR))
 		binops[n++] = left = left->left;
 	n--;
 
@@ -598,6 +626,7 @@ static void netlink_gen_binop(struct netlink_linearize_ctx *ctx,
 	nle = alloc_nft_expr("bitwise");
 	netlink_put_register(nle, NFTNL_EXPR_BITWISE_SREG, dreg);
 	netlink_put_register(nle, NFTNL_EXPR_BITWISE_DREG, dreg);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_BITWISE_OP, NFT_BITWISE_BOOL);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_BITWISE_LEN, len);
 
 	netlink_gen_raw_data(mask, expr->byteorder, len, &nld);
@@ -611,6 +640,21 @@ static void netlink_gen_binop(struct netlink_linearize_ctx *ctx,
 	mpz_clear(mask);
 
 	nftnl_rule_add_expr(ctx->nlr, nle);
+}
+
+static void netlink_gen_binop(struct netlink_linearize_ctx *ctx,
+			      const struct expr *expr,
+			      enum nft_registers dreg)
+{
+	switch(expr->op) {
+	case OP_LSHIFT:
+	case OP_RSHIFT:
+		netlink_gen_shift(ctx, expr, dreg);
+		break;
+	default:
+		netlink_gen_bitwise(ctx, expr, dreg);
+		break;
+	}
 }
 
 static enum nft_byteorder_ops netlink_gen_unary_op(enum ops op)

@@ -363,21 +363,16 @@ static void netlink_parse_lookup(struct netlink_parse_ctx *ctx,
 	ctx->stmt = expr_stmt_alloc(loc, expr);
 }
 
-static void netlink_parse_bitwise(struct netlink_parse_ctx *ctx,
-				  const struct location *loc,
-				  const struct nftnl_expr *nle)
+static struct expr *netlink_parse_bitwise_bool(struct netlink_parse_ctx *ctx,
+					       const struct location *loc,
+					       const struct nftnl_expr *nle,
+					       enum nft_registers sreg,
+					       struct expr *left)
+
 {
 	struct nft_data_delinearize nld;
-	enum nft_registers sreg, dreg;
-	struct expr *expr, *left, *mask, *xor, *or;
+	struct expr *expr, *mask, *xor, *or;
 	mpz_t m, x, o;
-
-	sreg = netlink_parse_register(nle, NFTNL_EXPR_BITWISE_SREG);
-	left = netlink_get_register(ctx, loc, sreg);
-	if (left == NULL)
-		return netlink_error(ctx, loc,
-				     "Bitwise expression has no left "
-				     "hand side");
 
 	expr = left;
 
@@ -429,6 +424,62 @@ static void netlink_parse_bitwise(struct netlink_parse_ctx *ctx,
 	mpz_clear(m);
 	mpz_clear(x);
 	mpz_clear(o);
+
+	return expr;
+}
+
+static struct expr *netlink_parse_bitwise_shift(struct netlink_parse_ctx *ctx,
+						const struct location *loc,
+						const struct nftnl_expr *nle,
+						enum ops op,
+						enum nft_registers sreg,
+						struct expr *left)
+{
+	struct nft_data_delinearize nld;
+	struct expr *expr, *right;
+
+	nld.value = nftnl_expr_get(nle, NFTNL_EXPR_BITWISE_DATA, &nld.len);
+	right = netlink_alloc_value(loc, &nld);
+
+	expr = binop_expr_alloc(loc, op, left, right);
+	expr->len = left->len;
+
+	return expr;
+}
+
+static void netlink_parse_bitwise(struct netlink_parse_ctx *ctx,
+				  const struct location *loc,
+				  const struct nftnl_expr *nle)
+{
+	enum nft_registers sreg, dreg;
+	struct expr *expr, *left;
+	enum nft_bitwise_ops op;
+
+	sreg = netlink_parse_register(nle, NFTNL_EXPR_BITWISE_SREG);
+	left = netlink_get_register(ctx, loc, sreg);
+	if (left == NULL)
+		return netlink_error(ctx, loc,
+				     "Bitwise expression has no left "
+				     "hand side");
+
+	op = nftnl_expr_get_u32(nle, NFTNL_EXPR_BITWISE_OP);
+
+	switch (op) {
+	case NFT_BITWISE_BOOL:
+		expr = netlink_parse_bitwise_bool(ctx, loc, nle, sreg,
+						  left);
+		break;
+	case NFT_BITWISE_LSHIFT:
+		expr = netlink_parse_bitwise_shift(ctx, loc, nle, OP_LSHIFT,
+						   sreg, left);
+		break;
+	case NFT_BITWISE_RSHIFT:
+		expr = netlink_parse_bitwise_shift(ctx, loc, nle, OP_RSHIFT,
+						   sreg, left);
+		break;
+	default:
+		BUG("invalid bitwise operation %u\n", op);
+	}
 
 	dreg = netlink_parse_register(nle, NFTNL_EXPR_BITWISE_DREG);
 	netlink_set_register(ctx, dreg, expr);
@@ -2100,8 +2151,16 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 		break;
 	case EXPR_BINOP:
 		expr_postprocess(ctx, &expr->left);
-		expr_set_type(expr->right, expr->left->dtype,
-			      expr->left->byteorder);
+		switch (expr->op) {
+		case OP_LSHIFT:
+		case OP_RSHIFT:
+			expr_set_type(expr->right, &integer_type,
+				      BYTEORDER_HOST_ENDIAN);
+			break;
+		default:
+			expr_set_type(expr->right, expr->left->dtype,
+				      expr->left->byteorder);
+		}
 		expr_postprocess(ctx, &expr->right);
 
 		expr_set_type(expr, expr->left->dtype,

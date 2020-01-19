@@ -2361,7 +2361,7 @@ static void stmt_payload_binop_pp(struct rule_pp_ctx *ctx, struct expr *binop)
  * the original payload expression because it has an odd size or
  * a non-byte divisible offset/length.
  *
- * Of that was the case, the 'value' expression is not a value but
+ * If that was the case, the 'value' expression is not a value but
  * a binop expression with a munged payload expression on the left
  * and a mask to clear the real payload offset/length.
  *

@@ -2030,7 +2030,7 @@ static bool __expr_postprocess_string(struct expr **exprp)
 
 static struct expr *expr_postprocess_string(struct expr *expr)
 {
-	struct expr *mask;
+	struct expr *mask, *out;
 
 	assert(expr_basetype(expr)->type == TYPE_STRING);
 	if (__expr_postprocess_string(&expr))
@@ -2040,7 +2040,9 @@ static struct expr *expr_postprocess_string(struct expr *expr)
 				   BYTEORDER_HOST_ENDIAN,
 				   expr->len + BITS_PER_BYTE, NULL);
 	mpz_init_bitmask(mask->value, expr->len);
-	return string_wildcard_expr_alloc(&expr->location, mask, expr);
+	out = string_wildcard_expr_alloc(&expr->location, mask, expr);
+	expr_free(mask);
+	return out;
 }
 
 static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)

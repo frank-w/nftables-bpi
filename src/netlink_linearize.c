@@ -941,7 +941,7 @@ static void netlink_gen_payload_stmt(struct netlink_linearize_ctx *ctx,
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_PAYLOAD_CSUM_OFFSET,
 				   csum_off / BITS_PER_BYTE);
 	}
-	if (expr->payload.base == PROTO_BASE_NETWORK_HDR &&
+	if (expr->payload.base == PROTO_BASE_NETWORK_HDR && desc &&
 	    payload_needs_l4csum_update_pseudohdr(expr, desc))
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_PAYLOAD_FLAGS,
 				   NFT_PAYLOAD_L4CSUM_PSEUDOHDR);

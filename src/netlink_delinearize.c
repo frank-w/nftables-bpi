@@ -274,7 +274,7 @@ static void netlink_parse_cmp(struct netlink_parse_ctx *ctx,
 {
 	struct nft_data_delinearize nld;
 	enum nft_registers sreg;
-	struct expr *expr, *left, *right;
+	struct expr *expr, *left, *right, *tmp;
 	enum ops op;
 
 	sreg = netlink_parse_register(nle, NFTNL_EXPR_CMP_SREG);
@@ -291,19 +291,26 @@ static void netlink_parse_cmp(struct netlink_parse_ctx *ctx,
 
 	if (left->len > right->len &&
 	    expr_basetype(left) != &string_type) {
-		return netlink_error(ctx, loc, "Relational expression size mismatch");
+		netlink_error(ctx, loc, "Relational expression size mismatch");
+		goto err_free;
 	} else if (left->len > 0 && left->len < right->len) {
 		expr_free(left);
 		left = netlink_parse_concat_expr(ctx, loc, sreg, right->len);
 		if (left == NULL)
-			return;
-		right = netlink_parse_concat_data(ctx, loc, sreg, right->len, right);
-		if (right == NULL)
-			return;
+			goto err_free;
+		tmp = netlink_parse_concat_data(ctx, loc, sreg, right->len, right);
+		if (tmp == NULL)
+			goto err_free;
+		expr_free(right);
+		right = tmp;
 	}
 
 	expr = relational_expr_alloc(loc, op, left, right);
 	ctx->stmt = expr_stmt_alloc(loc, expr);
+	return;
+err_free:
+	expr_free(left);
+	expr_free(right);
 }
 
 static void netlink_parse_lookup(struct netlink_parse_ctx *ctx,

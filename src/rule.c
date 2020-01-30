@@ -1540,7 +1540,8 @@ static int __do_add_setelems(struct netlink_ctx *ctx, struct set *set,
 		return -1;
 
 	if (set->init != NULL &&
-	    set->flags & NFT_SET_INTERVAL) {
+	    set->flags & NFT_SET_INTERVAL &&
+	    set->desc.field_count <= 1) {
 		interval_map_decompose(expr);
 		list_splice_tail_init(&expr->expressions, &set->init->expressions);
 		set->init->size += expr->size;
@@ -1561,7 +1562,7 @@ static int do_add_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 	table = table_lookup(h, &ctx->nft->cache);
 	set = set_lookup(table, h->set.name);
 
-	if (set->flags & NFT_SET_INTERVAL &&
+	if (set_is_non_concat_range(set) &&
 	    set_to_intervals(ctx->msgs, set, init, true,
 			     ctx->nft->debug_mask, set->automerge,
 			     &ctx->nft->output) < 0)
@@ -1576,7 +1577,7 @@ static int do_add_set(struct netlink_ctx *ctx, const struct cmd *cmd,
 	struct set *set = cmd->set;
 
 	if (set->init != NULL) {
-		if (set->flags & NFT_SET_INTERVAL &&
+		if (set_is_non_concat_range(set) &&
 		    set_to_intervals(ctx->msgs, set, set->init, true,
 				     ctx->nft->debug_mask, set->automerge,
 				     &ctx->nft->output) < 0)
@@ -1662,7 +1663,7 @@ static int do_delete_setelems(struct netlink_ctx *ctx, struct cmd *cmd)
 	table = table_lookup(h, &ctx->nft->cache);
 	set = set_lookup(table, h->set.name);
 
-	if (set->flags & NFT_SET_INTERVAL &&
+	if (set_is_non_concat_range(set) &&
 	    set_to_intervals(ctx->msgs, set, expr, false,
 			     ctx->nft->debug_mask, set->automerge,
 			     &ctx->nft->output) < 0)
@@ -2516,7 +2517,7 @@ static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 	set = set_lookup(table, cmd->handle.set.name);
 
 	/* Create a list of elements based of what we got from command line. */
-	if (set->flags & NFT_SET_INTERVAL)
+	if (set_is_non_concat_range(set))
 		init = get_set_intervals(set, cmd->expr);
 	else
 		init = cmd->expr;
@@ -2529,7 +2530,7 @@ static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 	if (err >= 0)
 		__do_list_set(ctx, cmd, table, new_set);
 
-	if (set->flags & NFT_SET_INTERVAL)
+	if (set_is_non_concat_range(set))
 		expr_free(init);
 
 	set_free(new_set);

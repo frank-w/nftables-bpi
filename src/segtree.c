@@ -650,6 +650,11 @@ struct expr *get_set_intervals(const struct set *set, const struct expr *init)
 			set_elem_add(set, new_init, i->key->value,
 				     i->flags, i->byteorder);
 			break;
+		case EXPR_CONCAT:
+			compound_expr_add(new_init, expr_clone(i));
+			i->flags |= EXPR_F_INTERVAL_END;
+			compound_expr_add(new_init, expr_clone(i));
+			break;
 		default:
 			range_expr_value_low(low, i);
 			set_elem_add(set, new_init, low, 0, i->byteorder);
@@ -821,6 +826,9 @@ static int expr_value_cmp(const void *p1, const void *p2)
 	struct expr *e2 = *(void * const *)p2;
 	int ret;
 
+	if (expr_value(e1)->etype == EXPR_CONCAT)
+		return -1;
+
 	ret = mpz_cmp(expr_value(e1)->value, expr_value(e2)->value);
 	if (ret == 0) {
 		if (e1->flags & EXPR_F_INTERVAL_END)
@@ -830,6 +838,115 @@ static int expr_value_cmp(const void *p1, const void *p2)
 	}
 
 	return ret;
+}
+
+/* Given start and end elements of a range, check if it can be represented as
+ * a single netmask, and if so, how long, by returning zero or a positive value.
+ */
+static int range_mask_len(const mpz_t start, const mpz_t end, unsigned int len)
+{
+	mpz_t tmp_start, tmp_end;
+	int ret;
+
+	mpz_init_set_ui(tmp_start, mpz_get_ui(start));
+	mpz_init_set_ui(tmp_end, mpz_get_ui(end));
+
+	while (mpz_cmp(tmp_start, tmp_end) <= 0 &&
+		!mpz_tstbit(tmp_start, 0) && mpz_tstbit(tmp_end, 0) &&
+		len--) {
+		mpz_fdiv_q_2exp(tmp_start, tmp_start, 1);
+		mpz_fdiv_q_2exp(tmp_end, tmp_end, 1);
+	}
+
+	ret = !mpz_cmp(tmp_start, tmp_end) ? (int)len : -1;
+
+	mpz_clear(tmp_start);
+	mpz_clear(tmp_end);
+
+	return ret;
+}
+
+/* Given a set with two elements (start and end), transform them into a
+ * concatenation of ranges. That is, from a list of start expressions and a list
+ * of end expressions, form a list of start - end expressions.
+ */
+void concat_range_aggregate(struct expr *set)
+{
+	struct expr *i, *start = NULL, *end, *r1, *r2, *next, *r1_next, *tmp;
+	struct list_head *r2_next;
+	int prefix_len, free_r1;
+	mpz_t range, p;
+
+	list_for_each_entry_safe(i, next, &set->expressions, list) {
+		if (!start) {
+			start = i;
+			continue;
+		}
+		end = i;
+
+		/* Walk over r1 (start expression) and r2 (end) in parallel,
+		 * form ranges between corresponding r1 and r2 expressions,
+		 * store them by replacing r2 expressions, and free r1
+		 * expressions.
+		 */
+		r2 = list_first_entry(&expr_value(end)->expressions,
+				      struct expr, list);
+		list_for_each_entry_safe(r1, r1_next,
+					 &expr_value(start)->expressions,
+					 list) {
+			mpz_init(range);
+			mpz_init(p);
+
+			r2_next = r2->list.next;
+			free_r1 = 0;
+
+			if (!mpz_cmp(r1->value, r2->value)) {
+				free_r1 = 1;
+				goto next;
+			}
+
+			mpz_sub(range, r2->value, r1->value);
+			mpz_sub_ui(range, range, 1);
+			mpz_and(p, r1->value, range);
+
+			/* Check if we are forced, or if it's anyway preferable,
+			 * to express the range as two points instead of a
+			 * netmask.
+			 */
+			prefix_len = range_mask_len(r1->value, r2->value,
+						    r1->len);
+			if (prefix_len < 0 ||
+			    !(r1->dtype->flags & DTYPE_F_PREFIX)) {
+				tmp = range_expr_alloc(&r1->location, r1,
+						       r2);
+
+				list_replace(&r2->list, &tmp->list);
+				r2_next = tmp->list.next;
+			} else {
+				tmp = prefix_expr_alloc(&r1->location, r1,
+							prefix_len);
+				tmp->len = r2->len;
+
+				list_replace(&r2->list, &tmp->list);
+				r2_next = tmp->list.next;
+				expr_free(r2);
+			}
+
+next:
+			mpz_clear(p);
+			mpz_clear(range);
+
+			r2 = list_entry(r2_next, typeof(*r2), list);
+			compound_expr_remove(start, r1);
+
+			if (free_r1)
+				expr_free(r1);
+		}
+
+		compound_expr_remove(set, start);
+		expr_free(start);
+		start = NULL;
+	}
 }
 
 void interval_map_decompose(struct expr *set)

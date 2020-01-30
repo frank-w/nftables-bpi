@@ -3592,7 +3592,6 @@ range_rhs_expr		:	basic_rhs_expr	DASH	basic_rhs_expr
 
 multiton_rhs_expr	:	prefix_rhs_expr
 			|	range_rhs_expr
-			|	wildcard_expr
 			;
 
 map_expr		:	concat_expr	MAP	rhs_expr
@@ -3686,7 +3685,7 @@ set_elem_option		:	TIMEOUT			time_spec
 			;
 
 set_lhs_expr		:	concat_rhs_expr
-			|	multiton_rhs_expr
+			|	wildcard_expr
 			;
 
 set_rhs_expr		:	concat_rhs_expr
@@ -3939,7 +3938,7 @@ list_rhs_expr		:	basic_rhs_expr		COMMA		basic_rhs_expr
 			;
 
 rhs_expr		:	concat_rhs_expr		{ $$ = $1; }
-			|	multiton_rhs_expr	{ $$ = $1; }
+			|	wildcard_expr		{ $$ = $1; }
 			|	set_expr		{ $$ = $1; }
 			|	set_ref_symbol_expr	{ $$ = $1; }
 			;
@@ -3980,7 +3979,17 @@ basic_rhs_expr		:	inclusive_or_rhs_expr
 			;
 
 concat_rhs_expr		:	basic_rhs_expr
-			|	concat_rhs_expr	DOT	basic_rhs_expr
+			|	multiton_rhs_expr
+			|	concat_rhs_expr		DOT	multiton_rhs_expr
+			{
+				struct location rhs[] = {
+					[1]	= @2,
+					[2]	= @3,
+				};
+
+				$$ = handle_concat_expr(&@$, $$, $1, $3, rhs);
+			}
+			|	concat_rhs_expr		DOT	basic_rhs_expr
 			{
 				struct location rhs[] = {
 					[1]	= @2,

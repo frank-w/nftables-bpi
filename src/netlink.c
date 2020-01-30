@@ -100,10 +100,11 @@ struct nftnl_expr *alloc_nft_expr(const char *name)
 static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 						  const struct expr *expr)
 {
-	const struct expr *elem, *key, *data;
+	const struct expr *elem, *data;
 	struct nftnl_set_elem *nlse;
 	struct nft_data_linearize nld;
 	struct nftnl_udata_buf *udbuf = NULL;
+	struct expr *key;
 
 	nlse = nftnl_set_elem_alloc();
 	if (nlse == NULL)
@@ -121,6 +122,16 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 
 	netlink_gen_data(key, &nld);
 	nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_KEY, &nld.value, nld.len);
+
+	if (set->set_flags & NFT_SET_INTERVAL && expr->key->field_count > 1) {
+		key->flags |= EXPR_F_INTERVAL_END;
+		netlink_gen_data(key, &nld);
+		key->flags &= ~EXPR_F_INTERVAL_END;
+
+		nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_KEY_END, &nld.value,
+				   nld.len);
+	}
+
 	if (elem->timeout)
 		nftnl_set_elem_set_u64(nlse, NFTNL_SET_ELEM_TIMEOUT,
 				       elem->timeout);
@@ -188,28 +199,58 @@ void netlink_gen_raw_data(const mpz_t value, enum byteorder byteorder,
 	data->len = len;
 }
 
+static int netlink_export_pad(unsigned char *data, const mpz_t v,
+			      const struct expr *i)
+{
+	mpz_export_data(data, v, i->byteorder,
+			div_round_up(i->len, BITS_PER_BYTE));
+
+	return netlink_padded_len(i->len) / BITS_PER_BYTE;
+}
+
+static int netlink_gen_concat_data_expr(int end, const struct expr *i,
+					unsigned char *data)
+{
+	switch (i->etype) {
+	case EXPR_RANGE:
+		i = end ? i->right : i->left;
+		break;
+	case EXPR_PREFIX:
+		if (end) {
+			int count;
+			mpz_t v;
+
+			mpz_init_bitmask(v, i->len - i->prefix_len);
+			mpz_add(v, i->prefix->value, v);
+			count = netlink_export_pad(data, v, i);
+			mpz_clear(v);
+			return count;
+		}
+		return netlink_export_pad(data, i->prefix->value, i);
+	case EXPR_VALUE:
+		break;
+	default:
+		BUG("invalid expression type '%s' in set", expr_ops(i)->name);
+	}
+
+	return netlink_export_pad(data, i->value, i);
+}
+
 static void netlink_gen_concat_data(const struct expr *expr,
 				    struct nft_data_linearize *nld)
 {
+	unsigned int len = expr->len / BITS_PER_BYTE, offset = 0;
+	int end = expr->flags & EXPR_F_INTERVAL_END;
+	unsigned char data[len];
 	const struct expr *i;
-	unsigned int len, offset;
 
-	len = expr->len / BITS_PER_BYTE;
-	if (1) {
-		unsigned char data[len];
+	memset(data, 0, len);
 
-		memset(data, 0, sizeof(data));
-		offset = 0;
-		list_for_each_entry(i, &expr->expressions, list) {
-			assert(i->etype == EXPR_VALUE);
-			mpz_export_data(data + offset, i->value, i->byteorder,
-					div_round_up(i->len, BITS_PER_BYTE));
-			offset += netlink_padded_len(i->len) / BITS_PER_BYTE;
-		}
+	list_for_each_entry(i, &expr->expressions, list)
+		offset += netlink_gen_concat_data_expr(end, i, data + offset);
 
-		memcpy(nld->value, data, len);
-		nld->len = len;
-	}
+	memcpy(nld->value, data, len);
+	nld->len = len;
 }
 
 static void netlink_gen_constant_data(const struct expr *expr,
@@ -913,6 +954,7 @@ int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 	if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_FLAGS))
 		flags = nftnl_set_elem_get_u32(nlse, NFTNL_SET_ELEM_FLAGS);
 
+key_end:
 	key = netlink_alloc_value(&netlink_location, &nld);
 	datatype_set(key, set->key->dtype);
 	key->byteorder	= set->key->byteorder;
@@ -984,6 +1026,15 @@ int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 	}
 out:
 	compound_expr_add(set->init, expr);
+
+	if (!(flags & NFT_SET_ELEM_INTERVAL_END) &&
+	    nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_KEY_END)) {
+		flags |= NFT_SET_ELEM_INTERVAL_END;
+		nld.value = nftnl_set_elem_get(nlse, NFTNL_SET_ELEM_KEY_END,
+					       &nld.len);
+		goto key_end;
+	}
+
 	return 0;
 }
 
@@ -1022,14 +1073,15 @@ int netlink_list_setelems(struct netlink_ctx *ctx, const struct handle *h,
 	set->init = set_expr_alloc(&internal_location, set);
 	nftnl_set_elem_foreach(nls, list_setelem_cb, ctx);
 
-	if (!(set->flags & NFT_SET_INTERVAL))
+	if (set->flags & NFT_SET_INTERVAL && set->desc.field_count > 1)
+		concat_range_aggregate(set->init);
+	else if (set->flags & NFT_SET_INTERVAL)
+		interval_map_decompose(set->init);
+	else
 		list_expr_sort(&ctx->set->init->expressions);
 
 	nftnl_set_free(nls);
 	ctx->set = NULL;
-
-	if (set->flags & NFT_SET_INTERVAL)
-		interval_map_decompose(set->init);
 
 	return 0;
 }
@@ -1039,6 +1091,7 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 			struct set *set, struct expr *init)
 {
 	struct nftnl_set *nls, *nls_out = NULL;
+	int err = 0;
 
 	nls = nftnl_set_alloc();
 	if (nls == NULL)
@@ -1062,18 +1115,18 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 	set->init = set_expr_alloc(loc, set);
 	nftnl_set_elem_foreach(nls_out, list_setelem_cb, ctx);
 
-	if (!(set->flags & NFT_SET_INTERVAL))
+	if (set->flags & NFT_SET_INTERVAL && set->desc.field_count > 1)
+		concat_range_aggregate(set->init);
+	else if (set->flags & NFT_SET_INTERVAL)
+		err = get_set_decompose(table, set);
+	else
 		list_expr_sort(&ctx->set->init->expressions);
 
 	nftnl_set_free(nls);
 	nftnl_set_free(nls_out);
 	ctx->set = NULL;
 
-	if (set->flags & NFT_SET_INTERVAL &&
-	    get_set_decompose(table, set) < 0)
-		return -1;
-
-	return 0;
+	return err;
 }
 
 void netlink_dump_obj(struct nftnl_obj *nln, struct netlink_ctx *ctx)

@@ -372,6 +372,11 @@ static inline bool set_is_interval(uint32_t set_flags)
 	return set_flags & NFT_SET_INTERVAL;
 }
 
+static inline bool set_is_non_concat_range(struct set *s)
+{
+	return (s->flags & NFT_SET_INTERVAL) && s->desc.field_count <= 1;
+}
+
 #include <statement.h>
 
 struct counter {

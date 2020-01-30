@@ -136,6 +136,11 @@ static int byteorder_conversion(struct eval_ctx *ctx, struct expr **expr,
 
 	if ((*expr)->byteorder == byteorder)
 		return 0;
+
+	/* Conversion for EXPR_CONCAT is handled for single composing ranges */
+	if ((*expr)->etype == EXPR_CONCAT)
+		return 0;
+
 	if (expr_basetype(*expr)->type != TYPE_INTEGER)
 		return expr_error(ctx->msgs, *expr,
 			 	  "Byteorder mismatch: expected %s, got %s",

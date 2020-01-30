@@ -289,7 +289,9 @@ extern struct rule *rule_lookup_by_index(const struct chain *chain,
  * @rg_cache:	cached range element (left)
  * @policy:	set mechanism policy
  * @automerge:	merge adjacents and overlapping elements, if possible
- * @desc:	set mechanism desc
+ * @desc.size:		count of set elements
+ * @desc.field_len:	length of single concatenated fields, bytes
+ * @desc.field_count:	count of concatenated fields
  */
 struct set {
 	struct list_head	list;
@@ -310,6 +312,8 @@ struct set {
 	bool			key_typeof_valid;
 	struct {
 		uint32_t	size;
+		uint8_t		field_len[NFT_REG32_COUNT];
+		uint8_t		field_count;
 	} desc;
 };
 

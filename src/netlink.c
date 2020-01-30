@@ -773,6 +773,17 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	if (nftnl_set_is_set(nls, NFTNL_SET_DESC_SIZE))
 		set->desc.size = nftnl_set_get_u32(nls, NFTNL_SET_DESC_SIZE);
 
+	if (nftnl_set_is_set(nls, NFTNL_SET_DESC_CONCAT)) {
+		uint32_t len = NFT_REG32_COUNT;
+		const uint8_t *data;
+
+		data = nftnl_set_get_data(nls, NFTNL_SET_DESC_CONCAT, &len);
+		if (data) {
+			memcpy(set->desc.field_len, data, len);
+			set->desc.field_count = len;
+		}
+	}
+
 	return set;
 }
 

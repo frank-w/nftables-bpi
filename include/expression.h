@@ -261,6 +261,8 @@ struct expr {
 			struct list_head	expressions;
 			unsigned int		size;
 			uint32_t		set_flags;
+			uint8_t			field_len[NFT_REG32_COUNT];
+			uint8_t			field_count;
 		};
 		struct {
 			/* EXPR_SET_REF */

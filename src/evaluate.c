@@ -1217,6 +1217,8 @@ static int expr_evaluate_concat(struct eval_ctx *ctx, struct expr **expr,
 	struct expr *i, *next;
 
 	list_for_each_entry_safe(i, next, &(*expr)->expressions, list) {
+		unsigned dsize_bytes;
+
 		if (expr_is_constant(*expr) && dtype && off == 0)
 			return expr_binary_error(ctx->msgs, i, *expr,
 						 "unexpected concat component, "
@@ -1241,6 +1243,9 @@ static int expr_evaluate_concat(struct eval_ctx *ctx, struct expr **expr,
 						 i->dtype->name);
 
 		ntype = concat_subtype_add(ntype, i->dtype->type);
+
+		dsize_bytes = div_round_up(i->dtype->size, BITS_PER_BYTE);
+		(*expr)->field_len[(*expr)->field_count++] = dsize_bytes;
 	}
 
 	(*expr)->flags |= flags;
@@ -3345,9 +3350,12 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 			return set_key_data_error(ctx, set,
 						  set->key->dtype, type);
 	}
-	if (set->flags & NFT_SET_INTERVAL &&
-	    set->key->etype == EXPR_CONCAT)
-		return set_error(ctx, set, "concatenated types not supported in interval sets");
+
+	if (set->flags & NFT_SET_INTERVAL && set->key->etype == EXPR_CONCAT) {
+		memcpy(&set->desc.field_len, &set->key->field_len,
+		       sizeof(set->desc.field_len));
+		set->desc.field_count = set->key->field_count;
+	}
 
 	if (set_is_datamap(set->flags)) {
 		if (set->data == NULL)

@@ -337,7 +337,7 @@ struct set *set_clone(const struct set *set)
 	new_set->objtype	= set->objtype;
 	new_set->policy		= set->policy;
 	new_set->automerge	= set->automerge;
-	new_set->desc.size	= set->desc.size;
+	new_set->desc		= set->desc;
 
 	return new_set;
 }

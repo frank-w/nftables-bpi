@@ -905,6 +905,13 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 	if (set->data)
 		set_key_expression(ctx, set->data, set->flags, udbuf, NFTNL_UDATA_SET_DATA_TYPEOF);
 
+	if (set->desc.field_len[0]) {
+		nftnl_set_set_data(nls, NFTNL_SET_DESC_CONCAT,
+				   set->desc.field_len,
+				   set->desc.field_count *
+				   sizeof(set->desc.field_len[0]));
+	}
+
 	nftnl_set_set_data(nls, NFTNL_SET_USERDATA, nftnl_udata_buf_data(udbuf),
 			   nftnl_udata_buf_len(udbuf));
 	nftnl_udata_buf_free(udbuf);

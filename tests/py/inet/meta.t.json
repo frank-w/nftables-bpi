@@ -213,3 +213,25 @@
     }
 ]
 
+# meta mark set ct mark >> 8
+[
+    {
+        "mangle": {
+            "key": {
+                "meta": {
+                    "key": "mark"
+                }
+            },
+            "value": {
+                ">>": [
+                    {
+                        "ct": {
+                            "key": "mark"
+                        }
+                    },
+                    8
+                ]
+            }
+        }
+    }
+]

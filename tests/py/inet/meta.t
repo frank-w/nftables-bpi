@@ -16,3 +16,4 @@ meta ipsec exists;ok
 meta secpath missing;ok;meta ipsec missing
 meta ibrname "br0";fail
 meta obrname "br0";fail
+meta mark set ct mark >> 8;ok

@@ -724,6 +724,34 @@
     }
 ]
 
+# ct mark set (meta mark | 0x10) << 8
+[
+    {
+        "mangle": {
+            "key": {
+                "ct": {
+                    "key": "mark"
+                }
+            },
+            "value": {
+                "<<": [
+                    {
+                        "|": [
+                            {
+                                "meta": {
+                                    "key": "mark"
+                                }
+                            },
+                            16
+                        ]
+                    },
+                    8
+                ]
+            }
+        }
+    }
+]
+
 # ct mark set mark map { 1 : 10, 2 : 20, 3 : 30 }
 [
     {

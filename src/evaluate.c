@@ -492,7 +492,7 @@ static void expr_evaluate_bits(struct eval_ctx *ctx, struct expr **exprp)
 	if (shift) {
 		off = constant_expr_alloc(&expr->location,
 					  expr_basetype(expr),
-					  BYTEORDER_BIG_ENDIAN,
+					  BYTEORDER_HOST_ENDIAN,
 					  sizeof(shift), &shift);
 
 		rshift = binop_expr_alloc(&expr->location, OP_RSHIFT, and, off);

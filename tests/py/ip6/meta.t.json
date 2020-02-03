@@ -105,3 +105,38 @@
     }
 ]
 
+# meta sdif "lo" accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "sdif"
+                }
+            },
+            "op": "==",
+            "right": "lo"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# meta sdifname != "vrf1" accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "sdifname"
+                }
+            },
+            "op": "!=",
+            "right": "vrf1"
+        }
+    },
+    {
+        "accept": null
+    }
+]

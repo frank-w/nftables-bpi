@@ -499,6 +499,29 @@
     }
 ]
 
+# ct mark set ct mark or 0x00000001
+[
+    {
+        "mangle": {
+            "key": {
+                "ct": {
+                    "key": "mark"
+                }
+            },
+            "value": {
+                "|": [
+                    {
+                        "ct": {
+                            "key": "mark"
+                        }
+                    },
+                    1
+                ]
+            }
+        }
+    }
+]
+
 # ct mark 0x00000032
 [
     {

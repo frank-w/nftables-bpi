@@ -455,7 +455,7 @@ static uint8_t expr_offset_shift(const struct expr *expr, unsigned int offset,
 
 static void expr_evaluate_bits(struct eval_ctx *ctx, struct expr **exprp)
 {
-	struct expr *expr = *exprp, *and, *mask, *lshift, *off;
+	struct expr *expr = *exprp, *and, *mask, *rshift, *off;
 	unsigned masklen, len = expr->len, extra_len = 0;
 	uint8_t shift;
 	mpz_t bitmask;
@@ -495,12 +495,12 @@ static void expr_evaluate_bits(struct eval_ctx *ctx, struct expr **exprp)
 					  BYTEORDER_BIG_ENDIAN,
 					  sizeof(shift), &shift);
 
-		lshift = binop_expr_alloc(&expr->location, OP_RSHIFT, and, off);
-		lshift->dtype		= expr->dtype;
-		lshift->byteorder	= expr->byteorder;
-		lshift->len		= masklen;
+		rshift = binop_expr_alloc(&expr->location, OP_RSHIFT, and, off);
+		rshift->dtype		= expr->dtype;
+		rshift->byteorder	= expr->byteorder;
+		rshift->len		= masklen;
 
-		*exprp = lshift;
+		*exprp = rshift;
 	} else
 		*exprp = and;
 

@@ -119,6 +119,10 @@ while [ -n "$1" ]; do
 		test_json=true
 		shift
 		;;
+	-H|--host)
+		nft=nft
+		shift
+		;;
 	testcases/*.t)
 		testcases+=" $1"
 		shift

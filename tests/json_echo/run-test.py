@@ -119,7 +119,7 @@ def get_handle(output, search):
             else:
                 data = item
 
-            k = search.keys()[0]
+            k = list(search.keys())[0]
 
             if not k in data:
                 continue

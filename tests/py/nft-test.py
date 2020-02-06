@@ -1357,9 +1357,15 @@ def main():
                         dest='force_all_family',
                         help='keep testing all families on error')
 
+    parser.add_argument('-H', '--host', action='store_true',
+                        help='run tests against installed libnftables.so.1')
+
     parser.add_argument('-j', '--enable-json', action='store_true',
                         dest='enable_json',
                         help='test JSON functionality as well')
+
+    parser.add_argument('-l', '--library', default=None,
+                        help='path to libntables.so.1, overrides --host')
 
     parser.add_argument('-s', '--schema', action='store_true',
                         dest='enable_schema',
@@ -1388,9 +1394,17 @@ def main():
     # Change working directory to repository root
     os.chdir(TESTS_PATH + "/../..")
 
-    if not os.path.exists('src/.libs/libnftables.so'):
-        print("The nftables library does not exist. "
-              "You need to build the project.")
+    check_lib_path = True
+    if args.library is None:
+        if args.host:
+            args.library = 'libnftables.so.1'
+            check_lib_path = False
+        else:
+            args.library = 'src/.libs/libnftables.so.1'
+
+    if check_lib_path and not os.path.exists(args.library):
+        print("The nftables library at '%s' does not exist. "
+              "You need to build the project." % args.library)
         return
 
     if args.enable_schema and not args.enable_json:
@@ -1398,7 +1412,7 @@ def main():
         return
 
     global nftables
-    nftables = Nftables(sofile = 'src/.libs/libnftables.so')
+    nftables = Nftables(sofile = args.library)
 
     test_files = files_ok = run_total = 0
     tests = passed = warnings = errors = 0

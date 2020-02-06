@@ -36,6 +36,13 @@ add such a rule, it will stop matching if the interface gets renamed and it
 will match again in case interface gets deleted and later a new interface
 with the same name is created.
 
+Like with iptables, wildcard matching on interface name prefixes is available for
+*iifname* and *oifname* matches by appending an asterisk (*) character. Note
+however that unlike iptables, nftables does not accept interface names
+consisting of the wildcard character only - users are supposed to just skip
+those always matching expressions. In order to match on literal asterisk
+character, one may escape it using backslash (\).
+
 .Meta expression types
 [options="header"]
 |==================

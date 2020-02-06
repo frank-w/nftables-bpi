@@ -507,8 +507,6 @@ be tuned with the flags that can be specified at set creation time.
 *delete*:: Delete the specified set.
 *list*:: Display the elements in the specified set.
 *flush*:: Remove all elements from the specified set.
-*add element*:: Comma-separated list of elements to add into the specified set.
-*delete element*:: Comma-separated list of elements to delete from the specified set.
 
 .Set specifications
 [options="header"]
@@ -550,7 +548,6 @@ MAPS
 *add map* ['family'] 'table' 'map' *{ type* 'type' | *typeof* 'expression' [*flags* 'flags' *;*] [*elements = {* 'element'[*,* ...] *} ;*] [*size* 'size' *;*] [*policy* 'policy' *;*] *}*
 {*delete* | *list* | *flush*} *map* ['family'] 'table' 'map'
 *list maps* ['family']
-{*add* | *delete*} *element* ['family'] 'table' 'map' *{ elements = {* 'element'[*,* ...] *} ; }*
 
 Maps store data based on some specific key used as input. They are uniquely identified by a user-defined name and attached to tables.
 
@@ -584,6 +581,43 @@ unsigned integer (64 bit)
 | policy |
 map policy |
 string: performance [default], memory
+|=================
+
+
+ELEMENTS
+--------
+[verse]
+____
+{*add* | *create* | *delete* | *get* } *element* ['family'] 'table' 'set' *{* 'ELEMENT'[*,* ...] *}*
+
+'ELEMENT' := 'key_expression' 'OPTIONS' [*:* 'value_expression']
+'OPTIONS' := [*timeout* 'TIMESPEC'] [*expires* 'TIMESPEC'] [*comment* 'string']
+'TIMESPEC' := ['num'*d*]['num'*h*]['num'*m*]['num'[*s*]]
+____
+Element-related commands allow to change contents of named sets and maps.
+'key_expression' is typically a value matching the set type.
+'value_expression' is not allowed in sets but mandatory when adding to maps, where it
+matches the data part in it's type definition. When deleting from maps, it may
+be specified but is optional as 'key_expression' uniquely identifies the
+element.
+
+*create* command is similar to *add* with the exception that none of the
+listed elements may already exist.
+
+*get* command is useful to check if an element is contained in a set which may
+be non-trivial in very large and/or interval sets. In the latter case, the
+containing interval is returned instead of just the element itself.
+
+.Element options
+[options="header"]
+|=================
+|Option | Description
+|timeout |
+timeout value for sets/maps with flag *timeout*
+|expires |
+the time until given element expires, useful for ruleset replication only
+|comment |
+per element comment field
 |=================
 
 

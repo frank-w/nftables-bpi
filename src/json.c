@@ -1021,23 +1021,14 @@ json_t *inet_protocol_type_json(const struct expr *expr,
 
 json_t *inet_service_type_json(const struct expr *expr, struct output_ctx *octx)
 {
-	struct sockaddr_in sin = {
-		.sin_family = AF_INET,
-		.sin_port = mpz_get_be16(expr->value),
-	};
-	char buf[NI_MAXSERV];
+	uint16_t port = mpz_get_be16(expr->value);
+	const struct servent *s = NULL;
 
 	if (!nft_output_service(octx) ||
-	    getnameinfo((struct sockaddr *)&sin, sizeof(sin),
-		        NULL, 0, buf, sizeof(buf), 0))
-		return json_integer(ntohs(sin.sin_port));
+	    (s = getservbyport(port, NULL)) == NULL)
+		return json_integer(ntohs(port));
 
-	if (htons(atoi(buf)) == sin.sin_port ||
-	    getnameinfo((struct sockaddr *)&sin, sizeof(sin),
-			NULL, 0, buf, sizeof(buf), NI_DGRAM))
-		return json_integer(ntohs(sin.sin_port));
-
-	return json_string(buf);
+	return json_string(s->s_name);
 }
 
 json_t *mark_type_json(const struct expr *expr, struct output_ctx *octx)

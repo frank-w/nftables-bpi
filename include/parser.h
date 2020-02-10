@@ -15,7 +15,6 @@
 
 struct parser_state {
 	struct input_descriptor		*indesc;
-	struct input_descriptor		*indescs[MAX_INCLUDE_DEPTH];
 	unsigned int			indesc_idx;
 	struct list_head		indesc_list;
 

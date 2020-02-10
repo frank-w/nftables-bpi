@@ -668,19 +668,20 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 static void scanner_push_indesc(struct parser_state *state,
 				struct input_descriptor *indesc)
 {
-	state->indescs[state->indesc_idx] = indesc;
-	state->indesc = state->indescs[state->indesc_idx++];
 	list_add_tail(&indesc->list, &state->indesc_list);
+	state->indesc = indesc;
+	state->indesc_idx++;
 }
 
 static void scanner_pop_indesc(struct parser_state *state)
 {
 	state->indesc_idx--;
-
-	if (state->indesc_idx > 0)
-		state->indesc = state->indescs[state->indesc_idx - 1];
-	else
+	if (!list_empty(&state->indesc_list)) {
+		state->indesc = list_entry(state->indesc->list.prev,
+					   struct input_descriptor, list);
+	} else {
 		state->indesc = NULL;
+	}
 }
 
 static void scanner_pop_buffer(yyscan_t scanner)

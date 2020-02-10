@@ -15,7 +15,6 @@
 
 struct parser_state {
 	struct input_descriptor		*indesc;
-	unsigned int			indesc_idx;
 	struct list_head		indesc_list;
 
 	struct list_head		*msgs;

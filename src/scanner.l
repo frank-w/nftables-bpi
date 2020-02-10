@@ -674,12 +674,10 @@ static void scanner_push_indesc(struct parser_state *state,
 		list_add(&indesc->list, &state->indesc->list);
 
 	state->indesc = indesc;
-	state->indesc_idx++;
 }
 
 static void scanner_pop_indesc(struct parser_state *state)
 {
-	state->indesc_idx--;
 	if (!list_empty(&state->indesc_list)) {
 		state->indesc = list_entry(state->indesc->list.prev,
 					   struct input_descriptor, list);
@@ -968,10 +966,6 @@ static void input_descriptor_list_destroy(struct parser_state *state)
 void scanner_destroy(struct nft_ctx *nft)
 {
 	struct parser_state *state = yyget_extra(nft->scanner);
-
-	do {
-		yypop_buffer_state(nft->scanner);
-	} while (state->indesc_idx--);
 
 	input_descriptor_list_destroy(state);
 	yylex_destroy(nft->scanner);

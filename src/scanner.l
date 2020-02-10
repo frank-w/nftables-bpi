@@ -670,6 +670,7 @@ static void scanner_push_indesc(struct parser_state *state,
 {
 	state->indescs[state->indesc_idx] = indesc;
 	state->indesc = state->indescs[state->indesc_idx++];
+	list_add_tail(&indesc->list, &state->indesc_list);
 }
 
 static void scanner_pop_indesc(struct parser_state *state)
@@ -711,7 +712,6 @@ static void scanner_push_file(struct nft_ctx *nft, void *scanner,
 	init_pos(indesc);
 
 	scanner_push_indesc(state, indesc);
-	list_add_tail(&indesc->list, &state->indesc_list);
 }
 
 static int include_file(struct nft_ctx *nft, void *scanner,
@@ -907,16 +907,14 @@ void scanner_push_buffer(void *scanner, const struct input_descriptor *indesc,
 			 const char *buffer)
 {
 	struct parser_state *state = yyget_extra(scanner);
+	struct input_descriptor *new_indesc;
 	YY_BUFFER_STATE b;
 
-	state->indesc = xzalloc(sizeof(struct input_descriptor));
-	state->indescs[state->indesc_idx] = state->indesc;
-	state->indesc_idx++;
-
-	memcpy(state->indesc, indesc, sizeof(*state->indesc));
-	state->indesc->data = buffer;
-	state->indesc->name = NULL;
-	list_add_tail(&state->indesc->list, &state->indesc_list);
+	new_indesc = xzalloc(sizeof(struct input_descriptor));
+	memcpy(new_indesc, indesc, sizeof(*new_indesc));
+	new_indesc->data = buffer;
+	new_indesc->name = NULL;
+	scanner_push_indesc(state, new_indesc);
 
 	b = yy_scan_string(buffer, scanner);
 	assert(b != NULL);

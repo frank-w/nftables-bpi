@@ -668,7 +668,11 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 static void scanner_push_indesc(struct parser_state *state,
 				struct input_descriptor *indesc)
 {
-	list_add_tail(&indesc->list, &state->indesc_list);
+	if (!state->indesc)
+		list_add_tail(&indesc->list, &state->indesc_list);
+	else
+		list_add(&indesc->list, &state->indesc->list);
+
 	state->indesc = indesc;
 	state->indesc_idx++;
 }

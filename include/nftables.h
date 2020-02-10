@@ -122,7 +122,6 @@ struct nft_ctx {
 	void			*scanner;
 	struct scope		*top_scope;
 	void			*json_root;
-	FILE			*f[MAX_INCLUDE_DEPTH];
 };
 
 enum nftables_exit_codes {
@@ -176,6 +175,7 @@ enum input_descriptor_types {
  * struct input_descriptor
  *
  * @location:		location, used for include statements
+ * @f:			file descriptor
  * @type:		input descriptor type
  * @name:		name describing the input
  * @union:		buffer or file descriptor, depending on type
@@ -186,6 +186,7 @@ enum input_descriptor_types {
  */
 struct input_descriptor {
 	struct list_head		list;
+	FILE				*f;
 	struct location			location;
 	enum input_descriptor_types	type;
 	const char			*name;

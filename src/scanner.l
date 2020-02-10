@@ -694,7 +694,8 @@ static void scanner_pop_buffer(yyscan_t scanner)
 
 static void scanner_push_file(struct nft_ctx *nft, void *scanner,
 			      FILE *f, const char *filename,
-			      const struct location *loc)
+			      const struct location *loc,
+			      const struct input_descriptor *parent_indesc)
 {
 	struct parser_state *state = yyget_extra(scanner);
 	struct input_descriptor *indesc;
@@ -710,19 +711,25 @@ static void scanner_push_file(struct nft_ctx *nft, void *scanner,
 	indesc->type	= INDESC_FILE;
 	indesc->name	= xstrdup(filename);
 	indesc->f	= f;
+	if (!parent_indesc) {
+		indesc->depth = 1;
+	} else {
+		indesc->depth = parent_indesc->depth + 1;
+	}
 	init_pos(indesc);
 
 	scanner_push_indesc(state, indesc);
 }
 
 static int include_file(struct nft_ctx *nft, void *scanner,
-			const char *filename, const struct location *loc)
+			const char *filename, const struct location *loc,
+			const struct input_descriptor *parent_indesc)
 {
 	struct parser_state *state = yyget_extra(scanner);
 	struct error_record *erec;
 	FILE *f;
 
-	if (state->indesc_idx == MAX_INCLUDE_DEPTH) {
+	if (parent_indesc && parent_indesc->depth == MAX_INCLUDE_DEPTH) {
 		erec = error(loc, "Include nested too deeply, max %u levels",
 			     MAX_INCLUDE_DEPTH);
 		goto err;
@@ -734,7 +741,7 @@ static int include_file(struct nft_ctx *nft, void *scanner,
 			     filename, strerror(errno));
 		goto err;
 	}
-	scanner_push_file(nft, scanner, f, filename, loc);
+	scanner_push_file(nft, scanner, f, filename, loc, parent_indesc);
 	return 0;
 err:
 	erec_queue(erec, state->msgs);
@@ -745,6 +752,7 @@ static int include_glob(struct nft_ctx *nft, void *scanner, const char *pattern,
 			const struct location *loc)
 {
 	struct parser_state *state = yyget_extra(scanner);
+	struct input_descriptor *indesc = state->indesc;
 	struct error_record *erec = NULL;
 	bool wildcard = false;
 	glob_t glob_data;
@@ -805,7 +813,7 @@ static int include_glob(struct nft_ctx *nft, void *scanner, const char *pattern,
 			if (len == 0 || path[len - 1] == '/')
 				continue;
 
-			ret = include_file(nft, scanner, path, loc);
+			ret = include_file(nft, scanner, path, loc, indesc);
 			if (ret != 0)
 				goto err;
 		}
@@ -842,7 +850,7 @@ err:
 int scanner_read_file(struct nft_ctx *nft, const char *filename,
 		      const struct location *loc)
 {
-	return include_file(nft, nft->scanner, filename, loc);
+	return include_file(nft, nft->scanner, filename, loc, NULL);
 }
 
 static bool search_in_include_path(const char *filename)

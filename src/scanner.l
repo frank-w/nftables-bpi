@@ -678,7 +678,7 @@ static void scanner_push_indesc(struct parser_state *state,
 
 static void scanner_pop_indesc(struct parser_state *state)
 {
-	if (!list_empty(&state->indesc_list)) {
+	if (!list_is_first(&state->indesc->list, &state->indesc_list)) {
 		state->indesc = list_entry(state->indesc->list.prev,
 					   struct input_descriptor, list);
 	} else {

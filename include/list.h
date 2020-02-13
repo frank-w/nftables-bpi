@@ -33,6 +33,17 @@ static inline void init_list_head(struct list_head *list)
 	list->prev = list;
 }
 
+/**
+ * list_is_first -- tests whether @list is the first entry in list @head
+ * @list: the entry to test
+ * @head: the head of the list
+ */
+static inline int list_is_first(const struct list_head *list,
+				const struct list_head *head)
+{
+	return list->prev == head;
+}
+
 /*
  * Insert a new entry between two known consecutive entries.
  *

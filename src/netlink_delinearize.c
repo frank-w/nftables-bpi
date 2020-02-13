@@ -1424,6 +1424,7 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 	}
 
 	if (expr_data != NULL) {
+		expr_set_type(expr_data, set->data->dtype, set->data->byteorder);
 		stmt = map_stmt_alloc(loc);
 		stmt->map.set	= set_ref_expr_alloc(loc, set);
 		stmt->map.key	= expr;

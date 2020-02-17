@@ -16,6 +16,7 @@ struct mnl_err {
 	struct list_head	head;
 	int			err;
 	uint32_t		seqnum;
+	uint32_t		offset;
 };
 
 void mnl_err_list_free(struct mnl_err *err);
@@ -28,7 +29,7 @@ void mnl_batch_end(struct nftnl_batch *batch, uint32_t seqnum);
 int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 		   uint32_t num_cmds);
 
-int mnl_nft_rule_add(struct netlink_ctx *ctx, const struct cmd *cmd,
+int mnl_nft_rule_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		     unsigned int flags);
 int mnl_nft_rule_del(struct netlink_ctx *ctx, const struct cmd *cmd);
 int mnl_nft_rule_replace(struct netlink_ctx *ctx, const struct cmd *cmd);
@@ -38,7 +39,7 @@ struct nftnl_rule_list *mnl_nft_rule_dump(struct netlink_ctx *ctx,
 
 int mnl_nft_chain_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		      unsigned int flags);
-int mnl_nft_chain_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+int mnl_nft_chain_del(struct netlink_ctx *ctx, struct cmd *cmd);
 int mnl_nft_chain_rename(struct netlink_ctx *ctx, const struct cmd *cmd,
 			 const struct chain *chain);
 
@@ -47,14 +48,14 @@ struct nftnl_chain_list *mnl_nft_chain_dump(struct netlink_ctx *ctx,
 
 int mnl_nft_table_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		      unsigned int flags);
-int mnl_nft_table_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+int mnl_nft_table_del(struct netlink_ctx *ctx, struct cmd *cmd);
 
 struct nftnl_table_list *mnl_nft_table_dump(struct netlink_ctx *ctx,
 					    int family);
 
 int mnl_nft_set_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		    unsigned int flags);
-int mnl_nft_set_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+int mnl_nft_set_del(struct netlink_ctx *ctx, struct cmd *cmd);
 
 struct nftnl_set_list *mnl_nft_set_dump(struct netlink_ctx *ctx, int family,
 					const char *table);
@@ -73,14 +74,14 @@ struct nftnl_obj_list *mnl_nft_obj_dump(struct netlink_ctx *ctx, int family,
 					bool dump, bool reset);
 int mnl_nft_obj_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 		    unsigned int flags);
-int mnl_nft_obj_del(struct netlink_ctx *ctx, const struct cmd *cmd, int type);
+int mnl_nft_obj_del(struct netlink_ctx *ctx, struct cmd *cmd, int type);
 
 struct nftnl_flowtable_list *
 mnl_nft_flowtable_dump(struct netlink_ctx *ctx, int family, const char *table);
 
 int mnl_nft_flowtable_add(struct netlink_ctx *ctx, const struct cmd *cmd,
 			  unsigned int flags);
-int mnl_nft_flowtable_del(struct netlink_ctx *ctx, const struct cmd *cmd);
+int mnl_nft_flowtable_del(struct netlink_ctx *ctx, struct cmd *cmd);
 
 int mnl_nft_event_listener(struct mnl_socket *nf_sock, unsigned int debug_mask,
 			   struct output_ctx *octx,

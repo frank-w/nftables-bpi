@@ -32,6 +32,7 @@ libnftables_la_SOURCES =			\
 		rule.c				\
 		statement.c			\
 		cache.c				\
+		cmd.c				\
 		datatype.c			\
 		expression.c			\
 		evaluate.c			\

@@ -906,7 +906,8 @@ static int netlink_events_cb(const struct nlmsghdr *nlh, void *data)
 
 int netlink_echo_callback(const struct nlmsghdr *nlh, void *data)
 {
-	struct netlink_ctx *ctx = data;
+	struct netlink_cb_data *nl_cb_data = data;
+	struct netlink_ctx *ctx = nl_cb_data->nl_ctx;
 	struct netlink_mon_handler echo_monh = {
 		.format = NFTNL_OUTPUT_DEFAULT,
 		.ctx = ctx,

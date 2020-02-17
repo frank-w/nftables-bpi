@@ -635,6 +635,8 @@ struct monitor {
 struct monitor *monitor_alloc(uint32_t format, uint32_t type, const char *event);
 void monitor_free(struct monitor *m);
 
+#define NFT_NLATTR_LOC_MAX 8
+
 /**
  * struct cmd - command statement
  *
@@ -666,6 +668,11 @@ struct cmd {
 		struct markup	*markup;
 		struct obj	*object;
 	};
+	struct {
+		uint16_t	offset;
+		struct location	*location;
+	} attr[NFT_NLATTR_LOC_MAX];
+	int			num_attrs;
 	const void		*arg;
 };
 
@@ -677,6 +684,8 @@ extern struct cmd *cmd_alloc_obj_ct(enum cmd_ops op, int type,
 				    const struct handle *h,
 				    const struct location *loc, struct obj *obj);
 extern void cmd_free(struct cmd *cmd);
+
+void cmd_add_loc(struct cmd *cmd, uint16_t offset, struct location *loc);
 
 #include <payload.h>
 #include <expression.h>

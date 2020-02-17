@@ -16,6 +16,22 @@
 
 #define MAX_REGS	(1 + NFT_REG32_15 - NFT_REG32_00)
 
+#ifndef NETLINK_EXT_ACK
+#define NETLINK_EXT_ACK                 11
+
+enum nlmsgerr_attrs {
+	NLMSGERR_ATTR_UNUSED,
+	NLMSGERR_ATTR_MSG,
+	NLMSGERR_ATTR_OFFS,
+	NLMSGERR_ATTR_COOKIE,
+
+	__NLMSGERR_ATTR_MAX,
+	NLMSGERR_ATTR_MAX = __NLMSGERR_ATTR_MAX - 1
+};
+#define NLM_F_CAPPED	0x100	/* request was capped */
+#define NLM_F_ACK_TLVS	0x200	/* extended ACK TVLs were included */
+#endif
+
 struct netlink_parse_ctx {
 	struct list_head	*msgs;
 	struct table		*table;
@@ -176,6 +192,10 @@ struct netlink_mon_handler {
 
 extern int netlink_monitor(struct netlink_mon_handler *monhandler,
 			    struct mnl_socket *nf_sock);
+struct netlink_cb_data {
+	struct netlink_ctx	*nl_ctx;
+	struct list_head	*err_list;
+};
 int netlink_echo_callback(const struct nlmsghdr *nlh, void *data);
 
 struct ruleset_parse {

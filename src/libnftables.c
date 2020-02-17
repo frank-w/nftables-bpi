@@ -17,6 +17,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+static void nft_error(struct netlink_ctx *ctx, struct cmd *cmd,
+		      struct mnl_err *err)
+{
+	struct location *loc = NULL;
+	int i;
+
+	for (i = 0; i < cmd->num_attrs; i++) {
+		if (!cmd->attr[i].offset)
+			break;
+		if (cmd->attr[i].offset == err->offset)
+			loc = cmd->attr[i].location;
+	}
+	if (!loc)
+		loc = &cmd->location;
+
+	netlink_io_error(ctx, loc, "Could not process rule: %s",
+			 strerror(err->err));
+}
+
 static int nft_netlink(struct nft_ctx *nft,
 		       struct list_head *cmds, struct list_head *msgs,
 		       struct mnl_socket *nf_sock)
@@ -68,9 +87,7 @@ static int nft_netlink(struct nft_ctx *nft,
 		list_for_each_entry(cmd, cmds, list) {
 			if (err->seqnum == cmd->seqnum ||
 			    err->seqnum == batch_seqnum) {
-				netlink_io_error(&ctx, &cmd->location,
-						 "Could not process rule: %s",
-						 strerror(err->err));
+				nft_error(&ctx, cmd, err);
 				errno = err->err;
 				if (err->seqnum == cmd->seqnum) {
 					mnl_err_list_free(err);

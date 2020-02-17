@@ -2231,7 +2231,7 @@ tableid_spec 		: 	family_spec 	HANDLE NUM
 				memset(&$$, 0, sizeof($$));
 				$$.family 		= $1;
 				$$.handle.id 		= $3;
-				$$.handle.location	= @$;
+				$$.handle.location	= @3;
 			}
 			;
 
@@ -2246,7 +2246,7 @@ chain_spec		:	table_spec	identifier
 chainid_spec 		: 	table_spec 	HANDLE NUM
 			{
 				$$ 			= $1;
-				$$.handle.location 	= @$;
+				$$.handle.location 	= @3;
 				$$.handle.id 		= $3;
 			}
 			;
@@ -2270,7 +2270,7 @@ set_spec		:	table_spec	identifier
 setid_spec 		: 	table_spec 	HANDLE NUM
 			{
 				$$ 			= $1;
-				$$.handle.location 	= @$;
+				$$.handle.location 	= @3;
 				$$.handle.id 		= $3;
 			}
 			;
@@ -2294,7 +2294,7 @@ flowtable_spec		:	table_spec	identifier
 flowtableid_spec	:	table_spec	HANDLE NUM
 			{
 				$$			= $1;
-				$$.handle.location	= @$;
+				$$.handle.location	= @3;
 				$$.handle.id		= $3;
 			}
 			;
@@ -2318,7 +2318,7 @@ obj_spec		:	table_spec	identifier
 objid_spec		:	table_spec	HANDLE NUM
 			{
 				$$ 			= $1;
-				$$.handle.location	= @$;
+				$$.handle.location	= @3;
 				$$.handle.id		= $3;
 			}
 			;
@@ -2334,7 +2334,7 @@ obj_identifier		:	identifier
 handle_spec		:	HANDLE		NUM
 			{
 				memset(&$$, 0, sizeof($$));
-				$$.handle.location	= @$;
+				$$.handle.location	= @2;
 				$$.handle.id		= $2;
 			}
 			;

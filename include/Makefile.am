@@ -3,6 +3,7 @@ SUBDIRS =		linux		\
 
 noinst_HEADERS = 	cli.h		\
 			cache.h		\
+			cmd.h		\
 			datatype.h	\
 			expression.h	\
 			fib.h		\

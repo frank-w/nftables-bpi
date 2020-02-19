@@ -31,8 +31,8 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 
 int mnl_nft_rule_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		     unsigned int flags);
-int mnl_nft_rule_del(struct netlink_ctx *ctx, const struct cmd *cmd);
-int mnl_nft_rule_replace(struct netlink_ctx *ctx, const struct cmd *cmd);
+int mnl_nft_rule_del(struct netlink_ctx *ctx, struct cmd *cmd);
+int mnl_nft_rule_replace(struct netlink_ctx *ctx, struct cmd *cmd);
 
 struct nftnl_rule_list *mnl_nft_rule_dump(struct netlink_ctx *ctx,
 					  int family);

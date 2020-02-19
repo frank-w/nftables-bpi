@@ -619,11 +619,6 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 			nftnl_chain_set_str(nlc, NFTNL_CHAIN_TYPE,
 					    cmd->chain->type);
 		}
-		if (cmd->chain->policy) {
-			mpz_export_data(&policy, cmd->chain->policy->value,
-					BYTEORDER_HOST_ENDIAN, sizeof(int));
-			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_POLICY, policy);
-		}
 		if (cmd->chain->dev_expr) {
 			dev_array = xmalloc(sizeof(char *) * 8);
 			dev_array_len = 8;
@@ -657,6 +652,13 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	mnl_attr_put_strz(nlh, NFTA_CHAIN_TABLE, cmd->handle.table.name);
 	cmd_add_loc(cmd, nlh->nlmsg_len, &cmd->handle.chain.location);
 	mnl_attr_put_strz(nlh, NFTA_CHAIN_NAME, cmd->handle.chain.name);
+
+	if (cmd->chain && cmd->chain->policy) {
+		mpz_export_data(&policy, cmd->chain->policy->value,
+				BYTEORDER_HOST_ENDIAN, sizeof(int));
+		cmd_add_loc(cmd, nlh->nlmsg_len, &cmd->chain->policy->location);
+		mnl_attr_put_u32(nlh, NFTA_CHAIN_POLICY, htonl(policy));
+	}
 
 	nftnl_chain_nlmsg_build_payload(nlh, nlc);
 	nftnl_chain_free(nlc);

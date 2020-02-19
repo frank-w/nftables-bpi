@@ -2160,7 +2160,8 @@ policy_spec		:	POLICY		policy_expr
 					expr_free($2);
 					YYERROR;
 				}
-				$<chain>0->policy	= $2;
+				$<chain>0->policy		= $2;
+				$<chain>0->policy->location	= @$;
 			}
 			;
 

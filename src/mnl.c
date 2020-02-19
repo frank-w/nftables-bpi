@@ -26,6 +26,7 @@
 
 #include <mnl.h>
 #include <string.h>
+#include <net/if.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -609,7 +610,9 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 {
 	int priority, policy, i = 0;
 	struct nftnl_chain *nlc;
+	unsigned int ifname_len;
 	const char **dev_array;
+	char ifname[IFNAMSIZ];
 	struct nlmsghdr *nlh;
 	struct expr *expr;
 	int dev_array_len;
@@ -635,7 +638,12 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 			dev_array = xmalloc(sizeof(char *) * 8);
 			dev_array_len = 8;
 			list_for_each_entry(expr, &cmd->chain->dev_expr->expressions, list) {
-				dev_array[i++] = expr->identifier;
+				ifname_len = div_round_up(expr->len, BITS_PER_BYTE);
+				memset(ifname, 0, sizeof(ifname));
+				mpz_export_data(ifname, expr->value,
+						BYTEORDER_HOST_ENDIAN,
+						ifname_len);
+				dev_array[i++] = xstrdup(ifname);
 				if (i == dev_array_len) {
 					dev_array_len *= 2;
 					dev_array = xrealloc(dev_array,
@@ -649,6 +657,10 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 			else if (i > 1)
 				nftnl_chain_set_data(nlc, NFTNL_CHAIN_DEVICES, dev_array,
 						     sizeof(char *) * dev_array_len);
+
+			i = 0;
+			while (dev_array[i] != NULL)
+				xfree(dev_array[i++]);
 
 			xfree(dev_array);
 		}
@@ -1565,7 +1577,9 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, struct cmd *cmd,
 			  unsigned int flags)
 {
 	struct nftnl_flowtable *flo;
+	unsigned int ifname_len;
 	const char **dev_array;
+	char ifname[IFNAMSIZ];
 	struct nlmsghdr *nlh;
 	int i = 0, len = 1;
 	struct expr *expr;
@@ -1586,13 +1600,24 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	list_for_each_entry(expr, &cmd->flowtable->dev_expr->expressions, list)
 		len++;
 
-	dev_array = calloc(len, sizeof(char *));
-	list_for_each_entry(expr, &cmd->flowtable->dev_expr->expressions, list)
-		dev_array[i++] = expr->identifier;
+	dev_array = xmalloc(sizeof(char *) * len);
+
+	list_for_each_entry(expr, &cmd->flowtable->dev_expr->expressions, list) {
+		ifname_len = div_round_up(expr->len, BITS_PER_BYTE);
+		memset(ifname, 0, sizeof(ifname));
+		mpz_export_data(ifname, expr->value, BYTEORDER_HOST_ENDIAN,
+				ifname_len);
+		dev_array[i++] = xstrdup(ifname);
+	}
 
 	dev_array[i] = NULL;
 	nftnl_flowtable_set_data(flo, NFTNL_FLOWTABLE_DEVICES,
 				 dev_array, sizeof(char *) * len);
+
+	i = 0;
+	while (dev_array[i] != NULL)
+		xfree(dev_array[i++]);
+
 	free(dev_array);
 
 	netlink_dump_flowtable(flo, ctx);

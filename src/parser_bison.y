@@ -1909,9 +1909,9 @@ flowtable_list_expr	:	flowtable_expr_member
 
 flowtable_expr_member	:	STRING
 			{
-				$$ = symbol_expr_alloc(&@$, SYMBOL_VALUE,
-						       current_scope(state),
-						       $1);
+				$$ = constant_expr_alloc(&@$, &string_type,
+							 BYTEORDER_HOST_ENDIAN,
+							 strlen($1) * BITS_PER_BYTE, $1);
 				xfree($1);
 			}
 			;

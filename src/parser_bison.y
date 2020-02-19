@@ -2141,6 +2141,7 @@ dev_spec		:	DEVICE	string
 				expr = constant_expr_alloc(&@$, &string_type,
 							   BYTEORDER_HOST_ENDIAN,
 							   strlen($2) * BITS_PER_BYTE, $2);
+				xfree($2);
 				$$ = compound_expr_alloc(&@$, EXPR_LIST);
 				compound_expr_add($$, expr);
 

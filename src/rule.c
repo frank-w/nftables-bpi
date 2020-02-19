@@ -1579,7 +1579,7 @@ static int do_add_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 	return __do_add_setelems(ctx, set, init, flags);
 }
 
-static int do_add_set(struct netlink_ctx *ctx, const struct cmd *cmd,
+static int do_add_set(struct netlink_ctx *ctx, struct cmd *cmd,
 		      uint32_t flags)
 {
 	struct set *set = cmd->set;

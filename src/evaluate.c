@@ -2807,9 +2807,10 @@ static int stmt_evaluate_l3proto(struct eval_ctx *ctx,
 	    (nproto == &proto_ip6 && family != NFPROTO_IPV6))
 		return stmt_binary_error(ctx, stmt,
 					 &ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR],
-					 "conflicting protocols specified: %s vs. %s. You must specify ip or ip6 family in tproxy statement",
+					 "conflicting protocols specified: %s vs. %s. You must specify ip or ip6 family in %s statement",
 					 ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc->name,
-					 family2str(stmt->tproxy.family));
+					 family2str(family),
+					 stmt->ops->name);
 	return 0;
 }
 

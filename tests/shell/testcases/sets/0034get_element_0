@@ -3,7 +3,7 @@
 RC=0
 
 check() { # (elems, expected)
-	out=$($NFT get element ip t s "{ $1 }" 2>/dev/null)
+	out=$($NFT get element ip t s "{ $1 }")
 	out=$(grep "elements =" <<< "$out")
 	out="${out#* \{ }"
 	out="${out% \}}"

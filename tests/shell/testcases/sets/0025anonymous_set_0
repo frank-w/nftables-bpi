@@ -14,4 +14,4 @@ $NFT add rule t c ip daddr { \
 }
 
 #set : tcp ports
-$NFT add rule t c tcp dport { 22, 23 } counter
+$NFT add rule t c meta oifname \"doesntexist\" tcp dport { 22, 23 } counter

@@ -829,6 +829,140 @@ static void concat_expr_print(const struct expr *expr, struct output_ctx *octx)
 	compound_expr_print(expr, " . ", octx);
 }
 
+#define NFTNL_UDATA_SET_KEY_CONCAT_NEST 0
+#define NFTNL_UDATA_SET_KEY_CONCAT_NEST_MAX  NFT_REG32_SIZE
+
+#define NFTNL_UDATA_SET_KEY_CONCAT_SUB_TYPE 0
+#define NFTNL_UDATA_SET_KEY_CONCAT_SUB_DATA 1
+#define NFTNL_UDATA_SET_KEY_CONCAT_SUB_MAX  2
+
+static int concat_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				    const struct expr *concat_expr)
+{
+	struct nftnl_udata *nest;
+	unsigned int i = 0;
+	struct expr *expr;
+
+	list_for_each_entry(expr, &concat_expr->expressions, list) {
+		struct nftnl_udata *nest_expr;
+		int err;
+
+		if (!expr_ops(expr)->build_udata || i >= NFT_REG32_SIZE)
+			return -1;
+
+		nest = nftnl_udata_nest_start(udbuf, NFTNL_UDATA_SET_KEY_CONCAT_NEST + i);
+		nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_KEY_CONCAT_SUB_TYPE, expr->etype);
+		nest_expr = nftnl_udata_nest_start(udbuf, NFTNL_UDATA_SET_KEY_CONCAT_SUB_DATA);
+		err = expr_ops(expr)->build_udata(udbuf, expr);
+		if (err < 0)
+			return err;
+		nftnl_udata_nest_end(udbuf, nest_expr);
+		nftnl_udata_nest_end(udbuf, nest);
+		i++;
+	}
+
+	return 0;
+}
+
+static int concat_parse_udata_nest(const struct nftnl_udata *attr, void *data)
+{
+	const struct nftnl_udata **ud = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	if (type >= NFTNL_UDATA_SET_KEY_CONCAT_NEST_MAX)
+		return -1;
+
+	if (len <= sizeof(uint32_t))
+		return -1;
+
+	ud[type] = attr;
+	return 0;
+}
+
+static int concat_parse_udata_nested(const struct nftnl_udata *attr, void *data)
+{
+	const struct nftnl_udata **ud = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+	case NFTNL_UDATA_SET_KEY_CONCAT_SUB_TYPE:
+		if (len != sizeof(uint32_t))
+			return -1;
+		break;
+	case NFTNL_UDATA_SET_KEY_CONCAT_SUB_DATA:
+		if (len <= sizeof(uint32_t))
+			return -1;
+		break;
+	default:
+		return 0;
+	}
+
+	ud[type] = attr;
+	return 0;
+}
+
+static struct expr *concat_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	const struct nftnl_udata *ud[NFTNL_UDATA_SET_KEY_CONCAT_NEST_MAX] = {};
+	struct expr *concat_expr;
+	struct datatype *dtype;
+	unsigned int i;
+	int err;
+
+	err = nftnl_udata_parse(nftnl_udata_get(attr), nftnl_udata_len(attr),
+				concat_parse_udata_nest, ud);
+	if (err < 0)
+		return NULL;
+
+	concat_expr = concat_expr_alloc(&internal_location);
+	if (!concat_expr)
+		return NULL;
+
+	dtype = xzalloc(sizeof(*dtype));
+
+	for (i = 0; i < array_size(ud); i++) {
+		const struct nftnl_udata *nest_ud[NFTNL_UDATA_SET_KEY_CONCAT_SUB_MAX];
+		const struct nftnl_udata *nested, *subdata;
+		const struct expr_ops *ops;
+		struct expr *expr;
+		uint32_t etype;
+
+		if (ud[NFTNL_UDATA_SET_KEY_CONCAT_NEST + i] == NULL)
+			break;
+
+		nested = ud[NFTNL_UDATA_SET_KEY_CONCAT_NEST + i];
+		err = nftnl_udata_parse(nftnl_udata_get(nested), nftnl_udata_len(nested),
+					concat_parse_udata_nested, nest_ud);
+		if (err < 0)
+			goto err_free;
+
+		etype = nftnl_udata_get_u32(nest_ud[NFTNL_UDATA_SET_KEY_CONCAT_SUB_TYPE]);
+		ops = expr_ops_by_type(etype);
+		if (!ops || !ops->parse_udata)
+			goto err_free;
+
+		subdata = nest_ud[NFTNL_UDATA_SET_KEY_CONCAT_SUB_DATA];
+		expr = ops->parse_udata(subdata);
+		if (!expr)
+			goto err_free;
+
+		dtype->subtypes++;
+		compound_expr_add(concat_expr, expr);
+		dtype->size += round_up(expr->len, BITS_PER_BYTE * sizeof(uint32_t));
+	}
+
+	concat_expr->dtype = dtype;
+	concat_expr->len = dtype->size;
+
+	return concat_expr;
+
+err_free:
+	expr_free(concat_expr);
+	return NULL;
+}
+
 static const struct expr_ops concat_expr_ops = {
 	.type		= EXPR_CONCAT,
 	.name		= "concat",
@@ -836,6 +970,8 @@ static const struct expr_ops concat_expr_ops = {
 	.json		= concat_expr_json,
 	.clone		= compound_expr_clone,
 	.destroy	= concat_expr_destroy,
+	.build_udata	= concat_expr_build_udata,
+	.parse_udata	= concat_expr_parse_udata,
 };
 
 struct expr *concat_expr_alloc(const struct location *loc)

@@ -72,6 +72,7 @@ enum expr_types {
 	EXPR_FIB,
 	EXPR_XFRM,
 };
+#define EXPR_MAX EXPR_XFRM
 
 enum ops {
 	OP_INVALID,

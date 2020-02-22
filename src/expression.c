@@ -1185,9 +1185,9 @@ void range_expr_value_high(mpz_t rop, const struct expr *expr)
 	}
 }
 
-const struct expr_ops *expr_ops(const struct expr *e)
+static const struct expr_ops *__expr_ops_by_type(enum expr_types etype)
 {
-	switch (e->etype) {
+	switch (etype) {
 	case EXPR_INVALID:
 		BUG("Invalid expression ops requested");
 		break;
@@ -1220,26 +1220,21 @@ const struct expr_ops *expr_ops(const struct expr *e)
 	case EXPR_XFRM: return &xfrm_expr_ops;
 	}
 
-	BUG("Unknown expression type %d\n", e->etype);
+	BUG("Unknown expression type %d\n", etype);
 }
 
-const struct expr_ops *expr_ops_by_type(enum expr_types etype)
+const struct expr_ops *expr_ops(const struct expr *e)
 {
-	switch (etype) {
-	case EXPR_PAYLOAD: return &payload_expr_ops;
-	case EXPR_EXTHDR: return &exthdr_expr_ops;
-	case EXPR_META: return &meta_expr_ops;
-	case EXPR_SOCKET: return &socket_expr_ops;
-	case EXPR_OSF: return &osf_expr_ops;
-	case EXPR_CT: return &ct_expr_ops;
-	case EXPR_NUMGEN: return &numgen_expr_ops;
-	case EXPR_HASH: return &hash_expr_ops;
-	case EXPR_RT: return &rt_expr_ops;
-	case EXPR_FIB: return &fib_expr_ops;
-	case EXPR_XFRM: return &xfrm_expr_ops;
-	default:
-		break;
-	}
+	return __expr_ops_by_type(e->etype);
+}
 
-	BUG("Unknown expression type %d\n", etype);
+const struct expr_ops *expr_ops_by_type(uint32_t value)
+{
+	/* value might come from unreliable source, such as "udata"
+	 * annotation of set keys.  Avoid BUG() assertion.
+	 */
+	if (value == EXPR_INVALID || value > EXPR_MAX)
+		return NULL;
+
+	return __expr_ops_by_type(value);
 }

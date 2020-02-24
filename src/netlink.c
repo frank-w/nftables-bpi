@@ -169,6 +169,9 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 				nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_CHAIN,
 						   nld.chain, strlen(nld.chain));
 			break;
+		case EXPR_CONCAT:
+			assert(nld.len > 0);
+			/* fallthrough */
 		case EXPR_VALUE:
 			nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_DATA,
 					   nld.value, nld.len);
@@ -1005,6 +1008,10 @@ key_end:
 					  NFT_REG_VERDICT : NFT_REG_1);
 		datatype_set(data, set->data->dtype);
 		data->byteorder = set->data->byteorder;
+
+		if (set->data->dtype->subtypes)
+			data = netlink_parse_concat_elem(set->data->dtype, data);
+
 		if (data->byteorder == BYTEORDER_HOST_ENDIAN)
 			mpz_switch_byteorder(data->value, data->len / BITS_PER_BYTE);
 

@@ -2849,6 +2849,52 @@ static int stmt_evaluate_addr(struct eval_ctx *ctx, struct stmt *stmt,
 	return err;
 }
 
+static int stmt_evaluate_nat_map(struct eval_ctx *ctx, struct stmt *stmt)
+{
+	struct expr *one, *two, *data, *tmp;
+	const struct datatype *dtype;
+	int err;
+
+	dtype = get_addr_dtype(stmt->nat.family);
+
+	expr_set_context(&ctx->ectx, dtype, dtype->size);
+	if (expr_evaluate(ctx, &stmt->nat.addr))
+		return -1;
+
+	data = stmt->nat.addr->mappings->set->data;
+	if (expr_ops(data)->type != EXPR_CONCAT)
+		return __stmt_evaluate_arg(ctx, stmt, dtype, dtype->size,
+					   BYTEORDER_BIG_ENDIAN,
+					   &stmt->nat.addr);
+
+	one = list_first_entry(&data->expressions, struct expr, list);
+	two = list_entry(one->list.next, struct expr, list);
+
+	if (one == two || !list_is_last(&two->list, &data->expressions))
+		return __stmt_evaluate_arg(ctx, stmt, dtype, dtype->size,
+					   BYTEORDER_BIG_ENDIAN,
+					   &stmt->nat.addr);
+
+	tmp = one;
+	err = __stmt_evaluate_arg(ctx, stmt, dtype, dtype->size,
+				  BYTEORDER_BIG_ENDIAN,
+				  &tmp);
+	if (err < 0)
+		return err;
+	if (tmp != one)
+		BUG("Internal error: Unexpected alteration of l3 expression");
+
+	tmp = two;
+	err = nat_evaluate_transport(ctx, stmt, &tmp);
+	if (err < 0)
+		return err;
+	if (tmp != two)
+		BUG("Internal error: Unexpected alteration of l4 expression");
+
+	stmt->nat.ipportmap = true;
+	return err;
+}
+
 static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	int err;
@@ -2861,6 +2907,16 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 		err = stmt_evaluate_l3proto(ctx, stmt, stmt->nat.family);
 		if (err < 0)
 			return err;
+
+		if (stmt->nat.proto == NULL &&
+		    expr_ops(stmt->nat.addr)->type == EXPR_MAP) {
+			err = stmt_evaluate_nat_map(ctx, stmt);
+			if (err < 0)
+				return err;
+
+			stmt->flags |= STMT_F_TERMINAL;
+			return 0;
+		}
 
 		err = stmt_evaluate_addr(ctx, stmt, stmt->nat.family,
 					 &stmt->nat.addr);

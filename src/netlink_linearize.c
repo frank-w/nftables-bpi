@@ -1052,14 +1052,25 @@ static void netlink_gen_reject_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
+static unsigned int nat_addrlen(uint8_t family)
+{
+	switch (family) {
+	case NFPROTO_IPV4: return 32;
+	case NFPROTO_IPV6: return 128;
+	}
+
+	BUG("invalid nat family %u\n", family);
+	return 0;
+}
+
 static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 				 const struct stmt *stmt)
 {
 	struct nftnl_expr *nle;
 	enum nft_registers amin_reg, amax_reg;
 	enum nft_registers pmin_reg, pmax_reg;
+	uint8_t family = 0;
 	int registers = 0;
-	int family;
 	int nftnl_flag_attr;
 	int nftnl_reg_pmin, nftnl_reg_pmax;
 
@@ -1118,6 +1129,24 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 					     amin_reg);
 		}
 
+		if (stmt->nat.ipportmap) {
+			/* nat_stmt evaluation step doesn't allow
+			 * stmt->nat.ipportmap && stmt->nat.proto.
+			 */
+			assert(stmt->nat.proto == NULL);
+
+			pmin_reg = amin_reg;
+
+			/* if ipportmap is set, the mapped type is a
+			 * concatenation of 'addr . inet_service'.
+			 * The map lookup will then return the
+			 * concatenated value, so we need to skip
+			 * the address and use the register that
+			 * will hold the inet_service part.
+			 */
+			pmin_reg += netlink_register_space(nat_addrlen(family));
+			netlink_put_register(nle, nftnl_reg_pmin, pmin_reg);
+		}
 	}
 
 	if (stmt->nat.proto) {

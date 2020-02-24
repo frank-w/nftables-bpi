@@ -607,6 +607,9 @@ static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 			break;
 		}
 
+		if (stmt->nat.ipportmap)
+			nft_print(octx, " addr . port");
+
 		nft_print(octx, " to");
 	}
 

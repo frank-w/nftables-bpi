@@ -373,6 +373,7 @@ int nft_lex(void *, void *, void *);
 %token FLAGS			"flags"
 %token CPI			"cpi"
 
+%token PORT			"port"
 %token UDP			"udp"
 %token SPORT			"sport"
 %token DPORT			"dport"
@@ -3140,6 +3141,12 @@ nat_stmt_args		:	stmt_expr
 			|       nat_stmt_args   nf_nat_flags
 			{
 				$<stmt>0->nat.flags = $2;
+			}
+			|	nf_key_proto ADDR DOT	PORT	TO	stmt_expr
+			{
+				$<stmt>0->nat.family = $1;
+				$<stmt>0->nat.addr = $6;
+				$<stmt>0->nat.ipportmap = true;
 			}
 			;
 

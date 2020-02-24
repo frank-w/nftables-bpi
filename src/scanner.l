@@ -471,6 +471,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "udplite"		{ return UDPLITE; }
 "sport"			{ return SPORT; }
 "dport"			{ return DPORT; }
+"port"			{ return PORT; }
 
 "tcp"			{ return TCP; }
 "ackseq"		{ return ACKSEQ; }

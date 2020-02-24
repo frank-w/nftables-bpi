@@ -2853,15 +2853,32 @@ static int stmt_evaluate_nat_map(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	struct expr *one, *two, *data, *tmp;
 	const struct datatype *dtype;
-	int err;
+	int addr_type, err;
 
-	dtype = get_addr_dtype(stmt->nat.family);
+	if (stmt->nat.ipportmap) {
+		switch (stmt->nat.family) {
+		case NFPROTO_IPV4:
+			addr_type = TYPE_IPADDR;
+			break;
+		case NFPROTO_IPV6:
+			addr_type = TYPE_IP6ADDR;
+			break;
+		default:
+			return -1;
+		}
+		dtype = concat_type_alloc((addr_type << TYPE_BITS) |
+					   TYPE_INET_SERVICE);
+	} else {
+		dtype = get_addr_dtype(stmt->nat.family);
+	}
 
 	expr_set_context(&ctx->ectx, dtype, dtype->size);
 	if (expr_evaluate(ctx, &stmt->nat.addr))
 		return -1;
 
 	data = stmt->nat.addr->mappings->set->data;
+	datatype_set(data, dtype);
+
 	if (expr_ops(data)->type != EXPR_CONCAT)
 		return __stmt_evaluate_arg(ctx, stmt, dtype, dtype->size,
 					   BYTEORDER_BIG_ENDIAN,
@@ -2875,6 +2892,7 @@ static int stmt_evaluate_nat_map(struct eval_ctx *ctx, struct stmt *stmt)
 					   BYTEORDER_BIG_ENDIAN,
 					   &stmt->nat.addr);
 
+	dtype = get_addr_dtype(stmt->nat.family);
 	tmp = one;
 	err = __stmt_evaluate_arg(ctx, stmt, dtype, dtype->size,
 				  BYTEORDER_BIG_ENDIAN,
@@ -2891,7 +2909,6 @@ static int stmt_evaluate_nat_map(struct eval_ctx *ctx, struct stmt *stmt)
 	if (tmp != two)
 		BUG("Internal error: Unexpected alteration of l4 expression");
 
-	stmt->nat.ipportmap = true;
 	return err;
 }
 

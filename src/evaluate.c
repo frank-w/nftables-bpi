@@ -3368,6 +3368,10 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 			return set_error(ctx, set, "map definition does not "
 					 "specify mapping data type");
 
+		if (set->data->etype == EXPR_CONCAT &&
+		    expr_evaluate_concat(ctx, &set->data, false) < 0)
+			return -1;
+
 		if (set->data->len == 0 && set->data->dtype->type != TYPE_VERDICT)
 			return set_key_data_error(ctx, set,
 						  set->data->dtype, type);

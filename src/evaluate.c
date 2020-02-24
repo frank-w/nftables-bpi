@@ -2102,14 +2102,10 @@ static int stmt_prefix_conversion(struct eval_ctx *ctx, struct expr **expr,
 	return 0;
 }
 
-static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
-			     const struct datatype *dtype, unsigned int len,
-			     enum byteorder byteorder, struct expr **expr)
+static int __stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
+			       const struct datatype *dtype, unsigned int len,
+			       enum byteorder byteorder, struct expr **expr)
 {
-	__expr_set_context(&ctx->ectx, dtype, byteorder, len, 0);
-	if (expr_evaluate(ctx, expr) < 0)
-		return -1;
-
 	if ((*expr)->etype == EXPR_PAYLOAD &&
 	    (*expr)->dtype->type == TYPE_INTEGER &&
 	    ((*expr)->dtype->type != datatype_basetype(dtype)->type ||
@@ -2145,6 +2141,17 @@ static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
 	}
 
 	return 0;
+}
+
+static int stmt_evaluate_arg(struct eval_ctx *ctx, struct stmt *stmt,
+			     const struct datatype *dtype, unsigned int len,
+			     enum byteorder byteorder, struct expr **expr)
+{
+	__expr_set_context(&ctx->ectx, dtype, byteorder, len, 0);
+	if (expr_evaluate(ctx, expr) < 0)
+		return -1;
+
+	return __stmt_evaluate_arg(ctx, stmt, dtype, len, byteorder, expr);
 }
 
 static int stmt_evaluate_verdict(struct eval_ctx *ctx, struct stmt *stmt)
@@ -2762,22 +2769,28 @@ static int nat_evaluate_family(struct eval_ctx *ctx, struct stmt *stmt)
 	}
 }
 
+static const struct datatype *get_addr_dtype(uint8_t family)
+{
+	switch (family) {
+	case NFPROTO_IPV4:
+		return &ipaddr_type;
+	case NFPROTO_IPV6:
+		return &ip6addr_type;
+	}
+
+	return &invalid_type;
+}
+
 static int evaluate_addr(struct eval_ctx *ctx, struct stmt *stmt,
 			     struct expr **expr)
 {
 	struct proto_ctx *pctx = &ctx->pctx;
 	const struct datatype *dtype;
-	unsigned int len;
 
-	if (pctx->family == NFPROTO_IPV4) {
-		dtype = &ipaddr_type;
-		len   = 4 * BITS_PER_BYTE;
-	} else {
-		dtype = &ip6addr_type;
-		len   = 16 * BITS_PER_BYTE;
-	}
+	dtype = get_addr_dtype(pctx->family);
 
-	return stmt_evaluate_arg(ctx, stmt, dtype, len, BYTEORDER_BIG_ENDIAN,
+	return stmt_evaluate_arg(ctx, stmt, dtype, dtype->size,
+				 BYTEORDER_BIG_ENDIAN,
 				 expr);
 }
 
@@ -2819,25 +2832,15 @@ static int stmt_evaluate_addr(struct eval_ctx *ctx, struct stmt *stmt,
 			      struct expr **addr)
 {
 	const struct datatype *dtype;
-	unsigned int len;
 	int err;
 
 	if (ctx->pctx.family == NFPROTO_INET) {
-		switch (family) {
-		case NFPROTO_IPV4:
-			dtype = &ipaddr_type;
-			len   = 4 * BITS_PER_BYTE;
-			break;
-		case NFPROTO_IPV6:
-			dtype = &ip6addr_type;
-			len   = 16 * BITS_PER_BYTE;
-			break;
-		default:
+		dtype = get_addr_dtype(family);
+		if (dtype->size == 0)
 			return stmt_error(ctx, stmt,
 					  "ip or ip6 must be specified with address for inet tables.");
-		}
 
-		err = stmt_evaluate_arg(ctx, stmt, dtype, len,
+		err = stmt_evaluate_arg(ctx, stmt, dtype, dtype->size,
 					BYTEORDER_BIG_ENDIAN, addr);
 	} else {
 		err = evaluate_addr(ctx, stmt, addr);

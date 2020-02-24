@@ -1,0 +1,13 @@
+table ip ipfoo {
+	map x {
+		type ipv4_addr : ipv4_addr
+	}
+
+	chain c {
+		type nat hook prerouting priority dstnat; policy accept;
+		iifname != "foobar" accept
+		dnat to ip daddr map @x
+		ip saddr 10.1.1.1 dnat to 10.2.3.4
+		ip saddr 10.1.1.2 tcp dport 42 dnat to 10.2.3.4:4242
+	}
+}

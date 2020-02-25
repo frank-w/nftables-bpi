@@ -2855,22 +2855,17 @@ static int stmt_evaluate_nat_map(struct eval_ctx *ctx, struct stmt *stmt)
 	const struct datatype *dtype;
 	int addr_type, err;
 
-	if (stmt->nat.ipportmap) {
-		switch (stmt->nat.family) {
-		case NFPROTO_IPV4:
-			addr_type = TYPE_IPADDR;
-			break;
-		case NFPROTO_IPV6:
-			addr_type = TYPE_IP6ADDR;
-			break;
-		default:
-			return -1;
-		}
-		dtype = concat_type_alloc((addr_type << TYPE_BITS) |
-					   TYPE_INET_SERVICE);
-	} else {
-		dtype = get_addr_dtype(stmt->nat.family);
+	switch (stmt->nat.family) {
+	case NFPROTO_IPV4:
+		addr_type = TYPE_IPADDR;
+		break;
+	case NFPROTO_IPV6:
+		addr_type = TYPE_IP6ADDR;
+		break;
+	default:
+		return -1;
 	}
+	dtype = concat_type_alloc((addr_type << TYPE_BITS) | TYPE_INET_SERVICE);
 
 	expr_set_context(&ctx->ectx, dtype, dtype->size);
 	if (expr_evaluate(ctx, &stmt->nat.addr))
@@ -2925,8 +2920,7 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 		if (err < 0)
 			return err;
 
-		if (stmt->nat.proto == NULL &&
-		    expr_ops(stmt->nat.addr)->type == EXPR_MAP) {
+		if (stmt->nat.ipportmap) {
 			err = stmt_evaluate_nat_map(ctx, stmt);
 			if (err < 0)
 				return err;

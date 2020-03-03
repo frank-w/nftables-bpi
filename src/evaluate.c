@@ -2225,6 +2225,11 @@ static int stmt_evaluate_payload(struct eval_ctx *ctx, struct stmt *stmt)
 			      payload->byteorder, &stmt->payload.val) < 0)
 		return -1;
 
+	if (!expr_is_constant(stmt->payload.val) &&
+	    byteorder_conversion(ctx, &stmt->payload.val,
+				 payload->byteorder) < 0)
+		return -1;
+
 	need_csum = stmt_evaluate_payload_need_csum(payload);
 
 	if (!payload_needs_adjustment(payload)) {

@@ -736,6 +736,9 @@ static int expr_evaluate_payload(struct eval_ctx *ctx, struct expr **exprp)
 {
 	struct expr *expr = *exprp;
 
+	if (expr->payload.evaluated)
+		return 0;
+
 	if (__expr_evaluate_payload(ctx, expr) < 0)
 		return -1;
 
@@ -744,6 +747,8 @@ static int expr_evaluate_payload(struct eval_ctx *ctx, struct expr **exprp)
 
 	if (payload_needs_adjustment(expr))
 		expr_evaluate_bits(ctx, exprp);
+
+	expr->payload.evaluated = true;
 
 	return 0;
 }

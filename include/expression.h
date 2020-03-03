@@ -300,6 +300,7 @@ struct expr {
 			enum proto_bases		base;
 			unsigned int			offset;
 			bool				is_raw;
+			bool				evaluated;
 		} payload;
 		struct {
 			/* EXPR_EXTHDR */

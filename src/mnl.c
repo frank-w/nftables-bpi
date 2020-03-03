@@ -624,6 +624,10 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FAMILY, cmd->handle.family);
 
 	if (cmd->chain) {
+		if (cmd->chain->flags & CHAIN_F_HW_OFFLOAD) {
+			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FLAGS,
+					    CHAIN_F_HW_OFFLOAD);
+		}
 		if (cmd->chain->flags & CHAIN_F_BASECHAIN) {
 			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_HOOKNUM,
 					    cmd->chain->hooknum);

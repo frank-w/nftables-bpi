@@ -1177,6 +1177,9 @@ static void chain_print_declaration(const struct chain *chain,
 			nft_print(octx, " policy %s;",
 				  chain_policy2str(policy));
 		}
+		if (chain->flags & CHAIN_F_HW_OFFLOAD)
+			nft_print(octx, " flags offload;");
+
 		nft_print(octx, "\n");
 	}
 }

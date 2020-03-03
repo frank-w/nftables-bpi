@@ -435,6 +435,8 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 		xstrdup(nftnl_chain_get_str(nlc, NFTNL_CHAIN_TABLE));
 	chain->handle.handle.id =
 		nftnl_chain_get_u64(nlc, NFTNL_CHAIN_HANDLE);
+	if (nftnl_chain_is_set(nlc, NFTNL_CHAIN_FLAGS))
+		chain->flags = nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FLAGS);
 
 	if (nftnl_chain_is_set(nlc, NFTNL_CHAIN_HOOKNUM) &&
 	    nftnl_chain_is_set(nlc, NFTNL_CHAIN_PRIO) &&

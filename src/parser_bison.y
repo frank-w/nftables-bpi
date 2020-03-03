@@ -1667,6 +1667,7 @@ chain_block		:	/* empty */	{ $$ = $<chain>-1; }
 			|	chain_block	stmt_separator
 			|	chain_block	hook_spec	stmt_separator
 			|	chain_block	policy_spec	stmt_separator
+			|	chain_block	flags_spec	stmt_separator
 			|	chain_block	rule		stmt_separator
 			{
 				list_add_tail(&$2->list, &$1->rules);
@@ -2152,6 +2153,12 @@ dev_spec		:	DEVICE	string
 				$$ = $3;
 			}
 			|	/* empty */		{ $$ = NULL; }
+			;
+
+flags_spec		:	FLAGS		OFFLOAD
+			{
+				$<chain>0->flags |= CHAIN_F_HW_OFFLOAD;
+			}
 			;
 
 policy_spec		:	POLICY		policy_expr

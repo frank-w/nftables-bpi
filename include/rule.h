@@ -175,6 +175,7 @@ extern struct table *table_lookup_fuzzy(const struct handle *h,
  */
 enum chain_flags {
 	CHAIN_F_BASECHAIN	= 0x1,
+	CHAIN_F_HW_OFFLOAD	= 0x2,
 };
 
 /**

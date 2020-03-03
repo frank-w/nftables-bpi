@@ -2204,7 +2204,7 @@ static int stmt_evaluate_exthdr(struct eval_ctx *ctx, struct stmt *stmt)
 
 static int stmt_evaluate_payload(struct eval_ctx *ctx, struct stmt *stmt)
 {
-	struct expr *binop, *mask, *and, *payload_bytes;
+	struct expr *mask, *and, *xor, *payload_bytes;
 	unsigned int masklen, extra_len = 0;
 	unsigned int payload_byte_size, payload_byte_offset;
 	uint8_t shift_imm, data[NFT_REG_SIZE];
@@ -2251,21 +2251,20 @@ static int stmt_evaluate_payload(struct eval_ctx *ctx, struct stmt *stmt)
 	}
 
 	if (shift_imm) {
-		struct expr *off;
+		struct expr *off, *lshift;
 
 		off = constant_expr_alloc(&payload->location,
 					  expr_basetype(payload),
 					  BYTEORDER_HOST_ENDIAN,
 					  sizeof(shift_imm), &shift_imm);
 
-		binop = binop_expr_alloc(&payload->location, OP_LSHIFT,
-					 stmt->payload.val, off);
-		binop->dtype		= payload->dtype;
-		binop->byteorder	= payload->byteorder;
+		lshift = binop_expr_alloc(&payload->location, OP_LSHIFT,
+					  stmt->payload.val, off);
+		lshift->dtype     = payload->dtype;
+		lshift->byteorder = payload->byteorder;
 
-		stmt->payload.val = binop;
+		stmt->payload.val = lshift;
 	}
-
 
 	masklen = payload_byte_size * BITS_PER_BYTE;
 	mpz_init_bitmask(ff, masklen);
@@ -2295,16 +2294,17 @@ static int stmt_evaluate_payload(struct eval_ctx *ctx, struct stmt *stmt)
 
 	and = binop_expr_alloc(&payload->location, OP_AND, payload_bytes, mask);
 
-	and->dtype		 = payload_bytes->dtype;
-	and->byteorder		 = payload_bytes->byteorder;
-	and->len		 = payload_bytes->len;
+	and->dtype	= payload_bytes->dtype;
+	and->byteorder	= payload_bytes->byteorder;
+	and->len	= payload_bytes->len;
 
-	binop = binop_expr_alloc(&payload->location, OP_XOR, and,
-				 stmt->payload.val);
-	binop->dtype		= payload->dtype;
-	binop->byteorder	= payload->byteorder;
-	binop->len		= mask->len;
-	stmt->payload.val = binop;
+	xor = binop_expr_alloc(&payload->location, OP_XOR, and,
+			       stmt->payload.val);
+	xor->dtype	= payload->dtype;
+	xor->byteorder	= payload->byteorder;
+	xor->len	= mask->len;
+
+	stmt->payload.val = xor;
 
 	return expr_evaluate(ctx, &stmt->payload.val);
 }

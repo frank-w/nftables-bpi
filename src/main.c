@@ -27,6 +27,7 @@ static struct nft_ctx *nft;
 enum opt_vals {
 	OPT_HELP		= 'h',
 	OPT_VERSION		= 'v',
+	OPT_VERSION_LONG	= 'V',
 	OPT_CHECK		= 'c',
 	OPT_FILE		= 'f',
 	OPT_INTERACTIVE		= 'i',
@@ -46,7 +47,7 @@ enum opt_vals {
 	OPT_TERSE		= 't',
 	OPT_INVALID		= '?',
 };
-#define OPTSTRING	"+hvd:cf:iI:jvnsNaeSupypTt"
+#define OPTSTRING	"+hvVd:cf:iI:jvnsNaeSupypTt"
 
 static const struct option options[] = {
 	{
@@ -141,6 +142,7 @@ static void show_help(const char *name)
 "Options:\n"
 "  -h, --help			Show this help\n"
 "  -v, --version			Show version information\n"
+"  -V				Show extended version information\n"
 "\n"
 "  -c, --check			Check commands validity without actually applying the changes.\n"
 "  -f, --file <filename>		Read input from <filename>\n"
@@ -162,6 +164,45 @@ static void show_help(const char *name)
 "  --debug <level [,level...]>	Specify debugging level (scanner, parser, eval, netlink, mnl, proto-ctx, segtree, all)\n"
 "\n",
 	name, DEFAULT_INCLUDE_PATH);
+}
+
+static void show_version(void)
+{
+	const char *cli, *minigmp, *json, *xt;
+
+#if defined(HAVE_LIBREADLINE)
+	cli = "readline";
+#elif defined(HAVE_LIBLINENOISE)
+	cli = "linenoise";
+#else
+	cli = "no";
+#endif
+
+#if defined(HAVE_MINIGMP)
+	minigmp = "yes";
+#else
+	minigmp = "no";
+#endif
+
+#if defined(HAVE_JSON)
+	json = "yes";
+#else
+	json = "no";
+#endif
+
+#if defined(HAVE_XTABLES)
+	xt = "yes";
+#else
+	xt = "no";
+#endif
+
+	printf("%s v%s (%s)\n"
+	       "  cli:		%s\n"
+	       "  json:		%s\n"
+	       "  minigmp:	%s\n"
+	       "  libxtables:	%s\n",
+	       PACKAGE_NAME, PACKAGE_VERSION, RELEASE_NAME,
+	       cli, minigmp, json, xt);
 }
 
 static const struct {
@@ -271,6 +312,9 @@ int main(int argc, char * const *argv)
 		case OPT_VERSION:
 			printf("%s v%s (%s)\n",
 			       PACKAGE_NAME, PACKAGE_VERSION, RELEASE_NAME);
+			exit(EXIT_SUCCESS);
+		case OPT_VERSION_LONG:
+			show_version();
 			exit(EXIT_SUCCESS);
 		case OPT_CHECK:
 			nft_ctx_set_dry_run(nft, true);

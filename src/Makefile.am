@@ -13,6 +13,15 @@ endif
 if BUILD_XTABLES
 AM_CPPFLAGS += ${XTABLES_CFLAGS}
 endif
+if BUILD_MINIGMP
+AM_CPPFLAGS += -DHAVE_MINIGMP
+endif
+if BUILD_JSON
+AM_CPPFLAGS += -DHAVE_JSON
+endif
+if BUILD_XTABLES
+AM_CPPFLAGS += -DHAVE_XTABLES
+endif
 
 AM_CFLAGS = -Wall								\
 	    -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations	\

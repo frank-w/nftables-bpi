@@ -153,7 +153,7 @@ static void show_help(const char *name)
 "  -s, --stateless			Omit stateful information of ruleset.\n"
 "  -t, --terse				Omit contents of sets.\n"
 "  -u, --guid				Print UID/GID as defined in /etc/passwd and /etc/group.\n"
-"  -N					Translate IP addresses to names.\n"
+"  -N, --reversedns			Translate IP addresses to names.\n"
 "  -S, --service				Translate ports to service names as described in /etc/services.\n"
 "  -p, --numeric-protocol		Print layer 4 protocols numerically.\n"
 "  -y, --numeric-priority		Print chain priority numerically.\n"

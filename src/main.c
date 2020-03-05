@@ -160,10 +160,10 @@ static void show_help(const char *name)
 "  -T, --numeric-time			Print time values numerically.\n"
 "  -a, --handle				Output rule handle.\n"
 "  -e, --echo				Echo what has been added, inserted or replaced.\n"
-"  -I, --includepath <directory>		Add <directory> to the paths searched for include files. Default is: %s\n"
+"  -I, --includepath <directory>		Add <directory> to the paths searched for include files. Default is: " DEFAULT_INCLUDE_PATH "\n"
 "  -d, --debug <level [,level...]>	Specify debugging level (scanner, parser, eval, netlink, mnl, proto-ctx, segtree, all)\n"
 "\n",
-	name, DEFAULT_INCLUDE_PATH);
+	name);
 }
 
 static void show_version(void)

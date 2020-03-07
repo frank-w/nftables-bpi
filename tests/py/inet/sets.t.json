@@ -36,3 +36,38 @@
     }
 ]
 
+# ip saddr . ip daddr . tcp dport @set3 accept
+[
+    {
+        "match": {
+            "left": {
+                "concat": [
+                    {
+                        "payload": {
+                            "field": "saddr",
+                            "protocol": "ip"
+                        }
+                    },
+                    {
+                        "payload": {
+                            "field": "daddr",
+                            "protocol": "ip"
+                        }
+                    },
+                    {
+                        "payload": {
+                            "field": "dport",
+                            "protocol": "tcp"
+                        }
+                    }
+                ]
+            },
+            "op": "==",
+            "right": "@set3"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+

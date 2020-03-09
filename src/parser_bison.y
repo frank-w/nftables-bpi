@@ -3022,7 +3022,7 @@ shift_stmt_expr		:	primary_stmt_expr
 			{
 				$$ = binop_expr_alloc(&@$, OP_LSHIFT, $1, $3);
 			}
-			|	shift_stmt_expr		RSHIFT		primary_rhs_expr
+			|	shift_stmt_expr		RSHIFT		primary_stmt_expr
 			{
 				$$ = binop_expr_alloc(&@$, OP_RSHIFT, $1, $3);
 			}

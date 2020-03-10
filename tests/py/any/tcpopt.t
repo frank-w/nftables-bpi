@@ -1,5 +1,8 @@
 :input;type filter hook input priority 0
+
+*ip;test-ip4;input
 *ip6;test-ip6;input
+*inet;test-inet;input
 
 tcp option eol kind 1;ok
 tcp option noop kind 1;ok
@@ -35,3 +38,8 @@ tcp option eol left 1;fail
 tcp option eol left 1;fail
 tcp option sack window;fail
 tcp option sack window 1;fail
+
+tcp option window exists;ok
+tcp option window missing;ok
+
+tcp option maxseg size set 1360;ok

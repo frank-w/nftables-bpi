@@ -8,7 +8,7 @@
                     "name": "eol"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -24,7 +24,7 @@
                     "name": "noop"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -40,7 +40,7 @@
                     "name": "maxseg"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -56,7 +56,7 @@
                     "name": "maxseg"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -72,7 +72,7 @@
                     "name": "maxseg"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -88,7 +88,7 @@
                     "name": "window"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -104,7 +104,7 @@
                     "name": "window"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -120,7 +120,7 @@
                     "name": "window"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -136,7 +136,7 @@
                     "name": "sack-permitted"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -152,7 +152,7 @@
                     "name": "sack-permitted"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -168,7 +168,7 @@
                     "name": "sack"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -184,7 +184,7 @@
                     "name": "sack"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -200,7 +200,7 @@
                     "name": "sack"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -216,7 +216,7 @@
                     "name": "sack0"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -232,7 +232,7 @@
                     "name": "sack1"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -248,7 +248,7 @@
                     "name": "sack2"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -264,7 +264,23 @@
                     "name": "sack3"
                 }
             },
-	    "op": "==",
+            "op": "==",
+            "right": 1
+        }
+    }
+]
+
+# tcp option sack right 1
+[
+    {
+        "match": {
+            "left": {
+                "tcp option": {
+                    "field": "right",
+                    "name": "sack"
+                }
+            },
+            "op": "==",
             "right": 1
         }
     }
@@ -280,7 +296,7 @@
                     "name": "sack0"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -296,7 +312,7 @@
                     "name": "sack1"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -312,7 +328,7 @@
                     "name": "sack2"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -328,7 +344,7 @@
                     "name": "sack3"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -344,7 +360,7 @@
                     "name": "timestamp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -360,7 +376,7 @@
                     "name": "timestamp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -376,7 +392,7 @@
                     "name": "timestamp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -392,7 +408,7 @@
                     "name": "timestamp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1
         }
     }
@@ -407,7 +423,7 @@
                     "name": "window"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": true
         }
     }
@@ -422,7 +438,7 @@
                     "name": "window"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": false
         }
     }

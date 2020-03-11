@@ -822,9 +822,7 @@ static void netlink_gen_objref_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
-static struct nftnl_expr *
-netlink_gen_connlimit_stmt(struct netlink_linearize_ctx *ctx,
-			   const struct stmt *stmt)
+static struct nftnl_expr *netlink_gen_connlimit_stmt(const struct stmt *stmt)
 {
 	struct nftnl_expr *nle;
 
@@ -837,9 +835,7 @@ netlink_gen_connlimit_stmt(struct netlink_linearize_ctx *ctx,
 	return nle;
 }
 
-static struct nftnl_expr *
-netlink_gen_counter_stmt(struct netlink_linearize_ctx *ctx,
-			 const struct stmt *stmt)
+static struct nftnl_expr *netlink_gen_counter_stmt(const struct stmt *stmt)
 {
 	struct nftnl_expr *nle;
 
@@ -856,9 +852,7 @@ netlink_gen_counter_stmt(struct netlink_linearize_ctx *ctx,
 	return nle;
 }
 
-static struct nftnl_expr *
-netlink_gen_limit_stmt(struct netlink_linearize_ctx *ctx,
-		       const struct stmt *stmt)
+static struct nftnl_expr *netlink_gen_limit_stmt(const struct stmt *stmt)
 {
 	struct nftnl_expr *nle;
 
@@ -874,9 +868,7 @@ netlink_gen_limit_stmt(struct netlink_linearize_ctx *ctx,
 	return nle;
 }
 
-static struct nftnl_expr *
-netlink_gen_quota_stmt(struct netlink_linearize_ctx *ctx,
-		       const struct stmt *stmt)
+static struct nftnl_expr *netlink_gen_quota_stmt(const struct stmt *stmt)
 {
 	struct nftnl_expr *nle;
 
@@ -888,19 +880,17 @@ netlink_gen_quota_stmt(struct netlink_linearize_ctx *ctx,
 	return nle;
 }
 
-static struct nftnl_expr *
-netlink_gen_stmt_stateful(struct netlink_linearize_ctx *ctx,
-			  const struct stmt *stmt)
+static struct nftnl_expr *netlink_gen_stmt_stateful(const struct stmt *stmt)
 {
 	switch (stmt->ops->type) {
 	case STMT_CONNLIMIT:
-		return netlink_gen_connlimit_stmt(ctx, stmt);
+		return netlink_gen_connlimit_stmt(stmt);
 	case STMT_COUNTER:
-		return netlink_gen_counter_stmt(ctx, stmt);
+		return netlink_gen_counter_stmt(stmt);
 	case STMT_LIMIT:
-		return netlink_gen_limit_stmt(ctx, stmt);
+		return netlink_gen_limit_stmt(stmt);
 	case STMT_QUOTA:
-		return netlink_gen_quota_stmt(ctx, stmt);
+		return netlink_gen_quota_stmt(stmt);
 	default:
 		BUG("unknown stateful statement type %s\n", stmt->ops->name);
 	}
@@ -1378,7 +1368,7 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 
 	if (stmt->set.stmt)
 		nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
-			       netlink_gen_stmt_stateful(ctx, stmt->set.stmt), 0);
+			       netlink_gen_stmt_stateful(stmt->set.stmt), 0);
 }
 
 static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
@@ -1408,7 +1398,7 @@ static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
 
 	if (stmt->map.stmt)
 		nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
-			       netlink_gen_stmt_stateful(ctx, stmt->map.stmt), 0);
+			       netlink_gen_stmt_stateful(stmt->map.stmt), 0);
 
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
@@ -1440,7 +1430,7 @@ static void netlink_gen_meter_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set.name);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, set->handle.set_id);
 	nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
-		       netlink_gen_stmt_stateful(ctx, stmt->meter.stmt), 0);
+		       netlink_gen_stmt_stateful(stmt->meter.stmt), 0);
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
@@ -1486,7 +1476,7 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 	case STMT_COUNTER:
 	case STMT_LIMIT:
 	case STMT_QUOTA:
-		nle = netlink_gen_stmt_stateful(ctx, stmt);
+		nle = netlink_gen_stmt_stateful(stmt);
 		nftnl_rule_add_expr(ctx->nlr, nle);
 		break;
 	case STMT_NOTRACK:

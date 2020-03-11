@@ -138,6 +138,9 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 	if (elem->expiration)
 		nftnl_set_elem_set_u64(nlse, NFTNL_SET_ELEM_EXPIRATION,
 				       elem->expiration);
+	if (elem->stmt)
+		nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_EXPR,
+				   netlink_gen_stmt_stateful(elem->stmt), 0);
 	if (elem->comment || expr->elem_flags) {
 		udbuf = nftnl_udata_buf_alloc(NFT_USERDATA_MAXLEN);
 		if (!udbuf)

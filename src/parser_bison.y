@@ -3671,7 +3671,7 @@ meter_key_expr_alloc	:	concat_expr
 			;
 
 set_elem_expr		:	set_elem_expr_alloc
-			|	set_elem_expr_alloc		set_elem_options
+			|	set_elem_expr_alloc		set_elem_expr_options
 			;
 
 set_elem_expr_alloc	:	set_lhs_expr
@@ -3694,6 +3694,40 @@ set_elem_option		:	TIMEOUT			time_spec
 			|	EXPIRES		time_spec
 			{
 				$<expr>0->expiration = $2;
+			}
+			|	comment_spec
+			{
+				$<expr>0->comment = $1;
+			}
+			;
+
+set_elem_expr_options	:	set_elem_expr_option
+			{
+				$<expr>$	= $<expr>0;
+			}
+			|	set_elem_expr_options	set_elem_expr_option
+			;
+
+set_elem_expr_option	:	TIMEOUT			time_spec
+			{
+				$<expr>0->timeout = $2;
+			}
+			|	EXPIRES		time_spec
+			{
+				$<expr>0->expiration = $2;
+			}
+			|	COUNTER
+			{
+				$<expr>0->stmt = counter_stmt_alloc(&@$);
+			}
+			|	COUNTER	PACKETS	NUM	BYTES	NUM
+			{
+				struct stmt *stmt;
+
+				stmt = counter_stmt_alloc(&@$);
+				stmt->counter.packets = $3;
+				stmt->counter.bytes = $5;
+				$<expr>0->stmt = stmt;
 			}
 			|	comment_spec
 			{

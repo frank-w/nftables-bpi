@@ -113,6 +113,7 @@ extern void netlink_gen_data(const struct expr *expr,
 extern void netlink_gen_raw_data(const mpz_t value, enum byteorder byteorder,
 				 unsigned int len,
 				 struct nft_data_linearize *data);
+extern struct nftnl_expr *netlink_gen_stmt_stateful(const struct stmt *stmt);
 
 extern struct expr *netlink_alloc_value(const struct location *loc,
 				        const struct nft_data_delinearize *nld);

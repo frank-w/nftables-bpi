@@ -1026,6 +1026,11 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, struct cmd *cmd,
 			   nftnl_udata_buf_len(udbuf));
 	nftnl_udata_buf_free(udbuf);
 
+	if (set->stmt) {
+		nftnl_set_set_data(nls, NFTNL_SET_EXPR,
+				   netlink_gen_stmt_stateful(set->stmt), 0);
+	}
+
 	netlink_dump_set(nls, ctx);
 
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),

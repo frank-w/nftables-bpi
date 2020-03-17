@@ -766,6 +766,13 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	set->handle.set.name = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_NAME));
 	set->automerge	   = automerge;
 
+	if (nftnl_set_is_set(nls, NFTNL_SET_EXPR)) {
+		const struct nftnl_expr *nle;
+
+		nle = nftnl_set_get(nls, NFTNL_SET_EXPR);
+		set->stmt = netlink_parse_set_expr(set, &ctx->nft->cache, nle);
+	}
+
 	if (datatype) {
 		dtype = set_datatype_alloc(datatype, databyteorder);
 		klen = nftnl_set_get_u32(nls, NFTNL_SET_DATA_LEN) * BITS_PER_BYTE;

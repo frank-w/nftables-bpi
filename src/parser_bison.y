@@ -1733,6 +1733,11 @@ set_block		:	/* empty */	{ $$ = $<set>-1; }
 				$1->gc_int = $3;
 				$$ = $1;
 			}
+			|	set_block	COUNTER		stmt_separator
+			{
+				$1->stmt = counter_stmt_alloc(&@$);
+				$$ = $1;
+			}
 			|	set_block	ELEMENTS	'='		set_block_expr
 			{
 				$1->init = $4;

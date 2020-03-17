@@ -355,6 +355,7 @@ void set_free(struct set *set)
 	if (set->init != NULL)
 		expr_free(set->init);
 	handle_free(&set->handle);
+	stmt_free(set->stmt);
 	expr_free(set->key);
 	expr_free(set->data);
 	xfree(set);
@@ -544,6 +545,15 @@ static void set_print_declaration(const struct set *set,
 		}
 		nft_print(octx, "%s", opts->stmt_separator);
 	}
+
+	if (set->stmt) {
+		nft_print(octx, "%s%s", opts->tab, opts->tab);
+		octx->flags |= NFT_CTX_OUTPUT_STATELESS;
+		stmt_print(set->stmt, octx);
+		octx->flags &= ~NFT_CTX_OUTPUT_STATELESS;
+		nft_print(octx, "%s", opts->stmt_separator);
+	}
+
 	if (set->automerge)
 		nft_print(octx, "%s%sauto-merge%s", opts->tab, opts->tab,
 			  opts->stmt_separator);

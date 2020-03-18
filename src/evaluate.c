@@ -18,6 +18,7 @@
 #include <linux/netfilter_arp.h>
 #include <linux/netfilter/nf_tables.h>
 #include <linux/netfilter/nf_synproxy.h>
+#include <linux/netfilter/nf_nat.h>
 #include <linux/netfilter_ipv4.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/icmp6.h>
@@ -2950,6 +2951,8 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 		err = nat_evaluate_transport(ctx, stmt, &stmt->nat.proto);
 		if (err < 0)
 			return err;
+
+		stmt->nat.flags |= NF_NAT_RANGE_PROTO_SPECIFIED;
 	}
 
 	stmt->flags |= STMT_F_TERMINAL;

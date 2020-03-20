@@ -70,7 +70,7 @@ ip test-ip4 prerouting
   [ cmp eq reg 1 0x00005100 ]
   [ immediate reg 1 0x0203a8c0 ]
   [ immediate reg 2 0x0000901f ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 proto_min reg 2 proto_max reg 0 ]
+  [ nat dnat ip addr_min reg 1 addr_max reg 0 proto_min reg 2 proto_max reg 0 flags 0x2 ]
 
 # dnat to ct mark map { 0x00000014 : 1.2.3.4}
 __map%d test-ip4 b

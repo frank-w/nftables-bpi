@@ -491,6 +491,7 @@ struct flowtable {
 	const char		**dev_array;
 	struct expr		*dev_expr;
 	int			dev_array_len;
+	uint32_t		flags;
 	unsigned int		refcnt;
 };
 

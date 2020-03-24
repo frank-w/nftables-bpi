@@ -1892,6 +1892,10 @@ flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 			{
 				$$->dev_expr = $4;
 			}
+			|	flowtable_block COUNTER
+			{
+				$$->flags |= NFT_FLOWTABLE_COUNTER;
+			}
 			;
 
 flowtable_expr		:	'{'	flowtable_list_expr	'}'

@@ -1342,6 +1342,8 @@ netlink_delinearize_flowtable(struct netlink_ctx *ctx,
 						    &priority);
 	flowtable->hooknum =
 		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_HOOKNUM);
+	flowtable->flags =
+		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_FLAGS);
 
 	return flowtable;
 }

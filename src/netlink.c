@@ -1449,38 +1449,50 @@ static void trace_print_policy(const struct nftnl_trace *nlt,
 	expr_free(expr);
 }
 
-static void trace_print_rule(const struct nftnl_trace *nlt,
-			      struct output_ctx *octx, struct nft_cache *cache)
+static struct rule *trace_lookup_rule(const struct nftnl_trace *nlt,
+				      uint64_t rule_handle,
+				      struct nft_cache *cache)
 {
-	const struct table *table;
-	uint64_t rule_handle;
 	struct chain *chain;
-	struct rule *rule;
+	struct table *table;
 	struct handle h;
 
 	h.family = nftnl_trace_get_u32(nlt, NFTNL_TRACE_FAMILY);
-	h.table.name  = nftnl_trace_get_str(nlt, NFTNL_TRACE_TABLE);
-	h.chain.name  = nftnl_trace_get_str(nlt, NFTNL_TRACE_CHAIN);
+	h.table.name = nftnl_trace_get_str(nlt, NFTNL_TRACE_TABLE);
+	h.chain.name = nftnl_trace_get_str(nlt, NFTNL_TRACE_CHAIN);
 
 	if (!h.table.name)
-		return;
+		return NULL;
 
 	table = table_lookup(&h, cache);
 	if (!table)
-		return;
+		return NULL;
 
 	chain = chain_lookup(table, &h);
 	if (!chain)
-		return;
+		return NULL;
+
+	return rule_lookup(chain, rule_handle);
+}
+
+static void trace_print_rule(const struct nftnl_trace *nlt,
+			      struct output_ctx *octx, struct nft_cache *cache)
+{
+	uint64_t rule_handle;
+	struct rule *rule;
 
 	rule_handle = nftnl_trace_get_u64(nlt, NFTNL_TRACE_RULE_HANDLE);
-	rule = rule_lookup(chain, rule_handle);
-	if (!rule)
-		return;
+	rule = trace_lookup_rule(nlt, rule_handle, cache);
 
 	trace_print_hdr(nlt, octx);
-	nft_print(octx, "rule ");
-	rule_print(rule, octx);
+
+	if (rule) {
+		nft_print(octx, "rule ");
+		rule_print(rule, octx);
+	} else {
+		nft_print(octx, "unknown rule handle %" PRIu64, rule_handle);
+	}
+
 	nft_print(octx, " (");
 	trace_print_verdict(nlt, octx);
 	nft_print(octx, ")\n");

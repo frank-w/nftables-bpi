@@ -1310,13 +1310,21 @@ static int expr_evaluate_set_elem(struct eval_ctx *ctx, struct expr **expr)
 	struct set *set = ctx->set;
 	struct expr *elem = *expr;
 
-	if (elem->stmt && set->stmt && set->stmt->ops != elem->stmt->ops)
-		return stmt_binary_error(ctx, set->stmt, elem,
-					 "statement mismatch, element expects %s, "
-					 "%s has type %s",
-					 elem->stmt->ops->name,
-					 set_is_map(set->flags) ? "map" : "set",
-					 set->stmt->ops->name);
+	if (elem->stmt) {
+		if (set->stmt && set->stmt->ops != elem->stmt->ops) {
+			return stmt_error(ctx, elem->stmt,
+					  "statement mismatch, element expects %s, "
+					  "but %s has type %s",
+					  elem->stmt->ops->name,
+					  set_is_map(set->flags) ? "map" : "set",
+					  set->stmt->ops->name);
+		} else if (!set->stmt && !(set->flags & NFT_SET_EVAL)) {
+			return stmt_error(ctx, elem->stmt,
+					  "missing %s statement in %s definition",
+					  elem->stmt->ops->name,
+					  set_is_map(set->flags) ? "map" : "set");
+		}
+	}
 
 	if (expr_evaluate(ctx, &elem->key) < 0)
 		return -1;

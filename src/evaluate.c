@@ -3786,8 +3786,9 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 		chain->hook.num = str2hooknum(chain->handle.family,
 					      chain->hook.name);
 		if (chain->hook.num == NF_INET_NUMHOOKS)
-			return chain_error(ctx, chain, "invalid hook %s",
-					   chain->hook.name);
+			return __stmt_binary_error(ctx, &chain->hook.loc, NULL,
+						   "The %s family does not support this hook",
+						   family2str(chain->handle.family));
 
 		if (!evaluate_priority(ctx, &chain->priority,
 				       chain->handle.family, chain->hook.num))
@@ -3798,6 +3799,12 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 			if (!evaluate_policy(ctx, &chain->policy))
 				return chain_error(ctx, chain, "invalid policy expression %s",
 						   expr_name(chain->policy));
+		}
+
+		if (chain->handle.family == NFPROTO_NETDEV) {
+			if (!chain->dev_expr)
+				return __stmt_binary_error(ctx, &chain->loc, NULL,
+							   "Missing `device' in this chain definition");
 		}
 	}
 

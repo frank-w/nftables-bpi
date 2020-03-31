@@ -3805,6 +3805,9 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 			if (!chain->dev_expr)
 				return __stmt_binary_error(ctx, &chain->loc, NULL,
 							   "Missing `device' in this chain definition");
+		} else if (chain->dev_expr) {
+			return __stmt_binary_error(ctx, &chain->dev_expr->location, NULL,
+						   "This chain type cannot be bound to device");
 		}
 	}
 

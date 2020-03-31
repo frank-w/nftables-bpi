@@ -217,13 +217,16 @@ struct chain {
 	struct location		location;
 	unsigned int		refcnt;
 	uint32_t		flags;
-	struct prio_spec	priority;
-	struct hook_spec	hook;
-	struct expr		*policy;
-	const char		*type;
-	const char		**dev_array;
-	struct expr		*dev_expr;
-	int			dev_array_len;
+	struct {
+		struct location		loc;
+		struct prio_spec	priority;
+		struct hook_spec	hook;
+		struct expr		*policy;
+		const char		*type;
+		const char		**dev_array;
+		struct expr		*dev_expr;
+		int			dev_array_len;
+	};
 	struct scope		scope;
 	struct list_head	rules;
 };

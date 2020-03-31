@@ -2057,6 +2057,7 @@ hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	prio_spec
 				$<chain>0->type		= xstrdup(chain_type);
 				xfree($2);
 
+				$<chain>0->loc = @$;
 				$<chain>0->hook.loc = @4;
 				$<chain>0->hook.name = chain_hookname_lookup($4);
 				if ($<chain>0->hook.name == NULL) {

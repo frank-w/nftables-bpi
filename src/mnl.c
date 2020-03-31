@@ -630,7 +630,7 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		}
 		if (cmd->chain->flags & CHAIN_F_BASECHAIN) {
 			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_HOOKNUM,
-					    cmd->chain->hooknum);
+					    cmd->chain->hook.num);
 			mpz_export_data(&priority,
 					cmd->chain->priority.expr->value,
 					BYTEORDER_HOST_ENDIAN, sizeof(int));
@@ -1601,7 +1601,7 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FAMILY,
 				cmd->handle.family);
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM,
-				cmd->flowtable->hooknum);
+				cmd->flowtable->hook.num);
 	mpz_export_data(&priority, cmd->flowtable->priority.expr->value,
 			BYTEORDER_HOST_ENDIAN, sizeof(int));
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, priority);

@@ -240,7 +240,7 @@ static json_t *chain_print_json(const struct chain *chain)
 		tmp = json_pack("{s:s, s:s, s:i, s:s}",
 				"type", chain->type,
 				"hook", hooknum2str(chain->handle.family,
-						    chain->hooknum),
+						    chain->hook.num),
 				"prio", priority,
 				"policy", chain_policy2str(policy));
 		if (chain->dev_expr) {
@@ -415,7 +415,7 @@ static json_t *flowtable_print_json(const struct flowtable *ftable)
 			"name", ftable->handle.flowtable.name,
 			"table", ftable->handle.table.name,
 			"handle", ftable->handle.handle.id,
-			"hook", hooknum2str(NFPROTO_NETDEV, ftable->hooknum),
+			"hook", hooknum2str(NFPROTO_NETDEV, ftable->hook.num),
 			"prio", priority);
 
 	for (i = 0; i < ftable->dev_array_len; i++) {

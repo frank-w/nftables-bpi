@@ -445,10 +445,10 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 	    nftnl_chain_is_set(nlc, NFTNL_CHAIN_PRIO) &&
 	    nftnl_chain_is_set(nlc, NFTNL_CHAIN_TYPE) &&
 	    nftnl_chain_is_set(nlc, NFTNL_CHAIN_POLICY)) {
-		chain->hooknum       =
+		chain->hook.num =
 			nftnl_chain_get_u32(nlc, NFTNL_CHAIN_HOOKNUM);
-		chain->hookstr       =
-			hooknum2str(chain->handle.family, chain->hooknum);
+		chain->hook.name =
+			hooknum2str(chain->handle.family, chain->hook.num);
 		priority = nftnl_chain_get_s32(nlc, NFTNL_CHAIN_PRIO);
 		chain->priority.expr =
 				constant_expr_alloc(&netlink_location,
@@ -1340,7 +1340,7 @@ netlink_delinearize_flowtable(struct netlink_ctx *ctx,
 						    sizeof(int) *
 						    BITS_PER_BYTE,
 						    &priority);
-	flowtable->hooknum =
+	flowtable->hook.num =
 		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_HOOKNUM);
 	flowtable->flags =
 		nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_FLAGS);

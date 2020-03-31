@@ -1165,7 +1165,7 @@ static void chain_print_declaration(const struct chain *chain,
 	nft_print(octx, "\n");
 	if (chain->flags & CHAIN_F_BASECHAIN) {
 		nft_print(octx, "\t\ttype %s hook %s", chain->type,
-			  hooknum2str(chain->handle.family, chain->hooknum));
+			  hooknum2str(chain->handle.family, chain->hook.num));
 		if (chain->dev_array_len == 1) {
 			nft_print(octx, " device \"%s\"", chain->dev_array[0]);
 		} else if (chain->dev_array_len > 1) {
@@ -1179,7 +1179,7 @@ static void chain_print_declaration(const struct chain *chain,
 		}
 		nft_print(octx, " priority %s;",
 			  prio2str(octx, priobuf, sizeof(priobuf),
-				   chain->handle.family, chain->hooknum,
+				   chain->handle.family, chain->hook.num,
 				   chain->priority.expr));
 		if (chain->policy) {
 			mpz_export_data(&policy, chain->policy->value,
@@ -1220,9 +1220,9 @@ void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 		mpz_export_data(&policy, chain->policy->value,
 				BYTEORDER_HOST_ENDIAN, sizeof(int));
 		nft_print(octx, " { type %s hook %s priority %s; policy %s; }",
-			  chain->type, chain->hookstr,
+			  chain->type, chain->hook.name,
 			  prio2str(octx, priobuf, sizeof(priobuf),
-				   chain->handle.family, chain->hooknum,
+				   chain->handle.family, chain->hook.num,
 				   chain->priority.expr),
 			  chain_policy2str(policy));
 	}
@@ -2235,9 +2235,9 @@ static void flowtable_print_declaration(const struct flowtable *flowtable,
 	nft_print(octx, "%s", opts->nl);
 	nft_print(octx, "%s%shook %s priority %s%s",
 		  opts->tab, opts->tab,
-		  hooknum2str(NFPROTO_NETDEV, flowtable->hooknum),
+		  hooknum2str(NFPROTO_NETDEV, flowtable->hook.num),
 		  prio2str(octx, priobuf, sizeof(priobuf), NFPROTO_NETDEV,
-			   flowtable->hooknum, flowtable->priority.expr),
+			   flowtable->hook.num, flowtable->priority.expr),
 		  opts->stmt_separator);
 
 	nft_print(octx, "%s%sdevices = { ", opts->tab, opts->tab);

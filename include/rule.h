@@ -189,6 +189,12 @@ struct prio_spec {
 	struct expr	*expr;
 };
 
+struct hook_spec {
+	struct location	loc;
+	const char	*name;
+	unsigned int	num;
+};
+
 /**
  * struct chain - nftables chain
  *
@@ -211,9 +217,8 @@ struct chain {
 	struct location		location;
 	unsigned int		refcnt;
 	uint32_t		flags;
-	const char		*hookstr;
-	unsigned int		hooknum;
 	struct prio_spec	priority;
+	struct hook_spec	hook;
 	struct expr		*policy;
 	const char		*type;
 	const char		**dev_array;
@@ -485,8 +490,7 @@ struct flowtable {
 	struct handle		handle;
 	struct scope		scope;
 	struct location		location;
-	const char *		hookstr;
-	unsigned int		hooknum;
+	struct hook_spec	hook;
 	struct prio_spec	priority;
 	const char		**dev_array;
 	struct expr		*dev_expr;

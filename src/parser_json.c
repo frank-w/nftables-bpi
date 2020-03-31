@@ -2628,8 +2628,8 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 						   BYTEORDER_HOST_ENDIAN,
 						   sizeof(int) * BITS_PER_BYTE,
 						   &prio);
-	chain->hookstr = chain_hookname_lookup(hookstr);
-	if (!chain->hookstr) {
+	chain->hook.name = chain_hookname_lookup(hookstr);
+	if (!chain->hook.name) {
 		json_error(ctx, "Invalid chain hook '%s'.", hookstr);
 		chain_free(chain);
 		return NULL;
@@ -3017,7 +3017,7 @@ static struct cmd *json_parse_cmd_add_flowtable(struct json_ctx *ctx,
 	}
 
 	flowtable = flowtable_alloc(int_loc);
-	flowtable->hookstr = hookstr;
+	flowtable->hook.name = hookstr;
 	flowtable->priority.expr =
 		constant_expr_alloc(int_loc, &integer_type,
 				    BYTEORDER_HOST_ENDIAN,

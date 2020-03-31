@@ -3568,11 +3568,11 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 	if (table == NULL)
 		return table_not_found(ctx);
 
-	ft->hooknum = str2hooknum(NFPROTO_NETDEV, ft->hookstr);
-	if (ft->hooknum == NF_INET_NUMHOOKS)
-		return chain_error(ctx, ft, "invalid hook %s", ft->hookstr);
+	ft->hook.num = str2hooknum(NFPROTO_NETDEV, ft->hook.name);
+	if (ft->hook.num == NF_INET_NUMHOOKS)
+		return chain_error(ctx, ft, "invalid hook %s", ft->hook.name);
 
-	if (!evaluate_priority(ctx, &ft->priority, NFPROTO_NETDEV, ft->hooknum))
+	if (!evaluate_priority(ctx, &ft->priority, NFPROTO_NETDEV, ft->hook.num))
 		return __stmt_binary_error(ctx, &ft->priority.loc, NULL,
 					   "invalid priority expression %s.",
 					   expr_name(ft->priority.expr));
@@ -3783,14 +3783,14 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 	}
 
 	if (chain->flags & CHAIN_F_BASECHAIN) {
-		chain->hooknum = str2hooknum(chain->handle.family,
-					     chain->hookstr);
-		if (chain->hooknum == NF_INET_NUMHOOKS)
+		chain->hook.num = str2hooknum(chain->handle.family,
+					      chain->hook.name);
+		if (chain->hook.num == NF_INET_NUMHOOKS)
 			return chain_error(ctx, chain, "invalid hook %s",
-					   chain->hookstr);
+					   chain->hook.name);
 
 		if (!evaluate_priority(ctx, &chain->priority,
-				       chain->handle.family, chain->hooknum))
+				       chain->handle.family, chain->hook.num))
 			return __stmt_binary_error(ctx, &chain->priority.loc, NULL,
 						   "invalid priority expression %s in this context.",
 						   expr_name(chain->priority.expr));

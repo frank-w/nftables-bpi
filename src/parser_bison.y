@@ -1877,8 +1877,9 @@ flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 			|	flowtable_block	stmt_separator
 			|	flowtable_block	HOOK		STRING	prio_spec	stmt_separator
 			{
-				$$->hookstr	= chain_hookname_lookup($3);
-				if ($$->hookstr == NULL) {
+				$$->hook.loc = @3;
+				$$->hook.name = chain_hookname_lookup($3);
+				if ($$->hook.name == NULL) {
 					erec_queue(error(&@3, "unknown chain hook %s", $3),
 						   state->msgs);
 					xfree($3);
@@ -2056,8 +2057,9 @@ hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	prio_spec
 				$<chain>0->type		= xstrdup(chain_type);
 				xfree($2);
 
-				$<chain>0->hookstr	= chain_hookname_lookup($4);
-				if ($<chain>0->hookstr == NULL) {
+				$<chain>0->hook.loc = @4;
+				$<chain>0->hook.name = chain_hookname_lookup($4);
+				if ($<chain>0->hook.name == NULL) {
 					erec_queue(error(&@4, "unknown chain hook %s", $4),
 						   state->msgs);
 					xfree($4);

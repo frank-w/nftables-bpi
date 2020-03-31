@@ -225,7 +225,7 @@ static void show_version(void)
 	       "  minigmp:	%s\n"
 	       "  libxtables:	%s\n",
 	       PACKAGE_NAME, PACKAGE_VERSION, RELEASE_NAME,
-	       cli, minigmp, json, xt);
+	       cli, json, minigmp, xt);
 }
 
 static const struct {

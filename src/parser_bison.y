@@ -1880,7 +1880,7 @@ flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 				$$->hook.loc = @3;
 				$$->hook.name = chain_hookname_lookup($3);
 				if ($$->hook.name == NULL) {
-					erec_queue(error(&@3, "unknown chain hook %s", $3),
+					erec_queue(error(&@3, "unknown chain hook"),
 						   state->msgs);
 					xfree($3);
 					YYERROR;
@@ -2049,7 +2049,7 @@ hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	prio_spec
 				const char *chain_type = chain_type_name_lookup($2);
 
 				if (chain_type == NULL) {
-					erec_queue(error(&@2, "unknown chain type %s", $2),
+					erec_queue(error(&@2, "unknown chain type"),
 						   state->msgs);
 					xfree($2);
 					YYERROR;
@@ -2061,7 +2061,7 @@ hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	prio_spec
 				$<chain>0->hook.loc = @4;
 				$<chain>0->hook.name = chain_hookname_lookup($4);
 				if ($<chain>0->hook.name == NULL) {
-					erec_queue(error(&@4, "unknown chain hook %s", $4),
+					erec_queue(error(&@4, "unknown chain hook"),
 						   state->msgs);
 					xfree($4);
 					YYERROR;

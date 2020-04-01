@@ -16,9 +16,16 @@ EXPECTED="table inet t {
 			     4095 : 0x4095 }
 	}
 
+	map m3 {
+		typeof ip saddr . ip daddr : meta mark
+		elements = { 1.2.3.4 . 5.6.7.8 : 0x00000001,
+			     2.3.4.5 . 6.7.8.9 : 0x00000002 }
+	}
+
 	chain c {
 		ct mark set osf name map @m1
 		ether type vlan meta mark set vlan id map @m2
+		meta mark set ip saddr . ip daddr map @m3
 	}
 }"
 

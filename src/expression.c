@@ -906,8 +906,9 @@ static int concat_parse_udata_nested(const struct nftnl_udata *attr, void *data)
 static struct expr *concat_expr_parse_udata(const struct nftnl_udata *attr)
 {
 	const struct nftnl_udata *ud[NFTNL_UDATA_SET_KEY_CONCAT_NEST_MAX] = {};
+	const struct datatype *dtype;
 	struct expr *concat_expr;
-	struct datatype *dtype;
+	uint32_t dt = 0;
 	unsigned int i;
 	int err;
 
@@ -919,8 +920,6 @@ static struct expr *concat_expr_parse_udata(const struct nftnl_udata *attr)
 	concat_expr = concat_expr_alloc(&internal_location);
 	if (!concat_expr)
 		return NULL;
-
-	dtype = xzalloc(sizeof(*dtype));
 
 	for (i = 0; i < array_size(ud); i++) {
 		const struct nftnl_udata *nest_ud[NFTNL_UDATA_SET_KEY_CONCAT_SUB_MAX];
@@ -948,10 +947,13 @@ static struct expr *concat_expr_parse_udata(const struct nftnl_udata *attr)
 		if (!expr)
 			goto err_free;
 
-		dtype->subtypes++;
+		dt = concat_subtype_add(dt, expr->dtype->type);
 		compound_expr_add(concat_expr, expr);
-		dtype->size += round_up(expr->len, BITS_PER_BYTE * sizeof(uint32_t));
 	}
+
+	dtype = concat_type_alloc(dt);
+	if (!dtype)
+		goto err_free;
 
 	concat_expr->dtype = dtype;
 	concat_expr->len = dtype->size;

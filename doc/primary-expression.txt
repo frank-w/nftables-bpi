@@ -430,3 +430,32 @@ add rule nat prerouting dnat to numgen inc mod 2 map \
 add rule nat prerouting dnat to numgen random mod 10 map \
         { 0-2 : 192.168.10.100, 3-9 : 192.168.20.200 }
 ------------------------
+
+HASH EXPRESSIONS
+~~~~~~~~~~~~~~~~
+
+[verse]
+*jhash* {*ip saddr* | *ip6 daddr* | *tcp dport* | *udp sport* | *ether saddr*} [*.* ...] *mod* 'NUM' [ *seed* 'NUM' ] [ *offset* 'NUM' ]
+*symhash* *mod* 'NUM' [ *offset* 'NUM' ]
+
+Use a hashing function to generate a number. The functions available are
+*jhash*, known as Jenkins Hash, and *symhash*, for Symmetric Hash. The
+*jhash* requires an expression to determine the parameters of the packet
+header to apply the hashing, concatenations are possible as well. The value
+after *mod* keyword specifies an upper boundary (read: modulus) which is
+not reached by returned numbers. The optional *seed* is used to specify an
+init value used as seed in the hashing function. The optional *offset*
+allows to increment the returned value by a fixed offset.
+
+A typical use-case for *jhash* and *symhash* is load-balancing:
+
+.Using hash expressions
+------------------------
+# load balance based on source ip between 2 ip addresses:
+add rule nat prerouting dnat to jhash ip saddr mod 2 map \
+	{ 0 : 192.168.10.100, 1 : 192.168.20.200 }
+
+# symmetric load balancing between 2 ip addresses:
+add rule nat prerouting dnat to symhash mod 2 map \
+        { 0 : 192.168.10.100, 1 : 192.168.20.200 }
+------------------------

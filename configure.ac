@@ -29,13 +29,13 @@ AC_PROG_SED
 AM_PROG_LEX
 AC_PROG_YACC
 
-if test -z "$ac_cv_prog_YACC"
+if test -z "$ac_cv_prog_YACC" -a ! -f "${srcdir}/src/parser_bison.c"
 then
         echo "*** Error: No suitable bison/yacc found. ***"
         echo "    Please install the 'bison' package."
         exit 1
 fi
-if test -z "$ac_cv_prog_LEX"
+if test -z "$ac_cv_prog_LEX" -a ! -f "${srcdir}/src/scanner.c"
 then
         echo "*** Error: No suitable flex/lex found. ***"
         echo "    Please install the 'flex' package."

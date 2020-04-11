@@ -190,7 +190,8 @@ static bool segtree_debug(unsigned int debug_mask)
 static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
 		     struct elementary_interval *new, bool merge)
 {
-	struct elementary_interval *lei, *rei;
+	struct elementary_interval *lei, *rei, *ei;
+	struct expr *new_expr, *expr;
 	mpz_t p;
 
 	mpz_init2(p, tree->keylen);
@@ -205,8 +206,10 @@ static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
 		pr_gmp_debug("insert: [%Zx %Zx]\n", new->left, new->right);
 
 	if (lei != NULL && rei != NULL && lei == rei) {
-		if (!merge)
+		if (!merge) {
+			ei = lei;
 			goto err;
+		}
 		/*
 		 * The new interval is entirely contained in the same interval,
 		 * split it into two parts:
@@ -228,8 +231,10 @@ static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
 		ei_destroy(lei);
 	} else {
 		if (lei != NULL) {
-			if (!merge)
+			if (!merge) {
+				ei = lei;
 				goto err;
+			}
 			/*
 			 * Left endpoint is within lei, adjust it so we have:
 			 *
@@ -248,8 +253,10 @@ static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
 			}
 		}
 		if (rei != NULL) {
-			if (!merge)
+			if (!merge) {
+				ei = rei;
 				goto err;
+			}
 			/*
 			 * Right endpoint is within rei, adjust it so we have:
 			 *
@@ -276,7 +283,15 @@ static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
 	return 0;
 err:
 	errno = EEXIST;
-	return expr_binary_error(msgs, lei->expr, new->expr,
+	if (new->expr->etype == EXPR_MAPPING) {
+		new_expr = new->expr->left;
+		expr = ei->expr->left;
+	} else {
+		new_expr = new->expr;
+		expr = ei->expr;
+	}
+
+	return expr_binary_error(msgs, new_expr, expr,
 				 "conflicting intervals specified");
 }
 

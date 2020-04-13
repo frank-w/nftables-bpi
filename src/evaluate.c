@@ -1382,9 +1382,15 @@ static int expr_evaluate_set(struct eval_ctx *ctx, struct expr **expr)
 			set->size      += i->size - 1;
 			set->set_flags |= i->set_flags;
 			expr_free(i);
-		} else if (!expr_is_singleton(i))
+		} else if (!expr_is_singleton(i)) {
 			set->set_flags |= NFT_SET_INTERVAL;
+			if (i->key->etype == EXPR_CONCAT)
+				set->set_flags |= NFT_SET_CONCAT;
+		}
 	}
+
+	if (ctx->set && (ctx->set->flags & NFT_SET_CONCAT))
+		set->set_flags |= NFT_SET_CONCAT;
 
 	set->set_flags |= NFT_SET_CONSTANT;
 
@@ -3463,6 +3469,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 		memcpy(&set->desc.field_len, &set->key->field_len,
 		       sizeof(set->desc.field_len));
 		set->desc.field_count = set->key->field_count;
+		set->flags |= NFT_SET_CONCAT;
 	}
 
 	if (set_is_datamap(set->flags)) {

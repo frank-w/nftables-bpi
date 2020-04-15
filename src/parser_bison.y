@@ -1992,7 +1992,11 @@ ct_helper_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			;
 
-ct_timeout_block	:	/*empty */	{ $$ = $<obj>-1; }
+ct_timeout_block	:	/*empty */
+			{
+				$$ = $<obj>-1;
+				init_list_head(&$$->ct_timeout.timeout_list);
+			}
 			|	ct_timeout_block     common_block
 			|	ct_timeout_block     stmt_separator
 			|	ct_timeout_block     ct_timeout_config
@@ -3896,7 +3900,6 @@ ct_timeout_config	:	PROTOCOL	ct_l4protoname	stmt_separator
 				struct ct_timeout *ct;
 
 				ct = &$<obj>0->ct_timeout;
-				init_list_head(&ct->timeout_list);
 				list_splice_tail($4, &ct->timeout_list);
 			}
 			|	L3PROTOCOL	family_spec_explicit	stmt_separator

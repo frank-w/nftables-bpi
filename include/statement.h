@@ -121,6 +121,7 @@ extern const char *nat_etype2str(enum nft_nat_etypes type);
 
 enum {
 	STMT_NAT_F_INTERVAL	= (1 << 0),
+	STMT_NAT_F_PREFIX	= (1 << 1),
 };
 
 struct nat_stmt {

@@ -15,6 +15,7 @@
 #include <limits.h>
 #include <linux/netfilter/nf_tables.h>
 #include <arpa/inet.h>
+#include <linux/netfilter/nf_nat.h>
 #include <linux/netfilter.h>
 #include <net/ethernet.h>
 #include <netlink.h>
@@ -1059,6 +1060,9 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 
 	if (nftnl_expr_is_set(nle, NFTNL_EXPR_NAT_FLAGS))
 		stmt->nat.flags = nftnl_expr_get_u32(nle, NFTNL_EXPR_NAT_FLAGS);
+
+	if (stmt->nat.flags & NF_NAT_RANGE_NETMAP)
+		stmt->nat.type_flags |= STMT_NAT_F_PREFIX;
 
 	addr = NULL;
 	reg1 = netlink_parse_register(nle, NFTNL_EXPR_NAT_REG_ADDR_MIN);

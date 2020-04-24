@@ -1012,8 +1012,11 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		memory_allocation_error();
 
 	set_key_expression(ctx, set->key, set->flags, udbuf, NFTNL_UDATA_SET_KEY_TYPEOF);
-	if (set->data)
+	if (set->data) {
 		set_key_expression(ctx, set->data, set->flags, udbuf, NFTNL_UDATA_SET_DATA_TYPEOF);
+		nftnl_udata_put_u32(udbuf, NFTNL_UDATA_SET_DATA_INTERVAL,
+				    !!(set->data->flags & EXPR_F_INTERVAL));
+	}
 
 	if (set->desc.field_len[0]) {
 		nftnl_set_set_data(nls, NFTNL_SET_DESC_CONCAT,

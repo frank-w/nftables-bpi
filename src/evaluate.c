@@ -1446,6 +1446,9 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 		if (binop_transfer(ctx, expr) < 0)
 			return -1;
 
+		if (ctx->set->data->flags & EXPR_F_INTERVAL)
+			ctx->set->data->len *= 2;
+
 		ctx->set->key->len = ctx->ectx.len;
 		ctx->set = NULL;
 		map = *expr;
@@ -1486,6 +1489,7 @@ static int expr_evaluate_mapping(struct eval_ctx *ctx, struct expr **expr)
 {
 	struct expr *mapping = *expr;
 	struct set *set = ctx->set;
+	uint32_t datalen;
 
 	if (set == NULL)
 		return expr_error(ctx->msgs, mapping,
@@ -1502,7 +1506,13 @@ static int expr_evaluate_mapping(struct eval_ctx *ctx, struct expr **expr)
 	mapping->flags |= mapping->left->flags & EXPR_F_SINGLETON;
 
 	if (set->data) {
-		expr_set_context(&ctx->ectx, set->data->dtype, set->data->len);
+		if (!set_is_anonymous(set->flags) &&
+		    set->data->flags & EXPR_F_INTERVAL)
+			datalen = set->data->len / 2;
+		else
+			datalen = set->data->len;
+
+		expr_set_context(&ctx->ectx, set->data->dtype, datalen);
 	} else {
 		assert((set->flags & NFT_SET_MAP) == 0);
 	}
@@ -1512,7 +1522,14 @@ static int expr_evaluate_mapping(struct eval_ctx *ctx, struct expr **expr)
 	if (!expr_is_constant(mapping->right))
 		return expr_error(ctx->msgs, mapping->right,
 				  "Value must be a constant");
-	if (!expr_is_singleton(mapping->right))
+
+	if (set_is_anonymous(set->flags) &&
+	    (mapping->right->etype == EXPR_RANGE ||
+	     mapping->right->etype == EXPR_PREFIX))
+		set->data->flags |= EXPR_F_INTERVAL;
+
+	if (!(set->data->flags & EXPR_F_INTERVAL) &&
+	    !expr_is_singleton(mapping->right))
 		return expr_error(ctx->msgs, mapping->right,
 				  "Value must be a singleton");
 
@@ -2970,6 +2987,27 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 		if (err < 0)
 			return err;
 	}
+
+	if (stmt->nat.type_flags & STMT_NAT_F_INTERVAL) {
+		switch (stmt->nat.addr->etype) {
+		case EXPR_MAP:
+			if (!(stmt->nat.addr->mappings->set->data->flags & EXPR_F_INTERVAL))
+				return expr_error(ctx->msgs, stmt->nat.addr,
+						  "map is not defined as interval");
+			break;
+		case EXPR_RANGE:
+		case EXPR_PREFIX:
+			break;
+		default:
+			return expr_error(ctx->msgs, stmt->nat.addr,
+					  "neither prefix, range nor map expression");
+		}
+
+		stmt->flags |= STMT_F_TERMINAL;
+
+		return 0;
+	}
+
 	if (stmt->nat.proto != NULL) {
 		err = nat_evaluate_transport(ctx, stmt, &stmt->nat.proto);
 		if (err < 0)
@@ -3476,6 +3514,9 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 		if (set->data == NULL)
 			return set_error(ctx, set, "map definition does not "
 					 "specify mapping data type");
+
+		if (set->data->flags & EXPR_F_INTERVAL)
+			set->data->len *= 2;
 
 		if (set->data->etype == EXPR_CONCAT &&
 		    expr_evaluate_concat(ctx, &set->data, false) < 0)

@@ -1117,6 +1117,14 @@ static void netlink_gen_nat_stmt(struct netlink_linearize_ctx *ctx,
 			netlink_gen_expr(ctx, stmt->nat.addr, amin_reg);
 			netlink_put_register(nle, NFTNL_EXPR_NAT_REG_ADDR_MIN,
 					     amin_reg);
+			if (stmt->nat.addr->etype == EXPR_MAP &&
+			    stmt->nat.addr->mappings->set->data->flags & EXPR_F_INTERVAL) {
+				amax_reg = get_register(ctx, NULL);
+				registers++;
+				amin_reg += netlink_register_space(nat_addrlen(family));
+				netlink_put_register(nle, NFTNL_EXPR_NAT_REG_ADDR_MAX,
+						     amin_reg);
+			}
 		}
 
 		if (stmt->nat.ipportmap) {

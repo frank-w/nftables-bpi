@@ -462,6 +462,9 @@ static void set_print_key_and_data(const struct set *set, struct output_ctx *oct
 
 	if (set_is_datamap(set->flags)) {
 		nft_print(octx, " : ");
+		if (set->data->flags & EXPR_F_INTERVAL)
+			nft_print(octx, "interval ");
+
 		if (use_typeof)
 			expr_print(set->data, octx);
 		else

@@ -1792,6 +1792,17 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 				$1->flags |= NFT_SET_MAP;
 				$$ = $1;
 			}
+			|	map_block	TYPE
+						data_type_expr	COLON	INTERVAL	data_type_expr
+						stmt_separator
+			{
+				$1->key = $3;
+				$1->data = $6;
+				$1->data->flags |= EXPR_F_INTERVAL;
+
+				$1->flags |= NFT_SET_MAP;
+				$$ = $1;
+			}
 			|	map_block	TYPEOF
 						typeof_expr	COLON	typeof_expr
 						stmt_separator
@@ -1799,6 +1810,18 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 				$1->key = $3;
 				datatype_set($1->key, $3->dtype);
 				$1->data = $5;
+
+				$1->flags |= NFT_SET_MAP;
+				$$ = $1;
+			}
+			|	map_block	TYPEOF
+						typeof_expr	COLON	INTERVAL	typeof_expr
+						stmt_separator
+			{
+				$1->key = $3;
+				datatype_set($1->key, $3->dtype);
+				$1->data = $6;
+				$1->data->flags |= EXPR_F_INTERVAL;
 
 				$1->flags |= NFT_SET_MAP;
 				$$ = $1;
@@ -3170,6 +3193,17 @@ nat_stmt_args		:	stmt_expr
 				$<stmt>0->nat.family = $1;
 				$<stmt>0->nat.addr = $6;
 				$<stmt>0->nat.ipportmap = true;
+			}
+			|	nf_key_proto INTERVAL TO	stmt_expr
+			{
+				$<stmt>0->nat.family = $1;
+				$<stmt>0->nat.addr = $4;
+				$<stmt>0->nat.type_flags = STMT_NAT_F_INTERVAL;
+			}
+			|	INTERVAL TO	stmt_expr
+			{
+				$<stmt>0->nat.addr = $3;
+				$<stmt>0->nat.type_flags = STMT_NAT_F_INTERVAL;
 			}
 			;
 

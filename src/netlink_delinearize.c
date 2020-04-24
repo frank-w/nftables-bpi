@@ -979,6 +979,38 @@ static void netlink_parse_reject(struct netlink_parse_ctx *ctx,
 	ctx->stmt = stmt;
 }
 
+static bool is_nat_addr_map(const struct expr *addr, uint8_t family)
+{
+	const struct expr *mappings, *data;
+	const struct set *set;
+
+	if (!addr ||
+	    expr_ops(addr)->type != EXPR_MAP)
+		return false;
+
+	mappings = addr->right;
+	if (expr_ops(mappings)->type != EXPR_SET_REF)
+		return false;
+
+	set = mappings->set;
+	data = set->data;
+
+	if (!(data->flags & EXPR_F_INTERVAL))
+		return false;
+
+	/* if we're dealing with an address:address map,
+	 * the length will be bit_sizeof(addr) + 32 (one register).
+	 */
+	switch (family) {
+	case NFPROTO_IPV4:
+		return data->len == 32 + 32;
+	case NFPROTO_IPV6:
+		return data->len == 128 + 128;
+	}
+
+	return false;
+}
+
 static bool is_nat_proto_map(const struct expr *addr, uint8_t family)
 {
 	const struct expr *mappings, *data;
@@ -1044,6 +1076,13 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 			expr_set_type(addr, &ip6addr_type,
 				      BYTEORDER_BIG_ENDIAN);
 		stmt->nat.addr = addr;
+	}
+
+	if (is_nat_addr_map(addr, family)) {
+		stmt->nat.family = family;
+		stmt->nat.type_flags |= STMT_NAT_F_INTERVAL;
+		ctx->stmt = stmt;
+		return;
 	}
 
 	reg2 = netlink_parse_register(nle, NFTNL_EXPR_NAT_REG_ADDR_MAX);

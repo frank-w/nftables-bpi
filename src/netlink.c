@@ -176,6 +176,8 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 			assert(nld.len > 0);
 			/* fallthrough */
 		case EXPR_VALUE:
+		case EXPR_RANGE:
+		case EXPR_PREFIX:
 			nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_DATA,
 					   nld.value, nld.len);
 			break;
@@ -296,6 +298,38 @@ static void netlink_gen_verdict(const struct expr *expr,
 	}
 }
 
+static void netlink_gen_range(const struct expr *expr,
+			      struct nft_data_linearize *nld)
+{
+	unsigned int len = div_round_up(expr->left->len, BITS_PER_BYTE) * 2;
+	unsigned char data[len];
+	unsigned int offset = 0;
+
+	memset(data, 0, len);
+	offset = netlink_export_pad(data, expr->left->value, expr->left);
+	netlink_export_pad(data + offset, expr->right->value, expr->right);
+	memcpy(nld->value, data, len);
+	nld->len = len;
+}
+
+static void netlink_gen_prefix(const struct expr *expr,
+			       struct nft_data_linearize *nld)
+{
+	unsigned int len = div_round_up(expr->len, BITS_PER_BYTE) * 2;
+	unsigned char data[len];
+	int offset;
+	mpz_t v;
+
+	offset = netlink_export_pad(data, expr->prefix->value, expr);
+	mpz_init_bitmask(v, expr->len - expr->prefix_len);
+	mpz_add(v, expr->prefix->value, v);
+	netlink_export_pad(data + offset, v, expr->prefix);
+	mpz_clear(v);
+
+	memcpy(nld->value, data, len);
+	nld->len = len;
+}
+
 void netlink_gen_data(const struct expr *expr, struct nft_data_linearize *data)
 {
 	switch (expr->etype) {
@@ -305,6 +339,10 @@ void netlink_gen_data(const struct expr *expr, struct nft_data_linearize *data)
 		return netlink_gen_concat_data(expr, data);
 	case EXPR_VERDICT:
 		return netlink_gen_verdict(expr, data);
+	case EXPR_RANGE:
+		return netlink_gen_range(expr, data);
+	case EXPR_PREFIX:
+		return netlink_gen_prefix(expr, data);
 	default:
 		BUG("invalid data expression type %s\n", expr_name(expr));
 	}
@@ -618,6 +656,7 @@ static int set_parse_udata_cb(const struct nftnl_udata *attr, void *data)
 	case NFTNL_UDATA_SET_KEYBYTEORDER:
 	case NFTNL_UDATA_SET_DATABYTEORDER:
 	case NFTNL_UDATA_SET_MERGE_ELEMENTS:
+	case NFTNL_UDATA_SET_DATA_INTERVAL:
 		if (len != sizeof(uint32_t))
 			return -1;
 		break;
@@ -701,6 +740,7 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	struct expr *typeof_expr_key, *typeof_expr_data;
 	uint32_t flags, key, objtype = 0;
 	const struct datatype *dtype;
+	uint32_t data_interval = 0;
 	bool automerge = false;
 	const char *udata;
 	struct set *set;
@@ -724,6 +764,7 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 		GET_U32_UDATA(keybyteorder, NFTNL_UDATA_SET_KEYBYTEORDER);
 		GET_U32_UDATA(databyteorder, NFTNL_UDATA_SET_DATABYTEORDER);
 		GET_U32_UDATA(automerge, NFTNL_UDATA_SET_MERGE_ELEMENTS);
+		GET_U32_UDATA(data_interval, NFTNL_UDATA_SET_DATA_INTERVAL);
 
 #undef GET_U32_UDATA
 		typeof_expr_key = set_make_key(ud[NFTNL_UDATA_SET_KEY_TYPEOF]);
@@ -791,6 +832,9 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 			expr_free(typeof_expr_key);
 			typeof_expr_key = NULL;
 		}
+
+		if (data_interval)
+			set->data->flags |= EXPR_F_INTERVAL;
 
 		if (dtype != datatype)
 			datatype_free(datatype);
@@ -883,6 +927,69 @@ void alloc_setelem_cache(const struct expr *set, struct nftnl_set *nls)
 		nlse = alloc_nftnl_setelem(set, expr);
 		nftnl_set_elem_add(nls, nlse);
 	}
+}
+
+static bool mpz_bitmask_is_prefix(mpz_t bitmask, uint32_t len)
+{
+	unsigned long n1, n2;
+
+        n1 = mpz_scan0(bitmask, 0);
+        if (n1 == ULONG_MAX)
+                return false;
+
+        n2 = mpz_scan1(bitmask, n1 + 1);
+        if (n2 < len)
+                return false;
+
+        return true;
+}
+
+static uint32_t mpz_bitmask_to_prefix(mpz_t bitmask, uint32_t len)
+{
+	return len - mpz_scan0(bitmask, 0);
+}
+
+static struct expr *expr_range_to_prefix(struct expr *range)
+{
+	struct expr *left = range->left, *right = range->right, *prefix;
+	uint32_t len = left->len, prefix_len;
+	mpz_t bitmask;
+
+	mpz_init2(bitmask, len);
+	mpz_xor(bitmask, left->value, right->value);
+
+	if (mpz_bitmask_is_prefix(bitmask, len)) {
+		prefix_len = mpz_bitmask_to_prefix(bitmask, len);
+		prefix = prefix_expr_alloc(&range->location, expr_get(left),
+					   prefix_len);
+		mpz_clear(bitmask);
+		expr_free(range);
+
+		return prefix;
+	}
+	mpz_clear(bitmask);
+
+	return range;
+}
+
+static struct expr *netlink_parse_interval_elem(const struct datatype *dtype,
+						struct expr *expr)
+{
+	unsigned int len = div_round_up(expr->len, BITS_PER_BYTE);
+	struct expr *range, *left, *right;
+	char data[len];
+
+	mpz_export_data(data, expr->value, dtype->byteorder, len);
+	left = constant_expr_alloc(&internal_location, dtype,
+				   dtype->byteorder,
+				   (len / 2) * BITS_PER_BYTE, &data[0]);
+	right = constant_expr_alloc(&internal_location, dtype,
+				    dtype->byteorder,
+				    (len / 2) * BITS_PER_BYTE, &data[len / 2]);
+	range = range_expr_alloc(&expr->location, left, right);
+	expr_free(expr);
+
+	return expr_range_to_prefix(range);
 }
 
 static struct expr *netlink_parse_concat_elem(const struct datatype *dtype,
@@ -1021,7 +1128,9 @@ key_end:
 		datatype_set(data, set->data->dtype);
 		data->byteorder = set->data->byteorder;
 
-		if (set->data->dtype->subtypes)
+		if (set->data->flags & EXPR_F_INTERVAL)
+			data = netlink_parse_interval_elem(set->data->dtype, data);
+		else if (set->data->dtype->subtypes)
 			data = netlink_parse_concat_elem(set->data->dtype, data);
 
 		if (data->byteorder == BYTEORDER_HOST_ENDIAN)

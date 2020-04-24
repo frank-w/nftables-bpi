@@ -119,6 +119,10 @@ enum nft_nat_etypes {
 
 extern const char *nat_etype2str(enum nft_nat_etypes type);
 
+enum {
+	STMT_NAT_F_INTERVAL	= (1 << 0),
+};
+
 struct nat_stmt {
 	enum nft_nat_etypes	type;
 	struct expr		*addr;
@@ -126,6 +130,7 @@ struct nat_stmt {
 	uint32_t		flags;
 	uint8_t			family;
 	bool			ipportmap;
+	uint32_t		type_flags;
 };
 
 extern struct stmt *nat_stmt_alloc(const struct location *loc,

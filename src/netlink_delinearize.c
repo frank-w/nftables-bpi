@@ -1110,7 +1110,7 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 
 	if (is_nat_proto_map(addr, family)) {
 		stmt->nat.family = family;
-		stmt->nat.ipportmap = true;
+		stmt->nat.type_flags |= STMT_NAT_F_CONCAT;
 		ctx->stmt = stmt;
 		return;
 	}

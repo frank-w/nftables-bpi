@@ -607,7 +607,7 @@ static void nat_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 			break;
 		}
 
-		if (stmt->nat.ipportmap)
+		if (stmt->nat.type_flags & STMT_NAT_F_CONCAT)
 			nft_print(octx, " addr . port");
 		else if (stmt->nat.type_flags & STMT_NAT_F_PREFIX)
 			nft_print(octx, " prefix");

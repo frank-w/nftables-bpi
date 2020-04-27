@@ -2973,7 +2973,7 @@ static int stmt_evaluate_nat(struct eval_ctx *ctx, struct stmt *stmt)
 		if (err < 0)
 			return err;
 
-		if (stmt->nat.ipportmap) {
+		if (stmt->nat.type_flags & STMT_NAT_F_CONCAT) {
 			err = stmt_evaluate_nat_map(ctx, stmt);
 			if (err < 0)
 				return err;

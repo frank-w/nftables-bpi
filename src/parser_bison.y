@@ -3192,7 +3192,7 @@ nat_stmt_args		:	stmt_expr
 			{
 				$<stmt>0->nat.family = $1;
 				$<stmt>0->nat.addr = $6;
-				$<stmt>0->nat.ipportmap = true;
+				$<stmt>0->nat.type_flags = STMT_NAT_F_CONCAT;
 			}
 			|	nf_key_proto INTERVAL TO	stmt_expr
 			{

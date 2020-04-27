@@ -122,6 +122,7 @@ extern const char *nat_etype2str(enum nft_nat_etypes type);
 enum {
 	STMT_NAT_F_INTERVAL	= (1 << 0),
 	STMT_NAT_F_PREFIX	= (1 << 1),
+	STMT_NAT_F_CONCAT	= (1 << 2),
 };
 
 struct nat_stmt {
@@ -130,7 +131,6 @@ struct nat_stmt {
 	struct expr		*proto;
 	uint32_t		flags;
 	uint8_t			family;
-	bool			ipportmap;
 	uint32_t		type_flags;
 };
 

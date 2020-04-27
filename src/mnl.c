@@ -960,6 +960,8 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		memory_allocation_error();
 
 	nftnl_set_set_u32(nls, NFTNL_SET_FAMILY, h->family);
+	nftnl_set_set_str(nls, NFTNL_SET_TABLE, h->table.name);
+	nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
 	nftnl_set_set_u32(nls, NFTNL_SET_ID, h->set_id);
 
 	nftnl_set_set_u32(nls, NFTNL_SET_FLAGS, set->flags);
@@ -1035,6 +1037,9 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	}
 
 	netlink_dump_set(nls, ctx);
+
+	nftnl_set_unset(nls, NFTNL_SET_TABLE);
+	nftnl_set_unset(nls, NFTNL_SET_NAME);
 
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_NEWSET,

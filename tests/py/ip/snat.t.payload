@@ -60,3 +60,30 @@ ip test-ip4 postrouting
   [ immediate reg 1 0x0203a8c0 ]
   [ nat snat ip addr_min reg 1 addr_max reg 0 ]
 
+# snat ip addr . port to ip saddr map { 10.141.11.4 : 192.168.2.3 . 80 }
+__map%d test-ip4 b size 1
+__map%d test-ip4 0
+	element 040b8d0a  : 0302a8c0 00005000 0 [end]
+ip 
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ lookup reg 1 set __map%d dreg 1 ]
+  [ nat snat ip addr_min reg 1 addr_max reg 0 proto_min reg 9 proto_max reg 0 ]
+
+# snat ip interval to ip saddr map { 10.141.11.4 : 192.168.2.2-192.168.2.4 }
+__map%d test-ip4 b size 1
+__map%d test-ip4 0
+	element 040b8d0a  : 0202a8c0 0402a8c0 0 [end]
+ip 
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ lookup reg 1 set __map%d dreg 1 ]
+  [ nat snat ip addr_min reg 1 addr_max reg 9 ]
+
+# snat ip prefix to ip saddr map { 10.141.11.0/24 : 192.168.2.0/24 }
+__map%d test-ip4 f size 3
+__map%d test-ip4 0
+	element 00000000  : 1 [end]	element 000b8d0a  : 0002a8c0 ff02a8c0 0 [end]	element 000c8d0a  : 1 [end]
+ip 
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ lookup reg 1 set __map%d dreg 1 ]
+  [ nat snat ip addr_min reg 1 addr_max reg 9 flags 0x40 ]
+

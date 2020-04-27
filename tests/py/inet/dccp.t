@@ -12,7 +12,6 @@ dccp sport {23, 24, 25};ok
 dccp sport != {23, 24, 25};ok
 
 dccp sport { 20-50 };ok
-dccp sport ftp-data - re-mail-ck;ok;dccp sport 20-50
 dccp sport 20-50;ok
 dccp sport { 20-50};ok
 dccp sport != { 20-50};ok

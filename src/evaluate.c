@@ -2924,6 +2924,9 @@ static int stmt_evaluate_nat_map(struct eval_ctx *ctx, struct stmt *stmt)
 	if (expr_evaluate(ctx, &stmt->nat.addr))
 		return -1;
 
+	if (stmt->nat.addr->etype != EXPR_MAP)
+		return 0;
+
 	data = stmt->nat.addr->mappings->set->data;
 	datatype_set(data, dtype);
 

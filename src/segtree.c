@@ -1099,7 +1099,7 @@ void interval_map_decompose(struct expr *set)
 					prefix->comment = xstrdup(low->comment);
 				if (low->timeout)
 					prefix->timeout = low->timeout;
-				if (low->left->expiration)
+				if (low->expiration)
 					prefix->expiration = low->expiration;
 			}
 

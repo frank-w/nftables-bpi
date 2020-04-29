@@ -9,6 +9,11 @@ table inet t {
 		elements = { 2, 3, 103 }
 	}
 
+	set s3 {
+		typeof meta ibrpvid
+		elements = { 2, 3, 103 }
+	}
+
 	chain c1 {
 		osf name @s1 accept
 	}

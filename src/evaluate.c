@@ -3544,7 +3544,8 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 
 	ctx->set = set;
 	if (set->init != NULL) {
-		expr_set_context(&ctx->ectx, set->key->dtype, set->key->len);
+		__expr_set_context(&ctx->ectx, set->key->dtype,
+				   set->key->byteorder, set->key->len, 0);
 		if (expr_evaluate(ctx, &set->init) < 0)
 			return -1;
 	}

@@ -1103,8 +1103,10 @@ static void netlink_parse_nat(struct netlink_parse_ctx *ctx,
 		else
 			expr_set_type(addr, &ip6addr_type,
 				      BYTEORDER_BIG_ENDIAN);
-		if (stmt->nat.addr != NULL)
+		if (stmt->nat.addr != NULL) {
 			addr = range_expr_alloc(loc, stmt->nat.addr, addr);
+			addr = range_expr_to_prefix(addr);
+		}
 		stmt->nat.addr = addr;
 	}
 
@@ -2296,6 +2298,8 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 	case EXPR_RANGE:
 		expr_postprocess(ctx, &expr->left);
 		expr_postprocess(ctx, &expr->right);
+	case EXPR_PREFIX:
+		expr_postprocess(ctx, &expr->prefix);
 		break;
 	case EXPR_SET_ELEM:
 		expr_postprocess(ctx, &expr->key);

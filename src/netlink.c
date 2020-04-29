@@ -949,7 +949,7 @@ static uint32_t mpz_bitmask_to_prefix(mpz_t bitmask, uint32_t len)
 	return len - mpz_scan0(bitmask, 0);
 }
 
-static struct expr *expr_range_to_prefix(struct expr *range)
+struct expr *range_expr_to_prefix(struct expr *range)
 {
 	struct expr *left = range->left, *right = range->right, *prefix;
 	uint32_t len = left->len, prefix_len;
@@ -989,7 +989,7 @@ static struct expr *netlink_parse_interval_elem(const struct datatype *dtype,
 	range = range_expr_alloc(&expr->location, left, right);
 	expr_free(expr);
 
-	return expr_range_to_prefix(range);
+	return range_expr_to_prefix(range);
 }
 
 static struct expr *netlink_parse_concat_elem(const struct datatype *dtype,

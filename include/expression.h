@@ -452,6 +452,7 @@ extern struct expr *prefix_expr_alloc(const struct location *loc,
 
 extern struct expr *range_expr_alloc(const struct location *loc,
 				     struct expr *low, struct expr *high);
+struct expr *range_expr_to_prefix(struct expr *range);
 
 extern struct expr *compound_expr_alloc(const struct location *loc,
 					enum expr_types etypes);

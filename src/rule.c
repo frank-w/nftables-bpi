@@ -1564,7 +1564,7 @@ static int __do_add_setelems(struct netlink_ctx *ctx, struct set *set,
 		return -1;
 
 	if (!set_is_anonymous(set->flags) &&
-	    set->init != NULL &&
+	    set->init != NULL && set->init != expr &&
 	    set->flags & NFT_SET_INTERVAL &&
 	    set->desc.field_count <= 1) {
 		interval_map_decompose(expr);

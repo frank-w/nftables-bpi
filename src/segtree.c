@@ -708,9 +708,7 @@ static struct expr *get_set_interval_find(const struct table *table,
 			range_expr_value_high(high, i);
 			if (mpz_cmp(left->key->value, low) >= 0 &&
 			    mpz_cmp(right->key->value, high) <= 0) {
-				range = range_expr_alloc(&internal_location,
-							 expr_clone(left->key),
-							 expr_clone(right->key));
+				range = expr_clone(i->key);
 				goto out;
 			}
 			break;
@@ -742,9 +740,7 @@ static struct expr *get_set_interval_end(const struct table *table,
 		case EXPR_RANGE:
 			range_expr_value_low(low, i);
 			if (mpz_cmp(low, left->key->value) == 0) {
-				range = range_expr_alloc(&internal_location,
-							 expr_clone(left->key),
-							 expr_clone(i->key->right));
+				range = expr_clone(i->key);
 				goto out;
 			}
 			break;

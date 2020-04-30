@@ -702,6 +702,7 @@ static struct expr *get_set_interval_find(const struct table *table,
 
 	list_for_each_entry(i, &set->init->expressions, list) {
 		switch (i->key->etype) {
+		case EXPR_PREFIX:
 		case EXPR_RANGE:
 			range_expr_value_low(val, i);
 			if (left && mpz_cmp(left->key->value, val))

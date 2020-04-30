@@ -1563,7 +1563,8 @@ static int __do_add_setelems(struct netlink_ctx *ctx, struct set *set,
 	if (mnl_nft_setelem_add(ctx, set, expr, flags) < 0)
 		return -1;
 
-	if (set->init != NULL &&
+	if (!set_is_anonymous(set->flags) &&
+	    set->init != NULL &&
 	    set->flags & NFT_SET_INTERVAL &&
 	    set->desc.field_count <= 1) {
 		interval_map_decompose(expr);

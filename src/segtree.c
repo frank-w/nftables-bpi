@@ -694,63 +694,31 @@ static struct expr *get_set_interval_find(const struct table *table,
 {
 	struct expr *range = NULL;
 	struct set *set;
-	mpz_t low, high;
 	struct expr *i;
+	mpz_t val;
 
 	set = set_lookup(table, set_name);
-	mpz_init2(low, set->key->len);
-	mpz_init2(high, set->key->len);
+	mpz_init2(val, set->key->len);
 
 	list_for_each_entry(i, &set->init->expressions, list) {
 		switch (i->key->etype) {
 		case EXPR_RANGE:
-			range_expr_value_low(low, i);
-			range_expr_value_high(high, i);
-			if (mpz_cmp(left->key->value, low) >= 0 &&
-			    mpz_cmp(right->key->value, high) <= 0) {
-				range = expr_clone(i->key);
-				goto out;
-			}
-			break;
+			range_expr_value_low(val, i);
+			if (left && mpz_cmp(left->key->value, val))
+				break;
+
+			range_expr_value_high(val, i);
+			if (right && mpz_cmp(right->key->value, val))
+				break;
+
+			range = expr_clone(i->key);
+			goto out;
 		default:
 			break;
 		}
 	}
 out:
-	mpz_clear(low);
-	mpz_clear(high);
-
-	return range;
-}
-
-static struct expr *get_set_interval_end(const struct table *table,
-					 const char *set_name,
-					 struct expr *left)
-{
-	struct expr *i, *range = NULL;
-	struct set *set;
-	mpz_t low, high;
-
-	set = set_lookup(table, set_name);
-	mpz_init2(low, set->key->len);
-	mpz_init2(high, set->key->len);
-
-	list_for_each_entry(i, &set->init->expressions, list) {
-		switch (i->key->etype) {
-		case EXPR_RANGE:
-			range_expr_value_low(low, i);
-			if (mpz_cmp(low, left->key->value) == 0) {
-				range = expr_clone(i->key);
-				goto out;
-			}
-			break;
-		default:
-			break;
-		}
-	}
-out:
-	mpz_clear(low);
-	mpz_clear(high);
+	mpz_clear(val);
 
 	return range;
 }
@@ -780,9 +748,9 @@ int get_set_decompose(struct table *table, struct set *set)
 			left = NULL;
 		} else {
 			if (left) {
-				range = get_set_interval_end(table,
-							     set->handle.set.name,
-							     left);
+				range = get_set_interval_find(table,
+							      set->handle.set.name,
+							      left, NULL);
 				if (range)
 					compound_expr_add(new_init, range);
 				else
@@ -793,7 +761,8 @@ int get_set_decompose(struct table *table, struct set *set)
 		}
 	}
 	if (left) {
-		range = get_set_interval_end(table, set->handle.set.name, left);
+		range = get_set_interval_find(table, set->handle.set.name,
+					      left, NULL);
 		if (range)
 			compound_expr_add(new_init, range);
 		else

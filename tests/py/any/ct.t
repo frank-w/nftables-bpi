@@ -128,6 +128,8 @@ ct both zone 1;fail
 ct original zone 1;ok
 ct reply zone 1;ok
 
+ct id 12345;ok
+
 ct zone set 1;ok
 ct original zone set 1;ok
 ct reply zone set 1;ok

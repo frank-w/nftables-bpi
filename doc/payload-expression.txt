@@ -638,7 +638,7 @@ zone id is tied to the given direction. +
 
 [verse]
 *ct* {*state* | *direction* | *status* | *mark* | *expiration* | *helper* | *label*}
-*ct* [*original* | *reply*] {*l3proto* | *protocol* | *bytes* | *packets* | *avgpkt* | *zone*}
+*ct* [*original* | *reply*] {*l3proto* | *protocol* | *bytes* | *packets* | *avgpkt* | *zone* | *id*}
 *ct* {*original* | *reply*} {*proto-src* | *proto-dst*}
 *ct* {*original* | *reply*} {*ip* | *ip6*} {*saddr* | *daddr*}
 
@@ -700,6 +700,9 @@ integer (16 bit)
 |count|
 count number of connections
 integer (32 bit)
+|id|
+Connection id
+ct_id
 |==========================================
 A description of conntrack-specific types listed above can be found sub-section CONNTRACK TYPES above.
 

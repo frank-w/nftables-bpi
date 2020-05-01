@@ -124,10 +124,10 @@ static const char *get_optstring(void)
 		size_t i, j;
 
 		optstring[0] = '+';
-		for (i = 0, j = 1; i < NR_NFT_OPTIONS; i++)
-			j += sprintf(optstring + j, "%c%s",
-				     nft_options[i].val,
-				     nft_options[i].arg ? ":" : "");
+		for (i = 0, j = 1; i < NR_NFT_OPTIONS && j < sizeof(optstring); i++)
+			j += snprintf(optstring + j, sizeof(optstring) - j, "%c%s",
+				      nft_options[i].val,
+				      nft_options[i].arg ? ":" : "");
 	}
 	return optstring;
 }

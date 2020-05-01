@@ -1083,6 +1083,8 @@ struct datatype *datatype_get(const struct datatype *ptr)
 
 void datatype_set(struct expr *expr, const struct datatype *dtype)
 {
+	if (dtype == expr->dtype)
+		return;
 	datatype_free(expr->dtype);
 	expr->dtype = datatype_get(dtype);
 }

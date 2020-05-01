@@ -122,7 +122,7 @@ do
 
 			if [ "$DUMPGEN" == "y" ] && [ "$rc_got" == 0 ] && [ ! -f "${dumpfile}" ]; then
 				mkdir -p "${dumppath}"
-				nft list ruleset > "${dumpfile}"
+				$NFT list ruleset > "${dumpfile}"
 			fi
 		else
 			((failed++))

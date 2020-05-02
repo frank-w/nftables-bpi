@@ -118,7 +118,7 @@ static const struct nft_opt nft_options[] = {
 
 static const char *get_optstring(void)
 {
-	static char optstring[NR_NFT_OPTIONS + 2];
+	static char optstring[2 * NR_NFT_OPTIONS + 2];
 
 	if (!optstring[0]) {
 		size_t i, j;
@@ -128,6 +128,8 @@ static const char *get_optstring(void)
 			j += snprintf(optstring + j, sizeof(optstring) - j, "%c%s",
 				      nft_options[i].val,
 				      nft_options[i].arg ? ":" : "");
+
+		assert(j < sizeof(optstring));
 	}
 	return optstring;
 }

@@ -21,7 +21,7 @@ static int nft_netlink(struct nft_ctx *nft,
 		       struct list_head *cmds, struct list_head *msgs,
 		       struct mnl_socket *nf_sock)
 {
-	uint32_t batch_seqnum, seqnum = 0, num_cmds = 0;
+	uint32_t batch_seqnum, seqnum = 0, last_seqnum = UINT32_MAX, num_cmds = 0;
 	struct netlink_ctx ctx = {
 		.nft  = nft,
 		.msgs = msgs,
@@ -65,7 +65,14 @@ static int nft_netlink(struct nft_ctx *nft,
 		ret = -1;
 
 	list_for_each_entry_safe(err, tmp, &err_list, head) {
-		list_for_each_entry(cmd, cmds, list) {
+		/* cmd seqnums are monotonic: only reset the starting position
+		 * if the error seqnum is lower than the previous one.
+		 */
+		if (err->seqnum < last_seqnum)
+			cmd = list_first_entry(cmds, struct cmd, list);
+
+		list_for_each_entry_from(cmd, cmds, list) {
+			last_seqnum = cmd->seqnum;
 			if (err->seqnum == cmd->seqnum ||
 			    err->seqnum == batch_seqnum) {
 				nft_cmd_error(&ctx, cmd, err);
@@ -75,6 +82,11 @@ static int nft_netlink(struct nft_ctx *nft,
 					break;
 				}
 			}
+		}
+
+		if (&cmd->list == cmds) {
+			/* not found, rewind */
+			last_seqnum = UINT32_MAX;
 		}
 	}
 out:

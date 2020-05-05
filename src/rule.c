@@ -686,6 +686,12 @@ struct rule *rule_lookup_by_index(const struct chain *chain, uint64_t index)
 	return NULL;
 }
 
+void rule_stmt_append(struct rule *rule, struct stmt *stmt)
+{
+	list_add_tail(&stmt->list, &rule->stmts);
+	rule->num_stmts++;
+}
+
 void rule_stmt_insert_at(struct rule *rule, struct stmt *nstmt,
 			 struct stmt *stmt)
 {

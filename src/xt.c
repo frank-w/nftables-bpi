@@ -238,7 +238,7 @@ void netlink_parse_match(struct netlink_parse_ctx *ctx,
 	stmt->xt.name = strdup(name);
 	stmt->xt.type = NFT_XT_MATCH;
 #endif
-	list_add_tail(&stmt->list, &ctx->rule->stmts);
+	rule_stmt_append(ctx->rule, stmt);
 }
 
 void netlink_parse_target(struct netlink_parse_ctx *ctx,
@@ -283,7 +283,7 @@ void netlink_parse_target(struct netlink_parse_ctx *ctx,
 	stmt->xt.name = strdup(name);
 	stmt->xt.type = NFT_XT_TARGET;
 #endif
-	list_add_tail(&stmt->list, &ctx->rule->stmts);
+	rule_stmt_append(ctx->rule, stmt);
 }
 
 #ifdef HAVE_LIBXTABLES

@@ -2731,8 +2731,7 @@ static struct cmd *json_parse_cmd_add_rule(struct json_ctx *ctx, json_t *root,
 			return NULL;
 		}
 
-		rule->num_stmts++;
-		list_add_tail(&stmt->list, &rule->stmts);
+		rule_stmt_append(rule, stmt);
 	}
 
 	if (op == CMD_ADD)
@@ -3404,8 +3403,7 @@ static struct cmd *json_parse_cmd_replace(struct json_ctx *ctx,
 			return NULL;
 		}
 
-		rule->num_stmts++;
-		list_add_tail(&stmt->list, &rule->stmts);
+		rule_stmt_append(rule, stmt);
 	}
 
 	if (op == CMD_REPLACE)

@@ -563,8 +563,7 @@ static void netlink_parse_payload_stmt(struct netlink_parse_ctx *ctx,
 	payload_init_raw(expr, base, offset, len);
 
 	stmt = payload_stmt_alloc(loc, expr, val);
-
-	list_add_tail(&stmt->list, &ctx->rule->stmts);
+	rule_stmt_append(ctx->rule, stmt);
 }
 
 static void netlink_parse_payload(struct netlink_parse_ctx *ctx,
@@ -615,7 +614,7 @@ static void netlink_parse_exthdr(struct netlink_parse_ctx *ctx,
 		expr_set_type(val, expr->dtype, expr->byteorder);
 
 		stmt = exthdr_stmt_alloc(loc, expr, val);
-		list_add_tail(&stmt->list, &ctx->rule->stmts);
+		rule_stmt_append(ctx->rule, stmt);
 	}
 }
 
@@ -1672,7 +1671,7 @@ static int netlink_parse_rule_expr(struct nftnl_expr *nle, void *arg)
 	if (err < 0)
 		return err;
 	if (ctx->stmt != NULL) {
-		list_add_tail(&ctx->stmt->list, &ctx->rule->stmts);
+		rule_stmt_append(ctx->rule, ctx->stmt);
 		ctx->stmt = NULL;
 	}
 	return 0;

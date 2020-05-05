@@ -2167,6 +2167,7 @@ extended_prio_spec	:	int_num
 								BYTEORDER_HOST_ENDIAN,
 								strlen(str) * BITS_PER_BYTE,
 								str);
+				xfree($1);
 				$$ = spec;
 			}
 			;

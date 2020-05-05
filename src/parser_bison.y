@@ -3954,6 +3954,7 @@ ct_timeout_config	:	PROTOCOL	ct_l4protoname	stmt_separator
 
 				ct = &$<obj>0->ct_timeout;
 				list_splice_tail($4, &ct->timeout_list);
+				xfree($4);
 			}
 			|	L3PROTOCOL	family_spec_explicit	stmt_separator
 			{

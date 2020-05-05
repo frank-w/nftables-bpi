@@ -3902,6 +3902,7 @@ static int ct_timeout_evaluate(struct eval_ctx *ctx, struct obj *obj)
 
 		ct->timeout[ts->timeout_index] = ts->timeout_value;
 		list_del(&ts->head);
+		xfree(ts->timeout_str);
 		xfree(ts);
 	}
 

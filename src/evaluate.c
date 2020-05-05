@@ -659,7 +659,7 @@ static int resolve_protocol_conflict(struct eval_ctx *ctx,
 		if (err < 0)
 			return err;
 
-		list_add_tail(&nstmt->list, &ctx->stmt->list);
+		rule_stmt_insert_at(ctx->rule, nstmt, ctx->stmt);
 	}
 
 	assert(base <= PROTO_BASE_MAX);
@@ -673,7 +673,7 @@ static int resolve_protocol_conflict(struct eval_ctx *ctx,
 		return 1;
 
 	payload->payload.offset += ctx->pctx.protocol[base].offset;
-	list_add_tail(&nstmt->list, &ctx->stmt->list);
+	rule_stmt_insert_at(ctx->rule, nstmt, ctx->stmt);
 
 	return 0;
 }
@@ -698,7 +698,8 @@ static int __expr_evaluate_payload(struct eval_ctx *ctx, struct expr *expr)
 	if (desc == NULL) {
 		if (payload_gen_dependency(ctx, payload, &nstmt) < 0)
 			return -1;
-		list_add_tail(&nstmt->list, &ctx->stmt->list);
+
+		rule_stmt_insert_at(ctx->rule, nstmt, ctx->stmt);
 	} else {
 		/* No conflict: Same payload protocol as context, adjust offset
 		 * if needed.
@@ -840,8 +841,8 @@ static int ct_gen_nh_dependency(struct eval_ctx *ctx, struct expr *ct)
 	relational_expr_pctx_update(&ctx->pctx, dep);
 
 	nstmt = expr_stmt_alloc(&dep->location, dep);
+	rule_stmt_insert_at(ctx->rule, nstmt, ctx->stmt);
 
-	list_add_tail(&nstmt->list, &ctx->stmt->list);
 	return 0;
 }
 

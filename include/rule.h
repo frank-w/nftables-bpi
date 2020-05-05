@@ -280,6 +280,9 @@ extern void rule_print(const struct rule *rule, struct output_ctx *octx);
 extern struct rule *rule_lookup(const struct chain *chain, uint64_t handle);
 extern struct rule *rule_lookup_by_index(const struct chain *chain,
 					 uint64_t index);
+void rule_stmt_insert_at(struct rule *rule, struct stmt *nstmt,
+			 struct stmt *stmt);
+
 
 /**
  * struct set - nftables set

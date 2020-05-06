@@ -744,6 +744,8 @@ int get_set_decompose(struct table *table, struct set *set)
 				errno = ENOENT;
 				return -1;
 			}
+			expr_free(left);
+			expr_free(i);
 
 			compound_expr_add(new_init, range);
 			left = NULL;

@@ -1236,8 +1236,10 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 	netlink_dump_set(nls, ctx);
 
 	nls_out = mnl_nft_setelem_get_one(ctx, nls);
-	if (!nls_out)
+	if (!nls_out) {
+		nftnl_set_free(nls);
 		return -1;
+	}
 
 	ctx->set = set;
 	set->init = set_expr_alloc(loc, set);

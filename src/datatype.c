@@ -825,6 +825,7 @@ static const struct symbol_table icmp_code_tbl = {
 		SYMBOL("net-prohibited",	ICMP_NET_ANO),
 		SYMBOL("host-prohibited",	ICMP_HOST_ANO),
 		SYMBOL("admin-prohibited",	ICMP_PKT_FILTERED),
+		SYMBOL("frag-needed",		ICMP_FRAG_NEEDED),
 		SYMBOL_LIST_END
 	},
 };

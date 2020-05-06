@@ -254,6 +254,8 @@ The ICMP Code type is used to conveniently specify the ICMP header's code field.
 2
 |port-unreachable|
 3
+|frag-needed|
+4
 |net-prohibited|
 9
 |host-prohibited|

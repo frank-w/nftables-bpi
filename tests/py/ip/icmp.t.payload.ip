@@ -184,7 +184,7 @@ ip test-ip4 input
   [ payload load 1b @ transport header + 1 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
-# icmp code != { prot-unreachable, 4, 33, 54, 56}
+# icmp code != { prot-unreachable, frag-needed, 33, 54, 56}
 __set%d test-ip4 3
 __set%d test-ip4 0
 	element 00000002  : 0 [end]	element 00000004  : 0 [end]	element 00000036  : 0 [end]	element 00000021  : 0 [end]	element 00000038  : 0 [end]

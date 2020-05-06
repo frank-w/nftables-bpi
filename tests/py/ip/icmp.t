@@ -28,8 +28,8 @@ icmp code 33-55;ok
 icmp code != 33-55;ok
 icmp code { 33-55};ok
 icmp code != { 33-55};ok
-icmp code { 2, 4, 54, 33, 56};ok;icmp code { prot-unreachable, 4, 33, 54, 56}
-icmp code != { prot-unreachable, 4, 33, 54, 56};ok
+icmp code { 2, 4, 54, 33, 56};ok;icmp code { prot-unreachable, frag-needed, 33, 54, 56}
+icmp code != { prot-unreachable, frag-needed, 33, 54, 56};ok
 
 icmp checksum 12343 accept;ok
 icmp checksum != 12343 accept;ok

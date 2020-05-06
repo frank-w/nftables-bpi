@@ -2742,6 +2742,8 @@ static int stmt_evaluate_reject_icmp(struct eval_ctx *ctx, struct stmt *stmt)
 		return -1;
 	}
 	stmt->reject.icmp_code = mpz_get_uint8(code->value);
+	expr_free(code);
+
 	return 0;
 }
 

@@ -419,8 +419,12 @@ static int nft_evaluate(struct nft_ctx *nft, struct list_head *msgs,
 	if (nft->state->nerrs)
 		return -1;
 
-	list_for_each_entry(cmd, cmds, list)
+	list_for_each_entry(cmd, cmds, list) {
+		if (cmd->op != CMD_ADD)
+			continue;
+
 		nft_cmd_expand(cmd);
+	}
 
 	return 0;
 }

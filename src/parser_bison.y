@@ -980,7 +980,7 @@ add_cmd			:	TABLE		table_spec
 			}
 			|	ELEMENT		set_spec	set_block_expr
 			{
-				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SETELEM, &$2, &@$, $3);
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_ELEMENTS, &$2, &@$, $3);
 			}
 			|	FLOWTABLE	flowtable_spec	flowtable_block_alloc
 						'{'	flowtable_block	'}'
@@ -1077,7 +1077,7 @@ create_cmd		:	TABLE		table_spec
 			}
 			|	ELEMENT		set_spec	set_block_expr
 			{
-				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_SETELEM, &$2, &@$, $3);
+				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_ELEMENTS, &$2, &@$, $3);
 			}
 			|	FLOWTABLE	flowtable_spec	flowtable_block_alloc
 						'{'	flowtable_block	'}'
@@ -1169,7 +1169,7 @@ delete_cmd		:	TABLE		table_spec
 			}
 			|	ELEMENT		set_spec	set_block_expr
 			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SETELEM, &$2, &@$, $3);
+				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_ELEMENTS, &$2, &@$, $3);
 			}
 			|	FLOWTABLE	flowtable_spec
 			{
@@ -1227,7 +1227,7 @@ delete_cmd		:	TABLE		table_spec
 
 get_cmd			:	ELEMENT		set_spec	set_block_expr
 			{
-				$$ = cmd_alloc(CMD_GET, CMD_OBJ_SETELEM, &$2, &@$, $3);
+				$$ = cmd_alloc(CMD_GET, CMD_OBJ_ELEMENTS, &$2, &@$, $3);
 			}
 			;
 

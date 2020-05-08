@@ -558,7 +558,7 @@ enum cmd_ops {
  * enum cmd_obj - command objects
  *
  * @CMD_OBJ_INVALID:	invalid
- * @CMD_OBJ_SETELEM:	set element(s)
+ * @CMD_OBJ_ELEMENTS:	set element(s)
  * @CMD_OBJ_SET:	set
  * @CMD_OBJ_SETS:	multiple sets
  * @CMD_OBJ_RULE:	rule
@@ -586,7 +586,7 @@ enum cmd_ops {
  */
 enum cmd_obj {
 	CMD_OBJ_INVALID,
-	CMD_OBJ_SETELEM,
+	CMD_OBJ_ELEMENTS,
 	CMD_OBJ_SET,
 	CMD_OBJ_SETS,
 	CMD_OBJ_RULE,

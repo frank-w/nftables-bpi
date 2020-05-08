@@ -25,7 +25,7 @@ static unsigned int evaluate_cache_add(struct cmd *cmd, unsigned int flags)
 	case CMD_OBJ_FLOWTABLE:
 		flags |= NFT_CACHE_TABLE;
 		break;
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		flags |= NFT_CACHE_TABLE |
 			 NFT_CACHE_CHAIN |
 			 NFT_CACHE_SET |
@@ -53,7 +53,7 @@ static unsigned int evaluate_cache_add(struct cmd *cmd, unsigned int flags)
 static unsigned int evaluate_cache_del(struct cmd *cmd, unsigned int flags)
 {
 	switch (cmd->obj) {
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		flags |= NFT_CACHE_SETELEM;
 		break;
 	default:
@@ -66,7 +66,7 @@ static unsigned int evaluate_cache_del(struct cmd *cmd, unsigned int flags)
 static unsigned int evaluate_cache_get(struct cmd *cmd, unsigned int flags)
 {
 	switch (cmd->obj) {
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		flags |= NFT_CACHE_TABLE |
 			 NFT_CACHE_SET |
 			 NFT_CACHE_SETELEM;

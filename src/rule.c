@@ -1521,7 +1521,7 @@ void cmd_free(struct cmd *cmd)
 	handle_free(&cmd->handle);
 	if (cmd->data != NULL) {
 		switch (cmd->obj) {
-		case CMD_OBJ_SETELEM:
+		case CMD_OBJ_ELEMENTS:
 			expr_free(cmd->expr);
 			break;
 		case CMD_OBJ_SET:
@@ -1645,7 +1645,7 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 		return mnl_nft_rule_add(ctx, cmd, flags | NLM_F_APPEND);
 	case CMD_OBJ_SET:
 		return do_add_set(ctx, cmd, flags);
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		return do_add_setelems(ctx, cmd, flags);
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
@@ -1724,7 +1724,7 @@ static int do_command_delete(struct netlink_ctx *ctx, struct cmd *cmd)
 		return mnl_nft_rule_del(ctx, cmd);
 	case CMD_OBJ_SET:
 		return mnl_nft_set_del(ctx, cmd);
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		return do_delete_setelems(ctx, cmd);
 	case CMD_OBJ_COUNTER:
 		return mnl_nft_obj_del(ctx, cmd, NFT_OBJECT_COUNTER);
@@ -2588,7 +2588,7 @@ static int do_command_get(struct netlink_ctx *ctx, struct cmd *cmd)
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 
 	switch (cmd->obj) {
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		return do_get_setelems(ctx, cmd, table);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);

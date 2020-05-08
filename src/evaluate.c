@@ -3977,7 +3977,7 @@ static int table_evaluate(struct eval_ctx *ctx, struct table *table)
 static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
 		handle_merge(&cmd->set->handle, &cmd->handle);
@@ -4009,7 +4009,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		return setelem_evaluate(ctx, &cmd->expr);
 	case CMD_OBJ_SET:
 	case CMD_OBJ_RULE:
@@ -4036,7 +4036,7 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 	struct set *set;
 
 	switch (cmd->obj) {
-	case CMD_OBJ_SETELEM:
+	case CMD_OBJ_ELEMENTS:
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
 		if (table == NULL)
 			return table_not_found(ctx);

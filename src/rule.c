@@ -1417,11 +1417,11 @@ void cmd_add_loc(struct cmd *cmd, uint16_t offset, struct location *loc)
 void nft_cmd_expand(struct cmd *cmd)
 {
 	struct list_head new_cmds;
+	struct set *set, *newset;
 	struct flowtable *ft;
 	struct table *table;
 	struct chain *chain;
 	struct rule *rule;
-	struct set *set;
 	struct obj *obj;
 	struct cmd *new;
 	struct handle h;
@@ -1477,6 +1477,18 @@ void nft_cmd_expand(struct cmd *cmd)
 		}
 		list_splice(&new_cmds, &cmd->list);
 		break;
+	case CMD_OBJ_SET:
+		set = cmd->set;
+		memset(&h, 0, sizeof(h));
+		handle_merge(&h, &set->handle);
+		newset = set_clone(set);
+		newset->handle.set_id = set->handle.set_id;
+		newset->init = set->init;
+		set->init = NULL;
+		new = cmd_alloc(CMD_ADD, CMD_OBJ_SETELEMS, &h,
+				&set->location, newset);
+		list_add(&new->list, &cmd->list);
+		break;
 	default:
 		break;
 	}
@@ -1525,6 +1537,7 @@ void cmd_free(struct cmd *cmd)
 			expr_free(cmd->expr);
 			break;
 		case CMD_OBJ_SET:
+		case CMD_OBJ_SETELEMS:
 			set_free(cmd->set);
 			break;
 		case CMD_OBJ_RULE:
@@ -1610,7 +1623,7 @@ static int do_add_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 }
 
 static int do_add_set(struct netlink_ctx *ctx, struct cmd *cmd,
-		      uint32_t flags)
+		      uint32_t flags, bool add)
 {
 	struct set *set = cmd->set;
 
@@ -1621,7 +1634,7 @@ static int do_add_set(struct netlink_ctx *ctx, struct cmd *cmd,
 				     &ctx->nft->output) < 0)
 			return -1;
 	}
-	if (mnl_nft_set_add(ctx, cmd, flags) < 0)
+	if (add && mnl_nft_set_add(ctx, cmd, flags) < 0)
 		return -1;
 	if (set->init != NULL) {
 		return __do_add_setelems(ctx, set, set->init, flags);
@@ -1644,7 +1657,9 @@ static int do_command_add(struct netlink_ctx *ctx, struct cmd *cmd, bool excl)
 	case CMD_OBJ_RULE:
 		return mnl_nft_rule_add(ctx, cmd, flags | NLM_F_APPEND);
 	case CMD_OBJ_SET:
-		return do_add_set(ctx, cmd, flags);
+		return do_add_set(ctx, cmd, flags, true);
+	case CMD_OBJ_SETELEMS:
+		return do_add_set(ctx, cmd, flags, false);
 	case CMD_OBJ_ELEMENTS:
 		return do_add_setelems(ctx, cmd, flags);
 	case CMD_OBJ_COUNTER:

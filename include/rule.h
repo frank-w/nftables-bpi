@@ -561,6 +561,7 @@ enum cmd_ops {
  * @CMD_OBJ_ELEMENTS:	set element(s)
  * @CMD_OBJ_SET:	set
  * @CMD_OBJ_SETS:	multiple sets
+ * @CMD_OBJ_SETELEMS:	set elements
  * @CMD_OBJ_RULE:	rule
  * @CMD_OBJ_CHAIN:	chain
  * @CMD_OBJ_CHAINS:	multiple chains
@@ -588,6 +589,7 @@ enum cmd_obj {
 	CMD_OBJ_INVALID,
 	CMD_OBJ_ELEMENTS,
 	CMD_OBJ_SET,
+	CMD_OBJ_SETELEMS,
 	CMD_OBJ_SETS,
 	CMD_OBJ_RULE,
 	CMD_OBJ_CHAIN,

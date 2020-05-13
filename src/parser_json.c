@@ -3847,12 +3847,15 @@ static uint64_t handle_from_nlmsg(const struct nlmsghdr *nlh)
 }
 int json_events_cb(const struct nlmsghdr *nlh, struct netlink_mon_handler *monh)
 {
-	json_t *tmp, *json = seqnum_to_json(nlh->nlmsg_seq);
 	uint64_t handle = handle_from_nlmsg(nlh);
+	json_t *tmp, *json;
 	void *iter;
 
-	/* might be anonymous set, ignore message */
-	if (!json || !handle)
+	if (!handle)
+		return MNL_CB_OK;
+
+	json = seqnum_to_json(nlh->nlmsg_seq);
+	if (!json)
 		return MNL_CB_OK;
 
 	tmp = json_object_get(json, "add");

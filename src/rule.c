@@ -2272,13 +2272,15 @@ static void flowtable_print_declaration(const struct flowtable *flowtable,
 			   flowtable->hook.num, flowtable->priority.expr),
 		  opts->stmt_separator);
 
-	nft_print(octx, "%s%sdevices = { ", opts->tab, opts->tab);
-	for (i = 0; i < flowtable->dev_array_len; i++) {
-		nft_print(octx, "%s", flowtable->dev_array[i]);
-		if (i + 1 != flowtable->dev_array_len)
-			nft_print(octx, ", ");
+	if (flowtable->dev_array_len > 0) {
+		nft_print(octx, "%s%sdevices = { ", opts->tab, opts->tab);
+		for (i = 0; i < flowtable->dev_array_len; i++) {
+			nft_print(octx, "%s", flowtable->dev_array[i]);
+			if (i + 1 != flowtable->dev_array_len)
+				nft_print(octx, ", ");
+		}
+		nft_print(octx, " }%s", opts->stmt_separator);
 	}
-	nft_print(octx, " }%s", opts->stmt_separator);
 
 	if (flowtable->flags & NFT_FLOWTABLE_COUNTER)
 		nft_print(octx, "%s%scounter%s", opts->tab, opts->tab,

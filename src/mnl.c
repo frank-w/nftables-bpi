@@ -1652,10 +1652,12 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, 0);
 	}
 
-	dev_array = nft_flowtable_dev_array(cmd);
-	nftnl_flowtable_set_data(flo, NFTNL_FLOWTABLE_DEVICES,
-				 dev_array, 0);
-	nft_flowtable_dev_array_free(dev_array);
+	if (cmd->flowtable->dev_expr) {
+		dev_array = nft_flowtable_dev_array(cmd);
+		nftnl_flowtable_set_data(flo, NFTNL_FLOWTABLE_DEVICES,
+					 dev_array, 0);
+		nft_flowtable_dev_array_free(dev_array);
+	}
 
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FLAGS,
 				cmd->flowtable->flags);

@@ -9,6 +9,3 @@ $NFT add flowtable ip t f { hook ingress priority 10\; devices = { lo } }
 
 $NFT add flowtable ip t f { hook ingress\; priority 10\; }
 [[ $? -eq 1 ]] || exit 1
-
-$NFT add flowtable ip t f { hook ingress priority 10\; }
-[[ $? -eq 1 ]] || exit 1

@@ -1682,6 +1682,7 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, struct cmd *cmd,
 int mnl_nft_flowtable_del(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct nftnl_flowtable *flo;
+	const char **dev_array;
 	struct nlmsghdr *nlh;
 
 	flo = nftnl_flowtable_alloc();
@@ -1690,6 +1691,16 @@ int mnl_nft_flowtable_del(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FAMILY,
 				cmd->handle.family);
+
+	if (cmd->flowtable && cmd->flowtable->dev_expr) {
+		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM, 0);
+		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, 0);
+
+		dev_array = nft_flowtable_dev_array(cmd);
+		nftnl_flowtable_set_data(flo, NFTNL_FLOWTABLE_DEVICES,
+					 dev_array, 0);
+		nft_flowtable_dev_array_free(dev_array);
+	}
 
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_DELFLOWTABLE, cmd->handle.family,

@@ -1640,11 +1640,17 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, struct cmd *cmd,
 
 	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FAMILY,
 				cmd->handle.family);
-	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM,
-				cmd->flowtable->hook.num);
-	mpz_export_data(&priority, cmd->flowtable->priority.expr->value,
-			BYTEORDER_HOST_ENDIAN, sizeof(int));
-	nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, priority);
+
+	if (cmd->flowtable->hook.name) {
+		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM,
+					cmd->flowtable->hook.num);
+		mpz_export_data(&priority, cmd->flowtable->priority.expr->value,
+				BYTEORDER_HOST_ENDIAN, sizeof(int));
+		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, priority);
+	} else {
+		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_HOOKNUM, 0);
+		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, 0);
+	}
 
 	dev_array = nft_flowtable_dev_array(cmd);
 	nftnl_flowtable_set_data(flo, NFTNL_FLOWTABLE_DEVICES,

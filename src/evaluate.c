@@ -3624,17 +3624,16 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 	if (table == NULL)
 		return table_not_found(ctx);
 
-	ft->hook.num = str2hooknum(NFPROTO_NETDEV, ft->hook.name);
-	if (ft->hook.num == NF_INET_NUMHOOKS)
-		return chain_error(ctx, ft, "invalid hook %s", ft->hook.name);
-
-	if (!evaluate_priority(ctx, &ft->priority, NFPROTO_NETDEV, ft->hook.num))
-		return __stmt_binary_error(ctx, &ft->priority.loc, NULL,
-					   "invalid priority expression %s.",
-					   expr_name(ft->priority.expr));
-
-	if (!ft->dev_expr)
-		return chain_error(ctx, ft, "Unbound flowtable not allowed (must specify devices)");
+	if (ft->hook.name) {
+		ft->hook.num = str2hooknum(NFPROTO_NETDEV, ft->hook.name);
+		if (ft->hook.num == NF_INET_NUMHOOKS)
+			return chain_error(ctx, ft, "invalid hook %s",
+					   ft->hook.name);
+		if (!evaluate_priority(ctx, &ft->priority, NFPROTO_NETDEV, ft->hook.num))
+			return __stmt_binary_error(ctx, &ft->priority.loc, NULL,
+						   "invalid priority expression %s.",
+						   expr_name(ft->priority.expr));
+	}
 
 	return 0;
 }

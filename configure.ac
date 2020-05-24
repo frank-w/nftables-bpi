@@ -50,9 +50,9 @@ AC_EXEEXT
 AC_DISABLE_STATIC
 CHECK_GCC_FVISIBILITY
 
-AS_IF([test "x$enable_man_doc" = "xyes" -a ! -f "${srcdir}/doc/nft.8"], [
+AS_IF([test "x$enable_man_doc" = "xyes"], [
        AC_CHECK_PROG(A2X, [a2x], [a2x], [no])
-       AS_IF([test "$A2X" = "no"],
+       AS_IF([test "$A2X" = "no" -a ! -f "${srcdir}/doc/nft.8"],
 	     [AC_MSG_ERROR([a2x not found, please install asciidoc])])
 ])
 

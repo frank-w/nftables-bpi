@@ -21,4 +21,4 @@ ip6 daddr @set1 drop;fail
 ?set3 10.0.0.0/8 . 192.168.1.3-192.168.1.9 . 1024-65535;ok
 
 ip saddr . ip daddr . tcp dport @set3 accept;ok
--ip daddr . tcp dport { 10.0.0.0/8 . 10-23, 192.168.1.1-192.168.3.8 . 80-443 } accept;ok
+ip daddr . tcp dport { 10.0.0.0/8 . 10-23, 192.168.1.1-192.168.3.8 . 80-443 } accept;ok

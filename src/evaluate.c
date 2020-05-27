@@ -76,6 +76,7 @@ static void key_fix_dtype_byteorder(struct expr *key)
 	datatype_set(key, set_datatype_alloc(dtype, key->byteorder));
 }
 
+static int set_evaluate(struct eval_ctx *ctx, struct set *set);
 static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 					     const char *name,
 					     struct expr *key,
@@ -106,6 +107,8 @@ static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 		cmd->location = set->location;
 		list_add_tail(&cmd->list, &ctx->cmd->list);
 	}
+
+	set_evaluate(ctx, set);
 
 	return set_ref_expr_alloc(&expr->location, set);
 }
@@ -3316,12 +3319,6 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 
 		mappings = implicit_set_declaration(ctx, "__objmap%d",
 						    key, mappings);
-
-		mappings->set->data = constant_expr_alloc(&netlink_location,
-							  &string_type,
-							  BYTEORDER_HOST_ENDIAN,
-							  NFT_OBJ_MAXNAMELEN * BITS_PER_BYTE,
-							  NULL);
 		mappings->set->objtype  = stmt->objref.type;
 
 		map->mappings = mappings;
@@ -3546,6 +3543,13 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 
 	}
 
+	/* Default timeout value implies timeout support */
+	if (set->timeout)
+		set->flags |= NFT_SET_TIMEOUT;
+
+	if (set_is_anonymous(set->flags))
+		return 0;
+
 	ctx->set = set;
 	if (set->init != NULL) {
 		__expr_set_context(&ctx->ectx, set->key->dtype,
@@ -3557,10 +3561,6 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 
 	if (set_lookup(table, set->handle.set.name) == NULL)
 		set_add_hash(set_get(set), table);
-
-	/* Default timeout value implies timeout support */
-	if (set->timeout)
-		set->flags |= NFT_SET_TIMEOUT;
 
 	return 0;
 }

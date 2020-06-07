@@ -383,8 +383,8 @@ static bool interval_overlap(const struct elementary_interval *e1,
 static int set_overlap(struct list_head *msgs, const struct set *set,
 		       struct expr *init, unsigned int keylen, bool add)
 {
-	struct elementary_interval *new_intervals[init->size];
-	struct elementary_interval *intervals[set->init->size];
+	struct elementary_interval *new_intervals[init->size + 1];
+	struct elementary_interval *intervals[set->init->size + 1];
 	unsigned int n, m, i, j;
 	int ret = 0;
 

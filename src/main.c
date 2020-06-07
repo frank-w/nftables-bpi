@@ -169,6 +169,8 @@ static void print_option(const struct nft_opt *opt)
 
 static void show_help(const char *name)
 {
+	size_t i;
+
 	printf("Usage: %s [ options ] [ cmds... ]\n"
 	       "\n"
 	       "Options:\n", name);
@@ -185,7 +187,7 @@ static void show_help(const char *name)
 
 	fputs("\n", stdout);
 
-	for (size_t i = IDX_INTERACTIVE + 1; i < NR_NFT_OPTIONS; ++i)
+	for (i = IDX_INTERACTIVE + 1; i < NR_NFT_OPTIONS; ++i)
 		print_option(&nft_options[i]);
 
 	fputs("\n", stdout);

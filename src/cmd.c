@@ -6,6 +6,7 @@
 #include <iface.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <cache.h>
 #include <string.h>
 
 static int nft_cmd_enoent_table(struct netlink_ctx *ctx, const struct cmd *cmd,
@@ -38,6 +39,40 @@ static int nft_cmd_enoent_chain(struct netlink_ctx *ctx, const struct cmd *cmd,
 			 family2str(table->handle.family),
 			 table->handle.table.name);
 	return 1;
+}
+
+static int nft_cmd_enoent_rule(struct netlink_ctx *ctx, const struct cmd *cmd,
+			       struct location *loc)
+{
+	unsigned int flags = NFT_CACHE_TABLE |
+			     NFT_CACHE_CHAIN;
+	const struct table *table;
+	struct chain *chain;
+
+	if (cache_update(ctx->nft, flags, ctx->msgs) < 0)
+		return 0;
+
+	table = table_lookup_fuzzy(&cmd->handle, &ctx->nft->cache);
+	if (table && strcmp(cmd->handle.table.name, table->handle.table.name)) {
+		netlink_io_error(ctx, loc, "%s; did you mean table ‘%s’ in family %s?",
+				 strerror(ENOENT), table->handle.table.name,
+				 family2str(table->handle.family));
+		return 1;
+	} else if (!table) {
+		return 0;
+	}
+
+	chain = chain_lookup_fuzzy(&cmd->handle, &ctx->nft->cache, &table);
+	if (chain && strcmp(cmd->handle.chain.name, chain->handle.chain.name)) {
+		netlink_io_error(ctx, loc, "%s; did you mean chain ‘%s’ in table %s ‘%s’?",
+				 strerror(ENOENT),
+				 chain->handle.chain.name,
+				 family2str(table->handle.family),
+				 table->handle.table.name);
+		return 1;
+	}
+
+	return 0;
 }
 
 static int nft_cmd_enoent_set(struct netlink_ctx *ctx, const struct cmd *cmd,
@@ -108,6 +143,9 @@ static void nft_cmd_enoent(struct netlink_ctx *ctx, const struct cmd *cmd,
 		break;
 	case CMD_OBJ_SET:
 		ret = nft_cmd_enoent_set(ctx, cmd, loc);
+		break;
+	case CMD_OBJ_RULE:
+		ret = nft_cmd_enoent_rule(ctx, cmd, loc);
 		break;
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:

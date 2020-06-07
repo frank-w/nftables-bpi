@@ -80,6 +80,7 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set);
 static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 					     const char *name,
 					     struct expr *key,
+					     struct expr *data,
 					     struct expr *expr)
 {
 	struct cmd *cmd;
@@ -93,6 +94,7 @@ static struct expr *implicit_set_declaration(struct eval_ctx *ctx,
 	set->flags	= NFT_SET_ANONYMOUS | expr->set_flags;
 	set->handle.set.name = xstrdup(name);
 	set->key	= key;
+	set->data	= data;
 	set->init	= expr;
 	set->automerge	= set->flags & NFT_SET_INTERVAL;
 
@@ -1411,7 +1413,7 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 	struct expr_ctx ectx = ctx->ectx;
 	struct expr *map = *expr, *mappings;
 	const struct datatype *dtype;
-	struct expr *key;
+	struct expr *key, *data;
 
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &map->map) < 0)
@@ -1430,15 +1432,14 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 					  ctx->ectx.byteorder,
 					  ctx->ectx.len, NULL);
 
+		dtype = set_datatype_alloc(ectx.dtype, ectx.byteorder);
+		data = constant_expr_alloc(&netlink_location, dtype,
+					   dtype->byteorder, ectx.len, NULL);
+
 		mappings = implicit_set_declaration(ctx, "__map%d",
-						    key,
+						    key, data,
 						    mappings);
 
-		dtype = set_datatype_alloc(ectx.dtype, ectx.byteorder);
-
-		mappings->set->data = constant_expr_alloc(&netlink_location,
-							  dtype, dtype->byteorder,
-							  ectx.len, NULL);
 		if (ectx.len && mappings->set->data->len != ectx.len)
 			BUG("%d vs %d\n", mappings->set->data->len, ectx.len);
 
@@ -1898,7 +1899,8 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 		case EXPR_SET:
 			right = rel->right =
 				implicit_set_declaration(ctx, "__set%d",
-							 expr_get(left), right);
+							 expr_get(left), NULL,
+							 right);
 			/* fall through */
 		case EXPR_SET_REF:
 			/* Data for range lookups needs to be in big endian order */
@@ -2389,7 +2391,7 @@ static int stmt_evaluate_meter(struct eval_ctx *ctx, struct stmt *stmt)
 		set->set_flags |= NFT_SET_TIMEOUT;
 
 	setref = implicit_set_declaration(ctx, stmt->meter.name,
-					  expr_get(key), set);
+					  expr_get(key), NULL, set);
 
 	setref->set->desc.size = stmt->meter.size;
 	stmt->meter.set = setref;
@@ -3318,7 +3320,7 @@ static int stmt_evaluate_objref_map(struct eval_ctx *ctx, struct stmt *stmt)
 					  ctx->ectx.len, NULL);
 
 		mappings = implicit_set_declaration(ctx, "__objmap%d",
-						    key, mappings);
+						    key, NULL, mappings);
 		mappings->set->objtype  = stmt->objref.type;
 
 		map->mappings = mappings;

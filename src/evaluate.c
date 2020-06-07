@@ -3532,11 +3532,6 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 			return set_key_data_error(ctx, set,
 						  set->data->dtype, type);
 	} else if (set_is_objmap(set->flags)) {
-		if (set->data) {
-			assert(set->data->etype == EXPR_VALUE);
-			assert(set->data->dtype == &string_type);
-		}
-
 		assert(set->data == NULL);
 		set->data = constant_expr_alloc(&netlink_location, &string_type,
 						BYTEORDER_HOST_ENDIAN,

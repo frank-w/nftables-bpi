@@ -1682,13 +1682,19 @@ struct stmt *netlink_parse_set_expr(const struct set *set,
 				    const struct nftnl_expr *nle)
 {
 	struct netlink_parse_ctx ctx, *pctx = &ctx;
+	struct handle h = {};
 
-	pctx->rule = rule_alloc(&netlink_location, &set->handle);
+	handle_merge(&h, &set->handle);
+	pctx->rule = rule_alloc(&netlink_location, &h);
 	pctx->table = table_lookup(&set->handle, cache);
 	assert(pctx->table != NULL);
 
 	if (netlink_parse_expr(nle, pctx) < 0)
 		return NULL;
+
+	init_list_head(&pctx->rule->stmts);
+	rule_free(pctx->rule);
+
 	return pctx->stmt;
 }
 

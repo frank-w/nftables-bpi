@@ -73,7 +73,7 @@ static struct error_record *tchandle_type_parse(struct parse_ctx *ctx,
 	else if (strcmp(sym->identifier, "none") == 0)
 		handle = TC_H_UNSPEC;
 	else if (strchr(sym->identifier, ':')) {
-		uint16_t tmp;
+		uint32_t tmp;
 		char *colon;
 
 		str = xstrdup(sym->identifier);

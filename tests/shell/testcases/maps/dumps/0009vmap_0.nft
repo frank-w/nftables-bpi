@@ -7,7 +7,7 @@ table inet filter {
 	}
 
 	chain prerouting {
-		type filter hook prerouting priority -300; policy accept;
+		type filter hook prerouting priority raw; policy accept;
 		iif vmap { "lo" : jump wan_input }
 	}
 }

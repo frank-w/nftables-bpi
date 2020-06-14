@@ -22,6 +22,15 @@ if [ "$(id -u)" != "0" ] ; then
 	msg_error "this requires root!"
 fi
 
+if [ "${1}" != "run" ]; then
+	if unshare -f -n true; then
+		unshare -n "${0}" run $@
+		exit $?
+	fi
+	msg_warn "cannot run in own namespace, connectivity might break"
+fi
+shift
+
 [ -z "$NFT" ] && NFT=$SRC_NFT
 if [ ! -x "$NFT" ] ; then
 	msg_error "no nft binary!"

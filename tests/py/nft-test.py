@@ -1394,6 +1394,12 @@ def main():
     # Change working directory to repository root
     os.chdir(TESTS_PATH + "/../..")
 
+    try:
+        import unshare
+        unshare.unshare(unshare.CLONE_NEWNET)
+    except:
+        print_warning("cannot run in own namespace, connectivity might break")
+
     check_lib_path = True
     if args.library is None:
         if args.host:

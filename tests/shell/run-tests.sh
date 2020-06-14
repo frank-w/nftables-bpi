@@ -32,10 +32,12 @@ fi
 shift
 
 [ -z "$NFT" ] && NFT=$SRC_NFT
-if [ ! -x "$NFT" ] ; then
-	msg_error "no nft binary!"
+${NFT} > /dev/null 2>&1
+ret=$?
+if [ ${ret} -eq 126 ] || [ ${ret} -eq 127 ]; then
+	msg_error "cannot execute nft command: ${NFT}"
 else
-	msg_info "using nft binary $NFT"
+	msg_info "using nft command: ${NFT}"
 fi
 
 if [ ! -d "$TESTDIR" ] ; then
@@ -110,7 +112,7 @@ do
 	kernel_cleanup
 
 	msg_info "[EXECUTING]	$testfile"
-	test_output=$(NFT=$NFT DIFF=$DIFF ${testfile} 2>&1)
+	test_output=$(NFT="$NFT" DIFF=$DIFF ${testfile} 2>&1)
 	rc_got=$?
 	echo -en "\033[1A\033[K" # clean the [EXECUTING] foobar line
 

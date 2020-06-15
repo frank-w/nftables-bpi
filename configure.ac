@@ -1,5 +1,5 @@
-AC_INIT([nftables], [0.9.5], [netfilter-devel@vger.kernel.org])
-AC_DEFINE([RELEASE_NAME], ["Capital Idea"], [Release name])
+AC_INIT([nftables], [0.9.6], [netfilter-devel@vger.kernel.org])
+AC_DEFINE([RELEASE_NAME], ["Capital Idea #2"], [Release name])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])

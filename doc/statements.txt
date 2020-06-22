@@ -263,6 +263,20 @@ table inet raw {
 ct event set new,related,destroy
 --------------------------------------
 
+NOTRACK STATEMENT
+~~~~~~~~~~~~~~~~~
+The notrack statement allows to disable connection tracking for certain
+packets.
+
+[verse]
+*notrack*
+
+Note that for this statement to be effective, it has to be applied to packets
+before a conntrack lookup happens. Therefore, it needs to sit in a chain with
+either prerouting or output hook and a hook priority of -300 or less.
+
+See SYNPROXY STATEMENT for an example usage.
+
 META STATEMENT
 ~~~~~~~~~~~~~~
 A meta statement sets the value of a meta expression. The existing meta fields

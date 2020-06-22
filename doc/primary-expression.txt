@@ -123,7 +123,7 @@ integer (32 bit)
 pseudo-random number|
 integer (32 bit)
 |ipsec|
-boolean|
+true if packet was ipsec encrypted |
 boolean (1 bit)
 |iifkind|
 Input interface kind |
@@ -162,7 +162,7 @@ Device group (32 bit number). Can be specified numerically or as symbolic name d
 Packet type: *host* (addressed to local host), *broadcast* (to all),
 *multicast* (to group), *other* (addressed to another host).
 |ifkind|
-Interface kind (16 byte string). Does not have to exist.
+Interface kind (16 byte string). See TYPES in ip-link(8) for a list.
 |time|
 Either an integer or a date in ISO format. For example: "2019-06-06 17:00".
 Hour and seconds are optional and can be omitted if desired. If omitted,
@@ -183,11 +183,12 @@ For example, 17:00 and 17:00:00 would be equivalent.
 -----------------------
 # qualified meta expression
 filter output meta oif eth0
+filter forward meta iifkind { "tun", "veth" }
 
 # unqualified meta expression
 filter output oif eth0
 
-# packet was subject to ipsec processing
+# incoming packet was subject to ipsec processing
 raw prerouting meta ipsec exists accept
 -----------------------
 
@@ -362,13 +363,15 @@ Routing Realm (32 bit number). Can be specified numerically or as symbolic name 
 --------------------------
 # IP family independent rt expression
 filter output rt classid 10
-filter output rt ipsec missing
 
 # IP family dependent rt expressions
 ip filter output rt nexthop 192.168.0.1
 ip6 filter output rt nexthop fd00::1
 inet filter output rt ip nexthop 192.168.0.1
 inet filter output rt ip6 nexthop fd00::1
+
+# outgoing packet will be encapsulated/encrypted by ipsec
+filter output rt ipsec exists
 -------------------------- 
 
 IPSEC EXPRESSIONS

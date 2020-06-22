@@ -218,6 +218,11 @@ has to be assigned before a conntrack lookup takes place, i.e. this has to be
 done in prerouting and possibly output (if locally generated packets need to be
 placed in a distinct zone), with a hook priority of -300.
 
+Unlike iptables, where the helper assignment happens in the raw table,
+the helper needs to be assigned after a conntrack entry has been
+found, i.e. it will not work when used with hook priorities equal or before
+-200.
+
 .Conntrack statement types
 [options="header"]
 |==================

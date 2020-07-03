@@ -3820,6 +3820,7 @@ set_rhs_expr		:	concat_rhs_expr
 
 initializer_expr	:	rhs_expr
 			|	list_rhs_expr
+			|	'{' '}'		{ $$ = compound_expr_alloc(&@$, EXPR_SET); }
 			;
 
 counter_config		:	PACKETS		NUM	BYTES	NUM

@@ -1897,6 +1897,9 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 				return -1;
 			break;
 		case EXPR_SET:
+			if (right->size == 0)
+				return expr_error(ctx->msgs, right, "Set is empty");
+
 			right = rel->right =
 				implicit_set_declaration(ctx, "__set%d",
 							 expr_get(left), NULL,

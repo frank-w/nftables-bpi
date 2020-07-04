@@ -177,7 +177,10 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 			ret = netlink_list_chains(ctx, &table->handle);
 			if (ret < 0)
 				return -1;
+
 			list_splice_tail_init(&ctx->list, &table->chains);
+			list_splice_tail_init(&ctx->list_bindings,
+					      &table->chain_bindings);
 		}
 		if (flags & NFT_CACHE_FLOWTABLE_BIT) {
 			ret = netlink_list_flowtables(ctx, &table->handle);
@@ -196,6 +199,9 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 			ret = netlink_list_rules(ctx, &table->handle);
 			list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
 				chain = chain_lookup(table, &rule->handle);
+				if (!chain)
+					chain = chain_binding_lookup(table,
+							rule->handle.chain.name);
 				list_move_tail(&rule->list, &chain->rules);
 			}
 			if (ret < 0)
@@ -245,6 +251,7 @@ int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs
 {
 	struct netlink_ctx ctx = {
 		.list		= LIST_HEAD_INIT(ctx.list),
+		.list_bindings	= LIST_HEAD_INIT(ctx.list_bindings),
 		.nft		= nft,
 		.msgs		= msgs,
 	};
@@ -858,12 +865,16 @@ const char *chain_hookname_lookup(const char *name)
 	return NULL;
 }
 
+/* internal ID to uniquely identify a set in the batch */
+static uint32_t chain_id;
+
 struct chain *chain_alloc(const char *name)
 {
 	struct chain *chain;
 
 	chain = xzalloc(sizeof(*chain));
 	chain->refcnt = 1;
+	chain->handle.chain_id = ++chain_id;
 	init_list_head(&chain->rules);
 	init_list_head(&chain->scope.symbols);
 	if (name != NULL)
@@ -911,6 +922,18 @@ struct chain *chain_lookup(const struct table *table, const struct handle *h)
 
 	list_for_each_entry(chain, &table->chains, list) {
 		if (!strcmp(chain->handle.chain.name, h->chain.name))
+			return chain;
+	}
+	return NULL;
+}
+
+struct chain *chain_binding_lookup(const struct table *table,
+				   const char *chain_name)
+{
+	struct chain *chain;
+
+	list_for_each_entry(chain, &table->chain_bindings, list) {
+		if (!strcmp(chain->handle.chain.name, chain_name))
 			return chain;
 	}
 	return NULL;
@@ -1175,6 +1198,9 @@ static void chain_print_declaration(const struct chain *chain,
 	char priobuf[STD_PRIO_BUFSIZE];
 	int policy, i;
 
+	if (chain->flags & CHAIN_F_BINDING)
+		return;
+
 	nft_print(octx, "\tchain %s {", chain->handle.chain.name);
 	if (nft_output_handle(octx))
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
@@ -1210,17 +1236,22 @@ static void chain_print_declaration(const struct chain *chain,
 	}
 }
 
-static void chain_print(const struct chain *chain, struct output_ctx *octx)
+void chain_rules_print(const struct chain *chain, struct output_ctx *octx,
+		       const char *indent)
 {
 	struct rule *rule;
 
-	chain_print_declaration(chain, octx);
-
 	list_for_each_entry(rule, &chain->rules, list) {
-		nft_print(octx, "\t\t");
+		nft_print(octx, "\t\t%s", indent ? : "");
 		rule_print(rule, octx);
 		nft_print(octx, "\n");
 	}
+}
+
+static void chain_print(const struct chain *chain, struct output_ctx *octx)
+{
+	chain_print_declaration(chain, octx);
+	chain_rules_print(chain, octx, NULL);
 	nft_print(octx, "\t}\n");
 }
 
@@ -1255,6 +1286,7 @@ struct table *table_alloc(void)
 	init_list_head(&table->sets);
 	init_list_head(&table->objs);
 	init_list_head(&table->flowtables);
+	init_list_head(&table->chain_bindings);
 	init_list_head(&table->scope.symbols);
 	table->refcnt = 1;
 
@@ -1271,6 +1303,8 @@ void table_free(struct table *table)
 	if (--table->refcnt > 0)
 		return;
 	list_for_each_entry_safe(chain, next, &table->chains, list)
+		chain_free(chain);
+	list_for_each_entry_safe(chain, next, &table->chain_bindings, list)
 		chain_free(chain);
 	list_for_each_entry_safe(set, nset, &table->sets, list)
 		set_free(set);
@@ -1437,6 +1471,7 @@ void nft_cmd_expand(struct cmd *cmd)
 		list_for_each_entry(chain, &table->chains, list) {
 			memset(&h, 0, sizeof(h));
 			handle_merge(&h, &chain->handle);
+			h.chain_id = chain->handle.chain_id;
 			new = cmd_alloc(CMD_ADD, CMD_OBJ_CHAIN, &h,
 					&chain->location, chain_get(chain));
 			list_add_tail(&new->list, &new_cmds);
@@ -1469,6 +1504,12 @@ void nft_cmd_expand(struct cmd *cmd)
 			list_for_each_entry(rule, &chain->rules, list) {
 				memset(&h, 0, sizeof(h));
 				handle_merge(&h, &rule->handle);
+				if (chain->flags & CHAIN_F_BINDING) {
+					rule->handle.chain_id =
+						chain->handle.chain_id;
+					rule->handle.chain.location =
+						chain->location;
+				}
 				new = cmd_alloc(CMD_ADD, CMD_OBJ_RULE, &h,
 						&rule->location,
 						rule_get(rule));

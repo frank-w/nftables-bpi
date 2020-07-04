@@ -249,6 +249,7 @@ struct expr {
 			/* EXPR_VERDICT */
 			int			verdict;
 			struct expr		*chain;
+			uint32_t		chain_id;
 		};
 		struct {
 			/* EXPR_VALUE */

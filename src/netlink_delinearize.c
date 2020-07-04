@@ -163,6 +163,24 @@ err:
 	return NULL;
 }
 
+static void netlink_parse_chain_verdict(struct netlink_parse_ctx *ctx,
+					const struct location *loc,
+					struct expr *expr,
+					enum nft_verdicts verdict)
+{
+	char chain_name[NFT_CHAIN_MAXNAMELEN] = {};
+	struct chain *chain;
+
+	expr_chain_export(expr->chain, chain_name);
+	chain = chain_binding_lookup(ctx->table, chain_name);
+	if (chain) {
+		ctx->stmt = chain_stmt_alloc(loc, chain, verdict);
+		expr_free(expr);
+	} else {
+		ctx->stmt = verdict_stmt_alloc(loc, expr);
+	}
+}
+
 static void netlink_parse_immediate(struct netlink_parse_ctx *ctx,
 				    const struct location *loc,
 				    const struct nftnl_expr *nle)
@@ -182,12 +200,23 @@ static void netlink_parse_immediate(struct netlink_parse_ctx *ctx,
 	}
 
 	dreg = netlink_parse_register(nle, NFTNL_EXPR_IMM_DREG);
-
 	expr = netlink_alloc_data(loc, &nld, dreg);
-	if (dreg == NFT_REG_VERDICT)
-		ctx->stmt = verdict_stmt_alloc(loc, expr);
-	else
+
+	if (dreg == NFT_REG_VERDICT) {
+		switch (expr->verdict) {
+		case NFT_JUMP:
+			netlink_parse_chain_verdict(ctx, loc, expr, NFT_JUMP);
+			break;
+		case NFT_GOTO:
+			netlink_parse_chain_verdict(ctx, loc, expr, NFT_GOTO);
+			break;
+		default:
+			ctx->stmt = verdict_stmt_alloc(loc, expr);
+			break;
+		}
+	} else {
 		netlink_set_register(ctx, dreg, expr);
+	}
 }
 
 static void netlink_parse_xfrm(struct netlink_parse_ctx *ctx,

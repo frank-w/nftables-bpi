@@ -11,7 +11,7 @@
 #define YYLTYPE_IS_TRIVIAL		0
 #define YYENABLE_NLS			0
 
-#define SCOPE_NEST_MAX			3
+#define SCOPE_NEST_MAX			4
 
 struct parser_state {
 	struct input_descriptor		*indesc;

@@ -466,7 +466,11 @@ int mnl_nft_rule_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	cmd_add_loc(cmd, nlh->nlmsg_len, &h->table.location);
 	mnl_attr_put_strz(nlh, NFTA_RULE_TABLE, h->table.name);
 	cmd_add_loc(cmd, nlh->nlmsg_len, &h->chain.location);
-	mnl_attr_put_strz(nlh, NFTA_RULE_CHAIN, h->chain.name);
+
+	if (h->chain_id)
+		mnl_attr_put_u32(nlh, NFTA_RULE_CHAIN_ID, htonl(h->chain_id));
+	else
+		mnl_attr_put_strz(nlh, NFTA_RULE_CHAIN, h->chain.name);
 
 	nftnl_rule_nlmsg_build_payload(nlh, nlr);
 	nftnl_rule_free(nlr);
@@ -679,7 +683,18 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	cmd_add_loc(cmd, nlh->nlmsg_len, &cmd->handle.table.location);
 	mnl_attr_put_strz(nlh, NFTA_CHAIN_TABLE, cmd->handle.table.name);
 	cmd_add_loc(cmd, nlh->nlmsg_len, &cmd->handle.chain.location);
-	mnl_attr_put_strz(nlh, NFTA_CHAIN_NAME, cmd->handle.chain.name);
+
+	if (!cmd->chain || !(cmd->chain->flags & CHAIN_F_BINDING)) {
+		mnl_attr_put_strz(nlh, NFTA_CHAIN_NAME, cmd->handle.chain.name);
+	} else {
+		if (cmd->handle.chain.name)
+			mnl_attr_put_strz(nlh, NFTA_CHAIN_NAME,
+					  cmd->handle.chain.name);
+
+		mnl_attr_put_u32(nlh, NFTA_CHAIN_ID, htonl(cmd->handle.chain_id));
+		if (cmd->chain->flags)
+			nftnl_chain_set_u32(nlc, NFTNL_CHAIN_FLAGS, cmd->chain->flags);
+	}
 
 	if (cmd->chain && cmd->chain->policy) {
 		mpz_export_data(&policy, cmd->chain->policy->value,

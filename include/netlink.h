@@ -64,6 +64,7 @@ struct netlink_ctx {
 	struct nft_ctx		*nft;
 	struct list_head	*msgs;
 	struct list_head	list;
+	struct list_head	list_bindings;
 	struct set		*set;
 	const void		*data;
 	uint32_t		seqnum;
@@ -83,6 +84,7 @@ struct nft_data_linearize {
 	uint32_t	len;
 	uint32_t	value[4];
 	char		chain[NFT_CHAIN_MAXNAMELEN];
+	uint32_t	chain_id;
 	int		verdict;
 };
 

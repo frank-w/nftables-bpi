@@ -79,6 +79,7 @@ struct handle {
 	struct position_spec	position;
 	struct position_spec	index;
 	uint32_t		set_id;
+	uint32_t		chain_id;
 	uint32_t		rule_id;
 	uint32_t		position_id;
 };
@@ -155,6 +156,7 @@ struct table {
 	struct list_head	sets;
 	struct list_head	objs;
 	struct list_head	flowtables;
+	struct list_head	chain_bindings;
 	enum table_flags 	flags;
 	unsigned int		refcnt;
 };
@@ -176,6 +178,7 @@ extern struct table *table_lookup_fuzzy(const struct handle *h,
 enum chain_flags {
 	CHAIN_F_BASECHAIN	= 0x1,
 	CHAIN_F_HW_OFFLOAD	= 0x2,
+	CHAIN_F_BINDING		= 0x4,
 };
 
 /**
@@ -244,12 +247,16 @@ extern struct chain *chain_lookup(const struct table *table,
 extern struct chain *chain_lookup_fuzzy(const struct handle *h,
 					const struct nft_cache *cache,
 					const struct table **table);
+extern struct chain *chain_binding_lookup(const struct table *table,
+					  const char *chain_name);
 
 extern const char *family2str(unsigned int family);
 extern const char *hooknum2str(unsigned int family, unsigned int hooknum);
 extern const char *chain_policy2str(uint32_t policy);
 extern void chain_print_plain(const struct chain *chain,
 			      struct output_ctx *octx);
+extern void chain_rules_print(const struct chain *chain,
+			      struct output_ctx *octx, const char *indent);
 
 /**
  * struct rule - nftables rule

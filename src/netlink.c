@@ -269,31 +269,41 @@ static void netlink_gen_constant_data(const struct expr *expr,
 			     div_round_up(expr->len, BITS_PER_BYTE), data);
 }
 
-static void netlink_gen_verdict(const struct expr *expr,
-				struct nft_data_linearize *data)
+static void netlink_gen_chain(const struct expr *expr,
+			      struct nft_data_linearize *data)
 {
 	char chain[NFT_CHAIN_MAXNAMELEN];
 	unsigned int len;
+
+	len = expr->chain->len / BITS_PER_BYTE;
+
+	if (!len)
+		BUG("chain length is 0");
+
+	if (len > sizeof(chain))
+		BUG("chain is too large (%u, %u max)",
+		    len, (unsigned int)sizeof(chain));
+
+	memset(chain, 0, sizeof(chain));
+
+	mpz_export_data(chain, expr->chain->value,
+			BYTEORDER_HOST_ENDIAN, len);
+	snprintf(data->chain, NFT_CHAIN_MAXNAMELEN, "%s", chain);
+}
+
+static void netlink_gen_verdict(const struct expr *expr,
+				struct nft_data_linearize *data)
+{
 
 	data->verdict = expr->verdict;
 
 	switch (expr->verdict) {
 	case NFT_JUMP:
 	case NFT_GOTO:
-		len = expr->chain->len / BITS_PER_BYTE;
-
-		if (!len)
-			BUG("chain length is 0");
-
-		if (len > sizeof(chain))
-			BUG("chain is too large (%u, %u max)",
-			    len, (unsigned int)sizeof(chain));
-
-		memset(chain, 0, sizeof(chain));
-
-		mpz_export_data(chain, expr->chain->value,
-				BYTEORDER_HOST_ENDIAN, len);
-		snprintf(data->chain, NFT_CHAIN_MAXNAMELEN, "%s", chain);
+		if (expr->chain)
+			netlink_gen_chain(expr, data);
+		else
+			data->chain_id = expr->chain_id;
 		break;
 	}
 }
@@ -546,7 +556,10 @@ static int list_chain_cb(struct nftnl_chain *nlc, void *arg)
 		return 0;
 
 	chain = netlink_delinearize_chain(ctx, nlc);
-	list_add_tail(&chain->list, &ctx->list);
+	if (chain->flags & CHAIN_F_BINDING)
+		list_add_tail(&chain->list, &ctx->list_bindings);
+	else
+		list_add_tail(&chain->list, &ctx->list);
 
 	return 0;
 }

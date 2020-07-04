@@ -11,6 +11,14 @@ extern struct stmt *expr_stmt_alloc(const struct location *loc,
 extern struct stmt *verdict_stmt_alloc(const struct location *loc,
 				       struct expr *expr);
 
+struct chain_stmt {
+	struct chain		*chain;
+	struct expr		*expr;
+};
+
+struct stmt *chain_stmt_alloc(const struct location *loc, struct chain *chain,
+			      enum nft_verdicts verdict);
+
 struct flow_stmt {
 	const char		*table_name;
 };
@@ -287,6 +295,7 @@ extern struct stmt *xt_stmt_alloc(const struct location *loc);
  * @STMT_CONNLIMIT:	connection limit statement
  * @STMT_MAP:		map statement
  * @STMT_SYNPROXY:	synproxy statement
+ * @STMT_CHAIN:		chain statement
  */
 enum stmt_types {
 	STMT_INVALID,
@@ -315,6 +324,7 @@ enum stmt_types {
 	STMT_CONNLIMIT,
 	STMT_MAP,
 	STMT_SYNPROXY,
+	STMT_CHAIN,
 };
 
 /**
@@ -380,6 +390,7 @@ struct stmt {
 		struct flow_stmt	flow;
 		struct map_stmt		map;
 		struct synproxy_stmt	synproxy;
+		struct chain_stmt	chain;
 	};
 };
 

@@ -713,10 +713,12 @@ static void netlink_gen_immediate(struct netlink_linearize_ctx *ctx,
 		nftnl_expr_set(nle, NFTNL_EXPR_IMM_DATA, nld.value, nld.len);
 		break;
 	case EXPR_VERDICT:
-		if ((expr->chain != NULL) &&
-		    !nftnl_expr_is_set(nle, NFTNL_EXPR_IMM_CHAIN)) {
+		if (expr->chain) {
 			nftnl_expr_set_str(nle, NFTNL_EXPR_IMM_CHAIN,
 					   nld.chain);
+		} else if (expr->chain_id) {
+			nftnl_expr_set_u32(nle, NFTNL_EXPR_IMM_CHAIN_ID,
+					   nld.chain_id);
 		}
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_IMM_VERDICT, nld.verdict);
 		break;
@@ -1445,6 +1447,12 @@ static void netlink_gen_meter_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_rule_add_expr(ctx->nlr, nle);
 }
 
+static void netlink_gen_chain_stmt(struct netlink_linearize_ctx *ctx,
+				   const struct stmt *stmt)
+{
+	return netlink_gen_expr(ctx, stmt->chain.expr, NFT_REG_VERDICT);
+}
+
 static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 			     const struct stmt *stmt)
 {
@@ -1498,6 +1506,8 @@ static void netlink_gen_stmt(struct netlink_linearize_ctx *ctx,
 		return netlink_gen_objref_stmt(ctx, stmt);
 	case STMT_MAP:
 		return netlink_gen_map_stmt(ctx, stmt);
+	case STMT_CHAIN:
+		return netlink_gen_chain_stmt(ctx, stmt);
 	default:
 		BUG("unknown statement type %s\n", stmt->ops->name);
 	}

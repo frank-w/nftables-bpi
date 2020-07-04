@@ -3098,6 +3098,63 @@ static int stmt_evaluate_synproxy(struct eval_ctx *ctx, struct stmt *stmt)
 	return 0;
 }
 
+static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule,
+			 enum cmd_ops op);
+
+static int stmt_evaluate_chain(struct eval_ctx *ctx, struct stmt *stmt)
+{
+	struct chain *chain = stmt->chain.chain;
+	struct cmd *cmd;
+
+	chain->flags |= CHAIN_F_BINDING;
+
+	if (ctx->table != NULL) {
+		list_add_tail(&chain->list, &ctx->table->chains);
+	} else {
+		struct rule *rule, *next;
+		struct handle h;
+
+		memset(&h, 0, sizeof(h));
+		handle_merge(&h, &chain->handle);
+		h.family = ctx->rule->handle.family;
+		xfree(h.table.name);
+		h.table.name = xstrdup(ctx->rule->handle.table.name);
+		h.chain.location = stmt->location;
+		h.chain_id = chain->handle.chain_id;
+
+		cmd = cmd_alloc(CMD_ADD, CMD_OBJ_CHAIN, &h, &stmt->location,
+				chain);
+		cmd->location = stmt->location;
+		list_add_tail(&cmd->list, &ctx->cmd->list);
+		h.chain_id = chain->handle.chain_id;
+
+		list_for_each_entry_safe(rule, next, &chain->rules, list) {
+			struct eval_ctx rule_ctx = {
+				.nft	= ctx->nft,
+				.msgs	= ctx->msgs,
+			};
+			struct handle h2 = {};
+
+			handle_merge(&rule->handle, &ctx->rule->handle);
+			xfree(rule->handle.table.name);
+			rule->handle.table.name = xstrdup(ctx->rule->handle.table.name);
+			xfree(rule->handle.chain.name);
+			rule->handle.chain.name = NULL;
+			rule->handle.chain_id = chain->handle.chain_id;
+			if (rule_evaluate(&rule_ctx, rule, CMD_INVALID) < 0)
+				return -1;
+
+			handle_merge(&h2, &rule->handle);
+			cmd = cmd_alloc(CMD_ADD, CMD_OBJ_RULE, &h2,
+					&rule->location, rule);
+			list_add_tail(&cmd->list, &ctx->cmd->list);
+			list_del(&rule->list);
+		}
+	}
+
+	return 0;
+}
+
 static int stmt_evaluate_dup(struct eval_ctx *ctx, struct stmt *stmt)
 {
 	int err;
@@ -3490,6 +3547,8 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 		return stmt_evaluate_map(ctx, stmt);
 	case STMT_SYNPROXY:
 		return stmt_evaluate_synproxy(ctx, stmt);
+	case STMT_CHAIN:
+		return stmt_evaluate_chain(ctx, stmt);
 	default:
 		BUG("unknown statement type %s\n", stmt->ops->name);
 	}
@@ -3879,7 +3938,7 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 			chain_add_hash(chain, table);
 		}
 		return 0;
-	} else {
+	} else if (!(chain->flags & CHAIN_F_BINDING)) {
 		if (chain_lookup(table, &chain->handle) == NULL)
 			chain_add_hash(chain_get(chain), table);
 	}

@@ -594,8 +594,8 @@ int nft_lex(void *, void *, void *);
 
 %type <table>			table_block_alloc table_block
 %destructor { close_scope(state); table_free($$); }	table_block_alloc
-%type <chain>			chain_block_alloc chain_block
-%destructor { close_scope(state); chain_free($$); }	chain_block_alloc
+%type <chain>			chain_block_alloc chain_block subchain_block
+%destructor { close_scope(state); chain_free($$); }	chain_block_alloc subchain_block
 %type <rule>			rule rule_alloc
 %destructor { rule_free($$); }	rule
 
@@ -642,7 +642,9 @@ int nft_lex(void *, void *, void *);
 %destructor { stmt_free($$); }	tproxy_stmt
 %type <stmt>			synproxy_stmt synproxy_stmt_alloc
 %destructor { stmt_free($$); }	synproxy_stmt synproxy_stmt_alloc
-
+%type <stmt>			chain_stmt
+%destructor { stmt_free($$); }	chain_stmt
+%type <val>			chain_stmt_type
 
 %type <stmt>			queue_stmt queue_stmt_alloc
 %destructor { stmt_free($$); }	queue_stmt queue_stmt_alloc
@@ -1682,6 +1684,15 @@ chain_block		:	/* empty */	{ $$ = $<chain>-1; }
 			}
 			;
 
+subchain_block		:	/* empty */	{ $$ = $<chain>-1; }
+			|	subchain_block	stmt_separator
+			|	subchain_block	rule stmt_separator
+			{
+				list_add_tail(&$2->list, &$1->rules);
+				$$ = $1;
+			}
+			;
+
 typeof_expr		:	primary_expr
 			{
 				if (expr_ops($1)->build_udata == NULL) {
@@ -2527,6 +2538,20 @@ stmt			:	verdict_stmt
 			|	set_stmt
 			|	map_stmt
 			|	synproxy_stmt
+			|	chain_stmt
+			;
+
+chain_stmt_type		:	JUMP	{ $$ = NFT_JUMP; }
+			|	GOTO	{ $$ = NFT_GOTO; }
+			;
+
+chain_stmt		:	chain_stmt_type	chain_block_alloc '{'	subchain_block	'}'
+			{
+				$2->location = @2;
+				close_scope(state);
+				$4->location = @4;
+				$$ = chain_stmt_alloc(&@$, $4, $1);
+			}
 			;
 
 verdict_stmt		:	verdict_expr

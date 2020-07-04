@@ -247,20 +247,25 @@ const struct datatype invalid_type = {
 	.print		= invalid_type_print,
 };
 
+void expr_chain_export(const struct expr *e, char *chain_name)
+{
+	unsigned int len;
+
+	len = e->len / BITS_PER_BYTE;
+	if (len >= NFT_CHAIN_MAXNAMELEN)
+		BUG("verdict expression length %u is too large (%u bits max)",
+		    e->len, NFT_CHAIN_MAXNAMELEN * BITS_PER_BYTE);
+
+	mpz_export_data(chain_name, e->value, BYTEORDER_HOST_ENDIAN, len);
+}
+
 static void verdict_jump_chain_print(const char *what, const struct expr *e,
 				     struct output_ctx *octx)
 {
 	char chain[NFT_CHAIN_MAXNAMELEN];
-	unsigned int len;
 
 	memset(chain, 0, sizeof(chain));
-
-	len = e->len / BITS_PER_BYTE;
-	if (len >= sizeof(chain))
-		BUG("verdict expression length %u is too large (%lu bits max)",
-		    e->len, (unsigned long)sizeof(chain) * BITS_PER_BYTE);
-
-	mpz_export_data(chain, e->value, BYTEORDER_HOST_ENDIAN, len);
+	expr_chain_export(e, chain);
 	nft_print(octx, "%s %s", what, chain);
 }
 

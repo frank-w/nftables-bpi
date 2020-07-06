@@ -1027,6 +1027,10 @@ void interval_map_decompose(struct expr *set)
 					tmp->timeout = low->left->timeout;
 				if (low->left->expiration)
 					tmp->expiration = low->left->expiration;
+				if (low->left->stmt) {
+					tmp->stmt = low->left->stmt;
+					low->left->stmt = NULL;
+				}
 
 				tmp = mapping_expr_alloc(&tmp->location, tmp,
 							 expr_clone(low->right));
@@ -1037,6 +1041,10 @@ void interval_map_decompose(struct expr *set)
 					tmp->timeout = low->timeout;
 				if (low->expiration)
 					tmp->expiration = low->expiration;
+				if (low->stmt) {
+					tmp->stmt = low->stmt;
+					low->stmt = NULL;
+				}
 			}
 
 			compound_expr_add(set, tmp);
@@ -1059,6 +1067,10 @@ void interval_map_decompose(struct expr *set)
 					prefix->timeout = low->left->timeout;
 				if (low->left->expiration)
 					prefix->expiration = low->left->expiration;
+				if (low->left->stmt) {
+					prefix->stmt = low->left->stmt;
+					low->left->stmt = NULL;
+				}
 
 				prefix = mapping_expr_alloc(&low->location, prefix,
 							    expr_clone(low->right));
@@ -1069,6 +1081,10 @@ void interval_map_decompose(struct expr *set)
 					prefix->timeout = low->timeout;
 				if (low->expiration)
 					prefix->expiration = low->expiration;
+				if (low->stmt) {
+					prefix->stmt = low->stmt;
+					low->stmt = NULL;
+				}
 			}
 
 			compound_expr_add(set, prefix);

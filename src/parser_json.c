@@ -2159,7 +2159,9 @@ static struct stmt *json_parse_log_stmt(struct json_ctx *ctx,
 	stmt = log_stmt_alloc(int_loc);
 
 	if (!json_unpack(value, "{s:s}", "prefix", &tmpstr)) {
-		stmt->log.prefix = xstrdup(tmpstr);
+		stmt->log.prefix = constant_expr_alloc(int_loc, &string_type,
+						       BYTEORDER_HOST_ENDIAN,
+						       (strlen(tmpstr) + 1) * BITS_PER_BYTE, tmpstr);
 		stmt->log.flags |= STMT_LOG_PREFIX;
 	}
 	if (!json_unpack(value, "{s:i}", "group", &tmp)) {

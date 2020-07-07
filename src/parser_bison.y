@@ -2636,7 +2636,12 @@ log_args		:	log_arg
 
 log_arg			:	PREFIX			string
 			{
-				$<stmt>0->log.prefix	 = $2;
+				struct expr *expr;
+
+				expr = constant_expr_alloc(&@$, &string_type,
+							   BYTEORDER_HOST_ENDIAN,
+							   strlen($2) * BITS_PER_BYTE, $2);
+				$<stmt>0->log.prefix	 = expr;
 				$<stmt>0->log.flags 	|= STMT_LOG_PREFIX;
 			}
 			|	GROUP			NUM

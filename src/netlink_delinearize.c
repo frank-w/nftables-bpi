@@ -901,7 +901,11 @@ static void netlink_parse_log(struct netlink_parse_ctx *ctx,
 	stmt = log_stmt_alloc(loc);
 	prefix = nftnl_expr_get_str(nle, NFTNL_EXPR_LOG_PREFIX);
 	if (nftnl_expr_is_set(nle, NFTNL_EXPR_LOG_PREFIX)) {
-		stmt->log.prefix = xstrdup(prefix);
+		stmt->log.prefix = constant_expr_alloc(&internal_location,
+						       &string_type,
+						       BYTEORDER_HOST_ENDIAN,
+						       (strlen(prefix) + 1) * BITS_PER_BYTE,
+						       prefix);
 		stmt->log.flags |= STMT_LOG_PREFIX;
 	}
 	if (nftnl_expr_is_set(nle, NFTNL_EXPR_LOG_GROUP)) {

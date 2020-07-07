@@ -10,6 +10,7 @@
  */
 
 #include <linux/netfilter/nf_tables.h>
+#include <linux/netfilter/nf_log.h>
 
 #include <string.h>
 #include <rule.h>
@@ -1006,8 +1007,10 @@ static void netlink_gen_log_stmt(struct netlink_linearize_ctx *ctx,
 
 	nle = alloc_nft_expr("log");
 	if (stmt->log.prefix != NULL) {
-		nftnl_expr_set_str(nle, NFTNL_EXPR_LOG_PREFIX,
-				      stmt->log.prefix);
+		char prefix[NF_LOG_PREFIXLEN] = {};
+
+		expr_to_string(stmt->log.prefix, prefix);
+		nftnl_expr_set_str(nle, NFTNL_EXPR_LOG_PREFIX, prefix);
 	}
 	if (stmt->log.flags & STMT_LOG_GROUP) {
 		nftnl_expr_set_u16(nle, NFTNL_EXPR_LOG_GROUP, stmt->log.group);

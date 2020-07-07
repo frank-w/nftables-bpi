@@ -381,6 +381,8 @@ extern const struct datatype *expr_basetype(const struct expr *expr);
 extern void expr_set_type(struct expr *expr, const struct datatype *dtype,
 			  enum byteorder byteorder);
 
+void expr_to_string(const struct expr *expr, char *string);
+
 struct eval_ctx;
 extern int expr_binary_error(struct list_head *msgs,
 			     const struct expr *e1, const struct expr *e2,

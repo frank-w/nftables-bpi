@@ -175,6 +175,15 @@ void expr_describe(const struct expr *expr, struct output_ctx *octx)
 	}
 }
 
+void expr_to_string(const struct expr *expr, char *string)
+{
+	int len = expr->len / BITS_PER_BYTE;
+
+	assert(expr->dtype == &string_type);
+
+	mpz_export_data(string, expr->value, BYTEORDER_HOST_ENDIAN, len);
+}
+
 void expr_set_type(struct expr *expr, const struct datatype *dtype,
 		   enum byteorder byteorder)
 {

@@ -75,7 +75,7 @@ enum {
 };
 
 struct log_stmt {
-	const char		*prefix;
+	struct expr		*prefix;
 	unsigned int		snaplen;
 	uint16_t		group;
 	uint16_t		qthreshold;

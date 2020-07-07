@@ -19,6 +19,7 @@
 #include <linux/netfilter/nf_tables.h>
 #include <linux/netfilter/nf_synproxy.h>
 #include <linux/netfilter/nf_nat.h>
+#include <linux/netfilter/nf_log.h>
 #include <linux/netfilter_ipv4.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/icmp6.h>
@@ -3203,8 +3204,50 @@ static int stmt_evaluate_queue(struct eval_ctx *ctx, struct stmt *stmt)
 	return 0;
 }
 
+static int stmt_evaluate_log_prefix(struct eval_ctx *ctx, struct stmt *stmt)
+{
+	char prefix[NF_LOG_PREFIXLEN] = {}, tmp[NF_LOG_PREFIXLEN] = {};
+	int len = sizeof(prefix), offset = 0, ret;
+	struct expr *expr;
+	size_t size = 0;
+
+	if (stmt->log.prefix->etype != EXPR_LIST)
+		return 0;
+
+	list_for_each_entry(expr, &stmt->log.prefix->expressions, list) {
+		switch (expr->etype) {
+		case EXPR_VALUE:
+			expr_to_string(expr, tmp);
+			ret = snprintf(prefix + offset, len, "%s", tmp);
+			break;
+		case EXPR_VARIABLE:
+			ret = snprintf(prefix + offset, len, "%s",
+				       expr->sym->expr->identifier);
+			break;
+		default:
+			BUG("unknown expresion type %s\n", expr_name(expr));
+			break;
+		}
+		SNPRINTF_BUFFER_SIZE(ret, size, len, offset);
+	}
+
+	if (len == NF_LOG_PREFIXLEN)
+		return stmt_error(ctx, stmt, "log prefix is too long");
+
+	expr_free(stmt->log.prefix);
+
+	stmt->log.prefix =
+		constant_expr_alloc(&stmt->log.prefix->location, &string_type,
+				    BYTEORDER_HOST_ENDIAN,
+				    strlen(prefix) * BITS_PER_BYTE,
+				    prefix);
+	return 0;
+}
+
 static int stmt_evaluate_log(struct eval_ctx *ctx, struct stmt *stmt)
 {
+	int ret = 0;
+
 	if (stmt->log.flags & (STMT_LOG_GROUP | STMT_LOG_SNAPLEN |
 			       STMT_LOG_QTHRESHOLD)) {
 		if (stmt->log.flags & STMT_LOG_LEVEL)
@@ -3218,7 +3261,11 @@ static int stmt_evaluate_log(struct eval_ctx *ctx, struct stmt *stmt)
 	    (stmt->log.flags & ~STMT_LOG_LEVEL || stmt->log.logflags))
 		return stmt_error(ctx, stmt,
 				  "log level audit doesn't support any further options");
-	return 0;
+
+	if (stmt->log.prefix)
+		ret = stmt_evaluate_log_prefix(ctx, stmt);
+
+	return ret;
 }
 
 static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)

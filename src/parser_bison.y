@@ -2636,11 +2636,125 @@ log_args		:	log_arg
 
 log_arg			:	PREFIX			string
 			{
-				struct expr *expr;
+				struct scope *scope = current_scope(state);
+				bool done = false, another_var = false;
+				char *start, *end, scratch = '\0';
+				struct expr *expr, *item;
+				struct symbol *sym;
+				enum {
+					PARSE_TEXT,
+					PARSE_VAR,
+				} prefix_state;
 
-				expr = constant_expr_alloc(&@$, &string_type,
-							   BYTEORDER_HOST_ENDIAN,
-							   strlen($2) * BITS_PER_BYTE, $2);
+				/* No variables in log prefix, skip. */
+				if (!strchr($2, '$')) {
+					expr = constant_expr_alloc(&@$, &string_type,
+								   BYTEORDER_HOST_ENDIAN,
+								   (strlen($2) + 1) * BITS_PER_BYTE, $2);
+					$<stmt>0->log.prefix = expr;
+					$<stmt>0->log.flags |= STMT_LOG_PREFIX;
+					break;
+				}
+
+				/* Parse variables in log prefix string using a
+				 * state machine parser with two states. This
+				 * parser creates list of expressions composed
+				 * of constant and variable expressions.
+				 */
+				expr = compound_expr_alloc(&@$, EXPR_LIST);
+
+				start = (char *)$2;
+
+				if (*start != '$') {
+					prefix_state = PARSE_TEXT;
+				} else {
+					prefix_state = PARSE_VAR;
+					start++;
+				}
+				end = start;
+
+				/* Not nice, but works. */
+				while (!done) {
+					switch (prefix_state) {
+					case PARSE_TEXT:
+						while (*end != '\0' && *end != '$')
+							end++;
+
+						if (*end == '\0')
+							done = true;
+
+						*end = '\0';
+						item = constant_expr_alloc(&@$, &string_type,
+									   BYTEORDER_HOST_ENDIAN,
+									   (strlen(start) + 1) * BITS_PER_BYTE,
+									   start);
+						compound_expr_add(expr, item);
+
+						if (done)
+							break;
+
+						start = end + 1;
+						end = start;
+
+						/* fall through */
+					case PARSE_VAR:
+						while (isalnum(*end) || *end == '_')
+							end++;
+
+						if (*end == '\0')
+							done = true;
+						else if (*end == '$')
+							another_var = true;
+						else
+							scratch = *end;
+
+						*end = '\0';
+
+						sym = symbol_get(scope, start);
+						if (!sym) {
+							sym = symbol_lookup_fuzzy(scope, start);
+							if (sym) {
+								erec_queue(error(&@2, "unknown identifier '%s'; "
+										 "did you mean identifier ‘%s’?",
+										 start, sym->identifier),
+									   state->msgs);
+							} else {
+								erec_queue(error(&@2, "unknown identifier '%s'",
+										 start),
+									   state->msgs);
+							}
+							expr_free(expr);
+							xfree($2);
+							YYERROR;
+						}
+						item = variable_expr_alloc(&@$, scope, sym);
+						compound_expr_add(expr, item);
+
+						if (done)
+							break;
+
+						/* Restore original byte after
+						 * symbol lookup.
+						 */
+						if (scratch) {
+							*end = scratch;
+							scratch = '\0';
+						}
+
+						start = end;
+						if (another_var) {
+							another_var = false;
+							start++;
+							prefix_state = PARSE_VAR;
+						} else {
+							prefix_state = PARSE_TEXT;
+						}
+						end = start;
+						break;
+					}
+				}
+
+				xfree($2);
 				$<stmt>0->log.prefix	 = expr;
 				$<stmt>0->log.flags 	|= STMT_LOG_PREFIX;
 			}

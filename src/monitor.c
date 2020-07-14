@@ -214,6 +214,10 @@ static int netlink_events_table_cb(const struct nlmsghdr *nlh, int type,
 
 		nft_mon_print(monh, "%s %s", family2str(t->handle.family),
 			      t->handle.table.name);
+
+		if (t->flags & TABLE_F_DORMANT)
+			nft_mon_print(monh, " { flags dormant; }");
+
 		if (nft_output_handle(&monh->ctx->nft->output))
 			nft_mon_print(monh, " # handle %" PRIu64 "",
 				      t->handle.handle.id);

@@ -3291,13 +3291,12 @@ static int stmt_evaluate_log_prefix(struct eval_ctx *ctx, struct stmt *stmt)
 	if (len == NF_LOG_PREFIXLEN)
 		return stmt_error(ctx, stmt, "log prefix is too long");
 
+	expr = constant_expr_alloc(&stmt->log.prefix->location, &string_type,
+				   BYTEORDER_HOST_ENDIAN,
+				   strlen(prefix) * BITS_PER_BYTE, prefix);
 	expr_free(stmt->log.prefix);
+	stmt->log.prefix = expr;
 
-	stmt->log.prefix =
-		constant_expr_alloc(&stmt->log.prefix->location, &string_type,
-				    BYTEORDER_HOST_ENDIAN,
-				    strlen(prefix) * BITS_PER_BYTE,
-				    prefix);
 	return 0;
 }
 

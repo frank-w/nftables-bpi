@@ -2676,6 +2676,7 @@ log_arg			:	PREFIX			string
 					expr = constant_expr_alloc(&@$, &string_type,
 								   BYTEORDER_HOST_ENDIAN,
 								   (strlen($2) + 1) * BITS_PER_BYTE, $2);
+					xfree($2);
 					$<stmt>0->log.prefix = expr;
 					$<stmt>0->log.flags |= STMT_LOG_PREFIX;
 					break;

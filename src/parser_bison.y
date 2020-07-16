@@ -1945,6 +1945,11 @@ flowtable_expr		:	'{'	flowtable_list_expr	'}'
 				$2->location = @$;
 				$$ = $2;
 			}
+			|	variable_expr
+			{
+				$1->location = @$;
+				$$ = $1;
+			}
 			;
 
 flowtable_list_expr	:	flowtable_expr_member
@@ -1966,6 +1971,11 @@ flowtable_expr_member	:	STRING
 							 BYTEORDER_HOST_ENDIAN,
 							 strlen($1) * BITS_PER_BYTE, $1);
 				xfree($1);
+			}
+			|	variable_expr
+			{
+				datatype_set($1->sym->expr, &ifname_type);
+				$$ = $1;
 			}
 			;
 
@@ -2205,6 +2215,12 @@ dev_spec		:	DEVICE	string
 				$$ = compound_expr_alloc(&@$, EXPR_LIST);
 				compound_expr_add($$, expr);
 
+			}
+			|	DEVICE	variable_expr
+			{
+				datatype_set($2->sym->expr, &ifname_type);
+				$$ = compound_expr_alloc(&@$, EXPR_LIST);
+				compound_expr_add($$, $2);
 			}
 			|	DEVICES		'='	flowtable_expr
 			{

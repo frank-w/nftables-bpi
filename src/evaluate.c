@@ -3719,6 +3719,69 @@ static bool evaluate_priority(struct eval_ctx *ctx, struct prio_spec *prio,
 	return true;
 }
 
+static bool evaluate_expr_variable(struct eval_ctx *ctx, struct expr **exprp)
+{
+	struct expr *expr;
+
+	if (expr_evaluate(ctx, exprp) < 0)
+		return false;
+
+	expr = *exprp;
+	if (expr->etype != EXPR_VALUE &&
+	    expr->etype != EXPR_SET) {
+		expr_error(ctx->msgs, expr, "%s is not a valid "
+			   "variable expression", expr_name(expr));
+		return false;
+	}
+
+	return true;
+}
+
+static bool evaluate_device_expr(struct eval_ctx *ctx, struct expr **dev_expr)
+{
+	struct expr *expr, *next, *key;
+	LIST_HEAD(tmp);
+
+	if ((*dev_expr)->etype == EXPR_VARIABLE) {
+		expr_set_context(&ctx->ectx, &ifname_type,
+				 IFNAMSIZ * BITS_PER_BYTE);
+		if (!evaluate_expr_variable(ctx, dev_expr))
+			return false;
+	}
+
+	if ((*dev_expr)->etype != EXPR_SET &&
+	    (*dev_expr)->etype != EXPR_LIST)
+		return true;
+
+	list_for_each_entry_safe(expr, next, &(*dev_expr)->expressions, list) {
+		list_del(&expr->list);
+
+		switch (expr->etype) {
+		case EXPR_VARIABLE:
+			expr_set_context(&ctx->ectx, &ifname_type,
+					 IFNAMSIZ * BITS_PER_BYTE);
+			if (!evaluate_expr_variable(ctx, &expr))
+				return false;
+			break;
+		case EXPR_SET_ELEM:
+			key = expr_clone(expr->key);
+			expr_free(expr);
+			expr = key;
+			break;
+		case EXPR_VALUE:
+			break;
+		default:
+			BUG("invalid expresion type %s\n", expr_name(expr));
+			break;
+		}
+
+		list_add(&expr->list, &tmp);
+	}
+	list_splice_init(&tmp, &(*dev_expr)->expressions);
+
+	return true;
+}
+
 static uint32_t str2hooknum(uint32_t family, const char *hook);
 
 static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
@@ -3739,6 +3802,9 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 						   "invalid priority expression %s.",
 						   expr_name(ft->priority.expr));
 	}
+
+	if (ft->dev_expr && !evaluate_device_expr(ctx, &ft->dev_expr))
+		return -1;
 
 	return 0;
 }
@@ -3965,6 +4031,9 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 			if (!chain->dev_expr)
 				return __stmt_binary_error(ctx, &chain->loc, NULL,
 							   "Missing `device' in this chain definition");
+
+			if (!evaluate_device_expr(ctx, &chain->dev_expr))
+				return -1;
 		} else if (chain->dev_expr) {
 			return __stmt_binary_error(ctx, &chain->dev_expr->location, NULL,
 						   "This chain type cannot be bound to device");

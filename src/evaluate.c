@@ -3968,25 +3968,6 @@ static uint32_t str2hooknum(uint32_t family, const char *hook)
 	return NF_INET_NUMHOOKS;
 }
 
-static bool evaluate_policy(struct eval_ctx *ctx, struct expr **exprp)
-{
-	struct expr *expr;
-
-	ctx->ectx.dtype = &policy_type;
-	ctx->ectx.len = NFT_NAME_MAXLEN * BITS_PER_BYTE;
-	if (expr_evaluate(ctx, exprp) < 0)
-		return false;
-
-	expr = *exprp;
-	if (expr->etype != EXPR_VALUE) {
-		expr_error(ctx->msgs, expr, "%s is not a valid "
-			   "policy expression", expr_name(expr));
-		return false;
-	}
-
-	return true;
-}
-
 static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 {
 	struct table *table;
@@ -4022,7 +4003,9 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 						   "invalid priority expression %s in this context.",
 						   expr_name(chain->priority.expr));
 		if (chain->policy) {
-			if (!evaluate_policy(ctx, &chain->policy))
+			expr_set_context(&ctx->ectx, &policy_type,
+					 NFT_NAME_MAXLEN * BITS_PER_BYTE);
+			if (!evaluate_expr_variable(ctx, &chain->policy))
 				return chain_error(ctx, chain, "invalid policy expression %s",
 						   expr_name(chain->policy));
 		}

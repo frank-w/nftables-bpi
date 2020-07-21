@@ -4188,20 +4188,8 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 
 static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 {
-	struct table *table;
-	struct set *set;
-
 	switch (cmd->obj) {
 	case CMD_OBJ_ELEMENTS:
-		table = table_lookup(&cmd->handle, &ctx->nft->cache);
-		if (table == NULL)
-			return table_not_found(ctx);
-
-		set = set_lookup(table, cmd->handle.set.name);
-		if (set == NULL || set_is_map(set->flags))
-			return set_not_found(ctx, &ctx->cmd->handle.set.location,
-					     ctx->cmd->handle.set.name);
-
 		return setelem_evaluate(ctx, &cmd->expr);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);

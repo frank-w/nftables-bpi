@@ -2013,10 +2013,13 @@ static int expr_evaluate_variable(struct eval_ctx *ctx, struct expr **exprp)
 {
 	struct expr *new = expr_clone((*exprp)->sym->expr);
 
+	if (expr_evaluate(ctx, &new) < 0)
+		return -1;
+
 	expr_free(*exprp);
 	*exprp = new;
 
-	return expr_evaluate(ctx, exprp);
+	return 0;
 }
 
 static int expr_evaluate_xfrm(struct eval_ctx *ctx, struct expr **exprp)

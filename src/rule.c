@@ -1519,6 +1519,7 @@ void nft_cmd_expand(struct cmd *cmd)
 		list_splice(&new_cmds, &cmd->list);
 		break;
 	case CMD_OBJ_SET:
+	case CMD_OBJ_MAP:
 		set = cmd->set;
 		memset(&h, 0, sizeof(h));
 		handle_merge(&h, &set->handle);

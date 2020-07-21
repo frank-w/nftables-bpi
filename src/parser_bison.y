@@ -2157,7 +2157,6 @@ extended_prio_spec	:	int_num
 			{
 				struct prio_spec spec = {0};
 
-				datatype_set($1->sym->expr, &priority_type);
 				spec.expr = $1;
 				$$ = spec;
 			}
@@ -3982,6 +3981,15 @@ set_rhs_expr		:	concat_rhs_expr
 initializer_expr	:	rhs_expr
 			|	list_rhs_expr
 			|	'{' '}'		{ $$ = compound_expr_alloc(&@$, EXPR_SET); }
+			|	DASH	NUM
+			{
+				int32_t num = -$2;
+
+				$$ = constant_expr_alloc(&@$, &integer_type,
+							 BYTEORDER_HOST_ENDIAN,
+							 sizeof(num) * BITS_PER_BYTE,
+							 &num);
+			}
 			;
 
 counter_config		:	PACKETS		NUM	BYTES	NUM

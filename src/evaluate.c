@@ -1912,6 +1912,10 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 			    byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)
 				return -1;
 			break;
+		case EXPR_CONCAT:
+			return expr_binary_error(ctx->msgs, left, right,
+						 "Use concatenations with sets and maps, not singleton values");
+			break;
 		default:
 			BUG("invalid expression type %s\n", expr_name(right));
 		}

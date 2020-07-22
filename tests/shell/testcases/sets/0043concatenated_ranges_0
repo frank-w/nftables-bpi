@@ -63,27 +63,31 @@ cat <<'EOF' > "${tmp}"
 flush ruleset
 
 table inet filter {
-	set test {
-		type ${ta} . ${tb} . ${tc}
+	${setmap} test {
+		type ${ta} . ${tb} . ${tc} ${mapt}
 		flags interval,timeout
-		elements = { ${a1} . ${b1} . ${c1} ,
-			     ${a2} . ${b2} . ${c2} ,
-			     ${a3} . ${b3} . ${c3} }
+		elements = { ${a1} . ${b1} . ${c1} ${mapv},
+			     ${a2} . ${b2} . ${c2} ${mapv},
+			     ${a3} . ${b3} . ${c3} ${mapv}, }
 	}
 
 	chain output {
 		type filter hook output priority 0; policy accept;
-		${sa} . ${sb} . ${sc} @test counter
+		${rule} @test counter
 	}
 }
 EOF
 
 timeout_tested=0
+run_test()
+{
+setmap="$1"
 for ta in ${TYPES}; do
 	eval a=\$ELEMS_${ta}
 	a1=${a%% *}; a2=$(expr "$a" : ".* \(.*\) .*"); a3=${a##* }
 	eval sa=\$RULESPEC_${ta}
 
+	mark=0
 	for tb in ${TYPES}; do
 		[ "${tb}" = "${ta}" ] && continue
 		if [ "${tb}" = "ipv6_addr" ]; then
@@ -107,40 +111,54 @@ for ta in ${TYPES}; do
 				[ "${tb}" = "ipv6_addr" ] && continue
 			fi
 
-			echo "TYPE: ${ta} ${tb} ${tc}"
+			echo "$setmap TYPE: ${ta} ${tb} ${tc}"
 
 			eval c=\$ELEMS_${tc}
 			c1=${c%% *}; c2=$(expr "$c" : ".* \(.*\) .*"); c3=${c##* }
 			eval sc=\$RULESPEC_${tc}
 
+			case "${setmap}" in
+			"set")
+				mapt=""
+				mapv=""
+				rule="${sa} . ${sb} . ${sc}"
+			;;
+			"map")
+				mapt=": mark"
+				mark=42
+				mapv=$(printf " : 0x%08x" ${mark})
+				rule="meta mark set ${sa} . ${sb} . ${sc} map"
+			;;
+			esac
+
 			render ${tmp} | ${NFT} -f -
 
-			[ $(${NFT} list set inet filter test |		\
-			   grep -c -e "${a1} . ${b1} . ${c1}"		\
-				   -e "${a2} . ${b2} . ${c2}"		\
-				   -e "${a3} . ${b3} . ${c3}") -eq 3 ]
+			[ $(${NFT} list ${setmap} inet filter test |		\
+			   grep -c -e "${a1} . ${b1} . ${c1}${mapv}"		\
+				   -e "${a2} . ${b2} . ${c2}${mapv}"		\
+				   -e "${a3} . ${b3} . ${c3}${mapv}") -eq 3 ]
 
 			! ${NFT} "add element inet filter test \
-				  { ${a1} . ${b1} . ${c1} };
+				  { ${a1} . ${b1} . ${c1}${mapv} };
 				  add element inet filter test \
-				  { ${a2} . ${b2} . ${c2} };
+				  { ${a2} . ${b2} . ${c2}${mapv} };
 				  add element inet filter test \
-				  { ${a3} . ${b3} . ${c3} }" 2>/dev/null
+				  { ${a3} . ${b3} . ${c3}${mapv} }" 2>/dev/null
 
 			${NFT} delete element inet filter test \
-				"{ ${a1} . ${b1} . ${c1} }"
+				"{ ${a1} . ${b1} . ${c1}${mapv} }"
 			! ${NFT} delete element inet filter test \
-				"{ ${a1} . ${b1} . ${c1} }" 2>/dev/null
+				"{ ${a1} . ${b1} . ${c1}${mapv} }" 2>/dev/null
 
 			eval add_a=\$ADD_${ta}
 			eval add_b=\$ADD_${tb}
 			eval add_c=\$ADD_${tc}
 			${NFT} add element inet filter test \
-				"{ ${add_a} . ${add_b} . ${add_c} timeout 1s}"
-			[ $(${NFT} list set inet filter test |		\
+				"{ ${add_a} . ${add_b} . ${add_c} timeout 1s${mapv}}"
+			[ $(${NFT} list ${setmap} inet filter test |	\
 			   grep -c "${add_a} . ${add_b} . ${add_c}") -eq 1 ]
 			! ${NFT} add element inet filter test \
-				"{ ${add_a} . ${add_b} . ${add_c} timeout 1s}" \
+				"{ ${add_a} . ${add_b} . ${add_c} timeout 1s${mapv}}" \
 				2>/dev/null
 
 			eval get_a=\$GET_${ta}
@@ -150,31 +168,35 @@ for ta in ${TYPES}; do
 			exp_b=${get_b##* }; get_b=${get_b%% *}
 			exp_c=${get_c##* }; get_c=${get_c%% *}
 			[ $(${NFT} get element inet filter test 	\
-			   "{ ${get_a} . ${get_b} . ${get_c} }" |	\
+			   "{ ${get_a} . ${get_b} . ${get_c}${mapv} }" |	\
 			   grep -c "${exp_a} . ${exp_b} . ${exp_c}") -eq 1 ]
 
 			${NFT} "delete element inet filter test \
-				{ ${a2} . ${b2} . ${c2} };
+				{ ${a2} . ${b2} . ${c2}${mapv} };
 				delete element inet filter test \
-				{ ${a3} . ${b3} . ${c3} }"
+				{ ${a3} . ${b3} . ${c3}${mapv} }"
 			! ${NFT} "delete element inet filter test \
-				  { ${a2} . ${b2} . ${c2} };
+				  { ${a2} . ${b2} . ${c2}${mapv} };
 				  delete element inet filter test \
-				  { ${a3} . ${b3} . ${c3} }" 2>/dev/null
+				  { ${a3} . ${b3} . ${c3} ${mapv} }" 2>/dev/null
 
 			if [ ${timeout_tested} -eq 1 ]; then
 				${NFT} delete element inet filter test \
-					"{ ${add_a} . ${add_b} . ${add_c} }"
+					"{ ${add_a} . ${add_b} . ${add_c} ${mapv} }"
 				! ${NFT} delete element inet filter test \
-					"{ ${add_a} . ${add_b} . ${add_c} }" \
+					"{ ${add_a} . ${add_b} . ${add_c} ${mapv} }" \
 					2>/dev/null
 				continue
 			fi
 
 			sleep 1
-			[ $(${NFT} list set inet filter test |		\
-			   grep -c "${add_a} . ${add_b} . ${add_c}") -eq 0 ]
+			[ $(${NFT} list ${setmap} inet filter test |		\
+			   grep -c "${add_a} . ${add_b} . ${add_c} ${mapv}") -eq 0 ]
 			timeout_tested=1
 		done
 	done
 done
+}
+
+run_test "set"
+run_test "map"

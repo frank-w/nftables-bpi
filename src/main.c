@@ -24,17 +24,37 @@
 
 static struct nft_ctx *nft;
 
-/*
- * These options are grouped separately in the help, so we give them named
- * indices for use there.
- */
 enum opt_indices {
+        /* General options */
 	IDX_HELP,
 	IDX_VERSION,
 	IDX_VERSION_LONG,
-	IDX_CHECK,
+        /* Ruleset input handling */
 	IDX_FILE,
+#define IDX_RULESET_INPUT_START	IDX_FILE
 	IDX_INTERACTIVE,
+        IDX_INCLUDEPATH,
+	IDX_CHECK,
+#define IDX_RULESET_INPUT_END	IDX_CHECK
+        /* Ruleset list formatting */
+        IDX_HANDLE,
+#define IDX_RULESET_LIST_START	IDX_HANDLE
+        IDX_STATELESS,
+        IDX_TERSE,
+        IDX_SERVICE,
+        IDX_REVERSEDNS,
+        IDX_GUID,
+        IDX_NUMERIC,
+        IDX_NUMERIC_PRIO,
+        IDX_NUMERIC_PROTO,
+        IDX_NUMERIC_TIME,
+#define IDX_RULESET_LIST_END IDX_NUMERIC_TIME
+        /* Command output formatting */
+        IDX_ECHO,
+#define IDX_CMD_OUTPUT_START	IDX_ECHO
+        IDX_JSON,
+        IDX_DEBUG,
+#define IDX_CMD_OUTPUT_END	IDX_DEBUG
 };
 
 enum opt_vals {
@@ -72,46 +92,46 @@ struct nft_opt {
 	(struct nft_opt) { .name = n, .val = v, .arg = a, .help = h }
 
 static const struct nft_opt nft_options[] = {
-	NFT_OPT("help",			OPT_HELP,		NULL,
-		"Show this help"),
-	NFT_OPT("version",		OPT_VERSION,		NULL,
-		"Show version information"),
-	NFT_OPT(NULL,                   OPT_VERSION_LONG,       NULL,
-		"Show extended version information"),
-	NFT_OPT("check",		OPT_CHECK,		NULL,
-		"Check commands validity without actually applying the changes."),
-	NFT_OPT("file",			OPT_FILE,		"<filename>",
-		"Read input from <filename>"),
-	NFT_OPT("interactive",		OPT_INTERACTIVE,	NULL,
-		"Read input from interactive CLI"),
-	NFT_OPT("numeric",		OPT_NUMERIC,		NULL,
-		"Print fully numerical output."),
-	NFT_OPT("stateless",		OPT_STATELESS,		NULL,
-		"Omit stateful information of ruleset."),
-	NFT_OPT("reversedns",		OPT_IP2NAME,		NULL,
-		"Translate IP addresses to names."),
-	NFT_OPT("service",		OPT_SERVICE,		NULL,
-		"Translate ports to service names as described in /etc/services."),
-	NFT_OPT("includepath",		OPT_INCLUDEPATH,	"<directory>",
-		"Add <directory> to the paths searched for include files. Default is: " DEFAULT_INCLUDE_PATH),
-	NFT_OPT("debug",		OPT_DEBUG,		"<level [,level...]>",
-		"Specify debugging level (scanner, parser, eval, netlink, mnl, proto-ctx, segtree, all)"),
-	NFT_OPT("handle",		OPT_HANDLE_OUTPUT,	NULL,
-		"Output rule handle."),
-	NFT_OPT("echo",			OPT_ECHO,		NULL,
-		"Echo what has been added, inserted or replaced."),
-	NFT_OPT("json",			OPT_JSON,		NULL,
-		"Format output in JSON"),
-	NFT_OPT("guid",			OPT_GUID,		NULL,
-		"Print UID/GID as defined in /etc/passwd and /etc/group."),
-	NFT_OPT("numeric-priority",	OPT_NUMERIC_PRIO,	NULL,
-		"Print chain priority numerically."),
-	NFT_OPT("numeric-protocol",	OPT_NUMERIC_PROTO,	NULL,
-		"Print layer 4 protocols numerically."),
-	NFT_OPT("numeric-time",		OPT_NUMERIC_TIME,	NULL,
-		"Print time values numerically."),
-	NFT_OPT("terse",		OPT_TERSE,		NULL,
-		"Omit contents of sets."),
+	[IDX_HELP]          = NFT_OPT("help",			OPT_HELP,		NULL,
+				     "Show this help"),
+	[IDX_VERSION]       = NFT_OPT("version",			OPT_VERSION,		NULL,
+				     "Show version information"),
+	[IDX_VERSION_LONG]  = NFT_OPT(NULL,			OPT_VERSION_LONG,	NULL,
+				     "Show extended version information"),
+	[IDX_FILE]	    = NFT_OPT("file",			OPT_FILE,		"<filename>",
+				     "Read input from <filename>"),
+	[IDX_INTERACTIVE]   = NFT_OPT("interactive",		OPT_INTERACTIVE,	NULL,
+				     "Read input from interactive CLI"),
+	[IDX_INCLUDEPATH]   = NFT_OPT("includepath",		OPT_INCLUDEPATH,	"<directory>",
+				     "Add <directory> to the paths searched for include files. Default is: " DEFAULT_INCLUDE_PATH),
+	[IDX_CHECK]	    = NFT_OPT("check",			OPT_CHECK,		NULL,
+				     "Check commands validity without actually applying the changes."),
+	[IDX_HANDLE]	    = NFT_OPT("handle",			OPT_HANDLE_OUTPUT,	NULL,
+				     "Output rule handle."),
+	[IDX_STATELESS]     = NFT_OPT("stateless",		OPT_STATELESS,		NULL,
+				     "Omit stateful information of ruleset."),
+	[IDX_TERSE]	    = NFT_OPT("terse",			OPT_TERSE,		NULL,
+				      "Omit contents of sets."),
+	[IDX_SERVICE]       = NFT_OPT("service",			OPT_SERVICE,		NULL,
+				     "Translate ports to service names as described in /etc/services."),
+	[IDX_REVERSEDNS]    = NFT_OPT("reversedns",		OPT_IP2NAME,		NULL,
+				     "Translate IP addresses to names."),
+	[IDX_GUID]	    = NFT_OPT("guid",			OPT_GUID,		NULL,
+				     "Print UID/GID as defined in /etc/passwd and /etc/group."),
+	[IDX_NUMERIC]       = NFT_OPT("numeric",			OPT_NUMERIC,		NULL,
+				     "Print fully numerical output."),
+	[IDX_NUMERIC_PRIO]  = NFT_OPT("numeric-priority",	OPT_NUMERIC_PRIO,	NULL,
+				     "Print chain priority numerically."),
+	[IDX_NUMERIC_PROTO] = NFT_OPT("numeric-protocol",	OPT_NUMERIC_PROTO,	NULL,
+				     "Print layer 4 protocols numerically."),
+	[IDX_NUMERIC_TIME]  = NFT_OPT("numeric-time",		OPT_NUMERIC_TIME,	NULL,
+				      "Print time values numerically."),
+	[IDX_ECHO]	    = NFT_OPT("echo",			OPT_ECHO,		NULL,
+				     "Echo what has been added, inserted or replaced."),
+	[IDX_JSON]	    = NFT_OPT("json",			OPT_JSON,		NULL,
+				     "Format output in JSON"),
+	[IDX_DEBUG]	    = NFT_OPT("debug",			OPT_DEBUG,		"<level [,level...]>",
+				     "Specify debugging level (scanner, parser, eval, netlink, mnl, proto-ctx, segtree, all)"),
 };
 
 #define NR_NFT_OPTIONS (sizeof(nft_options) / sizeof(nft_options[0]))
@@ -169,25 +189,35 @@ static void print_option(const struct nft_opt *opt)
 
 static void show_help(const char *name)
 {
-	size_t i;
+	int i;
 
 	printf("Usage: %s [ options ] [ cmds... ]\n"
 	       "\n"
-	       "Options:\n", name);
+	       "Options (general):\n", name);
 
 	print_option(&nft_options[IDX_HELP]);
 	print_option(&nft_options[IDX_VERSION]);
 	print_option(&nft_options[IDX_VERSION_LONG]);
 
-	fputs("\n", stdout);
+	printf("\n"
+	       "Options (ruleset input handling):"
+	       "\n");
 
-	print_option(&nft_options[IDX_CHECK]);
-	print_option(&nft_options[IDX_FILE]);
-	print_option(&nft_options[IDX_INTERACTIVE]);
+	for (i = IDX_RULESET_INPUT_START; i <= IDX_RULESET_INPUT_END; i++)
+		print_option(&nft_options[i]);
 
-	fputs("\n", stdout);
+	printf("\n"
+	       "Options (ruleset list formatting):"
+	       "\n");
 
-	for (i = IDX_INTERACTIVE + 1; i < NR_NFT_OPTIONS; ++i)
+	for (i = IDX_RULESET_LIST_START; i <= IDX_RULESET_LIST_END; i++)
+		print_option(&nft_options[i]);
+
+	printf("\n"
+	       "Options (command output formatting):"
+	       "\n");
+
+	for (i = IDX_CMD_OUTPUT_START; i <= IDX_CMD_OUTPUT_END; i++)
 		print_option(&nft_options[i]);
 
 	fputs("\n", stdout);

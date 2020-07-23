@@ -22,7 +22,10 @@ for Netfilter.
 
 OPTIONS
 -------
-For a full summary of options, run *nft --help*.
+The command accepts several different options which are documented here in groups for better
+understanding of their meaning. You can get information about options by running *nft --help*.
+
+.General options:
 
 *-h*::
 *--help*::
@@ -32,56 +35,10 @@ For a full summary of options, run *nft --help*.
 *--version*::
 	Show version.
 
-*-n*::
-*--numeric*::
-	Print fully numerical output.
+*-V*::
+	Show long version information, including compile-time configuration.
 
-*-s*::
-*--stateless*::
-	Omit stateful information of rules and stateful objects.
-
-*-N*::
-*--reversedns*::
-	Translate IP address to names via reverse DNS lookup. This may slow down
-	your listing since it generates network traffic.
-
-*-S*::
-*--service*::
-	Translate ports to service names as defined by /etc/services.
-
-*-u*::
-*--guid*::
-	Translate numeric UID/GID to names as defined by /etc/passwd and /etc/group.
-
-*-p*::
-*--numeric-protocol*::
-	Display layer 4 protocol numerically.
-
-*-y*::
-*--numeric-priority*::
-	Display base chain priority numerically.
-
-*-c*::
-*--check*::
-	Check commands validity without actually applying the changes.
-
-*-a*::
-*--handle*::
-	Show object handles in output.
-
-*-e*::
-*--echo*::
-	When inserting items into the ruleset using *add*, *insert* or *replace* commands, print notifications
-	just like *nft monitor*.
-
-*-j*::
-*--json*::
-	Format output in JSON. See libnftables-json(5) for a schema description.
-
-*-I*::
-*--includepath directory*::
-	Add the directory 'directory' to the list of directories to be searched for included files. This
-	option may be specified multiple times.
+.Ruleset input handling options that specify to how to load rulesets:
 
 *-f*::
 *--file 'filename'*::
@@ -92,13 +49,74 @@ For a full summary of options, run *nft --help*.
 	Read input from an interactive readline CLI. You can use quit to exit, or use the EOF marker,
 	normally this is CTRL-D.
 
-*-T*::
-*--numeric-time*::
-	Show time, day and hour values in numeric format.
+*-I*::
+*--includepath directory*::
+	Add the directory 'directory' to the list of directories to be searched for included files. This
+	option may be specified multiple times.
+
+*-c*::
+*--check*::
+	Check commands validity without actually applying the changes.
+
+.Ruleset list output formatting that modify the output of the list ruleset command:
+
+*-a*::
+*--handle*::
+	Show object handles in output.
+
+*-s*::
+*--stateless*::
+	Omit stateful information of rules and stateful objects.
 
 *-t*::
 *--terse*::
 	Omit contents of sets from output.
+
+*-S*::
+*--service*::
+	Translate ports to service names as defined by /etc/services.
+
+*-N*::
+*--reversedns*::
+	Translate IP address to names via reverse DNS lookup. This may slow down
+	your listing since it generates network traffic.
+
+*-u*::
+*--guid*::
+	Translate numeric UID/GID to names as defined by /etc/passwd and /etc/group.
+
+*-n*::
+*--numeric*::
+	Print fully numerical output.
+
+*-y*::
+*--numeric-priority*::
+	Display base chain priority numerically.
+
+*-p*::
+*--numeric-protocol*::
+	Display layer 4 protocol numerically.
+
+*-T*::
+*--numeric-time*::
+	Show time, day and hour values in numeric format.
+
+.Command output formatting:
+
+*-e*::
+*--echo*::
+	When inserting items into the ruleset using *add*, *insert* or *replace* commands, print notifications
+	just like *nft monitor*.
+
+*-j*::
+*--json*::
+	Format output in JSON. See libnftables-json(5) for a schema description.
+
+*-d*::
+*--debug* 'level'::
+	Enable debugging output. The debug level can be any of *scanner*, *parser*, *eval*,
+        *netlink*, *mnl*, *proto-ctx*, *segtree*, *all*. You can combine more than one by
+        separating by the ',' symbol, for example '-d eval,mnl'.
 
 INPUT FILE FORMATS
 ------------------

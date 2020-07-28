@@ -2693,21 +2693,6 @@ static int do_command_reset(struct netlink_ctx *ctx, struct cmd *cmd)
 	return do_list_obj(ctx, cmd, type);
 }
 
-static void flush_set_cache(struct netlink_ctx *ctx, struct cmd *cmd)
-{
-	struct table *table;
-	struct set *set;
-
-	table = table_lookup(&cmd->handle, &ctx->nft->cache);
-	assert(table);
-	set = set_lookup(table, cmd->handle.set.name);
-	assert(set);
-	if (set->init != NULL) {
-		expr_free(set->init);
-		set->init = NULL;
-	}
-}
-
 static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
@@ -2717,7 +2702,6 @@ static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SET:
 	case CMD_OBJ_MAP:
 	case CMD_OBJ_METER:
-		flush_set_cache(ctx, cmd);
 		return mnl_nft_setelem_flush(ctx, cmd);
 	case CMD_OBJ_RULESET:
 		return mnl_nft_table_del(ctx, cmd);

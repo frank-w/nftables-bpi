@@ -4375,6 +4375,14 @@ static int cmd_evaluate_reset(struct eval_ctx *ctx, struct cmd *cmd)
 	}
 }
 
+static void __flush_set_cache(struct set *set)
+{
+	if (set->init != NULL) {
+		expr_free(set->init);
+		set->init = NULL;
+	}
+}
+
 static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table;
@@ -4402,6 +4410,9 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		else if (!set_is_literal(set->flags))
 			return cmd_error(ctx, &ctx->cmd->handle.set.location,
 					 "%s", strerror(ENOENT));
+
+		__flush_set_cache(set);
+
 		return 0;
 	case CMD_OBJ_MAP:
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
@@ -4416,6 +4427,8 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 			return cmd_error(ctx, &ctx->cmd->handle.set.location,
 					 "%s", strerror(ENOENT));
 
+		__flush_set_cache(set);
+
 		return 0;
 	case CMD_OBJ_METER:
 		table = table_lookup(&cmd->handle, &ctx->nft->cache);
@@ -4429,6 +4442,8 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		else if (!set_is_meter(set->flags))
 			return cmd_error(ctx, &ctx->cmd->handle.set.location,
 					 "%s", strerror(ENOENT));
+
+		__flush_set_cache(set);
 
 		return 0;
 	default:

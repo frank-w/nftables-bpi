@@ -862,6 +862,7 @@ common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
 				if (symbol_lookup(scope, $2) != NULL) {
 					erec_queue(error(&@2, "redefinition of symbol '%s'", $2),
 						   state->msgs);
+					expr_free($4);
 					xfree($2);
 					YYERROR;
 				}

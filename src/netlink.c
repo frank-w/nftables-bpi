@@ -1228,7 +1228,7 @@ int netlink_list_setelems(struct netlink_ctx *ctx, const struct handle *h,
 }
 
 int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
-			const struct location *loc, struct table *table,
+			const struct location *loc, struct set *cache_set,
 			struct set *set, struct expr *init)
 {
 	struct nftnl_set *nls, *nls_out = NULL;
@@ -1261,7 +1261,7 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 	if (set->flags & NFT_SET_INTERVAL && set->desc.field_count > 1)
 		concat_range_aggregate(set->init);
 	else if (set->flags & NFT_SET_INTERVAL)
-		err = get_set_decompose(table, set);
+		err = get_set_decompose(cache_set, set);
 	else
 		list_expr_sort(&ctx->set->init->expressions);
 

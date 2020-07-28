@@ -683,6 +683,10 @@ struct cmd {
 		void		*data;
 		struct expr	*expr;
 		struct set	*set;
+		struct {
+			struct expr	*expr;	/* same offset as cmd->expr */
+			struct set	*set;
+		} elem;
 		struct rule	*rule;
 		struct chain	*chain;
 		struct table	*table;

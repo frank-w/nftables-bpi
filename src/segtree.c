@@ -687,17 +687,15 @@ struct expr *get_set_intervals(const struct set *set, const struct expr *init)
 	return new_init;
 }
 
-static struct expr *get_set_interval_find(const struct table *table,
-					  const char *set_name,
+static struct expr *get_set_interval_find(const struct set *cache_set,
 					  struct expr *left,
 					  struct expr *right)
 {
+	const struct set *set = cache_set;
 	struct expr *range = NULL;
-	struct set *set;
 	struct expr *i;
 	mpz_t val;
 
-	set = set_lookup(table, set_name);
 	mpz_init2(val, set->key->len);
 
 	list_for_each_entry(i, &set->init->expressions, list) {
@@ -724,7 +722,7 @@ out:
 	return range;
 }
 
-int get_set_decompose(struct table *table, struct set *set)
+int get_set_decompose(struct set *cache_set, struct set *set)
 {
 	struct expr *i, *next, *range;
 	struct expr *left = NULL;
@@ -737,8 +735,7 @@ int get_set_decompose(struct table *table, struct set *set)
 			list_del(&left->list);
 			list_del(&i->list);
 			mpz_sub_ui(i->key->value, i->key->value, 1);
-			range = get_set_interval_find(table, set->handle.set.name,
-						    left, i);
+			range = get_set_interval_find(cache_set, left, i);
 			if (!range) {
 				expr_free(new_init);
 				errno = ENOENT;
@@ -751,8 +748,7 @@ int get_set_decompose(struct table *table, struct set *set)
 			left = NULL;
 		} else {
 			if (left) {
-				range = get_set_interval_find(table,
-							      set->handle.set.name,
+				range = get_set_interval_find(cache_set,
 							      left, NULL);
 				if (range)
 					compound_expr_add(new_init, range);
@@ -764,8 +760,7 @@ int get_set_decompose(struct table *table, struct set *set)
 		}
 	}
 	if (left) {
-		range = get_set_interval_find(table, set->handle.set.name,
-					      left, NULL);
+		range = get_set_interval_find(cache_set, left, NULL);
 		if (range)
 			compound_expr_add(new_init, range);
 		else

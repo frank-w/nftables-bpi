@@ -1577,6 +1577,8 @@ void cmd_free(struct cmd *cmd)
 		switch (cmd->obj) {
 		case CMD_OBJ_ELEMENTS:
 			expr_free(cmd->expr);
+			if (cmd->elem.set)
+				set_free(cmd->elem.set);
 			break;
 		case CMD_OBJ_SET:
 		case CMD_OBJ_SETELEMS:
@@ -1647,13 +1649,8 @@ static int __do_add_setelems(struct netlink_ctx *ctx, struct set *set,
 static int do_add_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 			   uint32_t flags)
 {
-	struct handle *h = &cmd->handle;
 	struct expr *init = cmd->expr;
-	struct table *table;
-	struct set *set;
-
-	table = table_lookup(h, &ctx->nft->cache);
-	set = set_lookup(table, h->set.name);
+	struct set *set = cmd->elem.set;
 
 	if (set_is_non_concat_range(set) &&
 	    set_to_intervals(ctx->msgs, set, init, true,
@@ -1750,13 +1747,8 @@ static int do_command_insert(struct netlink_ctx *ctx, struct cmd *cmd)
 
 static int do_delete_setelems(struct netlink_ctx *ctx, struct cmd *cmd)
 {
-	struct handle *h = &cmd->handle;
-	struct expr *expr = cmd->expr;
-	struct table *table;
-	struct set *set;
-
-	table = table_lookup(h, &ctx->nft->cache);
-	set = set_lookup(table, h->set.name);
+	struct expr *expr = cmd->elem.expr;
+	struct set *set = cmd->elem.set;
 
 	if (set_is_non_concat_range(set) &&
 	    set_to_intervals(ctx->msgs, set, expr, false,
@@ -2521,9 +2513,15 @@ static int do_list_chains(struct netlink_ctx *ctx, struct cmd *cmd)
 }
 
 static void __do_list_set(struct netlink_ctx *ctx, struct cmd *cmd,
-			  struct table *table, struct set *set)
+			  struct set *set)
 {
+	struct table *table = table_alloc();
+
+	table->handle.table.name = xstrdup(cmd->handle.table.name);
+	table->handle.family = cmd->handle.family;
 	table_print_declaration(table, &ctx->nft->output);
+	table_free(table);
+
 	set_print(set, &ctx->nft->output);
 	nft_print(&ctx->nft->output, "}\n");
 }
@@ -2537,7 +2535,7 @@ static int do_list_set(struct netlink_ctx *ctx, struct cmd *cmd,
 	if (set == NULL)
 		return -1;
 
-	__do_list_set(ctx, cmd, table, set);
+	__do_list_set(ctx, cmd, set);
 
 	return 0;
 }
@@ -2608,14 +2606,13 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 	return 0;
 }
 
-static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
-			   struct table *table)
+static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct set *set, *new_set;
 	struct expr *init;
 	int err;
 
-	set = set_lookup(table, cmd->handle.set.name);
+	set = cmd->elem.set;
 
 	/* Create a list of elements based of what we got from command line. */
 	if (set_is_non_concat_range(set))
@@ -2627,9 +2624,9 @@ static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 
 	/* Fetch from kernel the elements that have been requested .*/
 	err = netlink_get_setelem(ctx, &cmd->handle, &cmd->location,
-				  table, new_set, init);
+				  cmd->elem.set, new_set, init);
 	if (err >= 0)
-		__do_list_set(ctx, cmd, table, new_set);
+		__do_list_set(ctx, cmd, new_set);
 
 	if (set_is_non_concat_range(set))
 		expr_free(init);
@@ -2641,14 +2638,9 @@ static int do_get_setelems(struct netlink_ctx *ctx, struct cmd *cmd,
 
 static int do_command_get(struct netlink_ctx *ctx, struct cmd *cmd)
 {
-	struct table *table = NULL;
-
-	if (cmd->handle.table.name != NULL)
-		table = table_lookup(&cmd->handle, &ctx->nft->cache);
-
 	switch (cmd->obj) {
 	case CMD_OBJ_ELEMENTS:
-		return do_get_setelems(ctx, cmd, table);
+		return do_get_setelems(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

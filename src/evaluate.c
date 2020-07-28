@@ -3560,7 +3560,7 @@ int stmt_evaluate(struct eval_ctx *ctx, struct stmt *stmt)
 	}
 }
 
-static int setelem_evaluate(struct eval_ctx *ctx, struct expr **expr)
+static int setelem_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table;
 	struct set *set;
@@ -3576,9 +3576,12 @@ static int setelem_evaluate(struct eval_ctx *ctx, struct expr **expr)
 
 	ctx->set = set;
 	expr_set_context(&ctx->ectx, set->key->dtype, set->key->len);
-	if (expr_evaluate(ctx, expr) < 0)
+	if (expr_evaluate(ctx, &cmd->expr) < 0)
 		return -1;
 	ctx->set = NULL;
+
+	cmd->elem.set = set_get(set);
+
 	return 0;
 }
 
@@ -4141,7 +4144,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_ELEMENTS:
-		return setelem_evaluate(ctx, &cmd->expr);
+		return setelem_evaluate(ctx, cmd);
 	case CMD_OBJ_SET:
 		handle_merge(&cmd->set->handle, &cmd->handle);
 		return set_evaluate(ctx, cmd->set);
@@ -4173,7 +4176,7 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_ELEMENTS:
-		return setelem_evaluate(ctx, &cmd->expr);
+		return setelem_evaluate(ctx, cmd);
 	case CMD_OBJ_SET:
 	case CMD_OBJ_RULE:
 	case CMD_OBJ_CHAIN:
@@ -4197,7 +4200,7 @@ static int cmd_evaluate_get(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_ELEMENTS:
-		return setelem_evaluate(ctx, &cmd->expr);
+		return setelem_evaluate(ctx, cmd);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);
 	}

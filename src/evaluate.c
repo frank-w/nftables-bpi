@@ -4172,6 +4172,18 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	}
 }
 
+static void table_del_cache(struct eval_ctx *ctx, struct cmd *cmd)
+{
+	struct table *table;
+
+	table = table_lookup(&cmd->handle, &ctx->nft->cache);
+	if (!table)
+		return;
+
+	list_del(&table->list);
+	table_free(table);
+}
+
 static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
@@ -4180,7 +4192,10 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SET:
 	case CMD_OBJ_RULE:
 	case CMD_OBJ_CHAIN:
+		return 0;
 	case CMD_OBJ_TABLE:
+		table_del_cache(ctx, cmd);
+		return 0;
 	case CMD_OBJ_FLOWTABLE:
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:

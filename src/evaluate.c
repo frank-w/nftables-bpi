@@ -3707,7 +3707,6 @@ static bool evaluate_priority(struct eval_ctx *ctx, struct prio_spec *prio,
 	mpz_export_data(prio_str, prio->expr->value, BYTEORDER_HOST_ENDIAN,
 			NFT_NAME_MAXLEN);
 	loc = prio->expr->location;
-	expr_free(prio->expr);
 
 	if (sscanf(prio_str, "%s %c %d", prio_fst, &op, &prio_snd) < 3) {
 		priority = std_prio_lookup(prio_str, family, hook);
@@ -3724,6 +3723,7 @@ static bool evaluate_priority(struct eval_ctx *ctx, struct prio_spec *prio,
 		else
 			return false;
 	}
+	expr_free(prio->expr);
 	prio->expr = constant_expr_alloc(&loc, &integer_type,
 					 BYTEORDER_HOST_ENDIAN,
 					 sizeof(int) * BITS_PER_BYTE,

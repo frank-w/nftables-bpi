@@ -2017,8 +2017,10 @@ static int expr_evaluate_variable(struct eval_ctx *ctx, struct expr **exprp)
 {
 	struct expr *new = expr_clone((*exprp)->sym->expr);
 
-	if (expr_evaluate(ctx, &new) < 0)
+	if (expr_evaluate(ctx, &new) < 0) {
+		expr_free(new);
 		return -1;
+	}
 
 	expr_free(*exprp);
 	*exprp = new;

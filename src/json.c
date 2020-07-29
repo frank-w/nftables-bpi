@@ -1568,7 +1568,7 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 static json_t *do_list_ruleset_json(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	unsigned int family = cmd->handle.family;
-	json_t *root = json_array();
+	json_t *root = json_array(), *tmp;
 	struct table *table;
 
 	list_for_each_entry(table, &ctx->nft->cache.list, list) {
@@ -1576,7 +1576,9 @@ static json_t *do_list_ruleset_json(struct netlink_ctx *ctx, struct cmd *cmd)
 		    table->handle.family != family)
 			continue;
 
-		json_array_extend(root, table_print_json_full(ctx, table));
+		tmp = table_print_json_full(ctx, table);
+		json_array_extend(root, tmp);
+		json_decref(tmp);
 	}
 
 	return root;

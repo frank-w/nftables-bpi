@@ -1907,6 +1907,12 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 							 right);
 			/* fall through */
 		case EXPR_SET_REF:
+			if (rel->left->etype == EXPR_CT &&
+			    (rel->left->ct.key == NFT_CT_SRC ||
+			     rel->left->ct.key == NFT_CT_DST))
+				return expr_error(ctx->msgs, left,
+						  "specify either ip or ip6 for address matching");
+
 			/* Data for range lookups needs to be in big endian order */
 			if (right->set->flags & NFT_SET_INTERVAL &&
 			    byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)

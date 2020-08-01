@@ -2682,7 +2682,7 @@ static int do_command_reset(struct netlink_ctx *ctx, struct cmd *cmd)
 	if (ret < 0)
 		return ret;
 
-	return do_list_obj(ctx, cmd, type);
+	return do_command_list(ctx, cmd);
 }
 
 static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)

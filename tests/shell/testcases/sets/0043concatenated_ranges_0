@@ -6,11 +6,10 @@
 # all possible permutations, and:
 # - add entries to set
 # - list them
-# - check that they can't be added again
 # - get entries by specifying a value matching ranges for all fields
 # - delete them
+# - check that they can't be deleted again
 # - add them with 1s timeout
-# - check that they can't be added again right away
 # - check that they are not listed after 1s, just once, for the first entry
 # - delete them
 # - make sure they can't be deleted again
@@ -138,17 +137,11 @@ for ta in ${TYPES}; do
 				   -e "${a2} . ${b2} . ${c2}${mapv}"		\
 				   -e "${a3} . ${b3} . ${c3}${mapv}") -eq 3 ]
 
-			! ${NFT} "add element inet filter test \
-				  { ${a1} . ${b1} . ${c1}${mapv} };
-				  add element inet filter test \
-				  { ${a2} . ${b2} . ${c2}${mapv} };
-				  add element inet filter test \
-				  { ${a3} . ${b3} . ${c3}${mapv} }" 2>/dev/null
-
 			${NFT} delete element inet filter test \
 				"{ ${a1} . ${b1} . ${c1}${mapv} }"
-			! ${NFT} delete element inet filter test \
-				"{ ${a1} . ${b1} . ${c1}${mapv} }" 2>/dev/null
+			${NFT} delete element inet filter test \
+				"{ ${a1} . ${b1} . ${c1}${mapv} }" \
+				2>/dev/null && exit 1
 
 			eval add_a=\$ADD_${ta}
 			eval add_b=\$ADD_${tb}
@@ -157,9 +150,6 @@ for ta in ${TYPES}; do
 				"{ ${add_a} . ${add_b} . ${add_c} timeout 1s${mapv}}"
 			[ $(${NFT} list ${setmap} inet filter test |	\
 			   grep -c "${add_a} . ${add_b} . ${add_c}") -eq 1 ]
-			! ${NFT} add element inet filter test \
-				"{ ${add_a} . ${add_b} . ${add_c} timeout 1s${mapv}}" \
-				2>/dev/null
 
 			eval get_a=\$GET_${ta}
 			eval get_b=\$GET_${tb}
@@ -175,17 +165,18 @@ for ta in ${TYPES}; do
 				{ ${a2} . ${b2} . ${c2}${mapv} };
 				delete element inet filter test \
 				{ ${a3} . ${b3} . ${c3}${mapv} }"
-			! ${NFT} "delete element inet filter test \
+			${NFT} "delete element inet filter test \
 				  { ${a2} . ${b2} . ${c2}${mapv} };
 				  delete element inet filter test \
-				  { ${a3} . ${b3} . ${c3} ${mapv} }" 2>/dev/null
+				  { ${a3} . ${b3} . ${c3} ${mapv} }" \
+				  2>/dev/null && exit 1
 
 			if [ ${timeout_tested} -eq 1 ]; then
 				${NFT} delete element inet filter test \
 					"{ ${add_a} . ${add_b} . ${add_c} ${mapv} }"
-				! ${NFT} delete element inet filter test \
+				${NFT} delete element inet filter test \
 					"{ ${add_a} . ${add_b} . ${add_c} ${mapv} }" \
-					2>/dev/null
+					2>/dev/null && exit 1
 				continue
 			fi
 

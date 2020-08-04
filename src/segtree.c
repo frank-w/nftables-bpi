@@ -1097,16 +1097,20 @@ void interval_map_decompose(struct expr *set)
 
 	i = constant_expr_alloc(&low->location, low->dtype,
 				low->byteorder, expr_value(low)->len, NULL);
-	mpz_init_bitmask(i->value, i->len);
+	mpz_bitmask(i->value, i->len);
 
 	if (!mpz_cmp(i->value, expr_value(low)->value)) {
 		expr_free(i);
 		i = low;
 	} else {
-		i = range_expr_alloc(&low->location, expr_value(low), i);
+		i = range_expr_alloc(&low->location,
+				     expr_clone(expr_value(low)), i);
 		i = set_elem_expr_alloc(&low->location, i);
 		if (low->etype == EXPR_MAPPING)
-			i = mapping_expr_alloc(&i->location, i, low->right);
+			i = mapping_expr_alloc(&i->location, i,
+					       expr_clone(low->right));
+
+		expr_free(low);
 	}
 
 	compound_expr_add(set, i);

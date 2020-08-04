@@ -1895,9 +1895,15 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 static void monitor_print_json(struct netlink_mon_handler *monh,
 			       const char *cmd, json_t *obj)
 {
+	struct nft_ctx *nft = monh->ctx->nft;
+
 	obj = json_pack("{s:o}", cmd, obj);
-	json_dumpf(obj, monh->ctx->nft->output.output_fp, 0);
-	json_decref(obj);
+	if (nft_output_echo(&nft->output) && !nft->json_root) {
+		json_array_append_new(nft->json_echo, obj);
+	} else {
+		json_dumpf(obj, nft->output.output_fp, 0);
+		json_decref(obj);
+	}
 }
 
 void monitor_print_table_json(struct netlink_mon_handler *monh,
@@ -1940,4 +1946,11 @@ void monitor_print_rule_json(struct netlink_mon_handler *monh,
 	struct output_ctx *octx = &monh->ctx->nft->output;
 
 	monitor_print_json(monh, cmd, rule_print_json(octx, r));
+}
+
+void json_alloc_echo(struct nft_ctx *nft)
+{
+	nft->json_echo = json_array();
+	if (!nft->json_echo)
+		memory_allocation_error();
 }

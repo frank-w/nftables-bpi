@@ -4008,11 +4008,20 @@ int json_events_cb(const struct nlmsghdr *nlh, struct netlink_mon_handler *monh)
 
 void json_print_echo(struct nft_ctx *ctx)
 {
-	if (!ctx->json_root)
-		return;
+	if (!ctx->json_root) {
+		if (!ctx->json_echo)
+			return;
 
-	json_dumpf(ctx->json_root, ctx->output.output_fp, JSON_PRESERVE_ORDER);
-	json_cmd_assoc_free();
-	json_decref(ctx->json_root);
-	ctx->json_root = NULL;
+		ctx->json_echo = json_pack("{s:o}", "nftables", ctx->json_echo);
+		json_dumpf(ctx->json_echo, ctx->output.output_fp, JSON_PRESERVE_ORDER);
+		json_decref(ctx->json_echo);
+		ctx->json_echo = NULL;
+		fprintf(ctx->output.output_fp, "\n");
+		fflush(ctx->output.output_fp);
+	} else {
+		json_dumpf(ctx->json_root, ctx->output.output_fp, JSON_PRESERVE_ORDER);
+		json_cmd_assoc_free();
+		json_decref(ctx->json_root);
+		ctx->json_root = NULL;
+	}
 }

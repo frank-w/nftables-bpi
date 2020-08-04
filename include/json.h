@@ -111,6 +111,7 @@ void monitor_print_rule_json(struct netlink_mon_handler *monh,
 
 int json_events_cb(const struct nlmsghdr *nlh,
 		   struct netlink_mon_handler *monh);
+void json_alloc_echo(struct nft_ctx *ctx);
 void json_print_echo(struct nft_ctx *ctx);
 
 #else /* ! HAVE_LIBJANSSON */
@@ -249,6 +250,11 @@ static inline int json_events_cb(const struct nlmsghdr *nlh,
                                  struct netlink_mon_handler *monh)
 {
 	return -1;
+}
+
+static inline void json_alloc_echo(struct nft_ctx *ctx)
+{
+	/* empty */
 }
 
 static inline void json_print_echo(struct nft_ctx *ctx)

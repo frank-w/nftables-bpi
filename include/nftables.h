@@ -122,6 +122,7 @@ struct nft_ctx {
 	void			*scanner;
 	struct scope		*top_scope;
 	void			*json_root;
+	json_t			*json_echo;
 };
 
 enum nftables_exit_codes {

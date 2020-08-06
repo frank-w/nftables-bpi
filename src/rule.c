@@ -237,6 +237,11 @@ static bool cache_is_complete(struct nft_cache *cache, unsigned int flags)
 	return (cache->flags & flags) == flags;
 }
 
+static bool cache_needs_refresh(struct nft_cache *cache)
+{
+	return cache->flags & NFT_CACHE_REFRESH;
+}
+
 static bool cache_is_updated(struct nft_cache *cache, uint16_t genid)
 {
 	return genid && genid == cache->genid;
@@ -261,7 +266,8 @@ int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs
 replay:
 	ctx.seqnum = cache->seqnum++;
 	genid = mnl_genid_get(&ctx);
-	if (cache_is_complete(cache, flags) &&
+	if (!cache_needs_refresh(cache) &&
+	    cache_is_complete(cache, flags) &&
 	    cache_is_updated(cache, genid))
 		return 0;
 

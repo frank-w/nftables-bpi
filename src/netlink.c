@@ -661,6 +661,7 @@ void netlink_dump_set(const struct nftnl_set *nls, struct netlink_ctx *ctx)
 
 static int set_parse_udata_cb(const struct nftnl_udata *attr, void *data)
 {
+	unsigned char *value = nftnl_udata_get(attr);
 	const struct nftnl_udata **tb = data;
 	uint8_t type = nftnl_udata_type(attr);
 	uint8_t len = nftnl_udata_len(attr);
@@ -676,6 +677,10 @@ static int set_parse_udata_cb(const struct nftnl_udata *attr, void *data)
 	case NFTNL_UDATA_SET_KEY_TYPEOF:
 	case NFTNL_UDATA_SET_DATA_TYPEOF:
 		if (len < 3)
+			return -1;
+		break;
+	case NFTNL_UDATA_SET_COMMENT:
+		if (value[len - 1] != '\0')
 			return -1;
 		break;
 	default:
@@ -751,11 +756,11 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	enum byteorder databyteorder = BYTEORDER_INVALID;
 	const struct datatype *keytype, *datatype = NULL;
 	struct expr *typeof_expr_key, *typeof_expr_data;
+	const char *udata, *comment = NULL;
 	uint32_t flags, key, objtype = 0;
 	const struct datatype *dtype;
 	uint32_t data_interval = 0;
 	bool automerge = false;
-	const char *udata;
 	struct set *set;
 	uint32_t ulen;
 	uint32_t klen;
@@ -783,6 +788,8 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 		typeof_expr_key = set_make_key(ud[NFTNL_UDATA_SET_KEY_TYPEOF]);
 		if (ud[NFTNL_UDATA_SET_DATA_TYPEOF])
 			typeof_expr_data = set_make_key(ud[NFTNL_UDATA_SET_DATA_TYPEOF]);
+		if (ud[NFTNL_UDATA_SET_COMMENT])
+			comment = xstrdup(nftnl_udata_get(ud[NFTNL_UDATA_SET_COMMENT]));
 	}
 
 	key = nftnl_set_get_u32(nls, NFTNL_SET_KEY_TYPE);
@@ -819,6 +826,8 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	set->handle.table.name = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_TABLE));
 	set->handle.set.name = xstrdup(nftnl_set_get_str(nls, NFTNL_SET_NAME));
 	set->automerge	   = automerge;
+	if (comment)
+		set->comment = comment;
 
 	if (nftnl_set_is_set(nls, NFTNL_SET_EXPR)) {
 		const struct nftnl_expr *nle;

@@ -1042,6 +1042,11 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, struct cmd *cmd,
 				   sizeof(set->desc.field_len[0]));
 	}
 
+	if (set->comment) {
+		if (!nftnl_udata_put_strz(udbuf, NFTNL_UDATA_SET_COMMENT, set->comment))
+			memory_allocation_error();
+	}
+
 	nftnl_set_set_data(nls, NFTNL_SET_USERDATA, nftnl_udata_buf_data(udbuf),
 			   nftnl_udata_buf_len(udbuf));
 	nftnl_udata_buf_free(udbuf);

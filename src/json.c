@@ -98,6 +98,9 @@ static json_t *set_print_json(struct output_ctx *octx, const struct set *set)
 			"table", set->handle.table.name,
 			"type", set_dtype_json(set->key),
 			"handle", set->handle.handle.id);
+
+	if (set->comment)
+		json_object_set_new(root, "comment", json_string(set->comment));
 	if (datatype_ext)
 		json_object_set_new(root, "map", json_string(datatype_ext));
 

@@ -1768,6 +1768,11 @@ set_block		:	/* empty */	{ $$ = $<set>-1; }
 				$$ = $1;
 			}
 			|	set_block	set_mechanism	stmt_separator
+			|	set_block	comment_spec	stmt_separator
+			{
+				$1->comment = $2;
+				$$ = $1;
+			}
 			;
 
 set_block_expr		:	set_expr

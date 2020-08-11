@@ -309,6 +309,7 @@ void rule_stmt_insert_at(struct rule *rule, struct stmt *nstmt,
  * @rg_cache:	cached range element (left)
  * @policy:	set mechanism policy
  * @automerge:	merge adjacents and overlapping elements, if possible
+ * @comment:	comment
  * @desc.size:		count of set elements
  * @desc.field_len:	length of single concatenated fields, bytes
  * @desc.field_count:	count of concatenated fields
@@ -331,6 +332,7 @@ struct set {
 	bool			root;
 	bool			automerge;
 	bool			key_typeof_valid;
+	const char		*comment;
 	struct {
 		uint32_t	size;
 		uint8_t		field_len[NFT_REG32_COUNT];

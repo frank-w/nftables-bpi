@@ -367,6 +367,8 @@ void set_free(struct set *set)
 		return;
 	if (set->init != NULL)
 		expr_free(set->init);
+	if (set->comment)
+		xfree(set->comment);
 	handle_free(&set->handle);
 	stmt_free(set->stmt);
 	expr_free(set->key);
@@ -583,6 +585,13 @@ static void set_print_declaration(const struct set *set,
 		nft_print(octx, "%s%sgc-interval ", opts->tab, opts->tab);
 		time_print(set->gc_int, octx);
 		nft_print(octx, "%s", opts->stmt_separator);
+	}
+
+	if (set->comment) {
+		nft_print(octx, "%s%scomment \"%s\"%s",
+			  opts->tab, opts->tab,
+			  set->comment,
+			  opts->stmt_separator);
 	}
 }
 

@@ -1896,6 +1896,11 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 				$1->init = $4;
 				$$ = $1;
 			}
+			|	map_block	comment_spec	stmt_separator
+			{
+				$1->comment = $2;
+				$$ = $1;
+			}
 			|	map_block	set_mechanism	stmt_separator
 			;
 

@@ -680,3 +680,24 @@ inet test-inet input
   [ bitwise reg 1 = (reg=1 & 0x000000f0 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000080 ]
 
+# tcp flags & (fin | syn | rst | psh | ack | urg) == { fin, ack, psh | ack, fin | psh | ack }
+__set%d test-inet 3
+__set%d test-inet 0
+        element 00000001  : 0 [end]     element 00000010  : 0 [end]     element 00000018  : 0 [end]     element 00000019  : 0 [end]
+ip
+  [ meta load l4proto => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ payload load 1b @ transport header + 13 => reg 1 ]
+  [ bitwise reg 1 = (reg=1 & 0x0000003f ) ^ 0x00000000 ]
+  [ lookup reg 1 set __set%d ]
+
+# tcp flags { syn, syn | ack }
+__set%d test-inet 3
+__set%d test-inet 0
+        element 00000002  : 0 [end]     element 00000012  : 0 [end]
+inet
+  [ meta load l4proto => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ payload load 1b @ transport header + 13 => reg 1 ]
+  [ lookup reg 1 set __set%d ]
+

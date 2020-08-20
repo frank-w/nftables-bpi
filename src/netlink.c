@@ -1194,6 +1194,42 @@ static int list_setelem_cb(struct nftnl_set_elem *nlse, void *arg)
 	return netlink_delinearize_setelem(nlse, ctx->set, &ctx->nft->cache);
 }
 
+static int list_setelem_debug_cb(struct nftnl_set_elem *nlse, void *arg)
+{
+	int r;
+
+	r = list_setelem_cb(nlse, arg);
+	if (r == 0) {
+		struct netlink_ctx *ctx = arg;
+		FILE *fp = ctx->nft->output.output_fp;
+
+		fprintf(fp, "\t");
+		nftnl_set_elem_fprintf(fp, nlse, 0, 0);
+		fprintf(fp, "\n");
+	}
+
+	return r;
+}
+
+static int list_setelements(struct nftnl_set *s, struct netlink_ctx *ctx)
+{
+	FILE *fp = ctx->nft->output.output_fp;
+
+	if (fp && (ctx->nft->debug_mask & NFT_DEBUG_NETLINK)) {
+		const char *table, *name;
+		uint32_t family = nftnl_set_get_u32(s, NFTNL_SET_FAMILY);
+
+		table = nftnl_set_get_str(s, NFTNL_SET_TABLE);
+		name = nftnl_set_get_str(s, NFTNL_SET_NAME);
+
+		fprintf(fp, "%s %s @%s\n", family2str(family), table, name);
+
+		return nftnl_set_elem_foreach(s, list_setelem_debug_cb, ctx);
+	}
+
+	return nftnl_set_elem_foreach(s, list_setelem_cb, ctx);
+}
+
 int netlink_list_setelems(struct netlink_ctx *ctx, const struct handle *h,
 			  struct set *set)
 {
@@ -1221,7 +1257,7 @@ int netlink_list_setelems(struct netlink_ctx *ctx, const struct handle *h,
 
 	ctx->set = set;
 	set->init = set_expr_alloc(&internal_location, set);
-	nftnl_set_elem_foreach(nls, list_setelem_cb, ctx);
+	list_setelements(nls, ctx);
 
 	if (set->flags & NFT_SET_INTERVAL && set->desc.field_count > 1)
 		concat_range_aggregate(set->init);
@@ -1265,7 +1301,7 @@ int netlink_get_setelem(struct netlink_ctx *ctx, const struct handle *h,
 
 	ctx->set = set;
 	set->init = set_expr_alloc(loc, set);
-	nftnl_set_elem_foreach(nls_out, list_setelem_cb, ctx);
+	list_setelements(nls_out, ctx);
 
 	if (set->flags & NFT_SET_INTERVAL && set->desc.field_count > 1)
 		concat_range_aggregate(set->init);

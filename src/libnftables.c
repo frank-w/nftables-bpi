@@ -88,10 +88,12 @@ static void nft_init(struct nft_ctx *ctx)
 	realm_table_rt_init(ctx);
 	devgroup_table_init(ctx);
 	ct_label_table_init(ctx);
+	expr_handler_init();
 }
 
 static void nft_exit(struct nft_ctx *ctx)
 {
+	expr_handler_exit();
 	ct_label_table_exit(ctx);
 	realm_table_rt_exit(ctx);
 	devgroup_table_exit(ctx);

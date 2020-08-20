@@ -213,4 +213,7 @@ int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 
 enum nft_data_types dtype_map_to_kernel(const struct datatype *dtype);
 
+void expr_handler_init(void);
+void expr_handler_exit(void);
+
 #endif /* NFTABLES_NETLINK_H */

@@ -162,6 +162,7 @@ struct table {
 	struct list_head	chain_bindings;
 	enum table_flags 	flags;
 	unsigned int		refcnt;
+	const char		*comment;
 };
 
 extern struct table *table_alloc(void);

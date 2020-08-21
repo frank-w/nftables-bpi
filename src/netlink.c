@@ -537,16 +537,48 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 	return chain;
 }
 
+static int table_parse_udata_cb(const struct nftnl_udata *attr, void *data)
+{
+	unsigned char *value = nftnl_udata_get(attr);
+	const struct nftnl_udata **tb = data;
+	uint8_t type = nftnl_udata_type(attr);
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+		case NFTNL_UDATA_TABLE_COMMENT:
+			if (value[len - 1] != '\0')
+				return -1;
+			break;
+		default:
+			return 0;
+	}
+	tb[type] = attr;
+	return 0;
+}
+
 struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 					const struct nftnl_table *nlt)
 {
+	const struct nftnl_udata *ud[NFTNL_UDATA_TABLE_MAX + 1] = {};
 	struct table *table;
+	const char *udata;
+	uint32_t ulen;
 
 	table = table_alloc();
 	table->handle.family = nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY);
 	table->handle.table.name = xstrdup(nftnl_table_get_str(nlt, NFTNL_TABLE_NAME));
 	table->flags	     = nftnl_table_get_u32(nlt, NFTNL_TABLE_FLAGS);
 	table->handle.handle.id = nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE);
+
+	if (nftnl_table_is_set(nlt, NFTNL_TABLE_USERDATA)) {
+		udata = nftnl_table_get_data(nlt, NFTNL_TABLE_USERDATA, &ulen);
+		if (nftnl_udata_parse(udata, ulen, table_parse_udata_cb, ud) < 0) {
+			netlink_io_error(ctx, NULL, "Cannot parse userdata");
+			return NULL;
+		}
+		if (ud[NFTNL_UDATA_TABLE_COMMENT])
+			table->comment = xstrdup(nftnl_udata_get(ud[NFTNL_UDATA_TABLE_COMMENT]));
+	}
 
 	return table;
 }

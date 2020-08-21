@@ -1324,6 +1324,8 @@ void table_free(struct table *table)
 
 	if (--table->refcnt > 0)
 		return;
+	if (table->comment)
+		xfree(table->comment);
 	list_for_each_entry_safe(chain, next, &table->chains, list)
 		chain_free(chain);
 	list_for_each_entry_safe(chain, next, &table->chain_bindings, list)
@@ -1421,6 +1423,9 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 		nft_print(octx, " # handle %" PRIu64, table->handle.handle.id);
 	nft_print(octx, "\n");
 	table_print_options(table, &delim, octx);
+
+	if (table->comment)
+		nft_print(octx, "\tcomment \"%s\"\n", table->comment);
 
 	list_for_each_entry(obj, &table->objs, list) {
 		nft_print(octx, "%s", delim);

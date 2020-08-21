@@ -1533,6 +1533,10 @@ table_options		:	FLAGS		STRING
 					YYERROR;
 				}
 			}
+			|	comment_spec
+			{
+				$<table>0->comment = $1;
+			}
 			;
 
 table_block		:	/* empty */	{ $$ = $<table>-1; }

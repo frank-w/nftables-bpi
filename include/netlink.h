@@ -64,7 +64,6 @@ struct netlink_ctx {
 	struct nft_ctx		*nft;
 	struct list_head	*msgs;
 	struct list_head	list;
-	struct list_head	list_bindings;
 	struct set		*set;
 	const void		*data;
 	uint32_t		seqnum;

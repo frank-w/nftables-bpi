@@ -537,52 +537,6 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 	return chain;
 }
 
-static int list_chain_cb(struct nftnl_chain *nlc, void *arg)
-{
-	struct netlink_ctx *ctx = arg;
-	const struct handle *h = ctx->data;
-	const char *table;
-	const char *name;
-	struct chain *chain;
-	uint32_t family;
-
-	table  = nftnl_chain_get_str(nlc, NFTNL_CHAIN_TABLE);
-	name   = nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME);
-	family = nftnl_chain_get_u32(nlc, NFTNL_CHAIN_FAMILY);
-
-	if (h->family != family || strcmp(table, h->table.name) != 0)
-		return 0;
-	if (h->chain.name && strcmp(name, h->chain.name) != 0)
-		return 0;
-
-	chain = netlink_delinearize_chain(ctx, nlc);
-	if (chain->flags & CHAIN_F_BINDING)
-		list_add_tail(&chain->list, &ctx->list_bindings);
-	else
-		list_add_tail(&chain->list, &ctx->list);
-
-	return 0;
-}
-
-int netlink_list_chains(struct netlink_ctx *ctx, const struct handle *h)
-{
-	struct nftnl_chain_list *chain_cache;
-
-	chain_cache = mnl_nft_chain_dump(ctx, h->family);
-	if (chain_cache == NULL) {
-		if (errno == EINTR)
-			return -1;
-
-		return 0;
-	}
-
-	ctx->data = h;
-	nftnl_chain_list_foreach(chain_cache, list_chain_cb, ctx);
-	nftnl_chain_list_free(chain_cache);
-
-	return 0;
-}
-
 struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 					const struct nftnl_table *nlt)
 {

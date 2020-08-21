@@ -152,11 +152,18 @@ static int cache_init_tables(struct netlink_ctx *ctx, struct handle *h,
 
 static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 {
+	struct nftnl_chain_list *chain_list = NULL;
 	struct rule *rule, *nrule;
 	struct table *table;
 	struct chain *chain;
 	struct set *set;
-	int ret;
+	int ret = 0;
+
+	if (flags & NFT_CACHE_CHAIN_BIT) {
+		chain_list = chain_cache_dump(ctx, &ret);
+		if (!chain_list)
+			return ret;
+	}
 
 	list_for_each_entry(table, &ctx->nft->cache.list, list) {
 		if (flags & NFT_CACHE_SET_BIT) {
@@ -174,13 +181,9 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 			}
 		}
 		if (flags & NFT_CACHE_CHAIN_BIT) {
-			ret = netlink_list_chains(ctx, &table->handle);
+			ret = chain_cache_init(ctx, table, chain_list);
 			if (ret < 0)
 				return -1;
-
-			list_splice_tail_init(&ctx->list, &table->chains);
-			list_splice_tail_init(&ctx->list_bindings,
-					      &table->chain_bindings);
 		}
 		if (flags & NFT_CACHE_FLOWTABLE_BIT) {
 			ret = netlink_list_flowtables(ctx, &table->handle);
@@ -198,7 +201,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 		if (flags & NFT_CACHE_RULE_BIT) {
 			ret = netlink_list_rules(ctx, &table->handle);
 			list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
-				chain = chain_lookup(table, &rule->handle);
+				chain = chain_cache_find(table, &rule->handle);
 				if (!chain)
 					chain = chain_binding_lookup(table,
 							rule->handle.chain.name);
@@ -208,6 +211,10 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 				return -1;
 		}
 	}
+
+	if (flags & NFT_CACHE_CHAIN_BIT)
+		nftnl_chain_list_free(chain_list);
+
 	return 0;
 }
 
@@ -256,7 +263,6 @@ int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs
 {
 	struct netlink_ctx ctx = {
 		.list		= LIST_HEAD_INIT(ctx.list),
-		.list_bindings	= LIST_HEAD_INIT(ctx.list_bindings),
 		.nft		= nft,
 		.msgs		= msgs,
 	};
@@ -926,11 +932,6 @@ void chain_free(struct chain *chain)
 	xfree(chain);
 }
 
-void chain_add_hash(struct chain *chain, struct table *table)
-{
-	list_add_tail(&chain->list, &table->chains);
-}
-
 struct chain *chain_lookup(const struct table *table, const struct handle *h)
 {
 	struct chain *chain;
@@ -1295,6 +1296,7 @@ void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 struct table *table_alloc(void)
 {
 	struct table *table;
+	int i;
 
 	table = xzalloc(sizeof(*table));
 	init_list_head(&table->chains);
@@ -1304,6 +1306,11 @@ struct table *table_alloc(void)
 	init_list_head(&table->chain_bindings);
 	init_list_head(&table->scope.symbols);
 	table->refcnt = 1;
+
+	table->chain_htable =
+		xmalloc(sizeof(struct list_head) * NFT_CACHE_HSIZE);
+	for (i = 0; i < NFT_CACHE_HSIZE; i++)
+		init_list_head(&table->chain_htable[i]);
 
 	return table;
 }
@@ -1329,6 +1336,7 @@ void table_free(struct table *table)
 		obj_free(obj);
 	handle_free(&table->handle);
 	scope_release(&table->scope);
+	xfree(table->chain_htable);
 	xfree(table);
 }
 

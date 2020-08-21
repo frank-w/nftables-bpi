@@ -3855,7 +3855,7 @@ static int rule_cache_update(struct eval_ctx *ctx, enum cmd_ops op)
 	if (!table)
 		return table_not_found(ctx);
 
-	chain = chain_lookup(table, &rule->handle);
+	chain = chain_cache_find(table, &rule->handle);
 	if (!chain)
 		return chain_not_found(ctx);
 
@@ -3999,12 +3999,12 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 		if (chain_lookup(table, &ctx->cmd->handle) == NULL) {
 			chain = chain_alloc(NULL);
 			handle_merge(&chain->handle, &ctx->cmd->handle);
-			chain_add_hash(chain, table);
+			chain_cache_add(chain, table);
 		}
 		return 0;
 	} else if (!(chain->flags & CHAIN_F_BINDING)) {
 		if (chain_lookup(table, &chain->handle) == NULL)
-			chain_add_hash(chain_get(chain), table);
+			chain_cache_add(chain_get(chain), table);
 	}
 
 	if (chain->flags & CHAIN_F_BASECHAIN) {

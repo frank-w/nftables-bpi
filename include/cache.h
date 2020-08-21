@@ -45,4 +45,18 @@ static inline uint32_t djb_hash(const char *key)
 	return hash;
 }
 
+#define NFT_CACHE_HSIZE 8192
+
+struct netlink_ctx;
+struct table;
+struct chain;
+struct handle;
+
+struct nftnl_chain_list *chain_cache_dump(struct netlink_ctx *ctx, int *err);
+int chain_cache_init(struct netlink_ctx *ctx, struct table *table,
+		     struct nftnl_chain_list *chain_cache);
+void chain_cache_add(struct chain *chain, struct table *table);
+struct chain *chain_cache_find(const struct table *table,
+			       const struct handle *handle);
+
 #endif /* _NFT_CACHE_H_ */

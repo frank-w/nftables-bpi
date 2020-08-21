@@ -8,6 +8,7 @@
 #include <libnftnl/object.h>	/* For NFTNL_CTTIMEOUT_ARRAY_MAX. */
 #include <linux/netfilter/nf_tables.h>
 #include <string.h>
+#include <cache.h>
 
 /**
  * struct handle_spec - handle ID
@@ -153,6 +154,7 @@ struct table {
 	struct handle		handle;
 	struct location		location;
 	struct scope		scope;
+	struct list_head	*chain_htable;
 	struct list_head	chains;
 	struct list_head	sets;
 	struct list_head	objs;
@@ -217,6 +219,7 @@ struct hook_spec {
  */
 struct chain {
 	struct list_head	list;
+	struct list_head	hlist;
 	struct handle		handle;
 	struct location		location;
 	unsigned int		refcnt;
@@ -242,7 +245,6 @@ extern const char *chain_hookname_lookup(const char *name);
 extern struct chain *chain_alloc(const char *name);
 extern struct chain *chain_get(struct chain *chain);
 extern void chain_free(struct chain *chain);
-extern void chain_add_hash(struct chain *chain, struct table *table);
 extern struct chain *chain_lookup(const struct table *table,
 				  const struct handle *h);
 extern struct chain *chain_lookup_fuzzy(const struct handle *h,

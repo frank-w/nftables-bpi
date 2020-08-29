@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd $(dirname $0)
-nft=../../src/nft
+nft=${NFT:-../../src/nft}
 debug=false
 test_json=false
 

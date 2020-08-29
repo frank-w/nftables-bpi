@@ -195,7 +195,7 @@ raw prerouting meta ipsec exists accept
 SOCKET EXPRESSION
 ~~~~~~~~~~~~~~~~~
 [verse]
-*socket* {*transparent* | *mark*}
+*socket* {*transparent* | *mark* | *wildcard*}
 
 Socket expression can be used to search for an existing open TCP/UDP socket and
 its attributes that can be associated with a packet. It looks for an established
@@ -209,15 +209,20 @@ or non-zero bound listening socket (possibly with a non-local address).
 Value of the IP_TRANSPARENT socket option in the found socket. It can be 0 or 1.|
 boolean (1 bit)
 |mark| Value of the socket mark (SOL_SOCKET, SO_MARK). | mark
+|wildcard|
+Indicates whether the socket is wildcard-bound (e.g. 0.0.0.0 or ::0). |
+boolean (1 bit)
 |==================
 
 .Using socket expression
 ------------------------
-# Mark packets that correspond to a transparent socket
+# Mark packets that correspond to a transparent socket. "socket wildcard 0"
+# means that zero-bound listener sockets are NOT matched (which is usually
+# exactly what you want).
 table inet x {
     chain y {
 	type filter hook prerouting priority -150; policy accept;
-        socket transparent 1 mark set 0x00000001 accept
+        socket transparent 1 socket wildcard 0 mark set 0x00000001 accept
     }
 }
 

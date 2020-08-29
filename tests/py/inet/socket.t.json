@@ -43,3 +43,32 @@
     }
 ]
 
+# socket wildcard 0
+[
+    {
+        "match": {
+            "left": {
+                "socket": {
+                    "key": "wildcard"
+                }
+            },
+            "op": "==",
+            "right": 0
+        }
+    }
+]
+
+# socket wildcard 1
+[
+    {
+        "match": {
+            "left": {
+                "socket": {
+                    "key": "wildcard"
+                }
+            },
+            "op": "==",
+            "right": 1
+        }
+    }
+]

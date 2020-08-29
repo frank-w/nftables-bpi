@@ -268,6 +268,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "socket"		{ return SOCKET; }
 "transparent"		{ return TRANSPARENT;}
+"wildcard"		{ return WILDCARD; }
 
 "tproxy"		{ return TPROXY; }
 

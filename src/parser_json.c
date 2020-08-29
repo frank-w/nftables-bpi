@@ -427,6 +427,8 @@ static struct expr *json_parse_socket_expr(struct json_ctx *ctx,
 		keyval = NFT_SOCKET_TRANSPARENT;
 	else if (!strcmp(key, "mark"))
 		keyval = NFT_SOCKET_MARK;
+	else if (!strcmp(key, "wildcard"))
+		keyval = NFT_SOCKET_WILDCARD;
 
 	if (keyval == -1) {
 		json_error(ctx, "Invalid socket key value.");

@@ -1998,9 +1998,11 @@ static int expr_evaluate_meta(struct eval_ctx *ctx, struct expr **exprp)
 
 static int expr_evaluate_socket(struct eval_ctx *ctx, struct expr **expr)
 {
+	enum nft_socket_keys key = (*expr)->socket.key;
 	int maxval = 0;
 
-	if((*expr)->socket.key == NFT_SOCKET_TRANSPARENT)
+	if (key == NFT_SOCKET_TRANSPARENT ||
+	    key == NFT_SOCKET_WILDCARD)
 		maxval = 1;
 	__expr_set_context(&ctx->ectx, (*expr)->dtype, (*expr)->byteorder,
 			   (*expr)->len, maxval);

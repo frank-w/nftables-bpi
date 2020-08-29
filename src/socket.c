@@ -26,6 +26,12 @@ const struct socket_template socket_templates[] = {
 		.len		= 4 * BITS_PER_BYTE,
 		.byteorder	= BYTEORDER_HOST_ENDIAN,
 	},
+	[NFT_SOCKET_WILDCARD] = {
+		.token		= "wildcard",
+		.dtype		= &integer_type,
+		.len		= BITS_PER_BYTE,
+		.byteorder	= BYTEORDER_HOST_ENDIAN,
+	},
 };
 
 static void socket_expr_print(const struct expr *expr, struct output_ctx *octx)

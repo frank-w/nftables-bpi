@@ -479,6 +479,7 @@ struct obj {
 	struct handle			handle;
 	uint32_t			type;
 	unsigned int			refcnt;
+	const char			*comment;
 	union {
 		struct counter		counter;
 		struct quota		quota;

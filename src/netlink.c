@@ -1314,11 +1314,33 @@ void netlink_dump_obj(struct nftnl_obj *nln, struct netlink_ctx *ctx)
 	fprintf(fp, "\n");
 }
 
+static int obj_parse_udata_cb(const struct nftnl_udata *attr, void *data)
+{
+	unsigned char *value = nftnl_udata_get(attr);
+	uint8_t type = nftnl_udata_type(attr);
+	const struct nftnl_udata **tb = data;
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+		case NFTNL_UDATA_OBJ_COMMENT:
+			if (value[len - 1] != '\0')
+				return -1;
+			break;
+		default:
+			return 0;
+	}
+	tb[type] = attr;
+	return 0;
+}
+
 struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 				    struct nftnl_obj *nlo)
 {
+	const struct nftnl_udata *ud[NFTNL_UDATA_OBJ_MAX + 1] = {};
+	const char *udata;
 	struct obj *obj;
 	uint32_t type;
+	uint32_t ulen;
 
 	obj = obj_alloc(&netlink_location);
 	obj->handle.family = nftnl_obj_get_u32(nlo, NFTNL_OBJ_FAMILY);
@@ -1328,6 +1350,15 @@ struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 		xstrdup(nftnl_obj_get_str(nlo, NFTNL_OBJ_NAME));
 	obj->handle.handle.id =
 		nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
+	if (nftnl_obj_is_set(nlo, NFTNL_OBJ_USERDATA)) {
+		udata = nftnl_obj_get_data(nlo, NFTNL_OBJ_USERDATA, &ulen);
+		if (nftnl_udata_parse(udata, ulen, obj_parse_udata_cb, ud) < 0) {
+			netlink_io_error(ctx, NULL, "Cannot parse userdata");
+			return NULL;
+		}
+		if (ud[NFTNL_UDATA_OBJ_COMMENT])
+			obj->comment = xstrdup(nftnl_udata_get(ud[NFTNL_UDATA_OBJ_COMMENT]));
+	}
 
 	type = nftnl_obj_get_u32(nlo, NFTNL_OBJ_TYPE);
 	switch (type) {

@@ -1006,7 +1006,15 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_COUNTER, &$2, &@$, $3);
 			}
+			|	COUNTER		obj_spec	counter_obj	'{' counter_block '}'
+			{
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_COUNTER, &$2, &@$, $3);
+			}
 			|	QUOTA		obj_spec	quota_obj	quota_config
+			{
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_QUOTA, &$2, &@$, $3);
+			}
+			|	QUOTA		obj_spec	quota_obj	'{' quota_block	'}'
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
@@ -1026,11 +1034,23 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_LIMIT, &$2, &@$, $3);
 			}
+			|	LIMIT		obj_spec	limit_obj	'{' limit_block '}'
+			{
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_LIMIT, &$2, &@$, $3);
+			}
 			|	SECMARK		obj_spec	secmark_obj	secmark_config
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SECMARK, &$2, &@$, $3);
 			}
+			|	SECMARK		obj_spec	secmark_obj	'{' secmark_block '}'
+			{
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SECMARK, &$2, &@$, $3);
+			}
 			|	SYNPROXY	obj_spec	synproxy_obj	synproxy_config
+			{
+				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SYNPROXY, &$2, &@$, $3);
+			}
+			|	SYNPROXY	obj_spec	synproxy_obj	'{' synproxy_block '}'
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SYNPROXY, &$2, &@$, $3);
 			}
@@ -2039,6 +2059,10 @@ counter_block		:	/* empty */	{ $$ = $<obj>-1; }
 			{
 				$$ = $1;
 			}
+			|	counter_block	  comment_spec
+			{
+				$<obj>1->comment = $2;
+			}
 			;
 
 quota_block		:	/* empty */	{ $$ = $<obj>-1; }
@@ -2048,6 +2072,10 @@ quota_block		:	/* empty */	{ $$ = $<obj>-1; }
 			{
 				$$ = $1;
 			}
+			|	quota_block	comment_spec
+			{
+				$<obj>1->comment = $2;
+			}
 			;
 
 ct_helper_block		:	/* empty */	{ $$ = $<obj>-1; }
@@ -2056,6 +2084,10 @@ ct_helper_block		:	/* empty */	{ $$ = $<obj>-1; }
 			|       ct_helper_block     ct_helper_config
 			{
 				$$ = $1;
+			}
+			|       ct_helper_block     comment_spec
+			{
+				$<obj>1->comment = $2;
 			}
 			;
 
@@ -2070,6 +2102,10 @@ ct_timeout_block	:	/*empty */
 			{
 				$$ = $1;
 			}
+			|       ct_timeout_block     comment_spec
+			{
+				$<obj>1->comment = $2;
+			}
 			;
 
 ct_expect_block		:	/*empty */	{ $$ = $<obj>-1; }
@@ -2078,6 +2114,10 @@ ct_expect_block		:	/*empty */	{ $$ = $<obj>-1; }
 			|	ct_expect_block     ct_expect_config
 			{
 				$$ = $1;
+			}
+			|       ct_expect_block     comment_spec
+			{
+				$<obj>1->comment = $2;
 			}
 			;
 
@@ -2088,6 +2128,10 @@ limit_block		:	/* empty */	{ $$ = $<obj>-1; }
 			{
 				$$ = $1;
 			}
+			|       limit_block     comment_spec
+			{
+				$<obj>1->comment = $2;
+			}
 			;
 
 secmark_block		:	/* empty */	{ $$ = $<obj>-1; }
@@ -2097,6 +2141,10 @@ secmark_block		:	/* empty */	{ $$ = $<obj>-1; }
 			{
 				$$ = $1;
 			}
+			|       secmark_block     comment_spec
+			{
+				$<obj>1->comment = $2;
+			}
 			;
 
 synproxy_block		:	/* empty */	{ $$ = $<obj>-1; }
@@ -2105,6 +2153,10 @@ synproxy_block		:	/* empty */	{ $$ = $<obj>-1; }
 			|	synproxy_block	synproxy_config
 			{
 				$$ = $1;
+			}
+			|       synproxy_block     comment_spec
+			{
+				$<obj>1->comment = $2;
 			}
 			;
 

@@ -1893,6 +1893,7 @@ void obj_free(struct obj *obj)
 {
 	if (--obj->refcnt > 0)
 		return;
+	xfree(obj->comment);
 	handle_free(&obj->handle);
 	xfree(obj);
 }
@@ -1986,6 +1987,16 @@ static const char *synproxy_timestamp_to_str(const uint32_t flags)
         return "";
 }
 
+static void obj_print_comment(const struct obj *obj,
+			      struct print_fmt_options *opts,
+			      struct output_ctx *octx)
+{
+	if (obj->comment)
+		nft_print(octx, "%s%s%scomment \"%s\"",
+			  opts->nl, opts->tab, opts->tab,
+			  obj->comment);
+}
+
 static void obj_print_data(const struct obj *obj,
 			   struct print_fmt_options *opts,
 			   struct output_ctx *octx)
@@ -1995,6 +2006,8 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		obj_print_comment(obj, opts, octx);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
 		if (nft_output_stateless(octx)) {
 			nft_print(octx, "packets 0 bytes 0");
@@ -2010,6 +2023,8 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		obj_print_comment(obj, opts, octx);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
 		data_unit = get_rate(obj->quota.bytes, &bytes);
 		nft_print(octx, "%s%" PRIu64 " %s",
@@ -2027,6 +2042,8 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		obj_print_comment(obj, opts, octx);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
 		nft_print(octx, "\"%s\"%s", obj->secmark.ctx, opts->nl);
 		break;
@@ -2034,6 +2051,8 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		obj_print_comment(obj, opts, octx);
 		nft_print(octx, "%s", opts->nl);
 		nft_print(octx, "%s%stype \"%s\" protocol ",
 			  opts->tab, opts->tab, obj->ct_helper.name);
@@ -2048,6 +2067,8 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		obj_print_comment(obj, opts, octx);
 		nft_print(octx, "%s", opts->nl);
 		nft_print(octx, "%s%sprotocol ", opts->tab, opts->tab);
 		print_proto_name_proto(obj->ct_timeout.l4proto, octx);
@@ -2063,6 +2084,8 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		obj_print_comment(obj, opts, octx);
 		nft_print(octx, "%s", opts->nl);
 		nft_print(octx, "%s%sprotocol ", opts->tab, opts->tab);
 		print_proto_name_proto(obj->ct_expect.l4proto, octx);
@@ -2091,6 +2114,8 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		obj_print_comment(obj, opts, octx);
 		nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);
 		switch (obj->limit.type) {
 		case NFT_LIMIT_PKTS:
@@ -2127,6 +2152,8 @@ static void obj_print_data(const struct obj *obj,
 		nft_print(octx, " %s {", obj->handle.obj.name);
 		if (nft_output_handle(octx))
 			nft_print(octx, " # handle %" PRIu64, obj->handle.handle.id);
+
+		obj_print_comment(obj, opts, octx);
 
 		if (flags & NF_SYNPROXY_OPT_MSS) {
 			nft_print(octx, "%s%s%s", opts->nl, opts->tab, opts->tab);

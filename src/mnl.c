@@ -1189,6 +1189,7 @@ int mnl_nft_obj_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		    unsigned int flags)
 {
 	struct obj *obj = cmd->object;
+	struct nftnl_udata_buf *udbuf;
 	struct nftnl_obj *nlo;
 	struct nlmsghdr *nlh;
 
@@ -1198,6 +1199,17 @@ int mnl_nft_obj_add(struct netlink_ctx *ctx, struct cmd *cmd,
 
 	nftnl_obj_set_u32(nlo, NFTNL_OBJ_FAMILY, cmd->handle.family);
 	nftnl_obj_set_u32(nlo, NFTNL_OBJ_TYPE, obj->type);
+
+	if (obj->comment) {
+		udbuf = nftnl_udata_buf_alloc(NFT_USERDATA_MAXLEN);
+		if (!udbuf)
+			memory_allocation_error();
+		if (!nftnl_udata_put_strz(udbuf, NFTNL_UDATA_OBJ_COMMENT, obj->comment))
+			memory_allocation_error();
+		nftnl_obj_set_data(nlo, NFTNL_OBJ_USERDATA, nftnl_udata_buf_data(udbuf),
+				     nftnl_udata_buf_len(udbuf));
+		nftnl_udata_buf_free(udbuf);
+	}
 
 	switch (obj->type) {
 	case NFT_OBJECT_COUNTER:

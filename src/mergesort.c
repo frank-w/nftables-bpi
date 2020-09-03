@@ -11,43 +11,58 @@
 #include <gmputil.h>
 #include <list.h>
 
-static int expr_msort_cmp(const struct expr *e1, const struct expr *e2);
+static void expr_msort_value(const struct expr *expr, mpz_t value);
 
-static int concat_expr_msort_cmp(const struct expr *e1, const struct expr *e2)
+static void concat_expr_msort_value(const struct expr *expr, mpz_t value)
 {
-	struct list_head *l = (&e2->expressions)->next;
-	const struct expr *i1, *i2;
-	int ret;
+	unsigned int len = 0, ilen;
+	const struct expr *i;
+	char data[512];
 
-	list_for_each_entry(i1, &e1->expressions, list) {
-		i2 = list_entry(l, typeof(struct expr), list);
-
-		ret = expr_msort_cmp(i1, i2);
-		if (ret)
-			return ret;
-
-		l = l->next;
+	list_for_each_entry(i, &expr->expressions, list) {
+		ilen = div_round_up(i->len, BITS_PER_BYTE);
+		mpz_export_data(data + len, i->value, i->byteorder, ilen);
+		len += ilen;
 	}
 
-	return false;
+	mpz_import_data(value, data, BYTEORDER_HOST_ENDIAN, len);
+}
+
+static void expr_msort_value(const struct expr *expr, mpz_t value)
+{
+	switch (expr->etype) {
+	case EXPR_SET_ELEM:
+		expr_msort_value(expr->key, value);
+		break;
+	case EXPR_BINOP:
+	case EXPR_MAPPING:
+		expr_msort_value(expr->left, value);
+		break;
+	case EXPR_VALUE:
+		mpz_set(value, expr->value);
+		break;
+	case EXPR_CONCAT:
+		concat_expr_msort_value(expr, value);
+		break;
+	default:
+		BUG("Unknown expression %s\n", expr_name(expr));
+	}
 }
 
 static int expr_msort_cmp(const struct expr *e1, const struct expr *e2)
 {
-	switch (e1->etype) {
-	case EXPR_SET_ELEM:
-		return expr_msort_cmp(e1->key, e2->key);
-	case EXPR_VALUE:
-		return mpz_cmp(e1->value, e2->value);
-	case EXPR_CONCAT:
-		return concat_expr_msort_cmp(e1, e2);
-	case EXPR_MAPPING:
-		return expr_msort_cmp(e1->left, e2->left);
-	case EXPR_BINOP:
-		return expr_msort_cmp(e1->left, e2->left);
-	default:
-		BUG("Unknown expression %s\n", expr_name(e1));
-	}
+	mpz_t value1, value2;
+	int ret;
+
+	mpz_init(value1);
+	mpz_init(value2);
+	expr_msort_value(e1, value1);
+	expr_msort_value(e2, value2);
+	ret = mpz_cmp(value1, value2);
+	mpz_clear(value1);
+	mpz_clear(value2);
+
+	return ret;
 }
 
 static void list_splice_sorted(struct list_head *list, struct list_head *head)

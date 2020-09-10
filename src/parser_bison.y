@@ -121,6 +121,17 @@ static struct expr *handle_concat_expr(const struct location *loc,
 	return expr;
 }
 
+static bool already_set(const void *attr, const struct location *loc,
+			struct parser_state *state)
+{
+	if (!attr)
+		return false;
+
+	erec_queue(error(loc, "You can only specify this once. This statement is duplicated."),
+		   state->msgs);
+	return true;
+}
+
 #define YYLLOC_DEFAULT(Current, Rhs, N)	location_update(&Current, Rhs, N)
 
 #define symbol_value(loc, str) \
@@ -1556,6 +1567,10 @@ table_options		:	FLAGS		STRING
 			}
 			|	comment_spec
 			{
+				if (already_set($<table>0->comment, &@$, state)) {
+					xfree($1);
+					YYERROR;
+				}
 				$<table>0->comment = $1;
 			}
 			;
@@ -1795,6 +1810,10 @@ set_block		:	/* empty */	{ $$ = $<set>-1; }
 			|	set_block	set_mechanism	stmt_separator
 			|	set_block	comment_spec	stmt_separator
 			{
+				if (already_set($1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$1->comment = $2;
 				$$ = $1;
 			}
@@ -1923,6 +1942,10 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 			}
 			|	map_block	comment_spec	stmt_separator
 			{
+				if (already_set($1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$1->comment = $2;
 				$$ = $1;
 			}
@@ -2061,6 +2084,10 @@ counter_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			|	counter_block	  comment_spec
 			{
+				if (already_set($<obj>1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$<obj>1->comment = $2;
 			}
 			;
@@ -2074,6 +2101,10 @@ quota_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			|	quota_block	comment_spec
 			{
+				if (already_set($<obj>1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$<obj>1->comment = $2;
 			}
 			;
@@ -2087,6 +2118,10 @@ ct_helper_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			|       ct_helper_block     comment_spec
 			{
+				if (already_set($<obj>1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$<obj>1->comment = $2;
 			}
 			;
@@ -2104,6 +2139,10 @@ ct_timeout_block	:	/*empty */
 			}
 			|       ct_timeout_block     comment_spec
 			{
+				if (already_set($<obj>1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$<obj>1->comment = $2;
 			}
 			;
@@ -2117,6 +2156,10 @@ ct_expect_block		:	/*empty */	{ $$ = $<obj>-1; }
 			}
 			|       ct_expect_block     comment_spec
 			{
+				if (already_set($<obj>1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$<obj>1->comment = $2;
 			}
 			;
@@ -2130,6 +2173,10 @@ limit_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			|       limit_block     comment_spec
 			{
+				if (already_set($<obj>1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$<obj>1->comment = $2;
 			}
 			;
@@ -2143,6 +2190,10 @@ secmark_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			|       secmark_block     comment_spec
 			{
+				if (already_set($<obj>1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$<obj>1->comment = $2;
 			}
 			;
@@ -2156,6 +2207,10 @@ synproxy_block		:	/* empty */	{ $$ = $<obj>-1; }
 			}
 			|       synproxy_block     comment_spec
 			{
+				if (already_set($<obj>1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
 				$<obj>1->comment = $2;
 			}
 			;
@@ -4000,6 +4055,10 @@ set_elem_option		:	TIMEOUT			time_spec
 			}
 			|	comment_spec
 			{
+				if (already_set($<expr>0->comment, &@1, state)) {
+					xfree($1);
+					YYERROR;
+				}
 				$<expr>0->comment = $1;
 			}
 			;
@@ -4034,6 +4093,10 @@ set_elem_expr_option	:	TIMEOUT			time_spec
 			}
 			|	comment_spec
 			{
+				if (already_set($<expr>0->comment, &@1, state)) {
+					xfree($1);
+					YYERROR;
+				}
 				$<expr>0->comment = $1;
 			}
 			;

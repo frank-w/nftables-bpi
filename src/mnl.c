@@ -273,24 +273,16 @@ static int mnl_set_rcvbuffer(const struct mnl_socket *nl, socklen_t bufsiz)
 	return ret;
 }
 
-static size_t mnl_nft_batch_to_msg(struct netlink_ctx *ctx, struct msghdr *msg,
-				   const struct sockaddr_nl *snl,
-				   struct iovec *iov, unsigned int iov_len)
+static void mnl_nft_batch_to_msg(struct netlink_ctx *ctx, struct msghdr *msg,
+				 const struct sockaddr_nl *snl,
+				 struct iovec *iov, unsigned int iov_len)
 {
-	unsigned int i;
-	size_t len = 0;
-
 	msg->msg_name		= (struct sockaddr_nl *)snl;
 	msg->msg_namelen	= sizeof(*snl);
 	msg->msg_iov		= iov;
 	msg->msg_iovlen		= iov_len;
 
 	nftnl_batch_iovec(ctx->batch, iov, iov_len);
-
-	for (i = 0; i < iov_len; i++)
-		len += msg->msg_iov[i].iov_len;
-
-	return len;
 }
 
 static ssize_t mnl_nft_socket_sendmsg(struct netlink_ctx *ctx,
@@ -385,7 +377,6 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 	struct iovec iov[iov_len];
 	struct msghdr msg = {};
 	unsigned int rcvbufsiz;
-	size_t batch_size;
 	fd_set readfds;
 	static mnl_cb_t cb_ctl_array[NLMSG_MIN_TYPE] = {
 	        [NLMSG_ERROR] = mnl_batch_extack_cb,
@@ -397,14 +388,12 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 
 	mnl_set_sndbuffer(ctx->nft->nf_sock, ctx->batch);
 
-	batch_size = mnl_nft_batch_to_msg(ctx, &msg, &snl, iov, iov_len);
+	mnl_nft_batch_to_msg(ctx, &msg, &snl, iov, iov_len);
 
+	rcvbufsiz = num_cmds * 1024;
 	if (nft_output_echo(&ctx->nft->output)) {
-		rcvbufsiz = num_cmds * 1024;
 		if (rcvbufsiz < NFT_MNL_ECHO_RCVBUFF_DEFAULT)
 			rcvbufsiz = NFT_MNL_ECHO_RCVBUFF_DEFAULT;
-	} else {
-		rcvbufsiz = num_cmds * div_round_up(batch_size, num_cmds) * 4;
 	}
 
 	mnl_set_rcvbuffer(ctx->nft->nf_sock, rcvbufsiz);

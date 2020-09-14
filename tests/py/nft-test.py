@@ -1022,6 +1022,8 @@ def execute_cmd(cmd, filename, lineno, stdout_log=False, debug=False):
     if debug_option:
         print(cmd)
 
+    log_file.flush()
+
     if debug:
         debug_old = nftables.get_debug()
         nftables.set_debug(debug)

@@ -707,33 +707,32 @@ static int __expr_evaluate_payload(struct eval_ctx *ctx, struct expr *expr)
 			return -1;
 
 		rule_stmt_insert_at(ctx->rule, nstmt, ctx->stmt);
-	} else {
-		/* No conflict: Same payload protocol as context, adjust offset
-		 * if needed.
-		 */
-		if (desc == payload->payload.desc) {
-			payload->payload.offset +=
-				ctx->pctx.protocol[base].offset;
-			return 0;
-		}
-		/* If we already have context and this payload is on the same
-		 * base, try to resolve the protocol conflict.
-		 */
-		if (payload->payload.base == desc->base) {
-			err = resolve_protocol_conflict(ctx, desc, payload);
-			if (err <= 0)
-				return err;
-
-			desc = ctx->pctx.protocol[base].desc;
-			if (desc == payload->payload.desc)
-				return 0;
-		}
-		return expr_error(ctx->msgs, payload,
-				  "conflicting protocols specified: %s vs. %s",
-				  ctx->pctx.protocol[base].desc->name,
-				  payload->payload.desc->name);
+		return 0;
 	}
-	return 0;
+
+	/* No conflict: Same payload protocol as context, adjust offset
+	 * if needed.
+	 */
+	if (desc == payload->payload.desc) {
+		payload->payload.offset += ctx->pctx.protocol[base].offset;
+		return 0;
+	}
+	/* If we already have context and this payload is on the same
+	 * base, try to resolve the protocol conflict.
+	 */
+	if (payload->payload.base == desc->base) {
+		err = resolve_protocol_conflict(ctx, desc, payload);
+		if (err <= 0)
+			return err;
+
+		desc = ctx->pctx.protocol[base].desc;
+		if (desc == payload->payload.desc)
+			return 0;
+	}
+	return expr_error(ctx->msgs, payload,
+			  "conflicting protocols specified: %s vs. %s",
+			  ctx->pctx.protocol[base].desc->name,
+			  payload->payload.desc->name);
 }
 
 static bool payload_needs_adjustment(const struct expr *expr)

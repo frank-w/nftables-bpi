@@ -167,7 +167,9 @@ struct expr_ops {
 	bool			(*cmp)(const struct expr *e1,
 				       const struct expr *e2);
 	void			(*pctx_update)(struct proto_ctx *ctx,
-					       const struct expr *expr);
+					       const struct location *loc,
+					       const struct expr *left,
+					       const struct expr *right);
 	int			(*build_udata)(struct nftnl_udata_buf *udbuf,
 					       const struct expr *expr);
 	struct expr *		(*parse_udata)(const struct nftnl_udata *ud);

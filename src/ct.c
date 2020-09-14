@@ -351,9 +351,11 @@ static void ct_expr_clone(struct expr *new, const struct expr *expr)
 	new->ct = expr->ct;
 }
 
-static void ct_expr_pctx_update(struct proto_ctx *ctx, const struct expr *expr)
+static void ct_expr_pctx_update(struct proto_ctx *ctx,
+				const struct location *loc,
+				const struct expr *left,
+				const struct expr *right)
 {
-	const struct expr *left = expr->left, *right = expr->right;
 	const struct proto_desc *base = NULL, *desc;
 	uint32_t nhproto;
 
@@ -366,7 +368,7 @@ static void ct_expr_pctx_update(struct proto_ctx *ctx, const struct expr *expr)
 	if (!desc)
 		return;
 
-	proto_ctx_update(ctx, left->ct.base + 1, &expr->location, desc);
+	proto_ctx_update(ctx, left->ct.base + 1, loc, desc);
 }
 
 #define NFTNL_UDATA_CT_KEY 0

@@ -52,3 +52,28 @@ inet test-inet prerouting
   [ payload load 4b @ network header + 16 => reg 9 ]
   [ lookup reg 1 set __map%d dreg 1 ]
   [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
+
+# meta l4proto { tcp, udp } dnat ip to 1.1.1.1:80
+__set%d test-inet 3
+__set%d test-inet 0
+        element 00000006  : 0 [end]     element 00000011  : 0 [end]
+inet
+  [ meta load l4proto => reg 1 ]
+  [ lookup reg 1 set __set%d ]
+  [ immediate reg 1 0x01010101 ]
+  [ immediate reg 2 0x00005000 ]
+  [ nat dnat ip addr_min reg 1 addr_max reg 0 proto_min reg 2 proto_max reg 0 flags 0x2 ]
+
+# ip protocol { tcp, udp } dnat ip to 1.1.1.1:80
+__set%d test-inet 3
+__set%d test-inet 0
+        element 00000006  : 0 [end]     element 00000011  : 0 [end]
+inet
+  [ meta load nfproto => reg 1 ]
+  [ cmp eq reg 1 0x00000002 ]
+  [ payload load 1b @ network header + 9 => reg 1 ]
+  [ lookup reg 1 set __set%d ]
+  [ immediate reg 1 0x01010101 ]
+  [ immediate reg 2 0x00005000 ]
+  [ nat dnat ip addr_min reg 1 addr_max reg 0 proto_min reg 2 proto_max reg 0 flags 0x2 ]
+

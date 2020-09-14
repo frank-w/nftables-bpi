@@ -193,10 +193,67 @@ void proto_ctx_update(struct proto_ctx *ctx, enum proto_bases base,
 		      const struct location *loc,
 		      const struct proto_desc *desc)
 {
+	bool found = false;
+	unsigned int i;
+
+	switch (base) {
+	case PROTO_BASE_LL_HDR:
+	case PROTO_BASE_NETWORK_HDR:
+		break;
+	case PROTO_BASE_TRANSPORT_HDR:
+		if (ctx->protocol[base].num_protos >= PROTO_CTX_NUM_PROTOS)
+			break;
+
+		for (i = 0; i < ctx->protocol[base].num_protos; i++) {
+			if (ctx->protocol[base].protos[i].desc == desc) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			i = ctx->protocol[base].num_protos++;
+			ctx->protocol[base].protos[i].desc = desc;
+			ctx->protocol[base].protos[i].location = *loc;
+		}
+		break;
+	default:
+		BUG("unknown protocol base %d", base);
+	}
+
 	ctx->protocol[base].location	= *loc;
 	ctx->protocol[base].desc	= desc;
 
 	proto_ctx_debug(ctx, base, ctx->debug_mask);
+}
+
+bool proto_ctx_is_ambiguous(struct proto_ctx *ctx, enum proto_bases base)
+{
+	return ctx->protocol[base].num_protos > 1;
+}
+
+const struct proto_desc *proto_ctx_find_conflict(struct proto_ctx *ctx,
+						 enum proto_bases base,
+						 const struct proto_desc *desc)
+{
+	unsigned int i;
+
+	switch (base) {
+	case PROTO_BASE_LL_HDR:
+	case PROTO_BASE_NETWORK_HDR:
+		if (desc != ctx->protocol[base].desc)
+			return ctx->protocol[base].desc;
+		break;
+	case PROTO_BASE_TRANSPORT_HDR:
+		for (i = 0; i < ctx->protocol[base].num_protos; i++) {
+			if (desc != ctx->protocol[base].protos[i].desc)
+				return ctx->protocol[base].protos[i].desc;
+		}
+		break;
+	default:
+		BUG("unknown protocol base %d", base);
+	}
+
+	return NULL;
 }
 
 #define HDR_TEMPLATE(__name, __dtype, __type, __member)			\

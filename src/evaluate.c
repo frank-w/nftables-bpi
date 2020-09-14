@@ -710,6 +710,17 @@ static int __expr_evaluate_payload(struct eval_ctx *ctx, struct expr *expr)
 		return 0;
 	}
 
+	if (payload->payload.base == desc->base &&
+	    proto_ctx_is_ambiguous(&ctx->pctx, base)) {
+		desc = proto_ctx_find_conflict(&ctx->pctx, base, payload->payload.desc);
+		assert(desc);
+
+		return expr_error(ctx->msgs, payload,
+				  "conflicting protocols specified: %s vs. %s",
+				  desc->name,
+				  payload->payload.desc->name);
+	}
+
 	/* No conflict: Same payload protocol as context, adjust offset
 	 * if needed.
 	 */
@@ -1874,8 +1885,7 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 		 * Update protocol context for payload and meta iiftype
 		 * equality expressions.
 		 */
-		if (expr_is_singleton(right))
-			relational_expr_pctx_update(&ctx->pctx, rel);
+		relational_expr_pctx_update(&ctx->pctx, rel);
 
 		/* fall through */
 	case OP_NEQ:

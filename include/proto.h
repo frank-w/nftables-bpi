@@ -152,6 +152,8 @@ struct dev_proto_desc {
 extern int proto_dev_type(const struct proto_desc *desc, uint16_t *res);
 extern const struct proto_desc *proto_dev_desc(uint16_t type);
 
+#define PROTO_CTX_NUM_PROTOS	16
+
 /**
  * struct proto_ctx - protocol context
  *
@@ -172,6 +174,11 @@ struct proto_ctx {
 		struct location			location;
 		const struct proto_desc		*desc;
 		unsigned int			offset;
+		struct {
+			struct location		location;
+			const struct proto_desc	*desc;
+		} protos[PROTO_CTX_NUM_PROTOS];
+		unsigned int			num_protos;
 	} protocol[PROTO_BASE_MAX + 1];
 };
 
@@ -180,6 +187,10 @@ extern void proto_ctx_init(struct proto_ctx *ctx, unsigned int family,
 extern void proto_ctx_update(struct proto_ctx *ctx, enum proto_bases base,
 			     const struct location *loc,
 			     const struct proto_desc *desc);
+bool proto_ctx_is_ambiguous(struct proto_ctx *ctx, enum proto_bases bases);
+const struct proto_desc *proto_ctx_find_conflict(struct proto_ctx *ctx,
+						 enum proto_bases base,
+						 const struct proto_desc *desc);
 extern const struct proto_desc *proto_find_upper(const struct proto_desc *base,
 						 unsigned int num);
 extern int proto_find_num(const struct proto_desc *base,

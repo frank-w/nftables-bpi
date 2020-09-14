@@ -753,10 +753,11 @@ static void meta_expr_clone(struct expr *new, const struct expr *expr)
  * Update LL protocol context based on IIFTYPE meta match in non-LL hooks.
  */
 static void meta_expr_pctx_update(struct proto_ctx *ctx,
-				  const struct expr *expr)
+				  const struct location *loc,
+				  const struct expr *left,
+				  const struct expr *right)
 {
 	const struct hook_proto_desc *h = &hook_proto_desc[ctx->family];
-	const struct expr *left = expr->left, *right = expr->right;
 	const struct proto_desc *desc;
 	uint8_t protonum;
 
@@ -771,7 +772,7 @@ static void meta_expr_pctx_update(struct proto_ctx *ctx,
 		if (desc == NULL)
 			desc = &proto_unknown;
 
-		proto_ctx_update(ctx, PROTO_BASE_LL_HDR, &expr->location, desc);
+		proto_ctx_update(ctx, PROTO_BASE_LL_HDR, loc, desc);
 		break;
 	case NFT_META_NFPROTO:
 		protonum = mpz_get_uint8(right->value);
@@ -784,7 +785,7 @@ static void meta_expr_pctx_update(struct proto_ctx *ctx,
 				desc = h->desc;
 		}
 
-		proto_ctx_update(ctx, PROTO_BASE_NETWORK_HDR, &expr->location, desc);
+		proto_ctx_update(ctx, PROTO_BASE_NETWORK_HDR, loc, desc);
 		break;
 	case NFT_META_L4PROTO:
 		desc = proto_find_upper(&proto_inet_service,
@@ -792,7 +793,7 @@ static void meta_expr_pctx_update(struct proto_ctx *ctx,
 		if (desc == NULL)
 			desc = &proto_unknown;
 
-		proto_ctx_update(ctx, PROTO_BASE_TRANSPORT_HDR, &expr->location, desc);
+		proto_ctx_update(ctx, PROTO_BASE_TRANSPORT_HDR, loc, desc);
 		break;
 	case NFT_META_PROTOCOL:
 		if (h->base != PROTO_BASE_LL_HDR)
@@ -806,7 +807,7 @@ static void meta_expr_pctx_update(struct proto_ctx *ctx,
 		if (desc == NULL)
 			desc = &proto_unknown;
 
-		proto_ctx_update(ctx, PROTO_BASE_NETWORK_HDR, &expr->location, desc);
+		proto_ctx_update(ctx, PROTO_BASE_NETWORK_HDR, loc, desc);
 		break;
 	default:
 		break;

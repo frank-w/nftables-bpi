@@ -708,16 +708,26 @@ struct expr *relational_expr_alloc(const struct location *loc, enum ops op,
 void relational_expr_pctx_update(struct proto_ctx *ctx,
 				 const struct expr *expr)
 {
-	const struct expr *left = expr->left;
+	const struct expr *left = expr->left, *right = expr->right;
 	const struct expr_ops *ops;
+	const struct expr *i;
 
 	assert(expr->etype == EXPR_RELATIONAL);
 	assert(expr->op == OP_EQ || expr->op == OP_IMPLICIT);
 
 	ops = expr_ops(left);
 	if (ops->pctx_update &&
-	    (left->flags & EXPR_F_PROTOCOL))
-		ops->pctx_update(ctx, expr);
+	    (left->flags & EXPR_F_PROTOCOL)) {
+		if (expr_is_singleton(right))
+			ops->pctx_update(ctx, &expr->location, left, right);
+		else if (right->etype == EXPR_SET) {
+			list_for_each_entry(i, &right->expressions, list) {
+				if (i->etype == EXPR_SET_ELEM &&
+				    i->key->etype == EXPR_VALUE)
+					ops->pctx_update(ctx, &expr->location, left, i->key);
+			}
+		}
+	}
 }
 
 static void range_expr_print(const struct expr *expr, struct output_ctx *octx)

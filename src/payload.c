@@ -80,9 +80,10 @@ static void payload_expr_clone(struct expr *new, const struct expr *expr)
  * Update protocol context for relational payload expressions.
  */
 static void payload_expr_pctx_update(struct proto_ctx *ctx,
-				     const struct expr *expr)
+				     const struct location *loc,
+				     const struct expr *left,
+				     const struct expr *right)
 {
-	const struct expr *left = expr->left, *right = expr->right;
 	const struct proto_desc *base, *desc;
 	unsigned int proto = 0;
 
@@ -102,7 +103,7 @@ static void payload_expr_pctx_update(struct proto_ctx *ctx,
 		assert(base->length > 0);
 		ctx->protocol[base->base].offset += base->length;
 	}
-	proto_ctx_update(ctx, desc->base, &expr->location, desc);
+	proto_ctx_update(ctx, desc->base, loc, desc);
 }
 
 #define NFTNL_UDATA_SET_KEY_PAYLOAD_DESC 0

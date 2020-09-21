@@ -929,6 +929,7 @@ void chain_free(struct chain *chain)
 	xfree(chain->dev_array);
 	expr_free(chain->priority.expr);
 	expr_free(chain->policy);
+	xfree(chain->comment);
 	xfree(chain);
 }
 
@@ -1220,6 +1221,8 @@ static void chain_print_declaration(const struct chain *chain,
 	nft_print(octx, "\tchain %s {", chain->handle.chain.name);
 	if (nft_output_handle(octx))
 		nft_print(octx, " # handle %" PRIu64, chain->handle.handle.id);
+	if (chain->comment)
+		nft_print(octx, "\n\t\tcomment \"%s\"", chain->comment);
 	nft_print(octx, "\n");
 	if (chain->flags & CHAIN_F_BASECHAIN) {
 		nft_print(octx, "\t\ttype %s hook %s", chain->type,

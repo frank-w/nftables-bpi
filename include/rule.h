@@ -225,6 +225,7 @@ struct chain {
 	struct location		location;
 	unsigned int		refcnt;
 	uint32_t		flags;
+	const char		*comment;
 	struct {
 		struct location		loc;
 		struct prio_spec	priority;

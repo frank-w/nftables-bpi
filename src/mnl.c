@@ -601,6 +601,7 @@ err:
 int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		      unsigned int flags)
 {
+	struct nftnl_udata_buf *udbuf;
 	int priority, policy, i = 0;
 	struct nftnl_chain *nlc;
 	unsigned int ifname_len;
@@ -660,6 +661,16 @@ int mnl_nft_chain_add(struct netlink_ctx *ctx, struct cmd *cmd,
 				xfree(dev_array[i++]);
 
 			xfree(dev_array);
+		}
+		if (cmd->chain->comment) {
+			udbuf = nftnl_udata_buf_alloc(NFT_USERDATA_MAXLEN);
+			if (!udbuf)
+				memory_allocation_error();
+			if (!nftnl_udata_put_strz(udbuf, NFTNL_UDATA_CHAIN_COMMENT, cmd->chain->comment))
+				memory_allocation_error();
+			nftnl_chain_set_data(nlc, NFTNL_CHAIN_USERDATA, nftnl_udata_buf_data(udbuf),
+					     nftnl_udata_buf_len(udbuf));
+			nftnl_udata_buf_free(udbuf);
 		}
 	}
 	netlink_dump_chain(nlc, ctx);

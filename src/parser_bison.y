@@ -1723,6 +1723,14 @@ chain_block		:	/* empty */	{ $$ = $<chain>-1; }
 				list_add_tail(&$2->list, &$1->rules);
 				$$ = $1;
 			}
+			|	chain_block	comment_spec	stmt_separator
+			{
+				if (already_set($1->comment, &@2, state)) {
+					xfree($2);
+					YYERROR;
+				}
+				$1->comment = $2;
+			}
 			;
 
 subchain_block		:	/* empty */	{ $$ = $<chain>-1; }

@@ -472,12 +472,34 @@ void netlink_dump_chain(const struct nftnl_chain *nlc, struct netlink_ctx *ctx)
 	fprintf(fp, "\n");
 }
 
+static int chain_parse_udata_cb(const struct nftnl_udata *attr, void *data)
+{
+	unsigned char *value = nftnl_udata_get(attr);
+	uint8_t type = nftnl_udata_type(attr);
+	const struct nftnl_udata **tb = data;
+	uint8_t len = nftnl_udata_len(attr);
+
+	switch (type) {
+		case NFTNL_UDATA_CHAIN_COMMENT:
+			if (value[len - 1] != '\0')
+				return -1;
+			break;
+		default:
+			return 0;
+	}
+	tb[type] = attr;
+	return 0;
+}
+
 struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 					const struct nftnl_chain *nlc)
 {
+	const struct nftnl_udata *ud[NFTNL_UDATA_OBJ_MAX + 1] = {};
 	int priority, policy, len = 0, i;
 	const char * const *dev_array;
 	struct chain *chain;
+	const char *udata;
+	uint32_t ulen;
 
 	chain = chain_alloc(nftnl_chain_get_str(nlc, NFTNL_CHAIN_NAME));
 	chain->handle.family =
@@ -532,6 +554,16 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 			chain->dev_array_len = len;
 		}
 		chain->flags        |= CHAIN_F_BASECHAIN;
+	}
+
+	if (nftnl_chain_is_set(nlc, NFTNL_CHAIN_USERDATA)) {
+		udata = nftnl_chain_get_data(nlc, NFTNL_CHAIN_USERDATA, &ulen);
+		if (nftnl_udata_parse(udata, ulen, chain_parse_udata_cb, ud) < 0) {
+			netlink_io_error(ctx, NULL, "Cannot parse userdata");
+			return NULL;
+		}
+		if (ud[NFTNL_UDATA_CHAIN_COMMENT])
+			chain->comment = xstrdup(nftnl_udata_get(ud[NFTNL_UDATA_CHAIN_COMMENT]));
 	}
 
 	return chain;

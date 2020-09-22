@@ -140,7 +140,7 @@ static json_t *set_print_json(struct output_ctx *octx, const struct set *set)
 		json_object_set_new(root, "gc-interval", tmp);
 	}
 
-	if (set->init && set->init->size > 0) {
+	if (!nft_output_terse(octx) && set->init && set->init->size > 0) {
 		json_t *array = json_array();
 		const struct expr *i;
 

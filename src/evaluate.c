@@ -324,8 +324,11 @@ static int expr_evaluate_string(struct eval_ctx *ctx, struct expr **exprp)
 		return 0;
 	}
 
-	if (datalen >= 1 &&
-	    data[datalen - 1] == '\\') {
+	if (datalen == 0)
+		return expr_error(ctx->msgs, expr,
+				  "All-wildcard strings are not supported");
+
+	if (data[datalen - 1] == '\\') {
 		char unescaped_str[data_len];
 
 		memset(unescaped_str, 0, sizeof(unescaped_str));

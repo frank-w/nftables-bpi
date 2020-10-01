@@ -642,6 +642,8 @@ zone id is tied to the given direction. +
 *ct* {*original* | *reply*} {*proto-src* | *proto-dst*}
 *ct* {*original* | *reply*} {*ip* | *ip6*} {*saddr* | *daddr*}
 
+The conntrack-specific types in this table are described in the sub-section CONNTRACK TYPES above.
+
 .Conntrack expressions
 [options="header"]
 |==================
@@ -698,15 +700,15 @@ integer (64 bit)
 conntrack zone |
 integer (16 bit)
 |count|
-count number of connections
+number of current connections|
 integer (32 bit)
 |id|
-Connection id
-ct_id
+Connection id|
+ct_id|
 |==========================================
-A description of conntrack-specific types listed above can be found sub-section CONNTRACK TYPES above.
 
 .restrict the number of parallel connections to a server
 --------------------
-filter input tcp dport 22 meter test { ip saddr ct count over 2 } reject
+nft add set filter ssh_flood '{ type ipv4_addr; flags dynamic; }'
+nft add rule filter input tcp dport 22 add @ssh_flood '{ ip saddr ct count over 2 }' reject
 --------------------

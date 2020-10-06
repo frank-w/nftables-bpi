@@ -103,6 +103,7 @@ struct proto_desc {
 	const char			*name;
 	enum proto_desc_id		id;
 	enum proto_bases		base;
+	enum nft_payload_csum_types	checksum_type;
 	unsigned int			checksum_key;
 	unsigned int			protocol_key;
 	unsigned int			length;

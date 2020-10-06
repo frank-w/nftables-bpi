@@ -974,7 +974,7 @@ static void netlink_gen_payload_stmt(struct netlink_linearize_ctx *ctx,
 			   expr->len / BITS_PER_BYTE);
 	if (csum_off) {
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_PAYLOAD_CSUM_TYPE,
-				   NFT_PAYLOAD_CSUM_INET);
+				   desc->checksum_type);
 		nftnl_expr_set_u32(nle, NFTNL_EXPR_PAYLOAD_CSUM_OFFSET,
 				   csum_off / BITS_PER_BYTE);
 	}

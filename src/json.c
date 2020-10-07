@@ -589,7 +589,7 @@ json_t *set_elem_expr_json(const struct expr *expr, struct output_ctx *octx)
 		return NULL;
 
 	/* these element attributes require formal set elem syntax */
-	if (expr->timeout || expr->expiration || expr->comment) {
+	if (expr->timeout || expr->expiration || expr->comment || expr->stmt) {
 		root = json_pack("{s:o}", "val", root);
 
 		if (expr->timeout) {
@@ -603,6 +603,12 @@ json_t *set_elem_expr_json(const struct expr *expr, struct output_ctx *octx)
 		if (expr->comment) {
 			tmp = json_string(expr->comment);
 			json_object_set_new(root, "comment", tmp);
+		}
+		if (expr->stmt) {
+			tmp = stmt_print_json(expr->stmt, octx);
+			/* XXX: detect and complain about clashes? */
+			json_object_update_missing(root, tmp);
+			json_decref(tmp);
 		}
 		return json_pack("{s:o}", "elem", root);
 	}

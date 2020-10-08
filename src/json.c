@@ -62,7 +62,7 @@ static json_t *set_dtype_json(const struct expr *key)
 
 	tok = strtok(namedup, " .");
 	while (tok) {
-		json_t *jtok = json_string(xstrdup(tok));
+		json_t *jtok = json_string(tok);
 		if (!root)
 			root = jtok;
 		else if (json_is_string(root))

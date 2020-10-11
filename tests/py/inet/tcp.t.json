@@ -1637,3 +1637,96 @@
     }
 ]
 
+# tcp flags { syn, syn | ack }
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "flags",
+                    "protocol": "tcp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    {
+                        "|": [
+                            "syn",
+                            "ack"
+                        ]
+                    },
+                    "syn"
+                ]
+            }
+        }
+    }
+]
+
+# tcp flags & (fin | syn | rst | psh | ack | urg) == { fin, ack, psh | ack, fin | psh | ack }
+[
+    {
+        "match": {
+            "left": {
+                "&": [
+                    {
+                        "payload": {
+                            "field": "flags",
+                            "protocol": "tcp"
+                        }
+                    },
+                    {
+                        "|": [
+                            {
+                                "|": [
+                                    {
+                                        "|": [
+                                            {
+                                                "|": [
+                                                    {
+                                                        "|": [
+                                                            "fin",
+                                                            "syn"
+                                                        ]
+                                                    },
+                                                    "rst"
+                                                ]
+                                            },
+                                            "psh"
+                                        ]
+                                    },
+                                    "ack"
+                                ]
+                            },
+                            "urg"
+                        ]
+                    }
+                ]
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    {
+                        "|": [
+                            {
+                                "|": [
+                                    "fin",
+                                    "psh"
+                                ]
+                            },
+                            "ack"
+                        ]
+                    },
+                    "fin",
+                    {
+                        "|": [
+                            "psh",
+                            "ack"
+                        ]
+                    },
+                    "ack"
+                ]
+            }
+        }
+    }
+]

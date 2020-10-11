@@ -1449,6 +1449,21 @@
     }
 ]
 
+# ct id 12345
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "id"
+                }
+            },
+            "op": "==",
+            "right": 12345
+        }
+    }
+]
+
 # ct zone set mark map { 1 : 1,  2 : 2 }
 [
     {

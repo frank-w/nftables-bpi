@@ -3965,10 +3965,12 @@ static uint32_t str2hooknum(uint32_t family, const char *hook)
 		return NF_INET_NUMHOOKS;
 
 	switch (family) {
+	case NFPROTO_INET:
+		if (!strcmp(hook, "ingress"))
+			return NF_INET_INGRESS;
 	case NFPROTO_IPV4:
 	case NFPROTO_BRIDGE:
 	case NFPROTO_IPV6:
-	case NFPROTO_INET:
 		/* These families have overlapping values for each hook */
 		if (!strcmp(hook, "prerouting"))
 			return NF_INET_PRE_ROUTING;
@@ -4042,7 +4044,9 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 						   expr_name(chain->policy));
 		}
 
-		if (chain->handle.family == NFPROTO_NETDEV) {
+		if (chain->handle.family == NFPROTO_NETDEV ||
+		    (chain->handle.family == NFPROTO_INET &&
+		     chain->hook.num == NF_INET_INGRESS)) {
 			if (!chain->dev_expr)
 				return __stmt_binary_error(ctx, &chain->loc, NULL,
 							   "Missing `device' in this chain definition");

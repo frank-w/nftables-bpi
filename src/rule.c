@@ -1019,6 +1019,8 @@ const char *hooknum2str(unsigned int family, unsigned int hooknum)
 			return "postrouting";
 		case NF_INET_LOCAL_OUT:
 			return "output";
+		case NF_INET_INGRESS:
+			return "ingress";
 		default:
 			break;
 		};

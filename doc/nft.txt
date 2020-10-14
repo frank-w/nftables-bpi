@@ -217,6 +217,11 @@ Packets forwarded to a different host are processed by the forward hook.
 Packets sent by local processes are processed by the output hook.
 |postrouting |
 All packets leaving the system are processed by the postrouting hook.
+|ingress |
+All packets entering the system are processed by this hook. It is invoked before
+layer 3 protocol handlers, hence before the prerouting hook, and it can be used
+for filtering and policing. Ingress is only available for Inet family (since
+Linux kernel 5.10).
 |===================
 
 ARP ADDRESS FAMILY
@@ -242,15 +247,18 @@ The list of supported hooks is identical to IPv4/IPv6/Inet address families abov
 
 NETDEV ADDRESS FAMILY
 ~~~~~~~~~~~~~~~~~~~~
-The Netdev address family handles packets from ingress.
+The Netdev address family handles packets from the device ingress path. This
+family allows you to filter packets of any ethertype such as ARP, VLAN 802.1q,
+VLAN 802.1ad (Q-in-Q) as well as IPv4 and IPv6 packets.
 
 .Netdev address family hooks
 [options="header"]
 |=================
 |Hook | Description
 |ingress |
-All packets entering the system are processed by this hook. It is invoked before
-layer 3 protocol handlers and it can be used for early filtering and policing.
+All packets entering the system are processed by this hook. It is invoked after
+the network taps (ie. *tcpdump*), right after *tc* ingress and before layer 3
+protocol handlers, it can be used for early filtering and policing.
 |=================
 
 RULESET
@@ -373,7 +381,7 @@ This allows to e.g. implement policy routing selectors in nftables.
 |=================
 
 Apart from the special cases illustrated above (e.g. *nat* type not supporting
-*forward* hook or *route* type only supporting *output* hook), there are two
+*forward* hook or *route* type only supporting *output* hook), there are three
 further quirks worth noticing:
 
 * The netdev family supports merely a single combination, namely *filter* type and
@@ -381,6 +389,11 @@ further quirks worth noticing:
   to be present since they exist per incoming interface only.
 * The arp family supports only the *input* and *output* hooks, both in chains of type
   *filter*.
+* The inet family also supports the *ingress* hook (since Linux kernel 5.10),
+  to filter IPv4 and IPv6 packet at the same location as the netdev *ingress*
+  hook. This inet hook allows you to share sets and maps between the usual
+  *prerouting*, *input*, *forward*, *output*, *postrouting* and this *ingress*
+  hook.
 
 The *priority* parameter accepts a signed integer value or a standard priority
 name which specifies the order in which chains with same *hook* value are

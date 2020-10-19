@@ -10,7 +10,7 @@
 #include <string.h>
 
 static int nft_cmd_enoent_table(struct netlink_ctx *ctx, const struct cmd *cmd,
-				struct location *loc)
+				const struct location *loc)
 {
 	struct table *table;
 
@@ -25,7 +25,7 @@ static int nft_cmd_enoent_table(struct netlink_ctx *ctx, const struct cmd *cmd,
 }
 
 static int nft_cmd_enoent_chain(struct netlink_ctx *ctx, const struct cmd *cmd,
-				struct location *loc)
+				const struct location *loc)
 {
 	const struct table *table;
 	struct chain *chain;
@@ -42,7 +42,7 @@ static int nft_cmd_enoent_chain(struct netlink_ctx *ctx, const struct cmd *cmd,
 }
 
 static int nft_cmd_enoent_rule(struct netlink_ctx *ctx, const struct cmd *cmd,
-			       struct location *loc)
+			       const struct location *loc)
 {
 	unsigned int flags = NFT_CACHE_TABLE |
 			     NFT_CACHE_CHAIN;
@@ -76,7 +76,7 @@ static int nft_cmd_enoent_rule(struct netlink_ctx *ctx, const struct cmd *cmd,
 }
 
 static int nft_cmd_enoent_set(struct netlink_ctx *ctx, const struct cmd *cmd,
-			      struct location *loc)
+			      const struct location *loc)
 {
 	const struct table *table;
 	struct set *set;
@@ -95,7 +95,7 @@ static int nft_cmd_enoent_set(struct netlink_ctx *ctx, const struct cmd *cmd,
 }
 
 static int nft_cmd_enoent_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
-			      struct location *loc)
+			      const struct location *loc)
 {
 	const struct table *table;
 	struct obj *obj;
@@ -112,7 +112,8 @@ static int nft_cmd_enoent_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
 }
 
 static int nft_cmd_enoent_flowtable(struct netlink_ctx *ctx,
-				    const struct cmd *cmd, struct location *loc)
+				    const struct cmd *cmd,
+				    const struct location *loc)
 {
 	const struct table *table;
 	struct flowtable *ft;
@@ -130,7 +131,7 @@ static int nft_cmd_enoent_flowtable(struct netlink_ctx *ctx,
 }
 
 static void nft_cmd_enoent(struct netlink_ctx *ctx, const struct cmd *cmd,
-			   struct location *loc, int err)
+			   const struct location *loc, int err)
 {
 	int ret = 0;
 
@@ -173,7 +174,7 @@ static void nft_cmd_enoent(struct netlink_ctx *ctx, const struct cmd *cmd,
 void nft_cmd_error(struct netlink_ctx *ctx, struct cmd *cmd,
 		   struct mnl_err *err)
 {
-	struct location *loc = NULL;
+	const struct location *loc = NULL;
 	int i;
 
 	for (i = 0; i < cmd->num_attrs; i++) {

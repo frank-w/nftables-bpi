@@ -704,8 +704,8 @@ struct cmd {
 		struct obj	*object;
 	};
 	struct {
-		uint16_t	offset;
-		struct location	*location;
+		uint16_t		offset;
+		const struct location	*location;
 	} attr[NFT_NLATTR_LOC_MAX];
 	int			num_attrs;
 	const void		*arg;
@@ -720,7 +720,7 @@ extern struct cmd *cmd_alloc_obj_ct(enum cmd_ops op, int type,
 				    const struct location *loc, struct obj *obj);
 extern void cmd_free(struct cmd *cmd);
 
-void cmd_add_loc(struct cmd *cmd, uint16_t offset, struct location *loc);
+void cmd_add_loc(struct cmd *cmd, uint16_t offset, const struct location *loc);
 
 #include <payload.h>
 #include <expression.h>

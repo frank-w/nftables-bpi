@@ -1473,7 +1473,7 @@ struct cmd *cmd_alloc(enum cmd_ops op, enum cmd_obj obj,
 	return cmd;
 }
 
-void cmd_add_loc(struct cmd *cmd, uint16_t offset, struct location *loc)
+void cmd_add_loc(struct cmd *cmd, uint16_t offset, const struct location *loc)
 {
 	if (cmd->num_attrs > NFT_NLATTR_LOC_MAX)
 		return;

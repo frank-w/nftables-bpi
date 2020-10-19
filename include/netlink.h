@@ -123,9 +123,11 @@ extern struct expr *netlink_alloc_data(const struct location *loc,
 				       enum nft_registers dreg);
 
 extern int netlink_list_rules(struct netlink_ctx *ctx, const struct handle *h);
+
+struct netlink_linearize_ctx;
 extern void netlink_linearize_rule(struct netlink_ctx *ctx,
-				   struct nftnl_rule *nlr,
-				   const struct rule *rule);
+				   const struct rule *rule,
+				   struct netlink_linearize_ctx *lctx);
 extern struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 					     struct nftnl_rule *r);
 
@@ -214,5 +216,26 @@ enum nft_data_types dtype_map_to_kernel(const struct datatype *dtype);
 
 void expr_handler_init(void);
 void expr_handler_exit(void);
+
+void netlink_linearize_init(struct netlink_linearize_ctx *lctx,
+			    struct nftnl_rule *nlr);
+void netlink_linearize_fini(struct netlink_linearize_ctx *lctx);
+
+struct netlink_linearize_ctx {
+	struct nftnl_rule	*nlr;
+	unsigned int		reg_low;
+	struct list_head	*expr_loc_htable;
+};
+
+#define NFT_EXPR_LOC_HSIZE      128
+
+struct nft_expr_loc {
+	struct list_head	hlist;
+	const struct nftnl_expr	*nle;
+	const struct location	*loc;
+};
+
+struct nft_expr_loc *nft_expr_loc_find(const struct nftnl_expr *nle,
+				       struct netlink_linearize_ctx *ctx);
 
 #endif /* NFTABLES_NETLINK_H */

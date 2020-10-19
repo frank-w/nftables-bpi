@@ -426,13 +426,55 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 	return 0;
 }
 
+struct mnl_nft_rule_build_ctx {
+	struct netlink_linearize_ctx	*lctx;
+	struct nlmsghdr			*nlh;
+	struct cmd			*cmd;
+};
+
+static int mnl_nft_expr_build_cb(struct nftnl_expr *nle, void *data)
+{
+	struct mnl_nft_rule_build_ctx *ctx = data;
+	struct nlmsghdr *nlh = ctx->nlh;
+	struct cmd *cmd = ctx->cmd;
+	struct nft_expr_loc *eloc;
+	struct nlattr *nest;
+
+	eloc = nft_expr_loc_find(nle, ctx->lctx);
+	if (eloc)
+		cmd_add_loc(cmd, nlh->nlmsg_len, eloc->loc);
+
+	nest = mnl_attr_nest_start(nlh, NFTA_LIST_ELEM);
+	nftnl_expr_build_payload(nlh, nle);
+	mnl_attr_nest_end(nlh, nest);
+
+	nftnl_rule_del_expr(nle);
+	nftnl_expr_free(nle);
+
+	return 0;
+}
+
+static void mnl_nft_rule_build_ctx_init(struct mnl_nft_rule_build_ctx *rule_ctx,
+					struct nlmsghdr *nlh,
+					struct cmd *cmd,
+					struct netlink_linearize_ctx *lctx)
+{
+	memset(rule_ctx, 0, sizeof(*rule_ctx));
+	rule_ctx->nlh = nlh;
+	rule_ctx->cmd = cmd;
+	rule_ctx->lctx = lctx;
+}
+
 int mnl_nft_rule_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		     unsigned int flags)
 {
+	struct mnl_nft_rule_build_ctx rule_ctx;
+	struct netlink_linearize_ctx lctx;
 	struct rule *rule = cmd->rule;
 	struct handle *h = &rule->handle;
 	struct nftnl_rule *nlr;
 	struct nlmsghdr *nlh;
+	struct nlattr *nest;
 
 	nlr = nftnl_rule_alloc();
 	if (!nlr)
@@ -446,7 +488,8 @@ int mnl_nft_rule_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	if (h->position_id)
 		nftnl_rule_set_u32(nlr, NFTNL_RULE_POSITION_ID, h->position_id);
 
-	netlink_linearize_rule(ctx, nlr, rule);
+	netlink_linearize_init(&lctx, nlr);
+	netlink_linearize_rule(ctx, rule, &lctx);
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_NEWRULE,
 				    cmd->handle.family,
@@ -461,8 +504,15 @@ int mnl_nft_rule_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	else
 		mnl_attr_put_strz(nlh, NFTA_RULE_CHAIN, h->chain.name);
 
+	mnl_nft_rule_build_ctx_init(&rule_ctx, nlh, cmd, &lctx);
+
+	nest = mnl_attr_nest_start(nlh, NFTA_RULE_EXPRESSIONS);
+	nftnl_expr_foreach(nlr, mnl_nft_expr_build_cb, &rule_ctx);
+	mnl_attr_nest_end(nlh, nest);
+
 	nftnl_rule_nlmsg_build_payload(nlh, nlr);
 	nftnl_rule_free(nlr);
+	netlink_linearize_fini(&lctx);
 
 	mnl_nft_batch_continue(ctx->batch);
 
@@ -471,11 +521,14 @@ int mnl_nft_rule_add(struct netlink_ctx *ctx, struct cmd *cmd,
 
 int mnl_nft_rule_replace(struct netlink_ctx *ctx, struct cmd *cmd)
 {
+	struct mnl_nft_rule_build_ctx rule_ctx;
+	struct netlink_linearize_ctx lctx;
 	struct rule *rule = cmd->rule;
 	struct handle *h = &rule->handle;
 	unsigned int flags = 0;
 	struct nftnl_rule *nlr;
 	struct nlmsghdr *nlh;
+	struct nlattr *nest;
 
 	if (nft_output_echo(&ctx->nft->output))
 		flags |= NLM_F_ECHO;
@@ -486,7 +539,8 @@ int mnl_nft_rule_replace(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	nftnl_rule_set_u32(nlr, NFTNL_RULE_FAMILY, h->family);
 
-	netlink_linearize_rule(ctx, nlr, rule);
+	netlink_linearize_init(&lctx, nlr);
+	netlink_linearize_rule(ctx, rule, &lctx);
 	nlh = nftnl_nlmsg_build_hdr(nftnl_batch_buffer(ctx->batch),
 				    NFT_MSG_NEWRULE,
 				    cmd->handle.family,
@@ -499,8 +553,15 @@ int mnl_nft_rule_replace(struct netlink_ctx *ctx, struct cmd *cmd)
 	cmd_add_loc(cmd, nlh->nlmsg_len, &h->handle.location);
 	mnl_attr_put_u64(nlh, NFTA_RULE_HANDLE, htobe64(h->handle.id));
 
+	mnl_nft_rule_build_ctx_init(&rule_ctx, nlh, cmd, &lctx);
+
+	nest = mnl_attr_nest_start(nlh, NFTA_RULE_EXPRESSIONS);
+	nftnl_expr_foreach(nlr, mnl_nft_expr_build_cb, &rule_ctx);
+	mnl_attr_nest_end(nlh, nest);
+
 	nftnl_rule_nlmsg_build_payload(nlh, nlr);
 	nftnl_rule_free(nlr);
+	netlink_linearize_fini(&lctx);
 
 	mnl_nft_batch_continue(ctx->batch);
 

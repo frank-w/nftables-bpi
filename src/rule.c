@@ -1475,7 +1475,9 @@ struct cmd *cmd_alloc(enum cmd_ops op, enum cmd_obj obj,
 
 void cmd_add_loc(struct cmd *cmd, uint16_t offset, struct location *loc)
 {
-	assert(cmd->num_attrs < NFT_NLATTR_LOC_MAX);
+	if (cmd->num_attrs > NFT_NLATTR_LOC_MAX)
+		return;
+
 	cmd->attr[cmd->num_attrs].offset = offset;
 	cmd->attr[cmd->num_attrs].location = loc;
 	cmd->num_attrs++;

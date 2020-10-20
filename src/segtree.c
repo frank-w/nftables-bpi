@@ -1084,11 +1084,13 @@ void interval_map_decompose(struct expr *set)
 		i = range_expr_alloc(&low->location,
 				     expr_clone(expr_value(low)), i);
 		i = set_elem_expr_alloc(&low->location, i);
-		if (low->etype == EXPR_MAPPING)
+		if (low->etype == EXPR_MAPPING) {
 			i = mapping_expr_alloc(&i->location, i,
 					       expr_clone(low->right));
-
-		interval_expr_copy(i, low);
+			interval_expr_copy(i->left, low->left);
+		} else {
+			interval_expr_copy(i, low);
+		}
 		expr_free(low);
 	}
 

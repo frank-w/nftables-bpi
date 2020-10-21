@@ -5224,6 +5224,13 @@ tcp_hdr_option_type	:	EOL		{ $$ = TCPOPT_KIND_EOL; }
 			|	SACK3		{ $$ = TCPOPT_KIND_SACK3; }
 			|	ECHO		{ $$ = TCPOPT_KIND_ECHO; }
 			|	TIMESTAMP	{ $$ = TCPOPT_KIND_TIMESTAMP; }
+			|	NUM		{
+				if ($1 > 255) {
+					erec_queue(error(&@1, "value too large"), state->msgs);
+					YYERROR;
+				}
+				$$ = $1;
+			}
 			;
 
 tcp_hdr_option_field	:	KIND		{ $$ = TCPOPT_COMMON_KIND; }

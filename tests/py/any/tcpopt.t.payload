@@ -510,39 +510,18 @@ inet
   [ cmp eq reg 1 0x01000000 ]
 
 # tcp option timestamp tsecr 1
-ip 
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000006 ]
-  [ exthdr load tcpopt 4b @ 8 + 6 => reg 1 ]
-  [ cmp eq reg 1 0x01000000 ]
-
-# tcp option timestamp tsecr 1
-ip6 
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000006 ]
-  [ exthdr load tcpopt 4b @ 8 + 6 => reg 1 ]
-  [ cmp eq reg 1 0x01000000 ]
-
-# tcp option timestamp tsecr 1
 inet 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ exthdr load tcpopt 4b @ 8 + 6 => reg 1 ]
   [ cmp eq reg 1 0x01000000 ]
 
-# tcp option window exists
-ip 
+# tcp option 255 missing
+inet
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
-  [ exthdr load tcpopt 1b @ 3 + 0 present => reg 1 ]
-  [ cmp eq reg 1 0x00000001 ]
-
-# tcp option window exists
-ip6 
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000006 ]
-  [ exthdr load tcpopt 1b @ 3 + 0 present => reg 1 ]
-  [ cmp eq reg 1 0x00000001 ]
+  [ exthdr load tcpopt 1b @ 255 + 0 present => reg 1 ]
+  [ cmp eq reg 1 0x00000000 ]
 
 # tcp option window exists
 inet 
@@ -552,35 +531,11 @@ inet
   [ cmp eq reg 1 0x00000001 ]
 
 # tcp option window missing
-ip 
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000006 ]
-  [ exthdr load tcpopt 1b @ 3 + 0 present => reg 1 ]
-  [ cmp eq reg 1 0x00000000 ]
-
-# tcp option window missing
-ip6 
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000006 ]
-  [ exthdr load tcpopt 1b @ 3 + 0 present => reg 1 ]
-  [ cmp eq reg 1 0x00000000 ]
-
-# tcp option window missing
 inet 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ exthdr load tcpopt 1b @ 3 + 0 present => reg 1 ]
   [ cmp eq reg 1 0x00000000 ]
-
-# tcp option maxseg size set 1360
-ip 
-  [ immediate reg 1 0x00005005 ]
-  [ exthdr write tcpopt reg 1 => 2b @ 2 + 2 ]
-
-# tcp option maxseg size set 1360
-ip6 
-  [ immediate reg 1 0x00005005 ]
-  [ exthdr write tcpopt reg 1 => 2b @ 2 + 2 ]
 
 # tcp option maxseg size set 1360
 inet 

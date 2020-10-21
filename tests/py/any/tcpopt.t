@@ -30,6 +30,7 @@ tcp option timestamp kind 1;ok
 tcp option timestamp length 1;ok
 tcp option timestamp tsval 1;ok
 tcp option timestamp tsecr 1;ok
+tcp option 255 missing;ok
 
 tcp option foobar;fail
 tcp option foo bar;fail
@@ -38,6 +39,7 @@ tcp option eol left 1;fail
 tcp option eol left 1;fail
 tcp option sack window;fail
 tcp option sack window 1;fail
+tcp option 256 exists;fail
 
 tcp option window exists;ok
 tcp option window missing;ok

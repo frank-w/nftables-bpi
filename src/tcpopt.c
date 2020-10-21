@@ -103,6 +103,19 @@ const struct exthdr_desc *tcpopt_protocols[] = {
 	[TCPOPT_KIND_TIMESTAMP]		= &tcpopt_timestamp,
 };
 
+/**
+ * tcpopt_expr_alloc - allocate tcp option extension expression
+ *
+ * @loc: location from parser
+ * @kind: raw tcp option value to find in packet
+ * @field: highlevel field to find in the option if @kind is present in packet
+ *
+ * Allocate a new tcp option expression.
+ * @kind is the raw option value to find in the packet.
+ * Exception: SACK may use extra OOB data that is mangled here.
+ *
+ * @field is the optional field to extract from the @type option.
+ */
 struct expr *tcpopt_expr_alloc(const struct location *loc,
 			       unsigned int kind,
 			       unsigned int field)
@@ -138,8 +151,22 @@ struct expr *tcpopt_expr_alloc(const struct location *loc,
 	if (kind < array_size(tcpopt_protocols))
 		desc = tcpopt_protocols[kind];
 
-	if (!desc)
-		return NULL;
+	if (!desc) {
+		if (field != TCPOPT_COMMON_KIND || kind > 255)
+			return NULL;
+
+		expr = expr_alloc(loc, EXPR_EXTHDR, &integer_type,
+				  BYTEORDER_BIG_ENDIAN, 8);
+
+		desc = tcpopt_protocols[TCPOPT_NOP];
+		tmpl = &desc->templates[field];
+		expr->exthdr.desc   = desc;
+		expr->exthdr.tmpl   = tmpl;
+		expr->exthdr.op = NFT_EXTHDR_OP_TCPOPT;
+		expr->exthdr.raw_type = kind;
+		return expr;
+	}
+
 	tmpl = &desc->templates[field];
 	if (!tmpl)
 		return NULL;
@@ -149,6 +176,7 @@ struct expr *tcpopt_expr_alloc(const struct location *loc,
 	expr->exthdr.desc   = desc;
 	expr->exthdr.tmpl   = tmpl;
 	expr->exthdr.op     = NFT_EXTHDR_OP_TCPOPT;
+	expr->exthdr.raw_type = desc->type;
 	expr->exthdr.offset = tmpl->offset;
 
 	return expr;
@@ -165,6 +193,10 @@ void tcpopt_init_raw(struct expr *expr, uint8_t type, unsigned int off,
 	expr->len = len;
 	expr->exthdr.flags = flags;
 	expr->exthdr.offset = off;
+	expr->exthdr.op = NFT_EXTHDR_OP_TCPOPT;
+
+	if (flags & NFT_EXTHDR_F_PRESENT)
+		datatype_set(expr, &boolean_type);
 
 	if (type >= array_size(tcpopt_protocols))
 		return;
@@ -178,12 +210,10 @@ void tcpopt_init_raw(struct expr *expr, uint8_t type, unsigned int off,
 		if (tmpl->offset != off || tmpl->len != len)
 			continue;
 
-		if (flags & NFT_EXTHDR_F_PRESENT)
-			datatype_set(expr, &boolean_type);
-		else
+		if ((flags & NFT_EXTHDR_F_PRESENT) == 0)
 			datatype_set(expr, tmpl->dtype);
+
 		expr->exthdr.tmpl = tmpl;
-		expr->exthdr.op   = NFT_EXTHDR_OP_TCPOPT;
 		break;
 	}
 }

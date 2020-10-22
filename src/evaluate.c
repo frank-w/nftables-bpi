@@ -2745,6 +2745,7 @@ static int stmt_evaluate_reject_default(struct eval_ctx *ctx,
 		}
 		break;
 	case NFPROTO_BRIDGE:
+	case NFPROTO_NETDEV:
 		desc = ctx->pctx.protocol[PROTO_BASE_NETWORK_HDR].desc;
 		if (desc == NULL) {
 			stmt->reject.type = NFT_REJECT_ICMPX_UNREACH;

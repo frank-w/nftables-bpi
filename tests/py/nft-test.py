@@ -28,7 +28,7 @@ os.environ['TZ'] = 'UTC-2'
 
 from nftables import Nftables
 
-TESTS_DIRECTORY = ["any", "arp", "bridge", "inet", "ip", "ip6"]
+TESTS_DIRECTORY = ["any", "arp", "bridge", "inet", "ip", "ip6", "netdev"]
 LOGFILE = "/tmp/nftables-test.log"
 log_file = None
 table_list = []

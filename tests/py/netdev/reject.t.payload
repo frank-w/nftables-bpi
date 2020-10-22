@@ -1,0 +1,60 @@
+# reject with icmp type host-unreachable
+netdev 
+  [ reject type 0 code 1 ]
+
+# reject
+netdev 
+  [ reject type 2 code 1 ]
+
+# reject
+netdev 
+  [ reject type 2 code 1 ]
+
+# reject with icmp type admin-prohibited
+netdev 
+  [ reject type 0 code 13 ]
+
+# reject with icmp type net-unreachable
+netdev 
+  [ reject type 0 code 0 ]
+
+# reject with icmp type prot-unreachable
+netdev 
+  [ reject type 0 code 2 ]
+
+# reject with icmp type port-unreachable
+netdev 
+  [ reject type 0 code 3 ]
+
+# reject with icmp type net-prohibited
+netdev 
+  [ reject type 0 code 9 ]
+
+# reject with icmp type host-prohibited
+netdev 
+  [ reject type 0 code 10 ]
+
+# reject with icmpv6 type no-route
+netdev 
+  [ reject type 0 code 0 ]
+
+# reject with icmpv6 type admin-prohibited
+netdev 
+  [ reject type 0 code 1 ]
+
+# reject with icmpv6 type addr-unreachable
+netdev 
+  [ reject type 0 code 3 ]
+
+# reject with icmpv6 type port-unreachable
+netdev 
+  [ reject type 0 code 4 ]
+
+# reject with icmpv6 type policy-fail
+netdev 
+  [ reject type 0 code 5 ]
+
+# reject with icmpv6 type reject-route
+netdev 
+  [ reject type 0 code 6 ]
+

@@ -1776,6 +1776,12 @@ static void payload_match_expand(struct rule_pp_ctx *ctx,
 		tmp = constant_expr_splice(right, left->len);
 		expr_set_type(tmp, left->dtype, left->byteorder);
 
+		if (left->payload.tmpl && (left->len < left->payload.tmpl->len)) {
+			mpz_lshift_ui(tmp->value, left->payload.tmpl->len - left->len);
+			tmp->len = left->payload.tmpl->len;
+			tmp = prefix_expr_alloc(&tmp->location, tmp, left->len);
+		}
+
 		nexpr = relational_expr_alloc(&expr->location, expr->op,
 					      left, tmp);
 		if (expr->op == OP_EQ)

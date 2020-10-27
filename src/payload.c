@@ -822,6 +822,11 @@ void payload_expr_expand(struct list_head *list, struct expr *expr,
 			expr->payload.offset += tmpl->len;
 			if (expr->len == 0)
 				return;
+		} else if (expr->len > 0) {
+			new = payload_expr_alloc(&expr->location, desc, i);
+			new->len = expr->len;
+			list_add_tail(&new->list, list);
+			return;
 		} else
 			break;
 	}

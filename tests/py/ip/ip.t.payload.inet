@@ -466,16 +466,14 @@ inet test-inet input
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x00000002 ]
-  [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
+  [ payload load 3b @ network header + 12 => reg 1 ]
   [ cmp eq reg 1 0x0002a8c0 ]
 
 # ip saddr != 192.168.2.0/24
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x00000002 ]
-  [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
+  [ payload load 3b @ network header + 12 => reg 1 ]
   [ cmp neq reg 1 0x0002a8c0 ]
 
 # ip saddr 192.168.3.1 ip daddr 192.168.3.100

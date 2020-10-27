@@ -604,9 +604,8 @@ inet test-inet input
 inet test-inet input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
-  [ payload load 16b @ network header + 8 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0xffffffff 0xffffffff 0x00000000 0x00000000 ) ^ 0x00000000 0x00000000 0x00000000 0x00000000 ]
-  [ cmp eq reg 1 0x00000000 0x00000000 0x00000000 0x00000000 ]
+  [ payload load 8b @ network header + 8 => reg 1 ]
+  [ cmp eq reg 1 0x00000000 0x00000000 ]
 
 # ip6 saddr ::1 ip6 daddr ::2
 inet test-inet input

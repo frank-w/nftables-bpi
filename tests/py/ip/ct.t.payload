@@ -21,25 +21,21 @@ ip test-ip4 output
 # ct original ip saddr 192.168.1.0/24
 ip test-ip4 output
   [ ct load src_ip => reg 1 , dir original ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0001a8c0 ]
 
 # ct reply ip saddr 192.168.1.0/24
 ip test-ip4 output
   [ ct load src_ip => reg 1 , dir reply ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0001a8c0 ]
 
 # ct original ip daddr 192.168.1.0/24
 ip test-ip4 output
   [ ct load dst_ip => reg 1 , dir original ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0001a8c0 ]
 
 # ct reply ip daddr 192.168.1.0/24
 ip test-ip4 output
   [ ct load dst_ip => reg 1 , dir reply ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0001a8c0 ]
 
 # ct l3proto ipv4

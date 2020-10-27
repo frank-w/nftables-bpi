@@ -322,8 +322,9 @@ static void netlink_parse_cmp(struct netlink_parse_ctx *ctx,
 
 	if (left->len > right->len &&
 	    expr_basetype(left) != &string_type) {
-		netlink_error(ctx, loc, "Relational expression size mismatch");
-		goto err_free;
+		mpz_lshift_ui(right->value, left->len - right->len);
+		right = prefix_expr_alloc(loc, right, right->len);
+		right->prefix->len = left->len;
 	} else if (left->len > 0 && left->len < right->len) {
 		expr_free(left);
 		left = netlink_parse_concat_expr(ctx, loc, sreg, right->len);

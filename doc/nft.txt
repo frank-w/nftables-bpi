@@ -475,7 +475,7 @@ beginning of the chain or before the specified rule.
 *replace*:: Similar to *add*, but the rule replaces the specified rule.
 *delete*:: Delete the specified rule.
 
-.*add a rule to ip table input chain*
+.*add a rule to ip table output chain*
 -------------
 nft add rule filter output ip daddr 192.168.0.0/24 accept # 'ip filter' is assumed
 # same command, slightly more verbose

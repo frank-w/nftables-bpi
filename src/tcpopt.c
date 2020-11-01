@@ -55,7 +55,7 @@ static const struct exthdr_desc tcpopt_window = {
 };
 
 static const struct exthdr_desc tcpopt_sack_permitted = {
-	.name		= "sack-permitted",
+	.name		= "sack-perm",
 	.type		= TCPOPT_SACK_PERMITTED,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0, 8),

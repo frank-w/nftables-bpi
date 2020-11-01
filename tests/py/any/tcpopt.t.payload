@@ -166,42 +166,42 @@ inet
   [ exthdr load tcpopt 1b @ 3 + 2 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
-# tcp option sack-permitted kind 1
+# tcp option sack-perm kind 1
 ip 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ exthdr load tcpopt 1b @ 4 + 0 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
-# tcp option sack-permitted kind 1
+# tcp option sack-perm kind 1
 ip6 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ exthdr load tcpopt 1b @ 4 + 0 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
-# tcp option sack-permitted kind 1
+# tcp option sack-perm kind 1
 inet 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ exthdr load tcpopt 1b @ 4 + 0 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
-# tcp option sack-permitted length 1
+# tcp option sack-perm length 1
 ip 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ exthdr load tcpopt 1b @ 4 + 1 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
-# tcp option sack-permitted length 1
+# tcp option sack-perm length 1
 ip6 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ exthdr load tcpopt 1b @ 4 + 1 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
-# tcp option sack-permitted length 1
+# tcp option sack-perm length 1
 inet 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]

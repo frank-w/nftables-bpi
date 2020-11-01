@@ -12,8 +12,8 @@ tcp option maxseg size 1;ok
 tcp option window kind 1;ok
 tcp option window length 1;ok
 tcp option window count 1;ok
-tcp option sack-permitted kind 1;ok
-tcp option sack-permitted length 1;ok
+tcp option sack-perm kind 1;ok
+tcp option sack-perm length 1;ok
 tcp option sack kind 1;ok
 tcp option sack length 1;ok
 tcp option sack left 1;ok

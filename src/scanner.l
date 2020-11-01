@@ -421,14 +421,16 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "echo"			{ return ECHO; }
 "eol"			{ return EOL; }
-"maxseg"		{ return MAXSEG; }
+"maxseg"		{ return MSS; }
+"mss"			{ return MSS; }
 "noop"			{ return NOOP; }
 "sack"			{ return SACK; }
 "sack0"			{ return SACK0; }
 "sack1"			{ return SACK1; }
 "sack2"			{ return SACK2; }
 "sack3"			{ return SACK3; }
-"sack-permitted"	{ return SACK_PERMITTED; }
+"sack-permitted"	{ return SACK_PERM; }
+"sack-perm"		{ return SACK_PERM; }
 "timestamp"		{ return TIMESTAMP; }
 "time"			{ return TIME; }
 
@@ -565,9 +567,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "osf"			{ return OSF; }
 
 "synproxy"		{ return SYNPROXY; }
-"mss"			{ return MSS; }
 "wscale"		{ return WSCALE; }
-"sack-perm"		{ return SACKPERM; }
 
 "notrack"		{ return NOTRACK; }
 

@@ -233,7 +233,6 @@ int nft_lex(void *, void *, void *);
 %token SYNPROXY			"synproxy"
 %token MSS			"mss"
 %token WSCALE			"wscale"
-%token SACKPERM			"sack-perm"
 
 %token TYPEOF			"typeof"
 
@@ -400,14 +399,13 @@ int nft_lex(void *, void *, void *);
 %token OPTION			"option"
 %token ECHO			"echo"
 %token EOL			"eol"
-%token MAXSEG			"maxseg"
 %token NOOP			"noop"
 %token SACK			"sack"
 %token SACK0			"sack0"
 %token SACK1			"sack1"
 %token SACK2			"sack2"
 %token SACK3			"sack3"
-%token SACK_PERMITTED		"sack-permitted"
+%token SACK_PERM		"sack-permitted"
 %token TIMESTAMP		"timestamp"
 %token KIND			"kind"
 %token COUNT			"count"
@@ -3279,7 +3277,7 @@ synproxy_arg		:	MSS	NUM
 			{
 				$<stmt>0->synproxy.flags |= NF_SYNPROXY_OPT_TIMESTAMP;
 			}
-			|	SACKPERM
+			|	SACK_PERM
 			{
 				$<stmt>0->synproxy.flags |= NF_SYNPROXY_OPT_SACK_PERM;
 			}
@@ -3334,7 +3332,7 @@ synproxy_ts		:	/* empty */	{ $$ = 0; }
 			;
 
 synproxy_sack		:	/* empty */	{ $$ = 0; }
-			|	SACKPERM
+			|	SACK_PERM
 			{
 				$$ = NF_SYNPROXY_OPT_SACK_PERM;
 			}
@@ -5216,9 +5214,9 @@ tcp_hdr_field		:	SPORT		{ $$ = TCPHDR_SPORT; }
 
 tcp_hdr_option_type	:	EOL		{ $$ = TCPOPTHDR_EOL; }
 			|	NOOP		{ $$ = TCPOPTHDR_NOOP; }
-			|	MAXSEG		{ $$ = TCPOPTHDR_MAXSEG; }
+			|	MSS  	  	{ $$ = TCPOPTHDR_MAXSEG; }
 			|	WINDOW		{ $$ = TCPOPTHDR_WINDOW; }
-			|	SACK_PERMITTED	{ $$ = TCPOPTHDR_SACK_PERMITTED; }
+			|	SACK_PERM	{ $$ = TCPOPTHDR_SACK_PERMITTED; }
 			|	SACK		{ $$ = TCPOPTHDR_SACK0; }
 			|	SACK0		{ $$ = TCPOPTHDR_SACK0; }
 			|	SACK1		{ $$ = TCPOPTHDR_SACK1; }

@@ -126,14 +126,14 @@
     }
 ]
 
-# tcp option sack-permitted kind 1
+# tcp option sack-perm kind 1
 [
     {
         "match": {
             "left": {
                 "tcp option": {
                     "field": "kind",
-                    "name": "sack-permitted"
+                    "name": "sack-perm"
                 }
             },
             "op": "==",
@@ -142,14 +142,14 @@
     }
 ]
 
-# tcp option sack-permitted length 1
+# tcp option sack-perm length 1
 [
     {
         "match": {
             "left": {
                 "tcp option": {
                     "field": "length",
-                    "name": "sack-permitted"
+                    "name": "sack-perm"
                 }
             },
             "op": "==",

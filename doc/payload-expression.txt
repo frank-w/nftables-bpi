@@ -591,6 +591,12 @@ TCP Timestamps |
 kind, length, tsval, tsecr
 |============================
 
+TCP option matching also supports raw expression syntax to access arbitrary options:
+[verse]
+*tcp option*
+[verse]
+*tcp option* *@*'number'*,*'offset'*,*'length'
+
 .IP Options
 [options="header"]
 |==================

@@ -523,6 +523,13 @@ inet
   [ exthdr load tcpopt 1b @ 255 + 0 present => reg 1 ]
   [ cmp eq reg 1 0x00000000 ]
 
+# tcp option @255,8,8 255
+inet
+  [ meta load l4proto => reg 1 ]
+  [ cmp eq reg 1 0x00000006 ]
+  [ exthdr load tcpopt 1b @ 255 + 1 => reg 1 ]
+  [ cmp eq reg 1 0x000000ff ]
+
 # tcp option window exists
 inet 
   [ meta load l4proto => reg 1 ]

@@ -5198,6 +5198,11 @@ tcp_hdr_expr		:	TCP	tcp_hdr_field
 				$$ = tcpopt_expr_alloc(&@$, $3, TCPOPT_COMMON_KIND);
 				$$->exthdr.flags = NFT_EXTHDR_F_PRESENT;
 			}
+			|	TCP	OPTION	AT tcp_hdr_option_type	COMMA	NUM	COMMA	NUM
+			{
+				$$ = tcpopt_expr_alloc(&@$, $4, 0);
+				tcpopt_init_raw($$, $4, $6, $8, 0);
+			}
 			;
 
 tcp_hdr_field		:	SPORT		{ $$ = TCPHDR_SPORT; }

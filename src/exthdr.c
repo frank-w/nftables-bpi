@@ -52,10 +52,15 @@ static void exthdr_expr_print(const struct expr *expr, struct output_ctx *octx)
 		 */
 		unsigned int offset = expr->exthdr.offset / 64;
 
-		if (expr->exthdr.desc == NULL &&
-		    expr->exthdr.offset == 0 &&
-		    expr->exthdr.flags & NFT_EXTHDR_F_PRESENT) {
-			nft_print(octx, "tcp option %d", expr->exthdr.raw_type);
+		if (expr->exthdr.desc == NULL) {
+			if (expr->exthdr.offset == 0 &&
+			    expr->exthdr.flags & NFT_EXTHDR_F_PRESENT) {
+				nft_print(octx, "tcp option %d", expr->exthdr.raw_type);
+				return;
+			}
+
+			nft_print(octx, "tcp option @%u,%u,%u", expr->exthdr.raw_type,
+								expr->exthdr.offset, expr->len);
 			return;
 		}
 

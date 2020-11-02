@@ -197,6 +197,8 @@ void tcpopt_init_raw(struct expr *expr, uint8_t type, unsigned int off,
 
 	if (flags & NFT_EXTHDR_F_PRESENT)
 		datatype_set(expr, &boolean_type);
+	else
+		datatype_set(expr, &integer_type);
 
 	if (type >= array_size(tcpopt_protocols))
 		return;

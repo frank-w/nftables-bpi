@@ -559,8 +559,8 @@ Segment Routing Header
 |eol|
 End if option list|
 kind
-|noop|
-1 Byte TCP No-op options |
+|nop|
+1 Byte TCP Nop padding option |
 kind
 |maxseg|
 TCP Maximum Segment Size|

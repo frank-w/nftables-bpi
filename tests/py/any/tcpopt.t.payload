@@ -19,21 +19,7 @@ inet
   [ exthdr load tcpopt 1b @ 0 + 0 => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
 
-# tcp option noop kind 1
-ip 
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000006 ]
-  [ exthdr load tcpopt 1b @ 1 + 0 => reg 1 ]
-  [ cmp eq reg 1 0x00000001 ]
-
-# tcp option noop kind 1
-ip6 
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000006 ]
-  [ exthdr load tcpopt 1b @ 1 + 0 => reg 1 ]
-  [ cmp eq reg 1 0x00000001 ]
-
-# tcp option noop kind 1
+# tcp option nop kind 1
 inet 
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]

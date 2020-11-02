@@ -27,7 +27,7 @@ static const struct exthdr_desc tcpopt_eol = {
 };
 
 static const struct exthdr_desc tcpopt_nop = {
-	.name		= "noop",
+	.name		= "nop",
 	.type		= TCPOPT_KIND_NOP,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,   8),

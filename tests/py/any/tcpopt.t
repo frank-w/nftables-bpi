@@ -5,7 +5,7 @@
 *inet;test-inet;input
 
 tcp option eol kind 1;ok
-tcp option noop kind 1;ok
+tcp option nop kind 1;ok
 tcp option maxseg kind 1;ok
 tcp option maxseg length 1;ok
 tcp option maxseg size 1;ok

@@ -14,14 +14,14 @@
     }
 ]
 
-# tcp option noop kind 1
+# tcp option nop kind 1
 [
     {
         "match": {
             "left": {
                 "tcp option": {
                     "field": "kind",
-                    "name": "noop"
+                    "name": "nop"
                 }
             },
             "op": "==",

@@ -477,7 +477,7 @@ static void expr_evaluate_bits(struct eval_ctx *ctx, struct expr **exprp)
 					  &extra_len);
 		break;
 	case EXPR_EXTHDR:
-		shift = expr_offset_shift(expr, expr->exthdr.tmpl->offset,
+		shift = expr_offset_shift(expr, expr->exthdr.offset,
 					  &extra_len);
 		break;
 	default:
@@ -530,18 +530,16 @@ static int __expr_evaluate_exthdr(struct eval_ctx *ctx, struct expr **exprp)
 	if (expr_evaluate_primary(ctx, exprp) < 0)
 		return -1;
 
-	if (expr->exthdr.tmpl->offset % BITS_PER_BYTE != 0 ||
+	if (expr->exthdr.offset % BITS_PER_BYTE != 0 ||
 	    expr->len % BITS_PER_BYTE != 0)
 		expr_evaluate_bits(ctx, exprp);
 
 	switch (expr->exthdr.op) {
 	case NFT_EXTHDR_OP_TCPOPT: {
 		static const unsigned int max_tcpoptlen = (15 * 4 - 20) * BITS_PER_BYTE;
-		unsigned int totlen = 0;
+		unsigned int totlen;
 
-		totlen += expr->exthdr.tmpl->offset;
-		totlen += expr->exthdr.tmpl->len;
-		totlen += expr->exthdr.offset;
+		totlen = expr->exthdr.tmpl->len + expr->exthdr.offset;
 
 		if (totlen > max_tcpoptlen)
 			return expr_error(ctx->msgs, expr,
@@ -551,11 +549,9 @@ static int __expr_evaluate_exthdr(struct eval_ctx *ctx, struct expr **exprp)
 	}
 	case NFT_EXTHDR_OP_IPV4: {
 		static const unsigned int max_ipoptlen = 40 * BITS_PER_BYTE;
-		unsigned int totlen = 0;
+		unsigned int totlen;
 
-		totlen += expr->exthdr.tmpl->offset;
-		totlen += expr->exthdr.tmpl->len;
-		totlen += expr->exthdr.offset;
+		totlen = expr->exthdr.offset + expr->exthdr.tmpl->len;
 
 		if (totlen > max_ipoptlen)
 			return expr_error(ctx->msgs, expr,

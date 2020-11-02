@@ -193,6 +193,7 @@ struct expr *exthdr_expr_alloc(const struct location *loc,
 			  BYTEORDER_BIG_ENDIAN, tmpl->len);
 	expr->exthdr.desc = desc;
 	expr->exthdr.tmpl = tmpl;
+	expr->exthdr.offset = tmpl->offset;
 	return expr;
 }
 

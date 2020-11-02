@@ -5195,7 +5195,7 @@ tcp_hdr_expr		:	TCP	tcp_hdr_field
 			}
 			|	TCP	OPTION	tcp_hdr_option_type
 			{
-				$$ = tcpopt_expr_alloc(&@$, $3, TCPOPTHDR_FIELD_KIND);
+				$$ = tcpopt_expr_alloc(&@$, $3, TCPOPT_COMMON_KIND);
 				$$->exthdr.flags = NFT_EXTHDR_F_PRESENT;
 			}
 			;
@@ -5226,14 +5226,14 @@ tcp_hdr_option_type	:	EOL		{ $$ = TCPOPT_KIND_EOL; }
 			|	TIMESTAMP	{ $$ = TCPOPT_KIND_TIMESTAMP; }
 			;
 
-tcp_hdr_option_field	:	KIND		{ $$ = TCPOPTHDR_FIELD_KIND; }
-			|	LENGTH		{ $$ = TCPOPTHDR_FIELD_LENGTH; }
-			|	SIZE		{ $$ = TCPOPTHDR_FIELD_SIZE; }
-			|	COUNT		{ $$ = TCPOPTHDR_FIELD_COUNT; }
-			|	LEFT		{ $$ = TCPOPTHDR_FIELD_LEFT; }
-			|	RIGHT		{ $$ = TCPOPTHDR_FIELD_RIGHT; }
-			|	TSVAL		{ $$ = TCPOPTHDR_FIELD_TSVAL; }
-			|	TSECR		{ $$ = TCPOPTHDR_FIELD_TSECR; }
+tcp_hdr_option_field	:	KIND		{ $$ = TCPOPT_COMMON_KIND; }
+			|	LENGTH		{ $$ = TCPOPT_COMMON_LENGTH; }
+			|	SIZE		{ $$ = TCPOPT_MAXSEG_SIZE; }
+			|	COUNT		{ $$ = TCPOPT_WINDOW_COUNT; }
+			|	LEFT		{ $$ = TCPOPT_SACK_LEFT; }
+			|	RIGHT		{ $$ = TCPOPT_SACK_RIGHT; }
+			|	TSVAL		{ $$ = TCPOPT_TS_TSVAL; }
+			|	TSECR		{ $$ = TCPOPT_TS_TSECR; }
 			;
 
 dccp_hdr_expr		:	DCCP	dccp_hdr_field

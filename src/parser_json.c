@@ -468,8 +468,10 @@ static int json_parse_tcp_option_type(const char *name, int *val)
 	}
 	/* special case for sack0 - sack3 */
 	if (sscanf(name, "sack%u", &i) == 1 && i < 4) {
-		if (val)
-			*val = TCPOPT_KIND_SACK + i;
+		if (val && i == 0)
+			*val = TCPOPT_KIND_SACK;
+		else if (val && i > 0)
+			*val = TCPOPT_KIND_SACK1 + i - 1;
 		return 0;
 	}
 	return 1;
@@ -477,12 +479,38 @@ static int json_parse_tcp_option_type(const char *name, int *val)
 
 static int json_parse_tcp_option_field(int type, const char *name, int *val)
 {
+	const struct exthdr_desc *desc;
+	unsigned int block = 0;
 	unsigned int i;
-	const struct exthdr_desc *desc = tcpopt_protocols[type];
+
+	switch (type) {
+	case TCPOPT_KIND_SACK1:
+		type = TCPOPT_KIND_SACK;
+		block = 1;
+		break;
+	case TCPOPT_KIND_SACK2:
+		type = TCPOPT_KIND_SACK;
+		block = 2;
+		break;
+	case TCPOPT_KIND_SACK3:
+		type = TCPOPT_KIND_SACK;
+		block = 3;
+		break;
+	}
+
+	if (type < 0 || type >= (int)array_size(tcpopt_protocols))
+		return 1;
+
+	desc = tcpopt_protocols[type];
 
 	for (i = 0; i < array_size(desc->templates); i++) {
 		if (desc->templates[i].token &&
 		    !strcmp(desc->templates[i].token, name)) {
+			if (block) {
+				block--;
+				continue;
+			}
+
 			if (val)
 				*val = i;
 			return 0;
@@ -587,7 +615,7 @@ static struct expr *json_parse_tcp_option_expr(struct json_ctx *ctx,
 
 	if (json_unpack(root, "{s:s}", "field", &field)) {
 		expr = tcpopt_expr_alloc(int_loc, descval,
-					 TCPOPTHDR_FIELD_KIND);
+					 TCPOPT_COMMON_KIND);
 		expr->exthdr.flags = NFT_EXTHDR_F_PRESENT;
 
 		return expr;

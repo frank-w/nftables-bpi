@@ -102,7 +102,7 @@ struct expr *ipopt_expr_alloc(const struct location *loc, uint8_t type,
 	expr->exthdr.desc   = desc;
 	expr->exthdr.tmpl   = tmpl;
 	expr->exthdr.op     = NFT_EXTHDR_OP_IPV4;
-	expr->exthdr.offset = calc_offset(desc, tmpl, ptr);
+	expr->exthdr.offset = tmpl->offset + calc_offset(desc, tmpl, ptr);
 
 	return expr;
 }

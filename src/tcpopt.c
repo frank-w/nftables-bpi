@@ -22,7 +22,7 @@ static const struct exthdr_desc tcpopt_eol = {
 	.name		= "eol",
 	.type		= TCPOPT_KIND_EOL,
 	.templates	= {
-		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",  0,    8),
+		[TCPOPT_COMMON_KIND]		= PHT("kind",  0,    8),
 	},
 };
 
@@ -30,7 +30,7 @@ static const struct exthdr_desc tcpopt_nop = {
 	.name		= "nop",
 	.type		= TCPOPT_KIND_NOP,
 	.templates	= {
-		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,   8),
+		[TCPOPT_COMMON_KIND]		= PHT("kind",  0,    8),
 	},
 };
 
@@ -38,9 +38,9 @@ static const struct exthdr_desc tcptopt_maxseg = {
 	.name		= "maxseg",
 	.type		= TCPOPT_KIND_MAXSEG,
 	.templates	= {
-		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,  8),
-		[TCPOPTHDR_FIELD_LENGTH]	= PHT("length", 8,  8),
-		[TCPOPTHDR_FIELD_SIZE]		= PHT("size",  16, 16),
+		[TCPOPT_MAXSEG_KIND]	= PHT("kind",   0,  8),
+		[TCPOPT_MAXSEG_LENGTH]	= PHT("length", 8,  8),
+		[TCPOPT_MAXSEG_SIZE]	= PHT("size",  16, 16),
 	},
 };
 
@@ -48,9 +48,9 @@ static const struct exthdr_desc tcpopt_window = {
 	.name		= "window",
 	.type		= TCPOPT_KIND_WINDOW,
 	.templates	= {
-		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,  8),
-		[TCPOPTHDR_FIELD_LENGTH]	= PHT("length", 8,  8),
-		[TCPOPTHDR_FIELD_COUNT]		= PHT("count", 16,  8),
+		[TCPOPT_WINDOW_KIND]	= PHT("kind",   0,  8),
+		[TCPOPT_WINDOW_LENGTH]	= PHT("length", 8,  8),
+		[TCPOPT_WINDOW_COUNT]	= PHT("count", 16,  8),
 	},
 };
 
@@ -58,8 +58,8 @@ static const struct exthdr_desc tcpopt_sack_permitted = {
 	.name		= "sack-perm",
 	.type		= TCPOPT_KIND_SACK_PERMITTED,
 	.templates	= {
-		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0, 8),
-		[TCPOPTHDR_FIELD_LENGTH]	= PHT("length", 8, 8),
+		[TCPOPT_COMMON_KIND]	= PHT("kind",   0, 8),
+		[TCPOPT_COMMON_LENGTH]	= PHT("length", 8, 8),
 	},
 };
 
@@ -67,10 +67,16 @@ static const struct exthdr_desc tcpopt_sack = {
 	.name		= "sack",
 	.type		= TCPOPT_KIND_SACK,
 	.templates	= {
-		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,   8),
-		[TCPOPTHDR_FIELD_LENGTH]		= PHT("length", 8,   8),
-		[TCPOPTHDR_FIELD_LEFT]		= PHT("left",  16,  32),
-		[TCPOPTHDR_FIELD_RIGHT]		= PHT("right", 48,  32),
+		[TCPOPT_SACK_KIND]	= PHT("kind",   0,   8),
+		[TCPOPT_SACK_LENGTH]	= PHT("length", 8,   8),
+		[TCPOPT_SACK_LEFT]	= PHT("left",  16,  32),
+		[TCPOPT_SACK_RIGHT]	= PHT("right", 48,  32),
+		[TCPOPT_SACK_LEFT1]	= PHT("left",  80,  32),
+		[TCPOPT_SACK_RIGHT1]	= PHT("right", 112,  32),
+		[TCPOPT_SACK_LEFT2]	= PHT("left",  144,  32),
+		[TCPOPT_SACK_RIGHT2]	= PHT("right", 176,  32),
+		[TCPOPT_SACK_LEFT3]	= PHT("left",  208,  32),
+		[TCPOPT_SACK_RIGHT3]	= PHT("right", 240,  32),
 	},
 };
 
@@ -78,12 +84,13 @@ static const struct exthdr_desc tcpopt_timestamp = {
 	.name		= "timestamp",
 	.type		= TCPOPT_KIND_TIMESTAMP,
 	.templates	= {
-		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,  8),
-		[TCPOPTHDR_FIELD_LENGTH]	= PHT("length", 8,  8),
-		[TCPOPTHDR_FIELD_TSVAL]		= PHT("tsval",  16, 32),
-		[TCPOPTHDR_FIELD_TSECR]		= PHT("tsecr",  48, 32),
+		[TCPOPT_TS_KIND]	= PHT("kind",   0,  8),
+		[TCPOPT_TS_LENGTH]	= PHT("length", 8,  8),
+		[TCPOPT_TS_TSVAL]	= PHT("tsval",  16, 32),
+		[TCPOPT_TS_TSECR]	= PHT("tsecr",  48, 32),
 	},
 };
+
 #undef PHT
 
 const struct exthdr_desc *tcpopt_protocols[] = {
@@ -96,65 +103,43 @@ const struct exthdr_desc *tcpopt_protocols[] = {
 	[TCPOPT_KIND_TIMESTAMP]		= &tcpopt_timestamp,
 };
 
-static unsigned int calc_offset(const struct exthdr_desc *desc,
-				const struct proto_hdr_template *tmpl,
-				unsigned int num)
-{
-	if (!desc || tmpl == &tcpopt_unknown_template)
-		return 0;
-
-	switch (desc->type) {
-	case TCPOPT_SACK:
-		/* Make sure, offset calculations only apply to left and right
-		 * fields
-		 */
-		return (tmpl->offset < 16) ? 0 : num * 64;
-	default:
-		return 0;
-	}
-}
-
-
-static unsigned int calc_offset_reverse(const struct exthdr_desc *desc,
-					const struct proto_hdr_template *tmpl,
-					unsigned int offset)
-{
-	if (!desc || tmpl == &tcpopt_unknown_template)
-		return offset;
-
-	switch (desc->type) {
-	case TCPOPT_SACK:
-		/* We can safely ignore the first left/right field */
-		return offset < 80 ? offset : (offset % 64);
-	default:
-		return offset;
-	}
-}
-
 struct expr *tcpopt_expr_alloc(const struct location *loc,
 			       unsigned int kind,
 			       unsigned int field)
 {
 	const struct proto_hdr_template *tmpl;
-	const struct exthdr_desc *desc;
-	uint8_t optnum = 0;
+	const struct exthdr_desc *desc = NULL;
 	struct expr *expr;
 
 	switch (kind) {
 	case TCPOPT_KIND_SACK1:
 		kind = TCPOPT_KIND_SACK;
-		optnum = 1;
+		if (field == TCPOPT_SACK_LEFT)
+			field = TCPOPT_SACK_LEFT1;
+		else if (field == TCPOPT_SACK_RIGHT)
+			field = TCPOPT_SACK_RIGHT1;
 		break;
 	case TCPOPT_KIND_SACK2:
 		kind = TCPOPT_KIND_SACK;
-		optnum = 2;
+		if (field == TCPOPT_SACK_LEFT)
+			field = TCPOPT_SACK_LEFT2;
+		else if (field == TCPOPT_SACK_RIGHT)
+			field = TCPOPT_SACK_RIGHT2;
 		break;
 	case TCPOPT_KIND_SACK3:
 		kind = TCPOPT_KIND_SACK;
-		optnum = 3;
+		if (field == TCPOPT_SACK_LEFT)
+			field = TCPOPT_SACK_LEFT3;
+		else if (field == TCPOPT_SACK_RIGHT)
+			field = TCPOPT_SACK_RIGHT3;
+		break;
 	}
 
-	desc = tcpopt_protocols[kind];
+	if (kind < array_size(tcpopt_protocols))
+		desc = tcpopt_protocols[kind];
+
+	if (!desc)
+		return NULL;
 	tmpl = &desc->templates[field];
 	if (!tmpl)
 		return NULL;
@@ -164,34 +149,32 @@ struct expr *tcpopt_expr_alloc(const struct location *loc,
 	expr->exthdr.desc   = desc;
 	expr->exthdr.tmpl   = tmpl;
 	expr->exthdr.op     = NFT_EXTHDR_OP_TCPOPT;
-	expr->exthdr.offset = calc_offset(desc, tmpl, optnum);
+	expr->exthdr.offset = tmpl->offset;
 
 	return expr;
 }
 
-void tcpopt_init_raw(struct expr *expr, uint8_t type, unsigned int offset,
+void tcpopt_init_raw(struct expr *expr, uint8_t type, unsigned int off,
 		     unsigned int len, uint32_t flags)
 {
 	const struct proto_hdr_template *tmpl;
-	unsigned int i, off;
+	unsigned int i;
 
 	assert(expr->etype == EXPR_EXTHDR);
 
 	expr->len = len;
 	expr->exthdr.flags = flags;
-	expr->exthdr.offset = offset;
+	expr->exthdr.offset = off;
 
-	assert(type < array_size(tcpopt_protocols));
+	if (type >= array_size(tcpopt_protocols))
+		return;
+
 	expr->exthdr.desc = tcpopt_protocols[type];
 	expr->exthdr.flags = flags;
 	assert(expr->exthdr.desc != NULL);
 
 	for (i = 0; i < array_size(expr->exthdr.desc->templates); ++i) {
 		tmpl = &expr->exthdr.desc->templates[i];
-		/* We have to reverse calculate the offset for the sack options
-		 * at this point
-		 */
-		off = calc_offset_reverse(expr->exthdr.desc, tmpl, offset);
 		if (tmpl->offset != off || tmpl->len != len)
 			continue;
 

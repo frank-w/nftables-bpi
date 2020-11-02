@@ -200,7 +200,7 @@ static void netlink_gen_exthdr(struct netlink_linearize_ctx *ctx,
 			       const struct expr *expr,
 			       enum nft_registers dreg)
 {
-	unsigned int offset = expr->exthdr.tmpl->offset + expr->exthdr.offset;
+	unsigned int offset = expr->exthdr.offset;
 	struct nftnl_expr *nle;
 
 	nle = alloc_nft_expr("exthdr");
@@ -966,7 +966,7 @@ static void netlink_gen_exthdr_stmt(struct netlink_linearize_ctx *ctx,
 
 	expr = stmt->exthdr.expr;
 
-	offset = expr->exthdr.tmpl->offset + expr->exthdr.offset;
+	offset = expr->exthdr.offset;
 
 	nle = alloc_nft_expr("exthdr");
 	netlink_put_register(nle, NFTNL_EXPR_EXTHDR_SREG, sreg);

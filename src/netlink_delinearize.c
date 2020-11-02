@@ -809,8 +809,8 @@ static void netlink_parse_numgen(struct netlink_parse_ctx *ctx,
 				 const struct location *loc,
 				 const struct nftnl_expr *nle)
 {
-	enum nft_registers dreg;
 	uint32_t type, until, offset;
+	enum nft_registers dreg;
 	struct expr *expr;
 
 	type  = nftnl_expr_get_u32(nle, NFTNL_EXPR_NG_TYPE);

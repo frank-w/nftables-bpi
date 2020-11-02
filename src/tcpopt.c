@@ -20,7 +20,7 @@ static const struct proto_hdr_template tcpopt_unknown_template =
 			   __offset, __len)
 static const struct exthdr_desc tcpopt_eol = {
 	.name		= "eol",
-	.type		= TCPOPT_EOL,
+	.type		= TCPOPT_KIND_EOL,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",  0,    8),
 	},
@@ -28,7 +28,7 @@ static const struct exthdr_desc tcpopt_eol = {
 
 static const struct exthdr_desc tcpopt_nop = {
 	.name		= "noop",
-	.type		= TCPOPT_NOP,
+	.type		= TCPOPT_KIND_NOP,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,   8),
 	},
@@ -36,7 +36,7 @@ static const struct exthdr_desc tcpopt_nop = {
 
 static const struct exthdr_desc tcptopt_maxseg = {
 	.name		= "maxseg",
-	.type		= TCPOPT_MAXSEG,
+	.type		= TCPOPT_KIND_MAXSEG,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,  8),
 		[TCPOPTHDR_FIELD_LENGTH]	= PHT("length", 8,  8),
@@ -46,7 +46,7 @@ static const struct exthdr_desc tcptopt_maxseg = {
 
 static const struct exthdr_desc tcpopt_window = {
 	.name		= "window",
-	.type		= TCPOPT_WINDOW,
+	.type		= TCPOPT_KIND_WINDOW,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,  8),
 		[TCPOPTHDR_FIELD_LENGTH]	= PHT("length", 8,  8),
@@ -56,7 +56,7 @@ static const struct exthdr_desc tcpopt_window = {
 
 static const struct exthdr_desc tcpopt_sack_permitted = {
 	.name		= "sack-perm",
-	.type		= TCPOPT_SACK_PERMITTED,
+	.type		= TCPOPT_KIND_SACK_PERMITTED,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0, 8),
 		[TCPOPTHDR_FIELD_LENGTH]	= PHT("length", 8, 8),
@@ -65,7 +65,7 @@ static const struct exthdr_desc tcpopt_sack_permitted = {
 
 static const struct exthdr_desc tcpopt_sack = {
 	.name		= "sack",
-	.type		= TCPOPT_SACK,
+	.type		= TCPOPT_KIND_SACK,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,   8),
 		[TCPOPTHDR_FIELD_LENGTH]		= PHT("length", 8,   8),
@@ -76,7 +76,7 @@ static const struct exthdr_desc tcpopt_sack = {
 
 static const struct exthdr_desc tcpopt_timestamp = {
 	.name		= "timestamp",
-	.type		= TCPOPT_TIMESTAMP,
+	.type		= TCPOPT_KIND_TIMESTAMP,
 	.templates	= {
 		[TCPOPTHDR_FIELD_KIND]		= PHT("kind",   0,  8),
 		[TCPOPTHDR_FIELD_LENGTH]	= PHT("length", 8,  8),
@@ -86,19 +86,14 @@ static const struct exthdr_desc tcpopt_timestamp = {
 };
 #undef PHT
 
-#define TCPOPT_OBSOLETE ((struct exthdr_desc *)NULL)
-#define TCPOPT_ECHO 6
-#define TCPOPT_ECHO_REPLY 7
-static const struct exthdr_desc *tcpopt_protocols[] = {
-	[TCPOPT_EOL]		= &tcpopt_eol,
-	[TCPOPT_NOP]		= &tcpopt_nop,
-	[TCPOPT_MAXSEG]		= &tcptopt_maxseg,
-	[TCPOPT_WINDOW]		= &tcpopt_window,
-	[TCPOPT_SACK_PERMITTED]	= &tcpopt_sack_permitted,
-	[TCPOPT_SACK]		= &tcpopt_sack,
-	[TCPOPT_ECHO]		= TCPOPT_OBSOLETE,
-	[TCPOPT_ECHO_REPLY]	= TCPOPT_OBSOLETE,
-	[TCPOPT_TIMESTAMP]	= &tcpopt_timestamp,
+const struct exthdr_desc *tcpopt_protocols[] = {
+	[TCPOPT_KIND_EOL]		= &tcpopt_eol,
+	[TCPOPT_KIND_NOP]		= &tcpopt_nop,
+	[TCPOPT_KIND_MAXSEG]		= &tcptopt_maxseg,
+	[TCPOPT_KIND_WINDOW]		= &tcpopt_window,
+	[TCPOPT_KIND_SACK_PERMITTED]	= &tcpopt_sack_permitted,
+	[TCPOPT_KIND_SACK]		= &tcpopt_sack,
+	[TCPOPT_KIND_TIMESTAMP]		= &tcpopt_timestamp,
 };
 
 static unsigned int calc_offset(const struct exthdr_desc *desc,
@@ -136,50 +131,33 @@ static unsigned int calc_offset_reverse(const struct exthdr_desc *desc,
 	}
 }
 
-const struct exthdr_desc *tcpopthdr_protocols[__TCPOPTHDR_MAX] = {
-	[TCPOPTHDR_EOL]			= &tcpopt_eol,
-	[TCPOPTHDR_NOOP]		= &tcpopt_nop,
-	[TCPOPTHDR_MAXSEG]		= &tcptopt_maxseg,
-	[TCPOPTHDR_WINDOW]		= &tcpopt_window,
-	[TCPOPTHDR_SACK_PERMITTED]	= &tcpopt_sack_permitted,
-	[TCPOPTHDR_SACK0]		= &tcpopt_sack,
-	[TCPOPTHDR_SACK1]		= &tcpopt_sack,
-	[TCPOPTHDR_SACK2]		= &tcpopt_sack,
-	[TCPOPTHDR_SACK3]		= &tcpopt_sack,
-	[TCPOPTHDR_ECHO]		= TCPOPT_OBSOLETE,
-	[TCPOPTHDR_ECHO_REPLY]		= TCPOPT_OBSOLETE,
-	[TCPOPTHDR_TIMESTAMP]		= &tcpopt_timestamp,
-};
-
-static uint8_t tcpopt_optnum[] = {
-	[TCPOPTHDR_SACK0]	= 0,
-	[TCPOPTHDR_SACK1]	= 1,
-	[TCPOPTHDR_SACK2]	= 2,
-	[TCPOPTHDR_SACK3]	= 3,
-};
-
-static uint8_t tcpopt_find_optnum(uint8_t optnum)
-{
-	if (optnum > TCPOPTHDR_SACK3)
-		return 0;
-
-	return tcpopt_optnum[optnum];
-}
-
-struct expr *tcpopt_expr_alloc(const struct location *loc, uint8_t type,
-			       uint8_t field)
+struct expr *tcpopt_expr_alloc(const struct location *loc,
+			       unsigned int kind,
+			       unsigned int field)
 {
 	const struct proto_hdr_template *tmpl;
 	const struct exthdr_desc *desc;
+	uint8_t optnum = 0;
 	struct expr *expr;
-	uint8_t optnum;
 
-	desc = tcpopthdr_protocols[type];
+	switch (kind) {
+	case TCPOPT_KIND_SACK1:
+		kind = TCPOPT_KIND_SACK;
+		optnum = 1;
+		break;
+	case TCPOPT_KIND_SACK2:
+		kind = TCPOPT_KIND_SACK;
+		optnum = 2;
+		break;
+	case TCPOPT_KIND_SACK3:
+		kind = TCPOPT_KIND_SACK;
+		optnum = 3;
+	}
+
+	desc = tcpopt_protocols[kind];
 	tmpl = &desc->templates[field];
 	if (!tmpl)
 		return NULL;
-
-	optnum = tcpopt_find_optnum(type);
 
 	expr = expr_alloc(loc, EXPR_EXTHDR, tmpl->dtype,
 			  BYTEORDER_BIG_ENDIAN, tmpl->len);
@@ -206,7 +184,7 @@ void tcpopt_init_raw(struct expr *expr, uint8_t type, unsigned int offset,
 	assert(type < array_size(tcpopt_protocols));
 	expr->exthdr.desc = tcpopt_protocols[type];
 	expr->exthdr.flags = flags;
-	assert(expr->exthdr.desc != TCPOPT_OBSOLETE);
+	assert(expr->exthdr.desc != NULL);
 
 	for (i = 0; i < array_size(expr->exthdr.desc->templates); ++i) {
 		tmpl = &expr->exthdr.desc->templates[i];

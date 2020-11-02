@@ -423,7 +423,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "eol"			{ return EOL; }
 "maxseg"		{ return MSS; }
 "mss"			{ return MSS; }
-"noop"			{ return NOOP; }
+"nop"			{ return NOP; }
+"noop"			{ return NOP; }
 "sack"			{ return SACK; }
 "sack0"			{ return SACK0; }
 "sack1"			{ return SACK1; }

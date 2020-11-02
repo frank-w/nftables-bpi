@@ -458,9 +458,9 @@ static int json_parse_tcp_option_type(const char *name, int *val)
 {
 	unsigned int i;
 
-	for (i = 0; i < array_size(tcpopthdr_protocols); i++) {
-		if (tcpopthdr_protocols[i] &&
-		    !strcmp(tcpopthdr_protocols[i]->name, name)) {
+	for (i = 0; i < array_size(tcpopt_protocols); i++) {
+		if (tcpopt_protocols[i] &&
+		    !strcmp(tcpopt_protocols[i]->name, name)) {
 			if (val)
 				*val = i;
 			return 0;
@@ -469,7 +469,7 @@ static int json_parse_tcp_option_type(const char *name, int *val)
 	/* special case for sack0 - sack3 */
 	if (sscanf(name, "sack%u", &i) == 1 && i < 4) {
 		if (val)
-			*val = TCPOPTHDR_SACK0 + i;
+			*val = TCPOPT_KIND_SACK + i;
 		return 0;
 	}
 	return 1;
@@ -478,7 +478,7 @@ static int json_parse_tcp_option_type(const char *name, int *val)
 static int json_parse_tcp_option_field(int type, const char *name, int *val)
 {
 	unsigned int i;
-	const struct exthdr_desc *desc = tcpopthdr_protocols[type];
+	const struct exthdr_desc *desc = tcpopt_protocols[type];
 
 	for (i = 0; i < array_size(desc->templates); i++) {
 		if (desc->templates[i].token &&

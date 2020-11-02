@@ -399,7 +399,7 @@ int nft_lex(void *, void *, void *);
 %token OPTION			"option"
 %token ECHO			"echo"
 %token EOL			"eol"
-%token NOOP			"noop"
+%token NOP			"nop"
 %token SACK			"sack"
 %token SACK0			"sack0"
 %token SACK1			"sack1"
@@ -5212,18 +5212,18 @@ tcp_hdr_field		:	SPORT		{ $$ = TCPHDR_SPORT; }
 			|	URGPTR		{ $$ = TCPHDR_URGPTR; }
 			;
 
-tcp_hdr_option_type	:	EOL		{ $$ = TCPOPTHDR_EOL; }
-			|	NOOP		{ $$ = TCPOPTHDR_NOOP; }
-			|	MSS  	  	{ $$ = TCPOPTHDR_MAXSEG; }
-			|	WINDOW		{ $$ = TCPOPTHDR_WINDOW; }
-			|	SACK_PERM	{ $$ = TCPOPTHDR_SACK_PERMITTED; }
-			|	SACK		{ $$ = TCPOPTHDR_SACK0; }
-			|	SACK0		{ $$ = TCPOPTHDR_SACK0; }
-			|	SACK1		{ $$ = TCPOPTHDR_SACK1; }
-			|	SACK2		{ $$ = TCPOPTHDR_SACK2; }
-			|	SACK3		{ $$ = TCPOPTHDR_SACK3; }
-			|	ECHO		{ $$ = TCPOPTHDR_ECHO; }
-			|	TIMESTAMP	{ $$ = TCPOPTHDR_TIMESTAMP; }
+tcp_hdr_option_type	:	EOL		{ $$ = TCPOPT_KIND_EOL; }
+			|	NOP		{ $$ = TCPOPT_KIND_NOP; }
+			|	MSS  	  	{ $$ = TCPOPT_KIND_MAXSEG; }
+			|	WINDOW		{ $$ = TCPOPT_KIND_WINDOW; }
+			|	SACK_PERM	{ $$ = TCPOPT_KIND_SACK_PERMITTED; }
+			|	SACK		{ $$ = TCPOPT_KIND_SACK; }
+			|	SACK0		{ $$ = TCPOPT_KIND_SACK; }
+			|	SACK1		{ $$ = TCPOPT_KIND_SACK1; }
+			|	SACK2		{ $$ = TCPOPT_KIND_SACK2; }
+			|	SACK3		{ $$ = TCPOPT_KIND_SACK3; }
+			|	ECHO		{ $$ = TCPOPT_KIND_ECHO; }
+			|	TIMESTAMP	{ $$ = TCPOPT_KIND_TIMESTAMP; }
 			;
 
 tcp_hdr_option_field	:	KIND		{ $$ = TCPOPTHDR_FIELD_KIND; }

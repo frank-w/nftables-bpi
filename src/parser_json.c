@@ -502,6 +502,8 @@ static int json_parse_tcp_option_field(int type, const char *name, int *val)
 		return 1;
 
 	desc = tcpopt_protocols[type];
+	if (!desc)
+		return 1;
 
 	for (i = 0; i < array_size(desc->templates); i++) {
 		if (desc->templates[i].token &&
@@ -601,30 +603,48 @@ static struct expr *json_parse_payload_expr(struct json_ctx *ctx,
 static struct expr *json_parse_tcp_option_expr(struct json_ctx *ctx,
 					       const char *type, json_t *root)
 {
+	int fieldval, kind, offset, len;
 	const char *desc, *field;
-	int descval, fieldval;
 	struct expr *expr;
 
-	if (json_unpack_err(ctx, root, "{s:s}", "name", &desc))
-		return NULL;
+	if (!json_unpack(root, "{s:i, s:i, s:i}",
+			"base", &kind, "offset", &offset, "len", &len)) {
+		uint32_t flag = 0;
 
-	if (json_parse_tcp_option_type(desc, &descval)) {
-		json_error(ctx, "Unknown tcp option name '%s'.", desc);
-		return NULL;
-	}
-
-	if (json_unpack(root, "{s:s}", "field", &field)) {
-		expr = tcpopt_expr_alloc(int_loc, descval,
+		expr = tcpopt_expr_alloc(int_loc, kind,
 					 TCPOPT_COMMON_KIND);
-		expr->exthdr.flags = NFT_EXTHDR_F_PRESENT;
 
+		if (kind < 0 || kind > 255)
+			return NULL;
+
+		if (offset == TCPOPT_COMMON_KIND && len == 8)
+			flag = NFT_EXTHDR_F_PRESENT;
+
+		tcpopt_init_raw(expr, kind, offset, len, flag);
 		return expr;
+	} else if (!json_unpack(root, "{s:s}", "name", &desc)) {
+		if (json_parse_tcp_option_type(desc, &kind)) {
+			json_error(ctx, "Unknown tcp option name '%s'.", desc);
+			return NULL;
+		}
+
+		if (json_unpack(root, "{s:s}", "field", &field)) {
+			expr = tcpopt_expr_alloc(int_loc, kind,
+						 TCPOPT_COMMON_KIND);
+			expr->exthdr.flags = NFT_EXTHDR_F_PRESENT;
+			return expr;
+		}
+
+		if (json_parse_tcp_option_field(kind, field, &fieldval)) {
+			json_error(ctx, "Unknown tcp option field '%s'.", field);
+			return NULL;
+		}
+
+		return tcpopt_expr_alloc(int_loc, kind, fieldval);
 	}
-	if (json_parse_tcp_option_field(descval, field, &fieldval)) {
-		json_error(ctx, "Unknown tcp option field '%s'.", field);
-		return NULL;
-	}
-	return tcpopt_expr_alloc(int_loc, descval, fieldval);
+
+	json_error(ctx, "Invalid tcp option expression properties.");
+	return NULL;
 }
 
 static int json_parse_ip_option_type(const char *name, int *val)

@@ -414,6 +414,40 @@
     }
 ]
 
+# tcp option 255 missing
+[
+    {
+        "match": {
+            "left": {
+                "tcp option": {
+                    "base": 255,
+                    "len": 8,
+                    "offset": 0
+                }
+            },
+            "op": "==",
+            "right": false
+        }
+    }
+]
+
+# tcp option @255,8,8 255
+[
+    {
+        "match": {
+            "left": {
+                "tcp option": {
+                    "base": 255,
+                    "len": 8,
+                    "offset": 8
+                }
+            },
+            "op": "==",
+            "right": 255
+        }
+    }
+]
+
 # tcp option window exists
 [
     {

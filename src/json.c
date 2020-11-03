@@ -665,29 +665,31 @@ json_t *map_expr_json(const struct expr *expr, struct output_ctx *octx)
 json_t *exthdr_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
 	const char *desc = expr->exthdr.desc ?
-			   expr->exthdr.desc->name :
-			   "unknown-exthdr";
+			   expr->exthdr.desc->name : NULL;
 	const char *field = expr->exthdr.tmpl->token;
 	json_t *root;
 	bool is_exists = expr->exthdr.flags & NFT_EXTHDR_F_PRESENT;
 
 	if (expr->exthdr.op == NFT_EXTHDR_OP_TCPOPT) {
+		static const char *offstrs[] = { "", "1", "2", "3" };
 		unsigned int offset = expr->exthdr.offset / 64;
+		const char *offstr = "";
 
-		if (offset) {
-			const char *offstrs[] = { "0", "1", "2", "3" };
-			const char *offstr = "";
-
+		if (desc) {
 			if (offset < 4)
 				offstr = offstrs[offset];
 
 			root = json_pack("{s:s+}", "name", desc, offstr);
-		} else {
-			root = json_pack("{s:s}", "name", desc);
-		}
 
-		if (!is_exists)
-			json_object_set_new(root, "field", json_string(field));
+			if (!is_exists)
+				json_object_set_new(root, "field", json_string(field));
+		} else {
+			root = json_pack("{s:i, s:i, s:i}",
+					 "base", expr->exthdr.raw_type,
+					 "offset", expr->exthdr.offset,
+					 "len", expr->len);
+			is_exists = false;
+		}
 
 		return json_pack("{s:o}", "tcp option", root);
 	}

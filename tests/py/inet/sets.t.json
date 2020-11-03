@@ -71,3 +71,77 @@
     }
 ]
 
+# ip daddr . tcp dport { 10.0.0.0/8 . 10-23, 192.168.1.1-192.168.3.8 . 80-443 } accept
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "nfproto"
+                }
+            },
+            "op": "==",
+            "right": "ipv4"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "concat": [
+                    {
+                        "payload": {
+                            "field": "daddr",
+                            "protocol": "ip"
+                        }
+                    },
+                    {
+                        "payload": {
+                            "field": "dport",
+                            "protocol": "tcp"
+                        }
+                    }
+                ]
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    {
+                        "concat": [
+                            {
+                                "prefix": {
+                                    "addr": "10.0.0.0",
+                                    "len": 8
+                                }
+                            },
+                            {
+                                "range": [
+                                    10,
+                                    23
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "concat": [
+                            {
+                                "range": [
+                                    "192.168.1.1",
+                                    "192.168.3.8"
+                                ]
+                            },
+                            {
+                                "range": [
+                                    80,
+                                    443
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "accept": null
+    }
+]

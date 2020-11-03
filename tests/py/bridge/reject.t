@@ -32,7 +32,7 @@ ether type ip6 reject with icmp type host-unreachable;fail
 ether type ip reject with icmpv6 type no-route;fail
 ether type vlan reject;ok
 ether type arp reject;fail
-ether type vlan reject with tcp reset;ok
+ether type vlan reject with tcp reset;ok;meta l4proto 6 ether type vlan reject with tcp reset
 ether type arp reject with tcp reset;fail
 ip protocol udp reject with tcp reset;fail
 

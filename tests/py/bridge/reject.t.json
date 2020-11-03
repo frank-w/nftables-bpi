@@ -267,3 +267,75 @@
     }
 ]
 
+# ether type vlan reject with tcp reset
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "l4proto"
+                }
+            },
+            "op": "==",
+            "right": 6
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "vlan"
+        }
+    },
+    {
+        "reject": {
+            "type": "tcp reset"
+        }
+    }
+]
+
+# ether type vlan reject
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "vlan"
+        }
+    },
+    {
+        "reject": null
+    }
+]
+
+# ether type vlan reject with icmpx type admin-prohibited
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "vlan"
+        }
+    },
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpx"
+        }
+    }
+]

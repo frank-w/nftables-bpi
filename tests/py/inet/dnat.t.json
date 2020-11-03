@@ -164,3 +164,58 @@
     }
 ]
 
+# meta l4proto { tcp, udp } dnat ip to 1.1.1.1:80
+[
+    {
+        "match": {
+            "left": {
+                "meta": {
+                    "key": "l4proto"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    6,
+                    17
+                ]
+            }
+        }
+    },
+    {
+        "dnat": {
+            "addr": "1.1.1.1",
+            "family": "ip",
+            "port": 80
+        }
+    }
+]
+
+# ip protocol { tcp, udp } dnat ip to 1.1.1.1:80
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "protocol",
+                    "protocol": "ip"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    6,
+                    17
+                ]
+            }
+        }
+    },
+    {
+        "dnat": {
+            "addr": "1.1.1.1",
+            "family": "ip",
+            "port": 80
+        }
+    }
+]
+

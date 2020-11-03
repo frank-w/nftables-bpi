@@ -1288,7 +1288,7 @@ json_t *log_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 	return json_pack("{s:o}", "log", root);
 }
 
-static json_t *nat_flags_json(int flags)
+static json_t *nat_flags_json(uint32_t flags)
 {
 	json_t *array = json_array();
 
@@ -1298,7 +1298,35 @@ static json_t *nat_flags_json(int flags)
 		json_array_append_new(array, json_string("fully-random"));
 	if (flags & NF_NAT_RANGE_PERSISTENT)
 		json_array_append_new(array, json_string("persistent"));
+	if (flags & NF_NAT_RANGE_NETMAP)
+		json_array_append_new(array, json_string("netmap"));
 	return array;
+}
+
+static json_t *nat_type_flags_json(uint32_t type_flags)
+{
+	json_t *array = json_array();
+
+	if (type_flags & STMT_NAT_F_INTERVAL)
+		json_array_append_new(array, json_string("interval"));
+	if (type_flags & STMT_NAT_F_PREFIX)
+		json_array_append_new(array, json_string("prefix"));
+	if (type_flags & STMT_NAT_F_CONCAT)
+		json_array_append_new(array, json_string("concat"));
+
+	return array;
+}
+
+static void nat_stmt_add_array(json_t *root, const char *name, json_t *array)
+{
+	if (json_array_size(array) > 1) {
+		json_object_set_new(root, name, array);
+	} else {
+		if (json_array_size(array))
+			json_object_set(root, name,
+					json_array_get(array, 0));
+		json_decref(array);
+	}
 }
 
 json_t *nat_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
@@ -1322,13 +1350,12 @@ json_t *nat_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 		json_object_set_new(root, "port",
 				    expr_print_json(stmt->nat.proto, octx));
 
-	if (json_array_size(array) > 1) {
-		json_object_set_new(root, "flags", array);
-	} else {
-		if (json_array_size(array))
-			json_object_set(root, "flags",
-					json_array_get(array, 0));
-		json_decref(array);
+	nat_stmt_add_array(root, "flags", array);
+
+	if (stmt->nat.type_flags) {
+		array = nat_type_flags_json(stmt->nat.type_flags);
+
+		nat_stmt_add_array(root, "type_flags", array);
 	}
 
 	if (!json_object_size(root)) {

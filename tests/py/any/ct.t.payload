@@ -330,20 +330,6 @@ ip test-ip4 output
   [ ct set mark with reg 1 ]
 
 # ct mark set (meta mark | 0x10) << 8
-ip test-ip4 output
-  [ meta load mark => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0xffffffef ) ^ 0x00000010 ]
-  [ bitwise reg 1 = ( reg 1 << 0x00000008 ) ]
-  [ ct set mark with reg 1 ]
-
-# ct mark set (meta mark | 0x10) << 8
-ip6 test-ip6 output
-  [ meta load mark => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0xffffffef ) ^ 0x00000010 ]
-  [ bitwise reg 1 = ( reg 1 << 0x00000008 ) ]
-  [ ct set mark with reg 1 ]
-
-# ct mark set (meta mark | 0x10) << 8
 inet test-inet output
   [ meta load mark => reg 1 ]
   [ bitwise reg 1 = (reg=1 & 0xffffffef ) ^ 0x00000010 ]

@@ -6,10 +6,6 @@ netdev
 netdev 
   [ reject type 2 code 1 ]
 
-# reject
-netdev 
-  [ reject type 2 code 1 ]
-
 # reject with icmp type admin-prohibited
 netdev 
   [ reject type 0 code 13 ]

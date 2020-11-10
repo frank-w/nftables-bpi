@@ -66,6 +66,34 @@
     }
 ]
 
+# arp daddr ether fe:ed:00:c0:ff:ee arp saddr ip 192.168.1.1
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "saddr ip",
+                    "protocol": "arp"
+                }
+            },
+            "op": "==",
+            "right": "192.168.1.1"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "daddr ether",
+                    "protocol": "arp"
+                }
+            },
+            "op": "==",
+            "right": "fe:ed:00:c0:ff:ee"
+        }
+    }
+]
+
 # meta iifname "invalid" arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566
 [
     {

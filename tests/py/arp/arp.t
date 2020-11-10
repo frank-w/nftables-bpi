@@ -61,4 +61,7 @@ arp daddr ip 4.3.2.1;ok
 arp saddr ether aa:bb:cc:aa:bb:cc;ok
 arp daddr ether aa:bb:cc:aa:bb:cc;ok
 
+arp saddr ip 192.168.1.1 arp daddr ether fe:ed:00:c0:ff:ee;ok
+arp daddr ether fe:ed:00:c0:ff:ee arp saddr ip 192.168.1.1;ok;arp saddr ip 192.168.1.1 arp daddr ether fe:ed:00:c0:ff:ee
+
 meta iifname "invalid" arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566;ok;iifname "invalid" arp htype 1 arp ptype ip arp hlen 6 arp plen 4 arp daddr ip 192.168.143.16 arp daddr ether set 11:22:33:44:55:66

@@ -307,3 +307,13 @@ arp test-arp input
   [ payload load 6b @ network header + 18 => reg 1 ]
   [ cmp eq reg 1 0xaaccbbaa 0x0000ccbb ]
 
+# arp saddr ip 192.168.1.1 arp daddr ether fe:ed:00:c0:ff:ee
+arp 
+  [ payload load 10b @ network header + 14 => reg 1 ]
+  [ cmp eq reg 1 0x0101a8c0 0xc000edfe 0x0000eeff ]
+
+# arp daddr ether fe:ed:00:c0:ff:ee arp saddr ip 192.168.1.1
+arp 
+  [ payload load 10b @ network header + 14 => reg 1 ]
+  [ cmp eq reg 1 0x0101a8c0 0xc000edfe 0x0000eeff ]
+

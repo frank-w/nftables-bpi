@@ -980,8 +980,8 @@ const struct proto_desc proto_arp = {
 		[ARPHDR_PLN]		= ARPHDR_FIELD("plen", plen),
 		[ARPHDR_OP]		= ARPHDR_TYPE("operation", &arpop_type, oper),
 		[ARPHDR_SADDR_ETHER]	= ARPHDR_TYPE("saddr ether", &etheraddr_type, sha),
-		[ARPHDR_DADDR_ETHER]	= ARPHDR_TYPE("daddr ether", &etheraddr_type, tha),
 		[ARPHDR_SADDR_IP]	= ARPHDR_TYPE("saddr ip", &ipaddr_type, spa),
+		[ARPHDR_DADDR_ETHER]	= ARPHDR_TYPE("daddr ether", &etheraddr_type, tha),
 		[ARPHDR_DADDR_IP]	= ARPHDR_TYPE("daddr ip", &ipaddr_type, tpa),
 	},
 	.format		= {

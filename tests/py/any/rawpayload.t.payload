@@ -34,13 +34,13 @@ inet test-inet input
 # @ll,0,1 1
 inet test-inet input
   [ payload load 1b @ link header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000080 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000080 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000080 ]
 
 # @ll,0,8 and 0x80 eq 0x80
 inet test-inet input
   [ payload load 1b @ link header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000080 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000080 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000080 ]
 
 # @ll,0,128 0xfedcba987654321001234567890abcde

@@ -1,25 +1,25 @@
 # ip6 dscp cs1
 ip6 test-ip6 input
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000c00f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000c00f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000002 ]
 
 # ip6 dscp != cs1
 ip6 test-ip6 input
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000c00f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000c00f ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00000002 ]
 
 # ip6 dscp 0x38
 ip6 test-ip6 input
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000c00f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000c00f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000000e ]
 
 # ip6 dscp != 0x20
 ip6 test-ip6 input
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000c00f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000c00f ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00000008 ]
 
 # ip6 dscp {cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, ef}
@@ -28,7 +28,7 @@ __set%d test-ip6 0
         element 00000002  : 0 [end]     element 00000004  : 0 [end]     element 00000006  : 0 [end]     element 00000008  : 0 [end]    element 0000000a  : 0 [end]      element 0000000c  : 0 [end]     element 0000000e  : 0 [end]     element 00000000  : 0 [end]     element 00008002  : 0 [end]     element 00000003  : 0 [end]     element 00008003  : 0 [end]     element 00008004  : 0 [end]     element 00000005  : 0 [end]     element 00008005  : 0 [end]     element 00008006  : 0 [end]     element 00000007  : 0 [end]     element 00008007  : 0 [end]     element 00008008  : 0 [end]     element 00000009  : 0 [end]     element 00008009  : 0 [end]     element 0000800b  : 0 [end]
 ip6 test-ip6 input
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000c00f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000c00f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d ]
 
 # ip6 dscp vmap { 0x04 : accept, 0x3f : continue } counter
@@ -37,20 +37,20 @@ __map%d test-ip6 0
 	element 00000001  : 0 [end]	element 0000c00f  : 0 [end]
 ip6 test-ip6 input
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000c00f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000c00f ) ^ 0x00000000 ]
   [ lookup reg 1 set __map%d dreg 0 ]
   [ counter pkts 0 bytes 0 ]
 
 # ip6 flowlabel 22
 ip6 test-ip6 input
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00160000 ]
 
 # ip6 flowlabel != 233
 ip6 test-ip6 input
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00e90000 ]
 
 # ip6 flowlabel { 33, 55, 67, 88}
@@ -59,7 +59,7 @@ __set%d test-ip6 0
 	element 00210000  : 0 [end]	element 00370000  : 0 [end]	element 00430000  : 0 [end]	element 00580000  : 0 [end]
 ip6 test-ip6 input
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d ]
 
 # ip6 flowlabel != { 33, 55, 67, 88}
@@ -68,7 +68,7 @@ __set%d test-ip6 0
 	element 00210000  : 0 [end]	element 00370000  : 0 [end]	element 00430000  : 0 [end]	element 00580000  : 0 [end]
 ip6 test-ip6 input
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # ip6 flowlabel { 33-55}
@@ -77,7 +77,7 @@ __set%d test-ip6 0
 	element 00000000  : 1 [end]	element 00210000  : 0 [end]	element 00380000  : 1 [end]
 ip6 test-ip6 input
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d ]
 
 # ip6 flowlabel != { 33-55}
@@ -86,7 +86,7 @@ __set%d test-ip6 0
 	element 00000000  : 1 [end]	element 00210000  : 0 [end]	element 00380000  : 1 [end]
 ip6 test-ip6 input
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # ip6 flowlabel vmap { 0 : accept, 2 : continue } 
@@ -95,7 +95,7 @@ __map%d test-ip6 0
 	element 00000000  : 0 [end]	element 00020000  : 0 [end]
 ip6 test-ip6 input 
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00ffff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ lookup reg 1 set __map%d dreg 0 ]
 
 # ip6 length 22
@@ -494,7 +494,7 @@ ip6 test-ip6 input
   [ meta load iif => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00003ff0 ) ^ 0x00000009 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00003ff0 ) ^ 0x00000009 ]
   [ payload write reg 1 => 2b @ network header + 0 csum_type 0 csum_off 0 csum_flags 0x0 ]
 
 # iif "lo" ip6 dscp set 63
@@ -502,7 +502,7 @@ ip6 test-ip6 input
   [ meta load iif => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00003ff0 ) ^ 0x0000c00f ]
+  [ bitwise reg 1 = ( reg 1 & 0x00003ff0 ) ^ 0x0000c00f ]
   [ payload write reg 1 => 2b @ network header + 0 csum_type 0 csum_off 0 csum_flags 0x0 ]
 
 # iif "lo" ip6 ecn set ect0
@@ -510,7 +510,7 @@ ip6 test-ip6 input
   [ meta load iif => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000cf ) ^ 0x00000020 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000cf ) ^ 0x00000020 ]
   [ payload write reg 1 => 1b @ network header + 1 csum_type 0 csum_off 0 csum_flags 0x0 ]
 
 # iif "lo" ip6 ecn set ce
@@ -518,7 +518,7 @@ ip6 test-ip6 input
   [ meta load iif => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000cf ) ^ 0x00000030 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000cf ) ^ 0x00000030 ]
   [ payload write reg 1 => 1b @ network header + 1 csum_type 0 csum_off 0 csum_flags 0x0 ]
 
 # iif "lo" ip6 flowlabel set 0
@@ -526,7 +526,7 @@ ip6 test-ip6 input
   [ meta load iif => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000f0 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000f0 ) ^ 0x00000000 ]
   [ payload write reg 1 => 3b @ network header + 1 csum_type 0 csum_off 0 csum_flags 0x0 ]
 
 # iif "lo" ip6 flowlabel set 12345
@@ -534,7 +534,7 @@ ip6 test-ip6 input
   [ meta load iif => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000f0 ) ^ 0x00393000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000f0 ) ^ 0x00393000 ]
   [ payload write reg 1 => 3b @ network header + 1 csum_type 0 csum_off 0 csum_flags 0x0 ]
 
 # iif "lo" ip6 flowlabel set 0xfffff
@@ -542,6 +542,6 @@ ip6 test-ip6 input
   [ meta load iif => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
   [ payload load 3b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000f0 ) ^ 0x00ffff0f ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000f0 ) ^ 0x00ffff0f ]
   [ payload write reg 1 => 3b @ network header + 1 csum_type 0 csum_off 0 csum_flags 0x0 ]
 

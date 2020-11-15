@@ -136,13 +136,13 @@ ip test-ip4 input
 # meta mark and 0x03 == 0x01
 ip test-ip4 input
   [ meta load mark => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000003 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000003 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000001 ]
 
 # meta mark and 0x03 != 0x01
 ip test-ip4 input
   [ meta load mark => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000003 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000003 ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00000001 ]
 
 # meta mark 0x10
@@ -158,13 +158,13 @@ ip test-ip4 input
 # meta mark or 0x03 == 0x01
 ip test-ip4 input
   [ meta load mark => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0xfffffffc ) ^ 0x00000003 ]
+  [ bitwise reg 1 = ( reg 1 & 0xfffffffc ) ^ 0x00000003 ]
   [ cmp eq reg 1 0x00000001 ]
 
 # meta mark or 0x03 != 0x01
 ip test-ip4 input
   [ meta load mark => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0xfffffffc ) ^ 0x00000003 ]
+  [ bitwise reg 1 = ( reg 1 & 0xfffffffc ) ^ 0x00000003 ]
   [ cmp neq reg 1 0x00000001 ]
 
 # meta mark xor 0x03 == 0x01

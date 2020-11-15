@@ -536,7 +536,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0xff000000 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0xff000000 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x01000000 ]
 
 # ip saddr & 0.0.0.255 < 0.0.0.127
@@ -544,7 +544,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0xff000000 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0xff000000 ) ^ 0x00000000 ]
   [ cmp lt reg 1 0x7f000000 ]
 
 # ip saddr & 0xffff0000 == 0xffff0000
@@ -552,7 +552,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ffff ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000ffff ]
 
 # ip version 4 ip hdrlength 5
@@ -560,10 +560,10 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000f0 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000f0 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000040 ]
   [ payload load 1b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000000f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000000f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000005 ]
 
 # ip hdrlength 0
@@ -571,7 +571,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000000f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000000f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000000 ]
 
 # ip hdrlength 15
@@ -579,7 +579,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000000f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000000f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000000f ]
 
 # ip hdrlength vmap { 0-4 : drop, 5 : accept, 6 : continue } counter
@@ -590,7 +590,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000000f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000000f ) ^ 0x00000000 ]
   [ lookup reg 1 set __map%d dreg 0 ]
   [ counter pkts 0 bytes 0 ]
 
@@ -746,7 +746,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000fc ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000020 ]
 
 # ip dscp != cs1
@@ -754,7 +754,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000fc ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00000020 ]
 
 # ip dscp 0x38
@@ -762,7 +762,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000fc ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x000000e0 ]
 
 # ip dscp != 0x20
@@ -770,7 +770,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000fc ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00000080 ]
 
 # ip dscp {cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, ef}
@@ -781,7 +781,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000fc ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d ]
 
 # ip dscp != {cs0, cs3}
@@ -792,7 +792,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000fc ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
 # ip dscp vmap { cs1 : continue , cs4 : accept } counter
@@ -803,7 +803,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 1b @ network header + 1 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000fc ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000fc ) ^ 0x00000000 ]
   [ lookup reg 1 set __map%d dreg 0 ]
   [ counter pkts 0 bytes 0 ]
 
@@ -841,7 +841,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000fcff ) ^ 0x00000100 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000fcff ) ^ 0x00000100 ]
   [ payload write reg 1 => 2b @ network header + 0 csum_type 1 csum_off 10 csum_flags 0x0 ]
 
 # iif "lo" ip ecn set ce
@@ -851,7 +851,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000fcff ) ^ 0x00000300 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000fcff ) ^ 0x00000300 ]
   [ payload write reg 1 => 2b @ network header + 0 csum_type 1 csum_off 10 csum_flags 0x0 ]
 
 # iif "lo" ip dscp set af23
@@ -861,7 +861,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000003ff ) ^ 0x00005800 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000003ff ) ^ 0x00005800 ]
   [ payload write reg 1 => 2b @ network header + 0 csum_type 1 csum_off 10 csum_flags 0x0 ]
 
 # iif "lo" ip dscp set cs0
@@ -871,7 +871,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 2b @ network header + 0 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000003ff ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000003ff ) ^ 0x00000000 ]
   [ payload write reg 1 => 2b @ network header + 0 csum_type 1 csum_off 10 csum_flags 0x0 ]
 
 # iif "lo" ip ttl set 23
@@ -881,7 +881,7 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 2b @ network header + 8 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff00 ) ^ 0x00000017 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff00 ) ^ 0x00000017 ]
   [ payload write reg 1 => 2b @ network header + 8 csum_type 1 csum_off 10 csum_flags 0x0 ]
 
 # iif "lo" ip protocol set 1
@@ -891,6 +891,6 @@ netdev test-netdev ingress
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 2b @ network header + 8 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000ff ) ^ 0x00000100 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000ff ) ^ 0x00000100 ]
   [ payload write reg 1 => 2b @ network header + 8 csum_type 1 csum_off 10 csum_flags 0x1 ]
 

@@ -417,7 +417,7 @@ inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ payload load 1b @ transport header + 13 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000080 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000080 ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00000000 ]
 
 # tcp flags != cwr
@@ -439,7 +439,7 @@ inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ payload load 1b @ transport header + 13 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000003 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000003 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000003 ]
 
 # tcp flags & (fin | syn | rst | psh | ack | urg | ecn | cwr) == fin | syn | rst | psh | ack | urg | ecn | cwr
@@ -447,7 +447,7 @@ inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ payload load 1b @ transport header + 13 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000ff ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000ff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x000000ff ]
 
 # tcp window 22222
@@ -677,7 +677,7 @@ inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ payload load 1b @ transport header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000f0 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000f0 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000080 ]
 
 # tcp flags & (fin | syn | rst | psh | ack | urg) == { fin, ack, psh | ack, fin | psh | ack }
@@ -688,7 +688,7 @@ ip
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ payload load 1b @ transport header + 13 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000003f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000003f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d ]
 
 # tcp flags { syn, syn | ack }

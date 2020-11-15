@@ -3,7 +3,7 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
 
 # vlan id 0
@@ -11,7 +11,7 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000000 ]
 
 # vlan id 4094 vlan cfi 0
@@ -19,10 +19,10 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000010 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000010 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000000 ]
 
 # vlan id 4094 vlan cfi != 1
@@ -30,10 +30,10 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000010 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000010 ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00000010 ]
 
 # vlan id 4094 vlan cfi 1
@@ -41,10 +41,10 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000010 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000010 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000010 ]
 
 # ether type vlan vlan id 4094
@@ -52,7 +52,7 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
 
 # ether type vlan vlan id 0
@@ -60,7 +60,7 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000000 ]
 
 # ether type vlan vlan id 4094 vlan cfi 0
@@ -68,10 +68,10 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000010 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000010 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000000 ]
 
 # ether type vlan vlan id 4094 vlan cfi 1
@@ -79,10 +79,10 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000010 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000010 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000010 ]
 
 # vlan id 4094 tcp dport 22
@@ -90,7 +90,7 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
@@ -102,7 +102,7 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000100 ]
   [ payload load 2b @ link header + 16 => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
@@ -114,12 +114,12 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000100 ]
   [ payload load 2b @ link header + 16 => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00feffff ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00feffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000000a ]
 
 # vlan id 1 ip saddr 10.0.0.0/23 udp dport 53
@@ -127,12 +127,12 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000100 ]
   [ payload load 2b @ link header + 16 => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00feffff ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00feffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000000a ]
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000011 ]
@@ -144,12 +144,12 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000100 ]
   [ payload load 2b @ link header + 16 => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 4b @ network header + 12 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00feffff ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00feffff ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000000a ]
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000011 ]
@@ -161,13 +161,13 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000010 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000010 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000010 ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000e0 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000e0 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x000000e0 ]
 
 # vlan id 4094 vlan cfi 1 vlan pcp 3
@@ -175,13 +175,13 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x0000fe0f ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x00000010 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x00000010 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000010 ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000e0 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000e0 ) ^ 0x00000000 ]
   [ cmp eq reg 1 0x00000060 ]
 
 # vlan id { 1, 2, 4, 100, 4095 } vlan pcp 1-3
@@ -192,10 +192,10 @@ bridge test-bridge input
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]
   [ payload load 2b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000ff0f ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000ff0f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d ]
   [ payload load 1b @ link header + 14 => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x000000e0 ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x000000e0 ) ^ 0x00000000 ]
   [ cmp gte reg 1 0x00000020 ]
   [ cmp lte reg 1 0x00000060 ]
 

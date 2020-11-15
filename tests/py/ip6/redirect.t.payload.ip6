@@ -183,7 +183,7 @@ ip6 test-ip6 output
   [ meta load iifname => reg 1 ]
   [ cmp eq reg 1 0x30687465 0x00000000 0x00000000 0x00000000 ]
   [ ct load state => reg 1 ]
-  [ bitwise reg 1 = (reg=1 & 0x0000000a ) ^ 0x00000000 ]
+  [ bitwise reg 1 = ( reg 1 & 0x0000000a ) ^ 0x00000000 ]
   [ cmp neq reg 1 0x00000000 ]
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]

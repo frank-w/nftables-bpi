@@ -3762,42 +3762,50 @@ static int json_verify_metainfo(struct json_ctx *ctx, json_t *root)
 }
 
 struct json_cmd_assoc {
-	struct json_cmd_assoc *next;
+	struct hlist_node hnode;
 	const struct cmd *cmd;
 	json_t *json;
 };
 
-static struct json_cmd_assoc *json_cmd_list = NULL;
+#define CMD_ASSOC_HSIZE		512
+static struct hlist_head json_cmd_assoc_hash[CMD_ASSOC_HSIZE];
 
 static void json_cmd_assoc_free(void)
 {
 	struct json_cmd_assoc *cur;
+	struct hlist_node *pos, *n;
+	int i;
 
-	while (json_cmd_list) {
-		cur = json_cmd_list;
-		json_cmd_list = cur->next;
-		free(cur);
+	for (i = 0; i < CMD_ASSOC_HSIZE; i++) {
+		hlist_for_each_entry_safe(cur, pos, n,
+					  &json_cmd_assoc_hash[i], hnode)
+			free(cur);
 	}
 }
 
 static void json_cmd_assoc_add(json_t *json, const struct cmd *cmd)
 {
 	struct json_cmd_assoc *new = xzalloc(sizeof *new);
+	int key = cmd->seqnum % CMD_ASSOC_HSIZE;
 
-	new->next	= json_cmd_list;
 	new->json	= json;
 	new->cmd	= cmd;
-	json_cmd_list	= new;
+
+	hlist_add_head(&new->hnode, &json_cmd_assoc_hash[key]);
 }
 
 static json_t *seqnum_to_json(const uint32_t seqnum)
 {
-	const struct json_cmd_assoc *cur;
+	int key = seqnum % CMD_ASSOC_HSIZE;
+	struct json_cmd_assoc *cur;
+	struct hlist_node *n;
 
-	for (cur = json_cmd_list; cur; cur = cur->next) {
+
+	hlist_for_each_entry(cur, n, &json_cmd_assoc_hash[key], hnode) {
 		if (cur->cmd->seqnum == seqnum)
 			return cur->json;
 	}
+
 	return NULL;
 }
 

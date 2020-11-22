@@ -184,7 +184,6 @@ int nft_lex(void *, void *, void *);
 	struct handle_spec	handle_spec;
 	struct position_spec	position_spec;
 	struct prio_spec	prio_spec;
-	const struct exthdr_desc *exthdr_desc;
 }
 
 %token TOKEN_EOF 0		"end of file"

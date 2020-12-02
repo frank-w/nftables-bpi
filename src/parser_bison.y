@@ -4097,6 +4097,38 @@ set_elem_expr_option	:	TIMEOUT			time_spec
 				stmt->counter.bytes = $5;
 				$<expr>0->stmt = stmt;
 			}
+			|	LIMIT   RATE    limit_mode      NUM     SLASH   time_unit       limit_burst_pkts
+			{
+				struct stmt *stmt;
+
+				stmt = limit_stmt_alloc(&@$);
+				stmt->limit.rate  = $4;
+				stmt->limit.unit  = $6;
+				stmt->limit.burst = $7;
+				stmt->limit.type  = NFT_LIMIT_PKTS;
+				stmt->limit.flags = $3;
+				$<expr>0->stmt = stmt;
+			}
+			|       LIMIT   RATE    limit_mode      NUM     STRING  limit_burst_bytes
+			{
+				struct error_record *erec;
+				uint64_t rate, unit;
+				struct stmt *stmt;
+
+				erec = rate_parse(&@$, $5, &rate, &unit);
+				xfree($5);
+				if (erec != NULL) {
+					erec_queue(erec, state->msgs);
+					YYERROR;
+				}
+
+				stmt = limit_stmt_alloc(&@$);
+				stmt->limit.rate  = rate * $4;
+				stmt->limit.unit  = unit;
+				stmt->limit.burst = $6;
+				stmt->limit.type  = NFT_LIMIT_PKT_BYTES;
+				stmt->limit.flags = $3;
+                        }
 			|	comment_spec
 			{
 				if (already_set($<expr>0->comment, &@1, state)) {

@@ -359,6 +359,9 @@ static int mnl_batch_extack_cb(const struct nlmsghdr *nlh, void *data)
 }
 
 #define NFT_MNL_ECHO_RCVBUFF_DEFAULT	(MNL_SOCKET_BUFFER_SIZE * 1024)
+#define NFT_MNL_ACK_MAXSIZE		((sizeof(struct nlmsghdr) + \
+					  sizeof(struct nfgenmsg) + (1 << 16)) + \
+					  MNL_SOCKET_BUFFER_SIZE)
 
 int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 		   uint32_t num_cmds)
@@ -366,7 +369,7 @@ int mnl_batch_talk(struct netlink_ctx *ctx, struct list_head *err_list,
 	struct mnl_socket *nl = ctx->nft->nf_sock;
 	int ret, fd = mnl_socket_get_fd(nl), portid = mnl_socket_get_portid(nl);
 	uint32_t iov_len = nftnl_batch_iovec_len(ctx->batch);
-	char rcv_buf[MNL_SOCKET_BUFFER_SIZE];
+	char rcv_buf[NFT_MNL_ACK_MAXSIZE];
 	const struct sockaddr_nl snl = {
 		.nl_family = AF_NETLINK
 	};

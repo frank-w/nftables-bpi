@@ -492,3 +492,46 @@ For each of the types above, keywords are available for convenience:
 |==================
 
 Possible keywords for conntrack label type (ct_label) are read at runtime from /etc/connlabel.conf.
+
+DCCP PKTTYPE TYPE
+~~~~~~~~~~~~~~~~
+[options="header"]
+|==================
+|Name | Keyword | Size | Base type
+|DCCP packet type |
+dccp_pkttype |
+4 bit |
+integer
+|===================
+
+The DCCP packet type abstracts the different legal values of the respective
+four bit field in the DCCP header, as stated by RFC4340. Note that possible
+values 10-15 are considered reserved and therefore not allowed to be used. In
+iptables' *dccp* match, these values are aliased 'INVALID'. With nftables, one
+may simply match on the numeric value range, i.e. *10-15*.
+
+.keywords may be used when specifying the DCCP packet type
+[options="header"]
+|==================
+|Keyword |Value
+|request|
+0
+|response|
+1
+|data|
+2
+|ack|
+3
+|dataack|
+4
+|closereq|
+5
+|close|
+6
+|reset|
+7
+|sync|
+8
+|syncack|
+9
+|=================

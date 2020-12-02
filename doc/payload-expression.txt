@@ -392,7 +392,7 @@ integer (32 bit)
 DCCP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~
 [verse]
-*dccp* {*sport* | *dport*}
+*dccp* {*sport* | *dport* | *type*}
 
 .DCCP header expression
 [options="header"]
@@ -404,6 +404,9 @@ inet_service
 |dport|
 Destination port|
 inet_service
+|type|
+Packet type|
+dccp_pkttype
 |========================
 
 AUTHENTICATION HEADER EXPRESSION

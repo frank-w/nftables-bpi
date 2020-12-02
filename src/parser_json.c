@@ -3762,6 +3762,7 @@ static int json_verify_metainfo(struct json_ctx *ctx, json_t *root)
 }
 
 struct json_cmd_assoc {
+	struct json_cmd_assoc *next;
 	struct hlist_node hnode;
 	const struct cmd *cmd;
 	json_t *json;
@@ -3769,12 +3770,19 @@ struct json_cmd_assoc {
 
 #define CMD_ASSOC_HSIZE		512
 static struct hlist_head json_cmd_assoc_hash[CMD_ASSOC_HSIZE];
+static struct json_cmd_assoc *json_cmd_assoc_list;
 
 static void json_cmd_assoc_free(void)
 {
 	struct json_cmd_assoc *cur;
 	struct hlist_node *pos, *n;
 	int i;
+
+	while (json_cmd_assoc_list) {
+		cur = json_cmd_assoc_list->next;
+		free(json_cmd_assoc_list);
+		json_cmd_assoc_list = cur;
+	}
 
 	for (i = 0; i < CMD_ASSOC_HSIZE; i++) {
 		hlist_for_each_entry_safe(cur, pos, n,
@@ -3786,21 +3794,29 @@ static void json_cmd_assoc_free(void)
 static void json_cmd_assoc_add(json_t *json, const struct cmd *cmd)
 {
 	struct json_cmd_assoc *new = xzalloc(sizeof *new);
-	int key = cmd->seqnum % CMD_ASSOC_HSIZE;
 
 	new->json	= json;
 	new->cmd	= cmd;
+	new->next	= json_cmd_assoc_list;
 
-	hlist_add_head(&new->hnode, &json_cmd_assoc_hash[key]);
+	json_cmd_assoc_list = new;
 }
 
 static json_t *seqnum_to_json(const uint32_t seqnum)
 {
-	int key = seqnum % CMD_ASSOC_HSIZE;
 	struct json_cmd_assoc *cur;
 	struct hlist_node *n;
+	int key;
 
+	while (json_cmd_assoc_list) {
+		cur = json_cmd_assoc_list;
+		json_cmd_assoc_list = cur->next;
 
+		key = cur->cmd->seqnum % CMD_ASSOC_HSIZE;
+		hlist_add_head(&cur->hnode, &json_cmd_assoc_hash[key]);
+	}
+
+	key = seqnum % CMD_ASSOC_HSIZE;
 	hlist_for_each_entry(cur, n, &json_cmd_assoc_hash[key], hnode) {
 		if (cur->cmd->seqnum == seqnum)
 			return cur->json;
@@ -3981,8 +3997,11 @@ int json_events_cb(const struct nlmsghdr *nlh, struct netlink_mon_handler *monh)
 		return MNL_CB_OK;
 
 	json = seqnum_to_json(nlh->nlmsg_seq);
-	if (!json)
+	if (!json) {
+		json_echo_error(monh, "No JSON command found with seqnum %lu\n",
+				nlh->nlmsg_seq);
 		return MNL_CB_OK;
+	}
 
 	tmp = json_object_get(json, "add");
 	if (!tmp)

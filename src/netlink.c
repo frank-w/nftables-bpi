@@ -635,7 +635,7 @@ int netlink_list_tables(struct netlink_ctx *ctx, const struct handle *h)
 		if (errno == EINTR)
 			return -1;
 
-		return 0;
+		return -1;
 	}
 
 	ctx->data = h;

@@ -463,8 +463,13 @@ int nft_run_cmd_from_buffer(struct nft_ctx *nft, const char *buf)
 	parser_rc = rc;
 
 	rc = nft_evaluate(nft, &msgs, &cmds);
-	if (rc < 0)
+	if (rc < 0) {
+		if (errno == EPERM) {
+			fprintf(stderr, "%s (you must be root)\n",
+				strerror(errno));
+		}
 		goto err;
+	}
 
 	if (parser_rc) {
 		rc = parser_rc;

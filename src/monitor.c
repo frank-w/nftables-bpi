@@ -225,7 +225,7 @@ static int netlink_events_table_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_JSON:
 		monitor_print_table_json(monh, cmd, t);
-		if(!nft_output_echo(&monh->ctx->nft->output))
+		if (!nft_output_echo(&monh->ctx->nft->output))
 			nft_mon_print(monh, "\n");
 		break;
 	}
@@ -264,7 +264,7 @@ static int netlink_events_chain_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_JSON:
 		monitor_print_chain_json(monh, cmd, c);
-		if(!nft_output_echo(&monh->ctx->nft->output))
+		if (!nft_output_echo(&monh->ctx->nft->output))
 			nft_mon_print(monh, "\n");
 		break;
 	}
@@ -312,7 +312,7 @@ static int netlink_events_set_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_JSON:
 		monitor_print_set_json(monh, cmd, set);
-		if(!nft_output_echo(&monh->ctx->nft->output))
+		if (!nft_output_echo(&monh->ctx->nft->output))
 			nft_mon_print(monh, "\n");
 		break;
 	}
@@ -457,7 +457,7 @@ static int netlink_events_setelem_cb(const struct nlmsghdr *nlh, int type,
 		/* prevent set_free() from trying to free those */
 		dummyset->handle.set.name = NULL;
 		dummyset->handle.table.name = NULL;
-		if(!nft_output_echo(&monh->ctx->nft->output))
+		if (!nft_output_echo(&monh->ctx->nft->output))
 			nft_mon_print(monh, "\n");
 		break;
 	}
@@ -504,7 +504,7 @@ static int netlink_events_obj_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_JSON:
 		monitor_print_obj_json(monh, cmd, obj);
-		if(!nft_output_echo(&monh->ctx->nft->output))
+		if (!nft_output_echo(&monh->ctx->nft->output))
 			nft_mon_print(monh, "\n");
 		break;
 	}
@@ -556,7 +556,7 @@ static int netlink_events_rule_cb(const struct nlmsghdr *nlh, int type,
 		break;
 	case NFTNL_OUTPUT_JSON:
 		monitor_print_rule_json(monh, cmd, r);
-		if(!nft_output_echo(&monh->ctx->nft->output))
+		if (!nft_output_echo(&monh->ctx->nft->output))
 			nft_mon_print(monh, "\n");
 		break;
 	}

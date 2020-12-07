@@ -39,8 +39,8 @@ struct proto_hdr_template {
 	const struct datatype		*dtype;
 	uint16_t			offset;
 	uint16_t			len;
-	enum byteorder			byteorder;
-	enum nft_meta_keys		meta_key;
+	enum byteorder			byteorder:8;
+	enum nft_meta_keys		meta_key:8;
 };
 
 #define PROTO_HDR_TEMPLATE(__token, __dtype,  __byteorder, __offset, __len)\
@@ -101,11 +101,11 @@ enum proto_desc_id {
  */
 struct proto_desc {
 	const char			*name;
-	enum proto_desc_id		id;
-	enum proto_bases		base;
-	enum nft_payload_csum_types	checksum_type;
-	unsigned int			checksum_key;
-	unsigned int			protocol_key;
+	enum proto_desc_id		id:8;
+	enum proto_bases		base:8;
+	enum nft_payload_csum_types	checksum_type:8;
+	uint16_t			checksum_key;
+	uint16_t			protocol_key;
 	unsigned int			length;
 	struct {
 		unsigned int			num;

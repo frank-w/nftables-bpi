@@ -605,7 +605,7 @@ int nft_lex(void *, void *, void *);
 %type <table>			table_block_alloc table_block
 %destructor { close_scope(state); table_free($$); }	table_block_alloc
 %type <chain>			chain_block_alloc chain_block subchain_block
-%destructor { close_scope(state); chain_free($$); }	chain_block_alloc subchain_block
+%destructor { close_scope(state); chain_free($$); }	chain_block_alloc
 %type <rule>			rule rule_alloc
 %destructor { rule_free($$); }	rule
 

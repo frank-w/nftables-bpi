@@ -20,6 +20,7 @@
 #include <linux/netfilter.h>
 #include <linux/if_ether.h>
 #include <netinet/ip_icmp.h>
+#include <netinet/icmp6.h>
 
 #include <rule.h>
 #include <expression.h>
@@ -677,8 +678,12 @@ static uint8_t icmp_dep_to_type(enum icmp_hdr_field_type t)
 	case PROTO_ICMP_ANY:
 		BUG("Invalid map for simple dependency");
 	case PROTO_ICMP_ECHO: return ICMP_ECHO;
+	case PROTO_ICMP6_ECHO: return ICMP6_ECHO_REQUEST;
 	case PROTO_ICMP_MTU: return ICMP_DEST_UNREACH;
 	case PROTO_ICMP_ADDRESS: return ICMP_REDIRECT;
+	case PROTO_ICMP6_MTU: return ICMP6_PACKET_TOO_BIG;
+	case PROTO_ICMP6_MGMQ: return MLD_LISTENER_QUERY;
+	case PROTO_ICMP6_PPTR: return ICMP6_PARAM_PROB;
 	}
 
 	BUG("Missing icmp type mapping");
@@ -1022,6 +1027,34 @@ int payload_gen_icmp_dependency(struct eval_ctx *ctx, const struct expr *expr,
 		stmt = __payload_gen_icmp_simple_dependency(ctx, expr,
 							    &icmp_type_type,
 							    desc, type);
+		break;
+	case PROTO_ICMP6_ECHO:
+		if (ctx->pctx.th_dep.icmp.type == ICMP6_ECHO_REQUEST ||
+		    ctx->pctx.th_dep.icmp.type == ICMP6_ECHO_REPLY)
+			goto done;
+
+		type = ICMP6_ECHO_REQUEST;
+		if (ctx->pctx.th_dep.icmp.type)
+			goto bad_proto;
+
+		stmt = __payload_gen_icmp_echo_dependency(ctx, expr,
+							  ICMP6_ECHO_REQUEST,
+							  ICMP6_ECHO_REPLY,
+							  &icmp6_type_type,
+							  desc);
+		break;
+	case PROTO_ICMP6_MTU:
+	case PROTO_ICMP6_MGMQ:
+	case PROTO_ICMP6_PPTR:
+		type = icmp_dep_to_type(tmpl->icmp_dep);
+		if (ctx->pctx.th_dep.icmp.type == type)
+			goto done;
+		if (ctx->pctx.th_dep.icmp.type)
+			goto bad_proto;
+		stmt = __payload_gen_icmp_simple_dependency(ctx, expr,
+							    &icmp6_type_type,
+							    desc, type);
+		break;
 		break;
 	default:
 		BUG("Unhandled icmp dependency code");

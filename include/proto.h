@@ -30,6 +30,10 @@ enum icmp_hdr_field_type {
 	PROTO_ICMP_ECHO,	/* echo and reply */
 	PROTO_ICMP_MTU,		/* destination unreachable */
 	PROTO_ICMP_ADDRESS,	/* redirect */
+	PROTO_ICMP6_MTU,
+	PROTO_ICMP6_PPTR,
+	PROTO_ICMP6_ECHO,
+	PROTO_ICMP6_MGMQ,
 };
 
 /**

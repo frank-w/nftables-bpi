@@ -729,7 +729,7 @@ static int __expr_evaluate_payload(struct eval_ctx *ctx, struct expr *expr)
 
 		payload->payload.offset += ctx->pctx.protocol[base].offset;
 check_icmp:
-		if (desc != &proto_icmp)
+		if (desc != &proto_icmp && desc != &proto_icmp6)
 			return 0;
 
 		tmpl = expr->payload.tmpl;

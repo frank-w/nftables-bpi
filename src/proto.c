@@ -396,25 +396,34 @@ const struct datatype icmp_type_type = {
 	.sym_tbl	= &icmp_type_tbl,
 };
 
-#define ICMPHDR_FIELD(__name, __member) \
-	HDR_FIELD(__name, struct icmphdr, __member)
+#define ICMPHDR_FIELD(__token, __member, __dep)					\
+	{									\
+		.token		= (__token),					\
+		.dtype		= &integer_type,				\
+		.byteorder	= BYTEORDER_BIG_ENDIAN,				\
+		.offset		= offsetof(struct icmphdr, __member) * 8,	\
+		.len		= field_sizeof(struct icmphdr, __member) * 8,	\
+		.icmp_dep	= (__dep),					\
+	}
+
 #define ICMPHDR_TYPE(__name, __type, __member) \
-	HDR_TYPE(__name, __type, struct icmphdr, __member)
+	HDR_TYPE(__name,  __type, struct icmphdr, __member)
 
 const struct proto_desc proto_icmp = {
 	.name		= "icmp",
 	.id		= PROTO_DESC_ICMP,
 	.base		= PROTO_BASE_TRANSPORT_HDR,
+	.protocol_key	= ICMPHDR_TYPE,
 	.checksum_key	= ICMPHDR_CHECKSUM,
 	.checksum_type  = NFT_PAYLOAD_CSUM_INET,
 	.templates	= {
 		[ICMPHDR_TYPE]		= ICMPHDR_TYPE("type", &icmp_type_type, type),
 		[ICMPHDR_CODE]		= ICMPHDR_TYPE("code", &icmp_code_type, code),
-		[ICMPHDR_CHECKSUM]	= ICMPHDR_FIELD("checksum", checksum),
-		[ICMPHDR_ID]		= ICMPHDR_FIELD("id", un.echo.id),
-		[ICMPHDR_SEQ]		= ICMPHDR_FIELD("sequence", un.echo.sequence),
-		[ICMPHDR_GATEWAY]	= ICMPHDR_FIELD("gateway", un.gateway),
-		[ICMPHDR_MTU]		= ICMPHDR_FIELD("mtu", un.frag.mtu),
+		[ICMPHDR_CHECKSUM]	= ICMPHDR_FIELD("checksum", checksum, PROTO_ICMP_ANY),
+		[ICMPHDR_ID]		= ICMPHDR_FIELD("id", un.echo.id, PROTO_ICMP_ECHO),
+		[ICMPHDR_SEQ]		= ICMPHDR_FIELD("sequence", un.echo.sequence, PROTO_ICMP_ECHO),
+		[ICMPHDR_GATEWAY]	= ICMPHDR_FIELD("gateway", un.gateway, PROTO_ICMP_ADDRESS),
+		[ICMPHDR_MTU]		= ICMPHDR_FIELD("mtu", un.frag.mtu, PROTO_ICMP_MTU),
 	},
 };
 

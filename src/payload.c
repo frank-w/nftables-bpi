@@ -19,6 +19,7 @@
 #include <arpa/inet.h>
 #include <linux/netfilter.h>
 #include <linux/if_ether.h>
+#include <netinet/ip_icmp.h>
 
 #include <rule.h>
 #include <expression.h>
@@ -95,8 +96,16 @@ static void payload_expr_pctx_update(struct proto_ctx *ctx,
 	base = ctx->protocol[left->payload.base].desc;
 	desc = proto_find_upper(base, proto);
 
-	if (!desc)
+	if (!desc) {
+		if (base == &proto_icmp) {
+			/* proto 0 is ECHOREPLY, just pretend its ECHO.
+			 * Not doing this would need an additional marker
+			 * bit to tell when icmp.type was set.
+			 */
+			ctx->th_dep.icmp.type = proto ? proto : ICMP_ECHO;
+		}
 		return;
+	}
 
 	assert(desc->base <= PROTO_BASE_MAX);
 	if (desc->base == base->base) {
@@ -662,6 +671,19 @@ void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 	}
 }
 
+static uint8_t icmp_dep_to_type(enum icmp_hdr_field_type t)
+{
+	switch (t) {
+	case PROTO_ICMP_ANY:
+		BUG("Invalid map for simple dependency");
+	case PROTO_ICMP_ECHO: return ICMP_ECHO;
+	case PROTO_ICMP_MTU: return ICMP_DEST_UNREACH;
+	case PROTO_ICMP_ADDRESS: return ICMP_REDIRECT;
+	}
+
+	BUG("Missing icmp type mapping");
+}
+
 /**
  * payload_expr_complete - fill in type information of a raw payload expr
  *
@@ -912,4 +934,109 @@ struct expr *payload_expr_join(const struct expr *e1, const struct expr *e2)
 	expr->payload.offset = e1->payload.offset;
 	expr->len	     = e1->len + e2->len;
 	return expr;
+}
+
+static struct stmt *
+__payload_gen_icmp_simple_dependency(struct eval_ctx *ctx, const struct expr *expr,
+				     const struct datatype *icmp_type,
+				     const struct proto_desc *desc,
+				     uint8_t type)
+{
+	struct expr *left, *right, *dep;
+
+	left = payload_expr_alloc(&expr->location, desc, desc->protocol_key);
+	right = constant_expr_alloc(&expr->location, icmp_type,
+				    BYTEORDER_BIG_ENDIAN, BITS_PER_BYTE,
+				    constant_data_ptr(type, BITS_PER_BYTE));
+
+	dep = relational_expr_alloc(&expr->location, OP_EQ, left, right);
+	return expr_stmt_alloc(&dep->location, dep);
+}
+
+static struct stmt *
+__payload_gen_icmp_echo_dependency(struct eval_ctx *ctx, const struct expr *expr,
+				   uint8_t echo, uint8_t reply,
+				   const struct datatype *icmp_type,
+				   const struct proto_desc *desc)
+{
+	struct expr *left, *right, *dep, *set;
+
+	left = payload_expr_alloc(&expr->location, desc, desc->protocol_key);
+
+	set = set_expr_alloc(&expr->location, NULL);
+
+	right = constant_expr_alloc(&expr->location, icmp_type,
+				    BYTEORDER_BIG_ENDIAN, BITS_PER_BYTE,
+				    constant_data_ptr(echo, BITS_PER_BYTE));
+	right = set_elem_expr_alloc(&expr->location, right);
+	compound_expr_add(set, right);
+
+	right = constant_expr_alloc(&expr->location, icmp_type,
+				    BYTEORDER_BIG_ENDIAN, BITS_PER_BYTE,
+				    constant_data_ptr(reply, BITS_PER_BYTE));
+	right = set_elem_expr_alloc(&expr->location, right);
+	compound_expr_add(set, right);
+
+	dep = relational_expr_alloc(&expr->location, OP_IMPLICIT, left, set);
+	return expr_stmt_alloc(&dep->location, dep);
+}
+
+int payload_gen_icmp_dependency(struct eval_ctx *ctx, const struct expr *expr,
+				struct stmt **res)
+{
+	const struct proto_hdr_template *tmpl;
+	const struct proto_desc *desc;
+	struct stmt *stmt = NULL;
+	uint8_t type;
+
+	assert(expr->etype == EXPR_PAYLOAD);
+
+	tmpl = expr->payload.tmpl;
+	desc = expr->payload.desc;
+
+	switch (tmpl->icmp_dep) {
+	case PROTO_ICMP_ANY:
+		BUG("No dependency needed");
+		break;
+	case PROTO_ICMP_ECHO:
+		/* do not test ICMP_ECHOREPLY here: its 0 */
+		if (ctx->pctx.th_dep.icmp.type == ICMP_ECHO)
+			goto done;
+
+		type = ICMP_ECHO;
+		if (ctx->pctx.th_dep.icmp.type)
+			goto bad_proto;
+
+		stmt = __payload_gen_icmp_echo_dependency(ctx, expr,
+							  ICMP_ECHO, ICMP_ECHOREPLY,
+							  &icmp_type_type,
+							  desc);
+		break;
+	case PROTO_ICMP_MTU:
+	case PROTO_ICMP_ADDRESS:
+		type = icmp_dep_to_type(tmpl->icmp_dep);
+		if (ctx->pctx.th_dep.icmp.type == type)
+			goto done;
+		if (ctx->pctx.th_dep.icmp.type)
+			goto bad_proto;
+		stmt = __payload_gen_icmp_simple_dependency(ctx, expr,
+							    &icmp_type_type,
+							    desc, type);
+		break;
+	default:
+		BUG("Unhandled icmp dependency code");
+	}
+
+	ctx->pctx.th_dep.icmp.type = type;
+
+	if (stmt_evaluate(ctx, stmt) < 0)
+		return expr_error(ctx->msgs, expr,
+				  "icmp dependency statement is invalid");
+done:
+	*res = stmt;
+	return 0;
+
+bad_proto:
+	return expr_error(ctx->msgs, expr, "incompatible icmp match: rule has %d, need %u",
+			  ctx->pctx.th_dep.icmp.type, type);
 }

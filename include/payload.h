@@ -15,6 +15,9 @@ struct eval_ctx;
 struct stmt;
 extern int payload_gen_dependency(struct eval_ctx *ctx, const struct expr *expr,
 				  struct stmt **res);
+extern int payload_gen_icmp_dependency(struct eval_ctx *ctx,
+				       const struct expr *expr,
+				       struct stmt **res);
 extern int exthdr_gen_dependency(struct eval_ctx *ctx, const struct expr *expr,
 				 const struct proto_desc *dependency,
 				 enum proto_bases pb, struct stmt **res);

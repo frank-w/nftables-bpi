@@ -25,6 +25,13 @@ enum proto_bases {
 extern const char *proto_base_names[];
 extern const char *proto_base_tokens[];
 
+enum icmp_hdr_field_type {
+	PROTO_ICMP_ANY = 0,
+	PROTO_ICMP_ECHO,	/* echo and reply */
+	PROTO_ICMP_MTU,		/* destination unreachable */
+	PROTO_ICMP_ADDRESS,	/* redirect */
+};
+
 /**
  * struct proto_hdr_template - protocol header field description
  *
@@ -33,6 +40,7 @@ extern const char *proto_base_tokens[];
  * @offset:	offset of the header field from base
  * @len:	length of header field
  * @meta_key:	special case: meta expression key
+ * @icmp_dep:  special case: icmp header dependency
  */
 struct proto_hdr_template {
 	const char			*token;
@@ -41,6 +49,7 @@ struct proto_hdr_template {
 	uint16_t			len;
 	enum byteorder			byteorder:8;
 	enum nft_meta_keys		meta_key:8;
+	enum icmp_hdr_field_type	icmp_dep:8;
 };
 
 #define PROTO_HDR_TEMPLATE(__token, __dtype,  __byteorder, __offset, __len)\
@@ -170,7 +179,12 @@ extern const struct proto_desc *proto_dev_desc(uint16_t type);
  */
 struct proto_ctx {
 	unsigned int			debug_mask;
-	unsigned int			family;
+	uint8_t				family;
+	union {
+		struct {
+			uint8_t			type;
+		} icmp;
+	} th_dep;
 	struct {
 		struct location			location;
 		const struct proto_desc		*desc;

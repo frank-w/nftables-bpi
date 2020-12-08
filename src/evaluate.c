@@ -706,7 +706,8 @@ static int __expr_evaluate_payload(struct eval_ctx *ctx, struct expr *expr)
 			return -1;
 
 		rule_stmt_insert_at(ctx->rule, nstmt, ctx->stmt);
-		return 0;
+		desc = ctx->pctx.protocol[base].desc;
+		goto check_icmp;
 	}
 
 	if (payload->payload.base == desc->base &&
@@ -724,7 +725,24 @@ static int __expr_evaluate_payload(struct eval_ctx *ctx, struct expr *expr)
 	 * if needed.
 	 */
 	if (desc == payload->payload.desc) {
+		const struct proto_hdr_template *tmpl;
+
 		payload->payload.offset += ctx->pctx.protocol[base].offset;
+check_icmp:
+		if (desc != &proto_icmp)
+			return 0;
+
+		tmpl = expr->payload.tmpl;
+
+		if (!tmpl || !tmpl->icmp_dep)
+			return 0;
+
+		if (payload_gen_icmp_dependency(ctx, expr, &nstmt) < 0)
+			return -1;
+
+		if (nstmt)
+			rule_stmt_insert_at(ctx->rule, nstmt, ctx->stmt);
+
 		return 0;
 	}
 	/* If we already have context and this payload is on the same

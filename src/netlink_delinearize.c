@@ -1771,6 +1771,9 @@ static void payload_match_expand(struct rule_pp_ctx *ctx,
 	enum proto_bases base = left->payload.base;
 	bool stacked;
 
+	if (ctx->pdctx.icmp_type)
+		ctx->pctx.th_dep.icmp.type = ctx->pdctx.icmp_type;
+
 	payload_expr_expand(&list, left, &ctx->pctx);
 
 	list_for_each_entry(left, &list, list) {

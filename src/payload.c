@@ -98,7 +98,7 @@ static void payload_expr_pctx_update(struct proto_ctx *ctx,
 	desc = proto_find_upper(base, proto);
 
 	if (!desc) {
-		if (base == &proto_icmp) {
+		if (base == &proto_icmp || base == &proto_icmp6) {
 			/* proto 0 is ECHOREPLY, just pretend its ECHO.
 			 * Not doing this would need an additional marker
 			 * bit to tell when icmp.type was set.
@@ -554,6 +554,35 @@ void payload_dependency_reset(struct payload_dep_ctx *ctx)
 	memset(ctx, 0, sizeof(*ctx));
 }
 
+static uint8_t icmp_get_type(const struct proto_desc *desc, uint8_t value)
+{
+	if (desc == &proto_icmp && value == 0)
+		return ICMP_ECHO;
+
+	return value;
+}
+
+static uint8_t icmp_get_dep_type(const struct proto_desc *desc, struct expr *right)
+{
+	if (right->etype == EXPR_VALUE && right->len == BITS_PER_BYTE)
+		return icmp_get_type(desc, mpz_get_uint8(right->value));
+
+	return 0;
+}
+
+static void payload_dependency_store_icmp_type(struct payload_dep_ctx *ctx)
+{
+	struct expr *dep = ctx->pdep->expr;
+	const struct proto_desc *desc;
+
+	if (dep->left->etype != EXPR_PAYLOAD)
+		return;
+
+	desc = dep->left->payload.desc;
+	if (desc == &proto_icmp || desc == &proto_icmp6)
+		ctx->icmp_type = icmp_get_dep_type(dep->left->payload.desc, dep->right);
+}
+
 /**
  * payload_dependency_store - store a possibly redundant protocol match
  *
@@ -566,6 +595,8 @@ void payload_dependency_store(struct payload_dep_ctx *ctx,
 {
 	ctx->pbase = base + 1;
 	ctx->pdep  = stmt;
+
+	payload_dependency_store_icmp_type(ctx);
 }
 
 /**
@@ -581,8 +612,8 @@ bool payload_dependency_exists(const struct payload_dep_ctx *ctx,
 			       enum proto_bases base)
 {
 	return ctx->pbase != PROTO_BASE_INVALID &&
-	       ctx->pbase == base &&
-	       ctx->pdep != NULL;
+	       ctx->pdep != NULL &&
+	       (ctx->pbase == base || (base == PROTO_BASE_TRANSPORT_HDR && ctx->pbase == base + 1));
 }
 
 void payload_dependency_release(struct payload_dep_ctx *ctx)
@@ -649,6 +680,10 @@ void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 	if (payload_dependency_exists(ctx, expr->payload.base) &&
 	    payload_may_dependency_kill(ctx, family, expr))
 		payload_dependency_release(ctx);
+	else if (ctx->icmp_type && ctx->pdep) {
+		fprintf(stderr, "Did not kill \n");
+		payload_dependency_release(ctx);
+	}
 }
 
 void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
@@ -716,6 +751,11 @@ void payload_expr_complete(struct expr *expr, const struct proto_ctx *ctx)
 		if (tmpl->offset != expr->payload.offset ||
 		    tmpl->len    != expr->len)
 			continue;
+
+		if (tmpl->icmp_dep && ctx->th_dep.icmp.type &&
+		    ctx->th_dep.icmp.type != icmp_dep_to_type(tmpl->icmp_dep))
+			continue;
+
 		expr->dtype	   = tmpl->dtype;
 		expr->payload.desc = desc;
 		expr->payload.tmpl = tmpl;
@@ -840,6 +880,10 @@ void payload_expr_expand(struct list_head *list, struct expr *expr,
 			break;
 
 		if (tmpl->offset != expr->payload.offset)
+			continue;
+
+		if (tmpl->icmp_dep && ctx->th_dep.icmp.type &&
+		     ctx->th_dep.icmp.type != icmp_dep_to_type(tmpl->icmp_dep))
 			continue;
 
 		if (tmpl->len <= expr->len) {

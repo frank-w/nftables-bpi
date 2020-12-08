@@ -26,11 +26,13 @@ extern int exthdr_gen_dependency(struct eval_ctx *ctx, const struct expr *expr,
  * struct payload_dep_ctx - payload protocol dependency tracking
  *
  * @pbase: protocol base of last dependency match
+ * @icmp_type: extra info for icmp(6) decoding
  * @pdep: last dependency match
  * @prev: previous statement
  */
 struct payload_dep_ctx {
-	enum proto_bases	pbase;
+	enum proto_bases	pbase:8;
+	uint8_t			icmp_type;
 	struct stmt		*pdep;
 	struct stmt		*prev;
 };

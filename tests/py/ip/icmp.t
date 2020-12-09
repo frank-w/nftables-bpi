@@ -59,6 +59,7 @@ icmp sequence { 33, 55, 67, 88};ok;icmp type { echo-request, echo-reply} icmp se
 icmp sequence != { 33, 55, 67, 88};ok;icmp type { echo-request, echo-reply} icmp sequence != { 33, 55, 67, 88}
 icmp sequence { 33-55};ok;icmp type { echo-request, echo-reply} icmp sequence { 33-55}
 icmp sequence != { 33-55};ok;icmp type { echo-request, echo-reply} icmp sequence != { 33-55}
+icmp id 1 icmp sequence 2;ok;icmp type { echo-reply, echo-request} icmp id 1 icmp sequence 2
 
 icmp mtu 33;ok
 icmp mtu 22-33;ok
@@ -83,3 +84,4 @@ icmp gateway { 33-55};ok
 icmp gateway != { 33-55};ok
 icmp gateway != 34;ok
 icmp gateway != { 333, 334};ok
+

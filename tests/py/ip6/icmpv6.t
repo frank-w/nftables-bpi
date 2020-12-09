@@ -66,6 +66,7 @@ icmpv6 mtu {33, 55, 67, 88};ok
 icmpv6 mtu != {33, 55, 67, 88};ok
 icmpv6 mtu {33-55};ok
 icmpv6 mtu != {33-55};ok
+icmpv6 type packet-too-big icmpv6 mtu 1280;ok;icmpv6 mtu 1280
 
 icmpv6 id 33-45;ok;icmpv6 type { echo-request, echo-reply} icmpv6 id 33-45
 icmpv6 id != 33-45;ok;icmpv6 type { echo-request, echo-reply} icmpv6 id != 33-45

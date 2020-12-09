@@ -44,9 +44,8 @@ icmpv6 checksum != { 222, 226};ok
 icmpv6 checksum { 222-226};ok
 icmpv6 checksum != { 222-226};ok
 
-# BUG: icmpv6 parameter-problem, pptr, mtu, packet-too-big
+# BUG: icmpv6 parameter-problem, pptr
 # [ICMP6HDR_PPTR]         = ICMP6HDR_FIELD("parameter-problem", icmp6_pptr),
-# [ICMP6HDR_MTU]          = ICMP6HDR_FIELD("packet-too-big", icmp6_mtu),
 # $ sudo nft add rule ip6 test6 input icmpv6 parameter-problem 35
 # <cmdline>:1:53-53: Error: syntax error, unexpected end of file
 # add rule ip6 test6 input icmpv6 parameter-problem 35
@@ -59,11 +58,6 @@ icmpv6 checksum != { 222-226};ok
 # <cmdline>:1:54-54: Error: syntax error, unexpected end of file
 # add rule ip6 test6 input icmpv6 parameter-problem 2-4
 
-# BUG: packet-too-big
-# $ sudo nft add rule ip6 test6 input icmpv6 packet-too-big 34
-# <cmdline>:1:50-50: Error: syntax error, unexpected end of file
-# add rule ip6 test6 input icmpv6 packet-too-big 34
-
 icmpv6 mtu 22;ok
 icmpv6 mtu != 233;ok
 icmpv6 mtu 33-45;ok
@@ -73,27 +67,24 @@ icmpv6 mtu != {33, 55, 67, 88};ok
 icmpv6 mtu {33-55};ok
 icmpv6 mtu != {33-55};ok
 
-- icmpv6 id 2;ok
-- icmpv6 id != 233;ok
-icmpv6 id 33-45;ok
-icmpv6 id != 33-45;ok
-icmpv6 id {33, 55, 67, 88};ok
-icmpv6 id != {33, 55, 67, 88};ok
-icmpv6 id {33-55};ok
-icmpv6 id != {33-55};ok
+icmpv6 id 33-45;ok;icmpv6 type { echo-request, echo-reply} icmpv6 id 33-45
+icmpv6 id != 33-45;ok;icmpv6 type { echo-request, echo-reply} icmpv6 id != 33-45
+icmpv6 id {33, 55, 67, 88};ok;icmpv6 type { echo-request, echo-reply} icmpv6 id { 33, 55, 67, 88}
+icmpv6 id != {33, 55, 67, 88};ok;icmpv6 type { echo-request, echo-reply} icmpv6 id != { 33, 55, 67, 88}
+icmpv6 id {33-55};ok;icmpv6 type { echo-request, echo-reply} icmpv6 id { 33-55}
+icmpv6 id != {33-55};ok;icmpv6 type { echo-request, echo-reply} icmpv6 id != { 33-55}
 
-icmpv6 sequence 2;ok
-icmpv6 sequence {3, 4, 5, 6, 7} accept;ok
+icmpv6 sequence 2;ok;icmpv6 type { echo-request, echo-reply} icmpv6 sequence 2
+icmpv6 sequence {3, 4, 5, 6, 7} accept;ok;icmpv6 type { echo-request, echo-reply} icmpv6 sequence { 3, 4, 5, 6, 7} accept
 
-icmpv6 sequence {2, 4};ok
-icmpv6 sequence != {2, 4};ok
-icmpv6 sequence 2-4;ok
-icmpv6 sequence != 2-4;ok
-icmpv6 sequence { 2-4};ok
-icmpv6 sequence != { 2-4};ok
 
-- icmpv6 max-delay 22;ok
-- icmpv6 max-delay != 233;ok
+icmpv6 sequence {2, 4};ok;icmpv6 type { echo-request, echo-reply} icmpv6 sequence { 2, 4}
+icmpv6 sequence != {2, 4};ok;icmpv6 type { echo-request, echo-reply} icmpv6 sequence != { 2, 4}
+icmpv6 sequence 2-4;ok;icmpv6 type { echo-request, echo-reply} icmpv6 sequence 2-4
+icmpv6 sequence != 2-4;ok;icmpv6 type { echo-request, echo-reply} icmpv6 sequence != 2-4
+icmpv6 sequence { 2-4};ok;icmpv6 type { echo-request, echo-reply} icmpv6 sequence { 2-4}
+icmpv6 sequence != { 2-4};ok;icmpv6 type { echo-request, echo-reply} icmpv6 sequence != { 2-4}
+
 icmpv6 max-delay 33-45;ok
 icmpv6 max-delay != 33-45;ok
 icmpv6 max-delay {33, 55, 67, 88};ok

@@ -40,24 +40,25 @@ icmp checksum != { 11-343} accept;ok
 icmp checksum { 1111, 222, 343} accept;ok
 icmp checksum != { 1111, 222, 343} accept;ok
 
-icmp id 1245 log;ok
-icmp id 22;ok
-icmp id != 233;ok
-icmp id 33-45;ok
-icmp id != 33-45;ok
-icmp id { 33-55};ok
-icmp id != { 33-55};ok
-icmp id { 22, 34, 333};ok
-icmp id != { 22, 34, 333};ok
+icmp id 1245 log;ok;icmp type { echo-reply, echo-request} icmp id 1245 log
+icmp id 22;ok;icmp type { echo-reply, echo-request} icmp id 22
+icmp id != 233;ok;icmp type { echo-reply, echo-request} icmp id != 233
+icmp id 33-45;ok;icmp type { echo-reply, echo-request} icmp id 33-45
+icmp id != 33-45;ok;icmp type { echo-reply, echo-request} icmp id != 33-45
+icmp id { 33-55};ok;icmp type { echo-reply, echo-request} icmp id { 33-55}
+icmp id != { 33-55};ok;icmp type { echo-reply, echo-request} icmp id != { 33-55}
 
-icmp sequence 22;ok
-icmp sequence != 233;ok
-icmp sequence 33-45;ok
-icmp sequence != 33-45;ok
-icmp sequence { 33, 55, 67, 88};ok
-icmp sequence != { 33, 55, 67, 88};ok
-icmp sequence { 33-55};ok
-icmp sequence != { 33-55};ok
+icmp id { 22, 34, 333};ok;icmp type { echo-request, echo-reply} icmp id { 22, 34, 333}
+icmp id != { 22, 34, 333};ok;icmp type { echo-request, echo-reply} icmp id != { 22, 34, 333}
+
+icmp sequence 22;ok;icmp type { echo-reply, echo-request} icmp sequence 22
+icmp sequence != 233;ok;icmp type { echo-reply, echo-request} icmp sequence != 233
+icmp sequence 33-45;ok;icmp type { echo-reply, echo-request} icmp sequence 33-45
+icmp sequence != 33-45;ok;icmp type { echo-reply, echo-request} icmp sequence != 33-45
+icmp sequence { 33, 55, 67, 88};ok;icmp type { echo-request, echo-reply} icmp sequence { 33, 55, 67, 88}
+icmp sequence != { 33, 55, 67, 88};ok;icmp type { echo-request, echo-reply} icmp sequence != { 33, 55, 67, 88}
+icmp sequence { 33-55};ok;icmp type { echo-request, echo-reply} icmp sequence { 33-55}
+icmp sequence != { 33-55};ok;icmp type { echo-request, echo-reply} icmp sequence != { 33-55}
 
 icmp mtu 33;ok
 icmp mtu 22-33;ok

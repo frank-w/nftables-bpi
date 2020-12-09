@@ -3370,6 +3370,8 @@ static int stmt_evaluate_log(struct eval_ctx *ctx, struct stmt *stmt)
 
 static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 {
+	struct stmt *this;
+
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &stmt->set.set) < 0)
 		return -1;
@@ -3389,12 +3391,12 @@ static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 	if (stmt->set.key->comment != NULL)
 		return expr_error(ctx->msgs, stmt->set.key,
 				  "Key expression comments are not supported");
-	if (stmt->set.stmt) {
-		if (stmt_evaluate(ctx, stmt->set.stmt) < 0)
+	list_for_each_entry(this, &stmt->set.stmt_list, list) {
+		if (stmt_evaluate(ctx, this) < 0)
 			return -1;
-		if (!(stmt->set.stmt->flags & STMT_F_STATEFUL))
-			return stmt_binary_error(ctx, stmt->set.stmt, stmt,
-						 "meter statement must be stateful");
+		if (!(this->flags & STMT_F_STATEFUL))
+			return stmt_error(ctx, this,
+					  "statement must be stateful");
 	}
 
 	return 0;
@@ -3402,6 +3404,8 @@ static int stmt_evaluate_set(struct eval_ctx *ctx, struct stmt *stmt)
 
 static int stmt_evaluate_map(struct eval_ctx *ctx, struct stmt *stmt)
 {
+	struct stmt *this;
+
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &stmt->map.set) < 0)
 		return -1;
@@ -3435,12 +3439,12 @@ static int stmt_evaluate_map(struct eval_ctx *ctx, struct stmt *stmt)
 		return expr_error(ctx->msgs, stmt->map.data,
 				  "Data expression comments are not supported");
 
-	if (stmt->map.stmt) {
-		if (stmt_evaluate(ctx, stmt->map.stmt) < 0)
+	list_for_each_entry(this, &stmt->map.stmt_list, list) {
+		if (stmt_evaluate(ctx, this) < 0)
 			return -1;
-		if (!(stmt->map.stmt->flags & STMT_F_STATEFUL))
-			return stmt_binary_error(ctx, stmt->map.stmt, stmt,
-						 "meter statement must be stateful");
+		if (!(this->flags & STMT_F_STATEFUL))
+			return stmt_error(ctx, this,
+					  "statement must be stateful");
 	}
 
 	return 0;

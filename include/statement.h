@@ -201,7 +201,7 @@ uint32_t fwd_stmt_type(const char *type);
 struct set_stmt {
 	struct expr		*set;
 	struct expr		*key;
-	struct stmt		*stmt;
+	struct list_head	stmt_list;
 	enum nft_dynset_ops	op;
 };
 
@@ -213,7 +213,7 @@ struct map_stmt {
 	struct expr		*set;
 	struct expr		*key;
 	struct expr		*data;
-	struct stmt		*stmt;
+	struct list_head	stmt_list;
 	enum nft_dynset_ops	op;
 };
 

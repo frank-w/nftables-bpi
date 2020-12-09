@@ -1489,16 +1489,46 @@ static void netlink_parse_queue(struct netlink_parse_ctx *ctx,
 	ctx->stmt = stmt;
 }
 
+struct dynset_parse_ctx {
+	struct netlink_parse_ctx	*nlctx;
+	const struct location		*loc;
+	struct list_head		stmt_list;
+};
+
+static int dynset_parse_expressions(struct nftnl_expr *e, void *data)
+{
+	struct dynset_parse_ctx *dynset_parse_ctx = data;
+	struct netlink_parse_ctx *ctx = dynset_parse_ctx->nlctx;
+	const struct location *loc = dynset_parse_ctx->loc;
+	struct stmt *stmt;
+
+	if (netlink_parse_expr(e, ctx) < 0 || !ctx->stmt) {
+		netlink_error(ctx, loc, "Could not parse dynset stmt");
+		return -1;
+	}
+	stmt = ctx->stmt;
+
+	list_add_tail(&stmt->list, &dynset_parse_ctx->stmt_list);
+
+	return 0;
+}
+
 static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 				 const struct location *loc,
 				 const struct nftnl_expr *nle)
 {
+	struct dynset_parse_ctx dynset_parse_ctx = {
+		.nlctx	= ctx,
+		.loc	= loc,
+	};
 	struct expr *expr, *expr_data = NULL;
 	enum nft_registers sreg, sreg_data;
+	struct stmt *stmt, *dstmt, *next;
 	const struct nftnl_expr *dnle;
-	struct stmt *stmt, *dstmt;
 	struct set *set;
 	const char *name;
+
+	init_list_head(&dynset_parse_ctx.stmt_list);
 
 	name = nftnl_expr_get_str(nle, NFTNL_EXPR_DYNSET_SET_NAME);
 	set  = set_lookup(ctx->table, name);
@@ -1523,16 +1553,25 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 	expr = set_elem_expr_alloc(&expr->location, expr);
 	expr->timeout = nftnl_expr_get_u64(nle, NFTNL_EXPR_DYNSET_TIMEOUT);
 
-	dstmt = NULL;
-	dnle = nftnl_expr_get(nle, NFTNL_EXPR_DYNSET_EXPR, NULL);
-	if (dnle != NULL) {
-		if (netlink_parse_expr(dnle, ctx) < 0)
-			goto out_err;
-		if (ctx->stmt == NULL) {
-			netlink_error(ctx, loc, "Could not parse dynset stmt");
-			goto out_err;
+	if (nftnl_expr_is_set(nle, NFTNL_EXPR_DYNSET_EXPR)) {
+		dstmt = NULL;
+		dnle = nftnl_expr_get(nle, NFTNL_EXPR_DYNSET_EXPR, NULL);
+		if (dnle != NULL) {
+			if (netlink_parse_expr(dnle, ctx) < 0)
+				goto out_err;
+			if (ctx->stmt == NULL) {
+				netlink_error(ctx, loc,
+					      "Could not parse dynset stmt");
+				goto out_err;
+			}
+			dstmt = ctx->stmt;
+			list_add_tail(&dstmt->list,
+				      &dynset_parse_ctx.stmt_list);
 		}
-		dstmt = ctx->stmt;
+	} else if (nftnl_expr_is_set(nle, NFTNL_EXPR_DYNSET_EXPRESSIONS)) {
+		if (nftnl_expr_expr_foreach(nle, dynset_parse_expressions,
+					    &dynset_parse_ctx) < 0)
+			goto out_err;
 	}
 
 	if (nftnl_expr_is_set(nle, NFTNL_EXPR_DYNSET_SREG_DATA)) {
@@ -1546,27 +1585,34 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 		stmt->map.set	= set_ref_expr_alloc(loc, set);
 		stmt->map.key	= expr;
 		stmt->map.data	= expr_data;
-		stmt->map.stmt	= dstmt;
 		stmt->map.op	= nftnl_expr_get_u32(nle, NFTNL_EXPR_DYNSET_OP);
+		list_splice_tail(&dynset_parse_ctx.stmt_list,
+				 &stmt->map.stmt_list);
 	} else {
-		if (dstmt != NULL && set->flags & NFT_SET_ANONYMOUS) {
+		if (!list_empty(&dynset_parse_ctx.stmt_list) &&
+		    set->flags & NFT_SET_ANONYMOUS) {
 			stmt = meter_stmt_alloc(loc);
 			stmt->meter.set  = set_ref_expr_alloc(loc, set);
 			stmt->meter.key  = expr;
-			stmt->meter.stmt = dstmt;
+			stmt->meter.stmt = list_first_entry(&dynset_parse_ctx.stmt_list,
+							    struct stmt, list);
 			stmt->meter.size = set->desc.size;
 		} else {
 			stmt = set_stmt_alloc(loc);
 			stmt->set.set   = set_ref_expr_alloc(loc, set);
 			stmt->set.op    = nftnl_expr_get_u32(nle, NFTNL_EXPR_DYNSET_OP);
 			stmt->set.key   = expr;
-			stmt->set.stmt	= dstmt;
+			list_splice_tail(&dynset_parse_ctx.stmt_list,
+					 &stmt->set.stmt_list);
 		}
 	}
 
 	ctx->stmt = stmt;
 	return;
 out_err:
+	list_for_each_entry_safe(dstmt, next, &dynset_parse_ctx.stmt_list, list)
+		stmt_free(dstmt);
+
 	xfree(expr);
 }
 

@@ -1132,6 +1132,7 @@ key_end:
 		key = bitmask_expr_to_binops(key);
 
 	expr = set_elem_expr_alloc(&netlink_location, key);
+
 	if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_TIMEOUT))
 		expr->timeout	 = nftnl_set_elem_get_u64(nlse, NFTNL_SET_ELEM_TIMEOUT);
 	if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_EXPIRATION))

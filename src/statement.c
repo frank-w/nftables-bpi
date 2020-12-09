@@ -732,15 +732,16 @@ const char * const set_stmt_op_names[] = {
 static void set_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	unsigned int flags = octx->flags;
+	struct stmt *this;
 
 	nft_print(octx, "%s ", set_stmt_op_names[stmt->set.op]);
 	expr_print(stmt->set.set, octx);
 	nft_print(octx, " { ");
 	expr_print(stmt->set.key, octx);
-	if (stmt->set.stmt) {
+	list_for_each_entry(this, &stmt->set.stmt_list, list) {
 		nft_print(octx, " ");
 		octx->flags |= NFT_CTX_OUTPUT_STATELESS;
-		stmt_print(stmt->set.stmt, octx);
+		stmt_print(this, octx);
 		octx->flags = flags;
 	}
 	nft_print(octx, " }");
@@ -748,9 +749,12 @@ static void set_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 
 static void set_stmt_destroy(struct stmt *stmt)
 {
+	struct stmt *this, *next;
+
 	expr_free(stmt->set.key);
 	expr_free(stmt->set.set);
-	stmt_free(stmt->set.stmt);
+	list_for_each_entry_safe(this, next, &stmt->set.stmt_list, list)
+		stmt_free(this);
 }
 
 static const struct stmt_ops set_stmt_ops = {
@@ -763,21 +767,27 @@ static const struct stmt_ops set_stmt_ops = {
 
 struct stmt *set_stmt_alloc(const struct location *loc)
 {
-	return stmt_alloc(loc, &set_stmt_ops);
+	struct stmt *stmt;
+
+	stmt = stmt_alloc(loc, &set_stmt_ops);
+	init_list_head(&stmt->set.stmt_list);
+
+	return stmt;
 }
 
 static void map_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 {
 	unsigned int flags = octx->flags;
+	struct stmt *this;
 
 	nft_print(octx, "%s ", set_stmt_op_names[stmt->map.op]);
 	expr_print(stmt->map.set, octx);
 	nft_print(octx, " { ");
 	expr_print(stmt->map.key, octx);
-	if (stmt->map.stmt) {
+	list_for_each_entry(this, &stmt->map.stmt_list, list) {
 		nft_print(octx, " ");
 		octx->flags |= NFT_CTX_OUTPUT_STATELESS;
-		stmt_print(stmt->map.stmt, octx);
+		stmt_print(this, octx);
 		octx->flags = flags;
 	}
 	nft_print(octx, " : ");
@@ -787,10 +797,13 @@ static void map_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 
 static void map_stmt_destroy(struct stmt *stmt)
 {
+	struct stmt *this, *next;
+
 	expr_free(stmt->map.key);
 	expr_free(stmt->map.data);
 	expr_free(stmt->map.set);
-	stmt_free(stmt->map.stmt);
+	list_for_each_entry_safe(this, next, &stmt->map.stmt_list, list)
+		stmt_free(this);
 }
 
 static const struct stmt_ops map_stmt_ops = {
@@ -802,7 +815,12 @@ static const struct stmt_ops map_stmt_ops = {
 
 struct stmt *map_stmt_alloc(const struct location *loc)
 {
-	return stmt_alloc(loc, &map_stmt_ops);
+	struct stmt *stmt;
+
+	stmt = stmt_alloc(loc, &map_stmt_ops);
+	init_list_head(&stmt->map.stmt_list);
+
+	return stmt;
 }
 
 static void dup_stmt_print(const struct stmt *stmt, struct output_ctx *octx)

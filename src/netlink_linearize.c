@@ -1397,8 +1397,10 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 				 const struct stmt *stmt)
 {
 	struct set *set = stmt->meter.set->set;
-	struct nftnl_expr *nle;
 	enum nft_registers sreg_key;
+	struct nftnl_expr *nle;
+	int num_stmts = 0;
+	struct stmt *this;
 
 	sreg_key = get_register(ctx, stmt->set.key->key);
 	netlink_gen_expr(ctx, stmt->set.key->key, sreg_key);
@@ -1414,9 +1416,20 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, set->handle.set_id);
 	nft_rule_add_expr(ctx, nle, &stmt->location);
 
-	if (stmt->set.stmt)
-		nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
-			       netlink_gen_stmt_stateful(stmt->set.stmt), 0);
+	list_for_each_entry(this, &stmt->set.stmt_list, list)
+		num_stmts++;
+
+	if (num_stmts == 1) {
+		list_for_each_entry(this, &stmt->set.stmt_list, list) {
+			nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
+				       netlink_gen_stmt_stateful(this), 0);
+		}
+	} else if (num_stmts > 1) {
+		list_for_each_entry(this, &stmt->set.stmt_list, list) {
+			nftnl_expr_add_expr(nle, NFTNL_EXPR_DYNSET_EXPRESSIONS,
+					    netlink_gen_stmt_stateful(this));
+		}
+	}
 }
 
 static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
@@ -1426,6 +1439,8 @@ static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
 	enum nft_registers sreg_data;
 	enum nft_registers sreg_key;
 	struct nftnl_expr *nle;
+	int num_stmts = 0;
+	struct stmt *this;
 
 	sreg_key = get_register(ctx, stmt->map.key);
 	netlink_gen_expr(ctx, stmt->map.key, sreg_key);
@@ -1443,12 +1458,22 @@ static void netlink_gen_map_stmt(struct netlink_linearize_ctx *ctx,
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_OP, stmt->map.op);
 	nftnl_expr_set_str(nle, NFTNL_EXPR_DYNSET_SET_NAME, set->handle.set.name);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_SET_ID, set->handle.set_id);
-
-	if (stmt->map.stmt)
-		nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
-			       netlink_gen_stmt_stateful(stmt->map.stmt), 0);
-
 	nft_rule_add_expr(ctx, nle, &stmt->location);
+
+	list_for_each_entry(this, &stmt->map.stmt_list, list)
+		num_stmts++;
+
+	if (num_stmts == 1) {
+		list_for_each_entry(this, &stmt->map.stmt_list, list) {
+			nftnl_expr_set(nle, NFTNL_EXPR_DYNSET_EXPR,
+				       netlink_gen_stmt_stateful(this), 0);
+		}
+	} else if (num_stmts > 1) {
+		list_for_each_entry(this, &stmt->map.stmt_list, list) {
+			nftnl_expr_add_expr(nle, NFTNL_EXPR_DYNSET_EXPRESSIONS,
+					    netlink_gen_stmt_stateful(this));
+		}
+	}
 }
 
 static void netlink_gen_meter_stmt(struct netlink_linearize_ctx *ctx,

@@ -624,8 +624,8 @@ int nft_lex(void *, void *, void *);
 %type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block ct_expect_block limit_block secmark_block synproxy_block
 %destructor { obj_free($$); }	obj_block_alloc
 
-%type <list>			stmt_list
-%destructor { stmt_list_free($$); xfree($$); } stmt_list
+%type <list>			stmt_list stateful_stmt_list
+%destructor { stmt_list_free($$); xfree($$); } stmt_list stateful_stmt_list
 %type <stmt>			stmt match_stmt verdict_stmt
 %destructor { stmt_free($$); }	stmt match_stmt verdict_stmt
 %type <stmt>			counter_stmt counter_stmt_alloc stateful_stmt
@@ -2656,6 +2656,19 @@ stmt_list		:	stmt
 			}
 			;
 
+stateful_stmt_list	:	stateful_stmt
+			{
+				$$ = xmalloc(sizeof(*$$));
+				init_list_head($$);
+				list_add_tail(&$1->list, $$);
+			}
+			|	stateful_stmt_list	stateful_stmt
+			{
+				$$ = $1;
+				list_add_tail(&$2->list, $1);
+			}
+			;
+
 stateful_stmt		:	counter_stmt
 			|	limit_stmt
 			|	quota_stmt
@@ -3675,13 +3688,14 @@ set_stmt		:	SET	set_stmt_op	set_elem_expr_stmt	set_ref_expr
 				$$->set.key = $4;
 				$$->set.set = $2;
 			}
-			|	set_stmt_op	set_ref_expr '{' set_elem_expr_stmt	stateful_stmt	'}'
+			|	set_stmt_op	set_ref_expr '{' set_elem_expr_stmt	stateful_stmt_list	'}'
 			{
 				$$ = set_stmt_alloc(&@$);
 				$$->set.op  = $1;
 				$$->set.key = $4;
 				$$->set.set = $2;
-				$$->set.stmt = $5;
+				list_splice_tail($5, &$$->set.stmt_list);
+				free($5);
 			}
 			;
 
@@ -3698,14 +3712,15 @@ map_stmt		:	set_stmt_op	set_ref_expr '{' set_elem_expr_stmt	COLON	set_elem_expr_
 				$$->map.data = $6;
 				$$->map.set = $2;
 			}
-			|	set_stmt_op	set_ref_expr '{' set_elem_expr_stmt	stateful_stmt COLON	set_elem_expr_stmt	'}'
+			|	set_stmt_op	set_ref_expr '{' set_elem_expr_stmt	stateful_stmt_list	COLON	set_elem_expr_stmt	'}'
 			{
 				$$ = map_stmt_alloc(&@$);
 				$$->map.op  = $1;
 				$$->map.key = $4;
 				$$->map.data = $7;
-				$$->map.stmt = $5;
 				$$->map.set = $2;
+				list_splice_tail($5, &$$->map.stmt_list);
+				free($5);
 			}
 			;
 

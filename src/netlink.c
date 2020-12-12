@@ -1880,12 +1880,12 @@ int netlink_events_trace_cb(const struct nlmsghdr *nlh, int type,
 	if (nftnl_trace_nlmsg_parse(nlh, nlt) < 0)
 		netlink_abi_error();
 
+	if (nftnl_trace_is_set(nlt, NFTNL_TRACE_LL_HEADER) ||
+	    nftnl_trace_is_set(nlt, NFTNL_TRACE_NETWORK_HEADER))
+		trace_print_packet(nlt, &monh->ctx->nft->output);
+
 	switch (nftnl_trace_get_u32(nlt, NFTNL_TRACE_TYPE)) {
 	case NFT_TRACETYPE_RULE:
-		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_LL_HEADER) ||
-		    nftnl_trace_is_set(nlt, NFTNL_TRACE_NETWORK_HEADER))
-			trace_print_packet(nlt, &monh->ctx->nft->output);
-
 		if (nftnl_trace_is_set(nlt, NFTNL_TRACE_RULE_HANDLE))
 			trace_print_rule(nlt, &monh->ctx->nft->output,
 					 &monh->ctx->nft->cache);

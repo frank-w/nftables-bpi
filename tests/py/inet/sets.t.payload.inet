@@ -29,7 +29,7 @@ inet
 # ip daddr . tcp dport { 10.0.0.0/8 . 10-23, 192.168.1.1-192.168.3.8 . 80-443 } accept
 __set%d test-inet 87
 __set%d test-inet 0
-        element 0000000a 00000a00  : 0 [end]    element 0101a8c0 00005000  : 0 [end]
+        element 0000000a 00000a00  - ffffff0a 00001700  : 0 [end]    element 0101a8c0 00005000  - 0803a8c0 0000bb01  : 0 [end]
 inet 
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x00000002 ]

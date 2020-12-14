@@ -3786,8 +3786,10 @@ static void json_cmd_assoc_free(void)
 
 	for (i = 0; i < CMD_ASSOC_HSIZE; i++) {
 		hlist_for_each_entry_safe(cur, pos, n,
-					  &json_cmd_assoc_hash[i], hnode)
+					  &json_cmd_assoc_hash[i], hnode) {
+			hlist_del(&cur->hnode);
 			free(cur);
+		}
 	}
 }
 

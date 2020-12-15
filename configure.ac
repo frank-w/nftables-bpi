@@ -111,7 +111,7 @@ AC_ARG_ENABLE(python,
 
 AC_ARG_WITH([python_bin],
             [AS_HELP_STRING([--with-python-bin], [Specify Python binary to use])],
-	    [PYTHON_BIN="$withval"], [AC_PATH_PROGS(PYTHON_BIN, python python2 python2.7)]
+	    [PYTHON_BIN="$withval"], [AC_PATH_PROGS(PYTHON_BIN, python python2 python2.7 python3)]
 	   )
 
 AS_IF([test "x$PYTHON_BIN" = "x"], [

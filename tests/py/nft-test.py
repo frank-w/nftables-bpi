@@ -712,8 +712,10 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
 
     if rule[1].strip() == "ok":
         payload_expected = None
+        payload_path = None
         try:
             payload_log = open("%s.payload" % filename_path)
+            payload_path = payload_log.name
             payload_expected = payload_find_expected(payload_log, rule[0])
         except:
             payload_log = None
@@ -756,6 +758,7 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
             table_payload_expected = None
             try:
                 payload_log = open("%s.payload.%s" % (filename_path, table.family))
+                payload_path = payload_log.name
                 table_payload_expected = payload_find_expected(payload_log, rule[0])
             except:
                 if not payload_log:
@@ -802,7 +805,7 @@ def rule_add(rule, filename, lineno, force_all_family_option, filename_path):
             if state == "ok" and not payload_check(table_payload_expected,
                                                    payload_log, cmd):
                 error += 1
-                gotf = open("%s.payload.got" % filename_path, 'a')
+                gotf = open("%s.got" % payload_path, 'a')
                 payload_log.seek(0, 0)
                 gotf.write("# %s\n" % rule[0])
                 while True:

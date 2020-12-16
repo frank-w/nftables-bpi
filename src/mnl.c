@@ -1046,6 +1046,8 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, struct cmd *cmd,
 	struct set *set = cmd->set;
 	struct nftnl_set *nls;
 	struct nlmsghdr *nlh;
+	struct stmt *stmt;
+	int num_stmts = 0;
 
 	nls = nftnl_set_alloc();
 	if (!nls)
@@ -1128,9 +1130,18 @@ int mnl_nft_set_add(struct netlink_ctx *ctx, struct cmd *cmd,
 			   nftnl_udata_buf_len(udbuf));
 	nftnl_udata_buf_free(udbuf);
 
-	if (set->stmt) {
-		nftnl_set_set_data(nls, NFTNL_SET_EXPR,
-				   netlink_gen_stmt_stateful(set->stmt), 0);
+	list_for_each_entry(stmt, &set->stmt_list, list)
+		num_stmts++;
+
+	if (num_stmts == 1) {
+		list_for_each_entry(stmt, &set->stmt_list, list) {
+			nftnl_set_set_data(nls, NFTNL_SET_EXPR,
+					   netlink_gen_stmt_stateful(stmt), 0);
+			break;
+		}
+	} else if (num_stmts > 1) {
+		list_for_each_entry(stmt, &set->stmt_list, list)
+			nftnl_set_add_expr(nls, netlink_gen_stmt_stateful(stmt));
 	}
 
 	netlink_dump_set(nls, ctx);

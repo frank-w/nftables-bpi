@@ -104,6 +104,8 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 	struct nftnl_set_elem *nlse;
 	struct nft_data_linearize nld;
 	struct nftnl_udata_buf *udbuf = NULL;
+	int num_exprs = 0;
+	struct stmt *stmt;
 	struct expr *key;
 
 	nlse = nftnl_set_elem_alloc();
@@ -138,9 +140,20 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 	if (elem->expiration)
 		nftnl_set_elem_set_u64(nlse, NFTNL_SET_ELEM_EXPIRATION,
 				       elem->expiration);
-	if (elem->stmt)
-		nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_EXPR,
-				   netlink_gen_stmt_stateful(elem->stmt), 0);
+	list_for_each_entry(stmt, &elem->stmt_list, list)
+		num_exprs++;
+
+	if (num_exprs == 1) {
+		list_for_each_entry(stmt, &elem->stmt_list, list) {
+			nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_EXPR,
+					   netlink_gen_stmt_stateful(stmt), 0);
+		}
+	} else if (num_exprs > 1) {
+		list_for_each_entry(stmt, &elem->stmt_list, list) {
+			nftnl_set_elem_add_expr(nlse,
+						netlink_gen_stmt_stateful(stmt));
+		}
+	}
 	if (elem->comment || expr->elem_flags) {
 		udbuf = nftnl_udata_buf_alloc(NFT_USERDATA_MAXLEN);
 		if (!udbuf)
@@ -766,6 +779,25 @@ static bool set_udata_key_valid(const struct expr *e, const struct datatype *d, 
 	return div_round_up(e->len, BITS_PER_BYTE) == len / BITS_PER_BYTE;
 }
 
+struct setelem_parse_ctx {
+	struct set			*set;
+	struct nft_cache		*cache;
+	struct list_head		stmt_list;
+};
+
+static int set_elem_parse_expressions(struct nftnl_expr *e, void *data)
+{
+	struct setelem_parse_ctx *setelem_parse_ctx = data;
+	struct nft_cache *cache = setelem_parse_ctx->cache;
+	struct set *set = setelem_parse_ctx->set;
+	struct stmt *stmt;
+
+	stmt = netlink_parse_set_expr(set, cache, e);
+	list_add_tail(&stmt->list, &setelem_parse_ctx->stmt_list);
+
+	return 0;
+}
+
 struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 				    const struct nftnl_set *nls)
 {
@@ -774,6 +806,7 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	enum byteorder databyteorder = BYTEORDER_INVALID;
 	const struct datatype *keytype, *datatype = NULL;
 	struct expr *typeof_expr_key, *typeof_expr_data;
+	struct setelem_parse_ctx set_parse_ctx;
 	const char *udata, *comment = NULL;
 	uint32_t flags, key, objtype = 0;
 	const struct datatype *dtype;
@@ -847,12 +880,22 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	if (comment)
 		set->comment = comment;
 
+	init_list_head(&set_parse_ctx.stmt_list);
+
 	if (nftnl_set_is_set(nls, NFTNL_SET_EXPR)) {
 		const struct nftnl_expr *nle;
+		struct stmt *stmt;
 
 		nle = nftnl_set_get(nls, NFTNL_SET_EXPR);
-		set->stmt = netlink_parse_set_expr(set, &ctx->nft->cache, nle);
+		stmt = netlink_parse_set_expr(set, &ctx->nft->cache, nle);
+		list_add_tail(&stmt->list, &set_parse_ctx.stmt_list);
+	} else if (nftnl_set_is_set(nls, NFTNL_SET_EXPRESSIONS)) {
+		set_parse_ctx.cache = &ctx->nft->cache;
+		set_parse_ctx.set = set;
+		nftnl_set_expr_foreach(nls, set_elem_parse_expressions,
+				       &set_parse_ctx);
 	}
+	list_splice_tail(&set_parse_ctx.stmt_list, &set->stmt_list);
 
 	if (datatype) {
 		dtype = set_datatype_alloc(datatype, databyteorder);
@@ -1107,9 +1150,15 @@ static void set_elem_parse_udata(struct nftnl_set_elem *nlse,
 int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 				struct set *set, struct nft_cache *cache)
 {
+	struct setelem_parse_ctx setelem_parse_ctx = {
+		.set	= set,
+		.cache	= cache,
+	};
 	struct nft_data_delinearize nld;
 	struct expr *expr, *key, *data;
 	uint32_t flags = 0;
+
+	init_list_head(&setelem_parse_ctx.stmt_list);
 
 	nld.value =
 		nftnl_set_elem_get(nlse, NFTNL_SET_ELEM_KEY, &nld.len);
@@ -1141,10 +1190,17 @@ key_end:
 		set_elem_parse_udata(nlse, expr);
 	if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_EXPR)) {
 		const struct nftnl_expr *nle;
+		struct stmt *stmt;
 
 		nle = nftnl_set_elem_get(nlse, NFTNL_SET_ELEM_EXPR, NULL);
-		expr->stmt = netlink_parse_set_expr(set, cache, nle);
+		stmt = netlink_parse_set_expr(set, cache, nle);
+		list_add_tail(&stmt->list, &setelem_parse_ctx.stmt_list);
+	} else if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_EXPRESSIONS)) {
+		nftnl_set_elem_expr_foreach(nlse, set_elem_parse_expressions,
+					    &setelem_parse_ctx);
 	}
+	list_splice_tail(&setelem_parse_ctx.stmt_list, &expr->stmt_list);
+
 	if (flags & NFT_SET_ELEM_INTERVAL_END) {
 		expr->flags |= EXPR_F_INTERVAL_END;
 		if (mpz_cmp_ui(set->key->value, 0) == 0)

@@ -1340,26 +1340,55 @@ static int expr_evaluate_list(struct eval_ctx *ctx, struct expr **expr)
 	return 0;
 }
 
-static int expr_evaluate_set_elem(struct eval_ctx *ctx, struct expr **expr)
+static int __expr_evaluate_set_elem(struct eval_ctx *ctx, struct expr *elem)
 {
+	int num_elem_exprs = 0, num_set_exprs = 0;
 	struct set *set = ctx->set;
-	struct expr *elem = *expr;
+	struct stmt *stmt;
 
-	if (elem->stmt) {
-		if (set->stmt && set->stmt->ops != elem->stmt->ops) {
-			return stmt_error(ctx, elem->stmt,
-					  "statement mismatch, element expects %s, "
-					  "but %s has type %s",
-					  elem->stmt->ops->name,
-					  set_is_map(set->flags) ? "map" : "set",
-					  set->stmt->ops->name);
-		} else if (!set->stmt && !(set->flags & NFT_SET_EVAL)) {
-			return stmt_error(ctx, elem->stmt,
-					  "missing %s statement in %s definition",
-					  elem->stmt->ops->name,
+	list_for_each_entry(stmt, &elem->stmt_list, list)
+		num_elem_exprs++;
+	list_for_each_entry(stmt, &set->stmt_list, list)
+		num_set_exprs++;
+
+	if (num_elem_exprs > 0) {
+		struct stmt *set_stmt, *elem_stmt;
+
+		if (num_set_exprs > 0 && num_elem_exprs != num_set_exprs) {
+			return expr_error(ctx->msgs, elem,
+					  "number of statements mismatch, set expects %d "
+					  "but element has %d", num_set_exprs,
+					  num_elem_exprs);
+		} else if (num_set_exprs == 0 && !(set->flags & NFT_SET_EVAL)) {
+			return expr_error(ctx->msgs, elem,
+					  "missing statements in %s definition",
 					  set_is_map(set->flags) ? "map" : "set");
 		}
+
+		set_stmt = list_first_entry(&set->stmt_list, struct stmt, list);
+
+		list_for_each_entry(elem_stmt, &elem->stmt_list, list) {
+			if (set_stmt->ops != elem_stmt->ops) {
+				return stmt_error(ctx, elem_stmt,
+						  "statement mismatch, element expects %s, "
+						  "but %s has type %s",
+						  elem_stmt->ops->name,
+						  set_is_map(set->flags) ? "map" : "set",
+						  set_stmt->ops->name);
+			}
+			set_stmt = list_next_entry(set_stmt, list);
+		}
 	}
+
+	return 0;
+}
+
+static int expr_evaluate_set_elem(struct eval_ctx *ctx, struct expr **expr)
+{
+	struct expr *elem = *expr;
+
+	if (ctx->set && __expr_evaluate_set_elem(ctx, elem) < 0)
+		return -1;
 
 	if (expr_evaluate(ctx, &elem->key) < 0)
 		return -1;

@@ -333,7 +333,7 @@ struct set {
 	struct expr		*init;
 	struct expr		*rg_cache;
 	uint32_t		policy;
-	struct stmt		*stmt;
+	struct list_head	stmt_list;
 	bool			root;
 	bool			automerge;
 	bool			key_typeof_valid;

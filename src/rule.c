@@ -338,6 +338,9 @@ struct set *set_alloc(const struct location *loc)
 	set->handle.set_id = ++set_id;
 	if (loc != NULL)
 		set->location = *loc;
+
+	init_list_head(&set->stmt_list);
+
 	return set;
 }
 
@@ -357,6 +360,7 @@ struct set *set_clone(const struct set *set)
 	new_set->policy		= set->policy;
 	new_set->automerge	= set->automerge;
 	new_set->desc		= set->desc;
+	init_list_head(&new_set->stmt_list);
 
 	return new_set;
 }
@@ -369,6 +373,8 @@ struct set *set_get(struct set *set)
 
 void set_free(struct set *set)
 {
+	struct stmt *stmt, *next;
+
 	if (--set->refcnt > 0)
 		return;
 	if (set->init != NULL)
@@ -376,7 +382,8 @@ void set_free(struct set *set)
 	if (set->comment)
 		xfree(set->comment);
 	handle_free(&set->handle);
-	stmt_free(set->stmt);
+	list_for_each_entry_safe(stmt, next, &set->stmt_list, list)
+		stmt_free(stmt);
 	expr_free(set->key);
 	expr_free(set->data);
 	xfree(set);
@@ -500,6 +507,7 @@ static void set_print_declaration(const struct set *set,
 				  struct output_ctx *octx)
 {
 	const char *delim = "";
+	struct stmt *stmt;
 	const char *type;
 	uint32_t flags;
 
@@ -570,13 +578,21 @@ static void set_print_declaration(const struct set *set,
 		nft_print(octx, "%s", opts->stmt_separator);
 	}
 
-	if (set->stmt) {
+	if (!list_empty(&set->stmt_list))
 		nft_print(octx, "%s%s", opts->tab, opts->tab);
+
+	if (!list_empty(&set->stmt_list)) {
 		octx->flags |= NFT_CTX_OUTPUT_STATELESS;
-		stmt_print(set->stmt, octx);
+		list_for_each_entry(stmt, &set->stmt_list, list) {
+			stmt_print(stmt, octx);
+			if (!list_is_last(&stmt->list, &set->stmt_list))
+				nft_print(octx, " ");
+		}
 		octx->flags &= ~NFT_CTX_OUTPUT_STATELESS;
-		nft_print(octx, "%s", opts->stmt_separator);
 	}
+
+	if (!list_empty(&set->stmt_list))
+		nft_print(octx, "%s", opts->stmt_separator);
 
 	if (set->automerge)
 		nft_print(octx, "%s%sauto-merge%s", opts->tab, opts->tab,

@@ -935,10 +935,8 @@ static void interval_expr_copy(struct expr *dst, struct expr *src)
 		dst->timeout = src->timeout;
 	if (src->expiration)
 		dst->expiration = src->expiration;
-	if (src->stmt) {
-		dst->stmt = src->stmt;
-		src->stmt = NULL;
-	}
+
+	list_splice_init(&src->stmt_list, &dst->stmt_list);
 }
 
 void interval_map_decompose(struct expr *set)

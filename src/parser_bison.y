@@ -624,10 +624,10 @@ int nft_lex(void *, void *, void *);
 %type <obj>			obj_block_alloc counter_block quota_block ct_helper_block ct_timeout_block ct_expect_block limit_block secmark_block synproxy_block
 %destructor { obj_free($$); }	obj_block_alloc
 
-%type <list>			stmt_list stateful_stmt_list
-%destructor { stmt_list_free($$); xfree($$); } stmt_list stateful_stmt_list
-%type <stmt>			stmt match_stmt verdict_stmt
-%destructor { stmt_free($$); }	stmt match_stmt verdict_stmt
+%type <list>			stmt_list stateful_stmt_list set_elem_stmt_list
+%destructor { stmt_list_free($$); xfree($$); } stmt_list stateful_stmt_list set_elem_stmt_list
+%type <stmt>			stmt match_stmt verdict_stmt set_elem_stmt
+%destructor { stmt_free($$); }	stmt match_stmt verdict_stmt set_elem_stmt
 %type <stmt>			counter_stmt counter_stmt_alloc stateful_stmt
 %destructor { stmt_free($$); }	counter_stmt counter_stmt_alloc stateful_stmt
 %type <stmt>			payload_stmt
@@ -1797,10 +1797,11 @@ set_block		:	/* empty */	{ $$ = $<set>-1; }
 				$1->gc_int = $3;
 				$$ = $1;
 			}
-			|	set_block	COUNTER		stmt_separator
+			|	set_block	stateful_stmt_list		stmt_separator
 			{
-				$1->stmt = counter_stmt_alloc(&@$);
+				list_splice_tail($2, &$1->stmt_list);
 				$$ = $1;
+				free($2);
 			}
 			|	set_block	ELEMENTS	'='		set_block_expr
 			{
@@ -4052,7 +4053,13 @@ set_elem_expr		:	set_elem_expr_alloc
 			|	set_elem_expr_alloc		set_elem_expr_options
 			;
 
-set_elem_expr_alloc	:	set_lhs_expr
+set_elem_expr_alloc	:	set_lhs_expr	set_elem_stmt_list
+			{
+				$$ = set_elem_expr_alloc(&@1, $1);
+				list_splice_tail($2, &$$->stmt_list);
+				xfree($2);
+			}
+			|	set_lhs_expr
 			{
 				$$ = set_elem_expr_alloc(&@1, $1);
 			}
@@ -4090,44 +4097,42 @@ set_elem_expr_options	:	set_elem_expr_option
 			|	set_elem_expr_options	set_elem_expr_option
 			;
 
-set_elem_expr_option	:	TIMEOUT			time_spec
+set_elem_stmt_list	:	set_elem_stmt
 			{
-				$<expr>0->timeout = $2;
+				$$ = xmalloc(sizeof(*$$));
+				init_list_head($$);
+				list_add_tail(&$1->list, $$);
 			}
-			|	EXPIRES		time_spec
+			|	set_elem_stmt_list	set_elem_stmt
 			{
-				$<expr>0->expiration = $2;
+				$$ = $1;
+				list_add_tail(&$2->list, $1);
 			}
-			|	COUNTER
+			;
+
+set_elem_stmt		:	COUNTER
 			{
-				$<expr>0->stmt = counter_stmt_alloc(&@$);
+				$$ = counter_stmt_alloc(&@$);
 			}
 			|	COUNTER	PACKETS	NUM	BYTES	NUM
 			{
-				struct stmt *stmt;
-
-				stmt = counter_stmt_alloc(&@$);
-				stmt->counter.packets = $3;
-				stmt->counter.bytes = $5;
-				$<expr>0->stmt = stmt;
+				$$ = counter_stmt_alloc(&@$);
+				$$->counter.packets = $3;
+				$$->counter.bytes = $5;
 			}
 			|	LIMIT   RATE    limit_mode      NUM     SLASH   time_unit       limit_burst_pkts
 			{
-				struct stmt *stmt;
-
-				stmt = limit_stmt_alloc(&@$);
-				stmt->limit.rate  = $4;
-				stmt->limit.unit  = $6;
-				stmt->limit.burst = $7;
-				stmt->limit.type  = NFT_LIMIT_PKTS;
-				stmt->limit.flags = $3;
-				$<expr>0->stmt = stmt;
+				$$ = limit_stmt_alloc(&@$);
+				$$->limit.rate  = $4;
+				$$->limit.unit  = $6;
+				$$->limit.burst = $7;
+				$$->limit.type  = NFT_LIMIT_PKTS;
+				$$->limit.flags = $3;
 			}
 			|       LIMIT   RATE    limit_mode      NUM     STRING  limit_burst_bytes
 			{
 				struct error_record *erec;
 				uint64_t rate, unit;
-				struct stmt *stmt;
 
 				erec = rate_parse(&@$, $5, &rate, &unit);
 				xfree($5);
@@ -4136,13 +4141,23 @@ set_elem_expr_option	:	TIMEOUT			time_spec
 					YYERROR;
 				}
 
-				stmt = limit_stmt_alloc(&@$);
-				stmt->limit.rate  = rate * $4;
-				stmt->limit.unit  = unit;
-				stmt->limit.burst = $6;
-				stmt->limit.type  = NFT_LIMIT_PKT_BYTES;
-				stmt->limit.flags = $3;
+				$$ = limit_stmt_alloc(&@$);
+				$$->limit.rate  = rate * $4;
+				$$->limit.unit  = unit;
+				$$->limit.burst = $6;
+				$$->limit.type  = NFT_LIMIT_PKT_BYTES;
+				$$->limit.flags = $3;
                         }
+			;
+
+set_elem_expr_option	:	TIMEOUT			time_spec
+			{
+				$<expr>0->timeout = $2;
+			}
+			|	EXPIRES		time_spec
+			{
+				$<expr>0->expiration = $2;
+			}
 			|	comment_spec
 			{
 				if (already_set($<expr>0->comment, &@1, state)) {

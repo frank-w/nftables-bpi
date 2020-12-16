@@ -583,13 +583,15 @@ json_t *set_ref_expr_json(const struct expr *expr, struct output_ctx *octx)
 json_t *set_elem_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
 	json_t *root = expr_print_json(expr->key, octx);
+	struct stmt *stmt;
 	json_t *tmp;
 
 	if (!root)
 		return NULL;
 
 	/* these element attributes require formal set elem syntax */
-	if (expr->timeout || expr->expiration || expr->comment || expr->stmt) {
+	if (expr->timeout || expr->expiration || expr->comment ||
+	    !list_empty(&expr->stmt_list)) {
 		root = json_pack("{s:o}", "val", root);
 
 		if (expr->timeout) {
@@ -604,11 +606,13 @@ json_t *set_elem_expr_json(const struct expr *expr, struct output_ctx *octx)
 			tmp = json_string(expr->comment);
 			json_object_set_new(root, "comment", tmp);
 		}
-		if (expr->stmt) {
-			tmp = stmt_print_json(expr->stmt, octx);
+		list_for_each_entry(stmt, &expr->stmt_list, list) {
+			tmp = stmt_print_json(stmt, octx);
 			/* XXX: detect and complain about clashes? */
 			json_object_update_missing(root, tmp);
 			json_decref(tmp);
+			/* TODO: only one statement per element. */
+			break;
 		}
 		return json_pack("{s:o}", "elem", root);
 	}

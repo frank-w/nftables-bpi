@@ -280,7 +280,7 @@ struct expr {
 			uint64_t		timeout;
 			uint64_t		expiration;
 			const char		*comment;
-			struct stmt		*stmt;
+			struct list_head	stmt_list;
 			uint32_t		elem_flags;
 		};
 		struct {

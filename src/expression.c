@@ -1248,7 +1248,13 @@ struct expr *set_ref_expr_alloc(const struct location *loc, struct set *set)
 static void set_elem_expr_print(const struct expr *expr,
 				 struct output_ctx *octx)
 {
+	struct stmt *stmt;
+
 	expr_print(expr->key, octx);
+	list_for_each_entry(stmt, &expr->stmt_list, list) {
+		nft_print(octx, " ");
+		stmt_print(stmt, octx);
+	}
 	if (expr->timeout) {
 		nft_print(octx, " timeout ");
 		time_print(expr->timeout, octx);
@@ -1257,19 +1263,18 @@ static void set_elem_expr_print(const struct expr *expr,
 		nft_print(octx, " expires ");
 		time_print(expr->expiration, octx);
 	}
-	if (expr->stmt) {
-		nft_print(octx, " ");
-		stmt_print(expr->stmt, octx);
-	}
 	if (expr->comment)
 		nft_print(octx, " comment \"%s\"", expr->comment);
 }
 
 static void set_elem_expr_destroy(struct expr *expr)
 {
+	struct stmt *stmt, *next;
+
 	xfree(expr->comment);
 	expr_free(expr->key);
-	stmt_free(expr->stmt);
+	list_for_each_entry_safe(stmt, next, &expr->stmt_list, list)
+		stmt_free(stmt);
 }
 
 static void set_elem_expr_clone(struct expr *new, const struct expr *expr)
@@ -1279,6 +1284,7 @@ static void set_elem_expr_clone(struct expr *new, const struct expr *expr)
 	new->timeout = expr->timeout;
 	if (expr->comment)
 		new->comment = xstrdup(expr->comment);
+	init_list_head(&new->stmt_list);
 }
 
 static const struct expr_ops set_elem_expr_ops = {
@@ -1297,6 +1303,8 @@ struct expr *set_elem_expr_alloc(const struct location *loc, struct expr *key)
 	expr = expr_alloc(loc, EXPR_SET_ELEM, key->dtype,
 			  key->byteorder, key->len);
 	expr->key = key;
+	init_list_head(&expr->stmt_list);
+
 	return expr;
 }
 

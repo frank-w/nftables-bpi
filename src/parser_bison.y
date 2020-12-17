@@ -3038,6 +3038,11 @@ log_flag_tcp		:	SEQUENCE
 
 limit_stmt		:	LIMIT	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst_pkts
 	    		{
+				if ($7 == 0) {
+					erec_queue(error(&@7, "limit burst must be > 0"),
+						   state->msgs);
+					YYERROR;
+				}
 				$$ = limit_stmt_alloc(&@$);
 				$$->limit.rate	= $4;
 				$$->limit.unit	= $6;
@@ -3049,6 +3054,12 @@ limit_stmt		:	LIMIT	RATE	limit_mode	NUM	SLASH	time_unit	limit_burst_pkts
 			{
 				struct error_record *erec;
 				uint64_t rate, unit;
+
+				if ($6 == 0) {
+					erec_queue(error(&@6, "limit burst must be > 0"),
+						   state->msgs);
+					YYERROR;
+				}
 
 				erec = rate_parse(&@$, $5, &rate, &unit);
 				xfree($5);
@@ -3126,11 +3137,11 @@ limit_mode		:	OVER				{ $$ = NFT_LIMIT_F_INV; }
 			|	/* empty */			{ $$ = 0; }
 			;
 
-limit_burst_pkts	:	/* empty */			{ $$ = 0; }
+limit_burst_pkts	:	/* empty */			{ $$ = 5; }
 			|	BURST	NUM	PACKETS		{ $$ = $2; }
 			;
 
-limit_burst_bytes	:	/* empty */			{ $$ = 0; }
+limit_burst_bytes	:	/* empty */			{ $$ = 5; }
 			|	BURST	NUM	BYTES		{ $$ = $2; }
 			|	BURST	NUM	STRING
 			{
@@ -4122,6 +4133,11 @@ set_elem_stmt		:	COUNTER
 			}
 			|	LIMIT   RATE    limit_mode      NUM     SLASH   time_unit       limit_burst_pkts
 			{
+				if ($7 == 0) {
+					erec_queue(error(&@7, "limit burst must be > 0"),
+						   state->msgs);
+					YYERROR;
+				}
 				$$ = limit_stmt_alloc(&@$);
 				$$->limit.rate  = $4;
 				$$->limit.unit  = $6;
@@ -4134,6 +4150,11 @@ set_elem_stmt		:	COUNTER
 				struct error_record *erec;
 				uint64_t rate, unit;
 
+				if ($6 == 0) {
+					erec_queue(error(&@6, "limit burst must be > 0"),
+						   state->msgs);
+					YYERROR;
+				}
 				erec = rate_parse(&@$, $5, &rate, &unit);
 				xfree($5);
 				if (erec != NULL) {

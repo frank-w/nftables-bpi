@@ -464,7 +464,7 @@ static void limit_stmt_print(const struct stmt *stmt, struct output_ctx *octx)
 		nft_print(octx,	"limit rate %s%" PRIu64 " %s/%s",
 			  inv ? "over " : "", rate, data_unit,
 			  get_unit(stmt->limit.unit));
-		if (stmt->limit.burst > 0) {
+		if (stmt->limit.burst != 5) {
 			uint64_t burst;
 
 			data_unit = get_rate(stmt->limit.burst, &burst);

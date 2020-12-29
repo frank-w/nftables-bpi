@@ -21,5 +21,5 @@ ip6 test-ip6 postrouting
   [ immediate reg 1 0x38080120 0x01005f03 0x00000000 0x00000000 ]
   [ immediate reg 2 0x38080120 0x02005f03 0x00000000 0x00000000 ]
   [ immediate reg 3 0x00006400 ]
-  [ nat snat ip6 addr_min reg 1 addr_max reg 2 proto_min reg 3 proto_max reg 0 flags 0x2 ]
+  [ nat snat ip6 addr_min reg 1 addr_max reg 2 proto_min reg 3 flags 0x2 ]
 

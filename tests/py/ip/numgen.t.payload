@@ -10,7 +10,7 @@ __map%d x 0
 ip test-ip4 pre 
   [ numgen reg 1 = inc mod 2 ]
   [ lookup reg 1 set __map%d dreg 1 ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat dnat ip addr_min reg 1 ]
 
 # dnat to numgen inc mod 10 map { 0-5 : 192.168.10.100, 6-9 : 192.168.20.200}
 __map%d test-ip4 f
@@ -20,7 +20,7 @@ ip test-ip4 pre
   [ numgen reg 1 = inc mod 10 ]
   [ byteorder reg 1 = hton(reg 1, 4, 4) ]
   [ lookup reg 1 set __map%d dreg 1 ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat dnat ip addr_min reg 1 ]
 
 # ct mark set numgen inc mod 2 offset 100
 ip test-ip4 pre

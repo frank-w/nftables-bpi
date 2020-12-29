@@ -41,7 +41,7 @@ ip test-ip4 pre
   [ payload load 4b @ network header + 12 => reg 2 ]
   [ hash reg 1 = jhash(reg 2, 4, 0xdeadbeef) % mod 2 ]
   [ lookup reg 1 set __map%d dreg 1 ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat dnat ip addr_min reg 1 ]
 
 # ct mark set symhash mod 2 offset 100
 ip test-ip4 pre

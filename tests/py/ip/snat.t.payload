@@ -8,7 +8,7 @@ ip test-ip4 postrouting
   [ cmp gte reg 1 0x00005000 ]
   [ cmp lte reg 1 0x00005a00 ]
   [ immediate reg 1 0x0203a8c0 ]
-  [ nat snat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat snat ip addr_min reg 1 ]
 
 # iifname "eth0" tcp dport != 80-90 snat to 192.168.3.2
 ip test-ip4 postrouting
@@ -19,7 +19,7 @@ ip test-ip4 postrouting
   [ payload load 2b @ transport header + 2 => reg 1 ]
   [ range neq reg 1 0x00005000 0x00005a00 ]
   [ immediate reg 1 0x0203a8c0 ]
-  [ nat snat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat snat ip addr_min reg 1 ]
 
 # iifname "eth0" tcp dport {80, 90, 23} snat to 192.168.3.2
 __set%d test-ip4 3
@@ -33,7 +33,7 @@ ip test-ip4 postrouting
   [ payload load 2b @ transport header + 2 => reg 1 ]
   [ lookup reg 1 set __set%d ]
   [ immediate reg 1 0x0203a8c0 ]
-  [ nat snat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat snat ip addr_min reg 1 ]
 
 # iifname "eth0" tcp dport != {80, 90, 23} snat to 192.168.3.2
 __set%d test-ip4 3
@@ -47,7 +47,7 @@ ip test-ip4 postrouting
   [ payload load 2b @ transport header + 2 => reg 1 ]
   [ lookup reg 1 set __set%d 0x1 ]
   [ immediate reg 1 0x0203a8c0 ]
-  [ nat snat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat snat ip addr_min reg 1 ]
 
 # iifname "eth0" tcp dport != 23-34 snat to 192.168.3.2
 ip test-ip4 postrouting
@@ -58,7 +58,7 @@ ip test-ip4 postrouting
   [ payload load 2b @ transport header + 2 => reg 1 ]
   [ range neq reg 1 0x00001700 0x00002200 ]
   [ immediate reg 1 0x0203a8c0 ]
-  [ nat snat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat snat ip addr_min reg 1 ]
 
 # snat ip addr . port to ip saddr map { 10.141.11.4 : 192.168.2.3 . 80 }
 __map%d test-ip4 b size 1
@@ -67,7 +67,7 @@ __map%d test-ip4 0
 ip 
   [ payload load 4b @ network header + 12 => reg 1 ]
   [ lookup reg 1 set __map%d dreg 1 ]
-  [ nat snat ip addr_min reg 1 addr_max reg 0 proto_min reg 9 proto_max reg 0 ]
+  [ nat snat ip addr_min reg 1 proto_min reg 9 ]
 
 # snat ip interval to ip saddr map { 10.141.11.4 : 192.168.2.2-192.168.2.4 }
 __map%d test-ip4 b size 1

@@ -130,7 +130,7 @@ ip test-ip4 postrouting
   [ payload load 1b @ network header + 9 => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
   [ immediate reg 1 0x00000004 ]
-  [ masq proto_min reg 1 proto_max reg 0 flags 0x2 ]
+  [ masq proto_min reg 1 flags 0x2 ]
 
 # ip protocol 6 masquerade to :1024-2048
 ip test-ip4 postrouting

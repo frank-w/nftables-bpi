@@ -18,7 +18,7 @@ inet test-inet prerouting
   [ payload load 2b @ transport header + 2 => reg 1 ]
   [ cmp eq reg 1 0x0000bb01 ]
   [ immediate reg 1 0x0203a8c0 ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat dnat ip addr_min reg 1 ]
 
 # iifname "eth0" tcp dport 443 dnat ip6 to [dead::beef]:4443
 inet test-inet prerouting
@@ -30,7 +30,7 @@ inet test-inet prerouting
   [ cmp eq reg 1 0x0000bb01 ]
   [ immediate reg 1 0x0000adde 0x00000000 0x00000000 0xefbe0000 ]
   [ immediate reg 2 0x00005b11 ]
-  [ nat dnat ip6 addr_min reg 1 addr_max reg 0 proto_min reg 2 proto_max reg 0 flags 0x2 ]
+  [ nat dnat ip6 addr_min reg 1 proto_min reg 2 flags 0x2 ]
 
 # dnat ip to ct mark map { 0x00000014 : 1.2.3.4}
 __map%d test-inet b size 1
@@ -39,7 +39,7 @@ __map%d test-inet 0
 inet test-inet prerouting
   [ ct load mark => reg 1 ]
   [ lookup reg 1 set __map%d dreg 1 ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat dnat ip addr_min reg 1 ]
 
 # dnat ip to ct mark . ip daddr map { 0x00000014 . 1.1.1.1 : 1.2.3.4}
 __map%d test-inet b size 1
@@ -51,7 +51,7 @@ inet test-inet prerouting
   [ ct load mark => reg 1 ]
   [ payload load 4b @ network header + 16 => reg 9 ]
   [ lookup reg 1 set __map%d dreg 1 ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 ]
+  [ nat dnat ip addr_min reg 1 ]
 
 # meta l4proto { tcp, udp } dnat ip to 1.1.1.1:80
 __set%d test-inet 3
@@ -62,7 +62,7 @@ inet
   [ lookup reg 1 set __set%d ]
   [ immediate reg 1 0x01010101 ]
   [ immediate reg 2 0x00005000 ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 proto_min reg 2 proto_max reg 0 flags 0x2 ]
+  [ nat dnat ip addr_min reg 1 proto_min reg 2 flags 0x2 ]
 
 # ip protocol { tcp, udp } dnat ip to 1.1.1.1:80
 __set%d test-inet 3
@@ -75,5 +75,5 @@ inet
   [ lookup reg 1 set __set%d ]
   [ immediate reg 1 0x01010101 ]
   [ immediate reg 2 0x00005000 ]
-  [ nat dnat ip addr_min reg 1 addr_max reg 0 proto_min reg 2 proto_max reg 0 flags 0x2 ]
+  [ nat dnat ip addr_min reg 1 proto_min reg 2 flags 0x2 ]
 

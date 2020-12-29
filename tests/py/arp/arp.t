@@ -46,7 +46,6 @@ arp operation rreply;ok
 arp operation inrequest;ok
 arp operation inreply;ok
 arp operation nak;ok
-arp operation reply;ok
 arp operation != request;ok
 arp operation != reply;ok
 arp operation != rrequest;ok
@@ -54,7 +53,6 @@ arp operation != rreply;ok
 arp operation != inrequest;ok
 arp operation != inreply;ok
 arp operation != nak;ok
-arp operation != reply;ok
 
 arp saddr ip 1.2.3.4;ok
 arp daddr ip 4.3.2.1;ok

@@ -306,15 +306,6 @@ ip test-ip4 output
   [ ct load helper => reg 1 ]
   [ cmp eq reg 1 0x00707466 0x00000000 0x00000000 0x00000000 ]
 
-# ct state . ct mark { new . 0x12345678}
-__set%d test 3
-__set%d test 0
-	element 00000008 12345678  : 0 [end]
-ip test-ip4 output
-  [ ct load state => reg 1 ]
-  [ ct load mark => reg 9 ]
-  [ lookup reg 1 set __set%d ]
-
 # ct state . ct mark { new . 0x12345678, new . 0x34127856, established . 0x12785634}
 __set%d test-ip4 3
 __set%d test-ip4 0

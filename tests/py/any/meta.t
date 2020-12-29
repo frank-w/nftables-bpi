@@ -29,7 +29,7 @@ meta l4proto 22;ok
 meta l4proto != 233;ok
 meta l4proto 33-45;ok
 meta l4proto != 33-45;ok
-meta l4proto { 33, 55, 67, 88};ok;meta l4proto { 33, 55, 67, 88}
+meta l4proto { 33, 55, 67, 88};ok
 meta l4proto != { 33, 55, 67, 88};ok
 meta l4proto { 33-55, 66-88};ok
 meta l4proto != { 33-55, 66-88};ok
@@ -101,10 +101,10 @@ meta skuid != "root";ok;meta skuid != 0
 meta skuid lt 3000 accept;ok;meta skuid < 3000 accept
 meta skuid gt 3000 accept;ok;meta skuid > 3000 accept
 meta skuid eq 3000 accept;ok;meta skuid 3000 accept
-meta skuid 3001-3005 accept;ok;meta skuid 3001-3005 accept
-meta skuid != 2001-2005 accept;ok;meta skuid != 2001-2005 accept
-meta skuid { 2001-2005, 3001-3005} accept;ok;meta skuid { 2001-2005, 3001-3005} accept
-meta skuid != { 2001-2005, 3001-3005} accept;ok;meta skuid != { 2001-2005, 3001-3005} accept
+meta skuid 3001-3005 accept;ok
+meta skuid != 2001-2005 accept;ok
+meta skuid { 2001-2005, 3001-3005} accept;ok
+meta skuid != { 2001-2005, 3001-3005} accept;ok
 
 meta skgid {"bin", "root", "daemon"} accept;ok;meta skgid { 0, 1, 2} accept
 meta skgid != {"bin", "root", "daemon"} accept;ok;meta skgid != { 1, 0, 2} accept
@@ -113,10 +113,10 @@ meta skgid != "root";ok;meta skgid != 0
 meta skgid lt 3000 accept;ok;meta skgid < 3000 accept
 meta skgid gt 3000 accept;ok;meta skgid > 3000 accept
 meta skgid eq 3000 accept;ok;meta skgid 3000 accept
-meta skgid 2001-2005 accept;ok;meta skgid 2001-2005 accept
-meta skgid != 2001-2005 accept;ok;meta skgid != 2001-2005 accept
-meta skgid { 2001-2005} accept;ok;meta skgid { 2001-2005} accept
-meta skgid != { 2001-2005} accept;ok;meta skgid != { 2001-2005} accept
+meta skgid 2001-2005 accept;ok
+meta skgid != 2001-2005 accept;ok
+meta skgid { 2001-2005} accept;ok
+meta skgid != { 2001-2005} accept;ok
 
 # BUG: meta nftrace 2 and meta nftrace 1
 # $ sudo nft add rule ip test input meta nftrace 2
@@ -188,14 +188,14 @@ meta oifgroup {11-33, 44-55};ok;oifgroup {11-33, 44-55}
 meta oifgroup != { 11,33};ok;oifgroup != { 11,33}
 meta oifgroup != {11-33, 44-55};ok;oifgroup != {11-33, 44-55}
 
-meta cgroup 1048577;ok;meta cgroup 1048577
-meta cgroup != 1048577;ok;meta cgroup != 1048577
-meta cgroup { 1048577, 1048578 };ok;meta cgroup { 1048577, 1048578}
-meta cgroup != { 1048577, 1048578};ok;meta cgroup != { 1048577, 1048578}
-meta cgroup 1048577-1048578;ok;meta cgroup 1048577-1048578
-meta cgroup != 1048577-1048578;ok;meta cgroup != 1048577-1048578
-meta cgroup {1048577-1048578};ok;meta cgroup { 1048577-1048578}
-meta cgroup != { 1048577-1048578};ok;meta cgroup != { 1048577-1048578}
+meta cgroup 1048577;ok
+meta cgroup != 1048577;ok
+meta cgroup { 1048577, 1048578 };ok
+meta cgroup != { 1048577, 1048578};ok
+meta cgroup 1048577-1048578;ok
+meta cgroup != 1048577-1048578;ok
+meta cgroup {1048577-1048578};ok
+meta cgroup != { 1048577-1048578};ok
 
 meta iif . meta oif { "lo" . "lo" };ok;iif . oif { "lo" . "lo" }
 meta iif . meta oif . meta mark { "lo" . "lo" . 0x0000000a };ok;iif . oif . meta mark { "lo" . "lo" . 0x0000000a }

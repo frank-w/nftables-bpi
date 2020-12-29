@@ -640,7 +640,7 @@
     }
 ]
 
-# icmpv6 checksum != 2222 log
+# icmpv6 checksum != 222-226
 [
     {
         "match": {
@@ -650,12 +650,11 @@
                     "protocol": "icmpv6"
                 }
             },
-            "op": "!=",
-            "right": 2222
+	    "op": "!=",
+            "right": {
+                "range": [ 222, 226 ]
+            }
         }
-    },
-    {
-        "log": null
     }
 ]
 

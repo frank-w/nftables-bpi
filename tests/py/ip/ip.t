@@ -92,8 +92,8 @@ ip saddr set {192.19.1.2, 191.1.22.1};fail
 ip saddr 192.168.2.0/24;ok
 ip saddr != 192.168.2.0/24;ok
 ip saddr 192.168.3.1 ip daddr 192.168.3.100;ok
-ip saddr != 1.1.1.1;ok;ip saddr != 1.1.1.1
-ip saddr 1.1.1.1;ok;ip saddr 1.1.1.1
+ip saddr != 1.1.1.1;ok
+ip saddr 1.1.1.1;ok
 ip daddr 192.168.0.1-192.168.0.250;ok
 ip daddr 10.0.0.0-10.255.255.255;ok
 ip daddr 172.16.0.0-172.31.255.255;ok

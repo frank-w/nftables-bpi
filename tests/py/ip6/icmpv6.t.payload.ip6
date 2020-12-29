@@ -275,13 +275,12 @@ ip6 test-ip6 input
   [ cmp gte reg 1 0x0000de00 ]
   [ cmp lte reg 1 0x0000e200 ]
 
-# icmpv6 checksum != 2222 log
-ip6 test-ip6 input
+# icmpv6 checksum != 222-226
+ip6
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x0000003a ]
   [ payload load 2b @ transport header + 2 => reg 1 ]
-  [ cmp neq reg 1 0x0000ae08 ]
-  [ log ]
+  [ range neq reg 1 0x0000de00 0x0000e200 ]
 
 # icmpv6 checksum { 222, 226}
 __set%d test-ip6 3

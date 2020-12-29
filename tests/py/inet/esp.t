@@ -13,6 +13,7 @@ esp spi != 111-222;ok
 esp spi { 100, 102};ok
 esp spi != { 100, 102};ok
 esp spi { 100-102};ok
+esp spi != { 100-102};ok
 - esp spi {100-102};ok
 
 esp sequence 22;ok

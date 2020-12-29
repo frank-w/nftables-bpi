@@ -229,11 +229,6 @@ arp test-arp input
   [ payload load 2b @ network header + 6 => reg 1 ]
   [ cmp eq reg 1 0x00000a00 ]
 
-# arp operation reply
-arp test-arp input
-  [ payload load 2b @ network header + 6 => reg 1 ]
-  [ cmp eq reg 1 0x00000200 ]
-
 # arp operation != request
 arp test-arp input
   [ payload load 2b @ network header + 6 => reg 1 ]
@@ -268,11 +263,6 @@ arp test-arp input
 arp test-arp input
   [ payload load 2b @ network header + 6 => reg 1 ]
   [ cmp neq reg 1 0x00000a00 ]
-
-# arp operation != reply
-arp test-arp input
-  [ payload load 2b @ network header + 6 => reg 1 ]
-  [ cmp neq reg 1 0x00000200 ]
 
 # meta iifname "invalid" arp ptype 0x0800 arp htype 1 arp hlen 6 arp plen 4 @nh,192,32 0xc0a88f10 @nh,144,48 set 0x112233445566
 arp test-arp input

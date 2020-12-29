@@ -14,7 +14,7 @@ netdev test-netdev ingress
   [ lookup reg 1 set set2 0x1 ]
   [ immediate reg 0 accept ]
 
-# ip saddr . ip daddr . tcp dport @ set3 accept
+# ip saddr . ip daddr . tcp dport @set3 accept
 inet 
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x00000002 ]

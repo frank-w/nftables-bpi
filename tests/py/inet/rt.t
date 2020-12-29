@@ -2,14 +2,13 @@
 
 *inet;test-inet;output
 
-rt nexthop 192.168.0.1;fail
-rt nexthop fd00::1;fail
-
 meta nfproto ipv4 rt nexthop 192.168.0.1;ok;meta nfproto ipv4 rt ip nexthop 192.168.0.1
 rt ip6 nexthop fd00::1;ok
 
 # missing context
+rt nexthop 192.168.0.1;fail
 rt nexthop fd00::1;fail
+
 # wrong context
 rt ip nexthop fd00::1;fail
 

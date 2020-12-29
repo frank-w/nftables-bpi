@@ -5,24 +5,6 @@
     }
 ]
 
-# synproxy mss 1460
-[
-    {
-        "synproxy": {
-            "mss": 1460
-        }
-    }
-]
-
-# synproxy wscale 7
-[
-    {
-        "synproxy": {
-            "wscale": 7
-        }
-    }
-]
-
 # synproxy mss 1460 wscale 7
 [
     {
@@ -48,20 +30,6 @@
 [
     {
         "synproxy": {
-            "flags": [
-                "timestamp",
-                "sack-perm"
-            ]
-        }
-    }
-]
-
-# synproxy mss 1460 wscale 7 timestamp sack-perm
-[
-    {
-        "synproxy": {
-            "mss": 1460,
-            "wscale": 7,
             "flags": [
                 "timestamp",
                 "sack-perm"

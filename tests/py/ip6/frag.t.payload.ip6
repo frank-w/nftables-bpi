@@ -148,12 +148,6 @@ ip6 test-ip6 output
   [ bitwise reg 1 = ( reg 1 & 0x0000f8ff ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
-# frag more-fragments 1
-ip6 test-ip6 output
-  [ exthdr load ipv6 1b @ 44 + 3 => reg 1 ]
-  [ bitwise reg 1 = ( reg 1 & 0x00000001 ) ^ 0x00000000 ]
-  [ cmp eq reg 1 0x00000001 ]
-
 # frag id 1
 ip6 test-ip6 output
   [ exthdr load ipv6 4b @ 44 + 4 => reg 1 ]

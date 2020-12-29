@@ -38,7 +38,7 @@ icmpv6 code != { 3-66};ok
 icmpv6 checksum 2222 log;ok
 icmpv6 checksum != 2222 log;ok
 icmpv6 checksum 222-226;ok
-icmpv6 checksum != 2222 log;ok
+icmpv6 checksum != 222-226;ok
 icmpv6 checksum { 222, 226};ok
 icmpv6 checksum != { 222, 226};ok
 icmpv6 checksum { 222-226};ok

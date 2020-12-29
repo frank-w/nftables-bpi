@@ -98,24 +98,6 @@
     }
 ]
 
-# dccp sport ftp-data - re-mail-ck
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "sport",
-                    "protocol": "dccp"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "range": [ "ftp-data", "re-mail-ck" ]
-            }
-        }
-    }
-]
-
 # dccp sport 20-50
 [
     {

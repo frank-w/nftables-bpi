@@ -693,22 +693,6 @@
     }
 ]
 
-# arp operation reply
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "operation",
-                    "protocol": "arp"
-                }
-            },
-	    "op": "==",
-            "right": "reply"
-        }
-    }
-]
-
 # arp operation != request
 [
     {
@@ -817,22 +801,6 @@
             },
             "op": "!=",
             "right": "nak"
-        }
-    }
-]
-
-# arp operation != reply
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "operation",
-                    "protocol": "arp"
-                }
-            },
-            "op": "!=",
-            "right": "reply"
         }
     }
 ]

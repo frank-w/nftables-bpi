@@ -37,7 +37,6 @@ tcp option foobar;fail
 tcp option foo bar;fail
 tcp option eol left;fail
 tcp option eol left 1;fail
-tcp option eol left 1;fail
 tcp option sack window;fail
 tcp option sack window 1;fail
 tcp option 256 exists;fail

@@ -311,6 +311,29 @@
     }
 ]
 
+# ct status != {expected, seen-reply, assured, confirmed, dying}
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "status"
+                }
+            },
+	    "op": "!=",
+            "right": {
+                "set": [
+                    "expected",
+                    "seen-reply",
+                    "assured",
+                    "confirmed",
+                    "dying"
+                ]
+            }
+        }
+    }
+]
+
 # ct status expected,seen-reply,assured,confirmed,snat,dnat,dying
 [
     {
@@ -985,39 +1008,6 @@
             },
             "op": "==",
             "right": "ftp"
-        }
-    }
-]
-
-# ct state . ct mark { new . 0x12345678}
-[
-    {
-        "match": {
-            "left": {
-                "concat": [
-                    {
-                        "ct": {
-                            "key": "state"
-                        }
-                    },
-                    {
-                        "ct": {
-                            "key": "mark"
-                        }
-                    }
-                ]
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    {
-                        "concat": [
-                            "new",
-                            "0x12345678"
-                        ]
-                    }
-                ]
-            }
         }
     }
 ]

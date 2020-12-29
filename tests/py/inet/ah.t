@@ -6,8 +6,6 @@
 *inet;test-inet;input
 *netdev;test-netdev;ingress
 
-# nexthdr Bug to list table.
-
 - ah nexthdr esp;ok
 - ah nexthdr ah;ok
 - ah nexthdr comp;ok

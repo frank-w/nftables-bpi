@@ -26,7 +26,7 @@ ip6 flowlabel { 33, 55, 67, 88};ok
 ip6 flowlabel != { 33, 55, 67, 88};ok
 ip6 flowlabel { 33-55};ok
 ip6 flowlabel != { 33-55};ok
-ip6 flowlabel vmap { 0 : accept, 2 : continue } ;ok
+ip6 flowlabel vmap { 0 : accept, 2 : continue };ok
 
 ip6 length 22;ok
 ip6 length != 233;ok

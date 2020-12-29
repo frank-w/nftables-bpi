@@ -43,14 +43,6 @@ inet test-inet input
   [ payload load 2b @ transport header + 0 => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
-# dccp sport ftp-data - re-mail-ck
-inet test-inet input
-  [ meta load l4proto => reg 1 ]
-  [ cmp eq reg 1 0x00000021 ]
-  [ payload load 2b @ transport header + 0 => reg 1 ]
-  [ cmp gte reg 1 0x00001400 ]
-  [ cmp lte reg 1 0x00003200 ]
-
 # dccp sport 20-50
 inet test-inet input
   [ meta load l4proto => reg 1 ]

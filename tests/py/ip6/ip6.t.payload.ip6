@@ -89,7 +89,7 @@ ip6 test-ip6 input
   [ bitwise reg 1 = ( reg 1 & 0x00ffff0f ) ^ 0x00000000 ]
   [ lookup reg 1 set __set%d 0x1 ]
 
-# ip6 flowlabel vmap { 0 : accept, 2 : continue } 
+# ip6 flowlabel vmap { 0 : accept, 2 : continue }
 __map%d test-ip6 b size 2
 __map%d test-ip6 0
 	element 00000000  : 0 [end]	element 00020000  : 0 [end]

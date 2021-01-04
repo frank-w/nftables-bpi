@@ -1429,6 +1429,8 @@ static void netlink_gen_set_stmt(struct netlink_linearize_ctx *ctx,
 			nftnl_expr_add_expr(nle, NFTNL_EXPR_DYNSET_EXPRESSIONS,
 					    netlink_gen_stmt_stateful(this));
 		}
+		nftnl_expr_set_u32(nle, NFTNL_EXPR_DYNSET_FLAGS,
+				   NFT_DYNSET_F_EXPR);
 	}
 }
 

@@ -3671,7 +3671,9 @@ static int set_key_data_error(struct eval_ctx *ctx, const struct set *set,
 
 static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 {
+	unsigned int num_stmts = 0;
 	struct table *table;
+	struct stmt *stmt;
 	const char *type;
 
 	table = table_lookup_global(ctx);
@@ -3731,6 +3733,12 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 	/* Default timeout value implies timeout support */
 	if (set->timeout)
 		set->flags |= NFT_SET_TIMEOUT;
+
+	list_for_each_entry(stmt, &set->stmt_list, list)
+		num_stmts++;
+
+	if (num_stmts > 1)
+		set->flags |= NFT_SET_EXPR;
 
 	if (set_is_anonymous(set->flags))
 		return 0;

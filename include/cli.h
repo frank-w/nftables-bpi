@@ -4,7 +4,7 @@
 #include <nftables/libnftables.h>
 #include <config.h>
 
-#if defined(HAVE_LIBREADLINE) || defined(HAVE_LIBLINENOISE)
+#if defined(HAVE_LIBREADLINE) || defined(HAVE_LIBEDIT) || defined(HAVE_LIBLINENOISE)
 extern int cli_init(struct nft_ctx *nft);
 #else
 static inline int cli_init(struct nft_ctx *nft)

@@ -24,6 +24,9 @@
 #ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>
 #include <readline/history.h>
+#elif defined(HAVE_LIBEDIT)
+#include <editline/readline.h>
+#include <editline/history.h>
 #else
 #include <linenoise.h>
 #endif
@@ -48,7 +51,26 @@ init_histfile(void)
 	snprintf(histfile, sizeof(histfile), "%s/%s", home, CMDLINE_HISTFILE);
 }
 
-#ifdef HAVE_LIBREADLINE
+#if defined(HAVE_LIBREADLINE)
+static void nft_rl_prompt_save(void)
+{
+	rl_save_prompt();
+	rl_clear_message();
+	rl_set_prompt(".... ");
+}
+#define nft_rl_prompt_restore rl_restore_prompt
+#elif defined(HAVE_LIBEDIT)
+static void nft_rl_prompt_save(void)
+{
+	rl_set_prompt(".... ");
+}
+static void nft_rl_prompt_restore(void)
+{
+	rl_set_prompt("nft> ");
+}
+#endif
+
+#if defined(HAVE_LIBREADLINE) || defined(HAVE_LIBEDIT)
 
 static struct nft_ctx *cli_nft;
 static char *multiline;
@@ -72,9 +94,7 @@ static char *cli_append_multiline(char *line)
 
 	if (multiline == NULL) {
 		multiline = line;
-		rl_save_prompt();
-		rl_clear_message();
-		rl_set_prompt(".... ");
+		nft_rl_prompt_save();
 	} else {
 		len += strlen(multiline);
 		s = malloc(len + 1);
@@ -93,7 +113,7 @@ static char *cli_append_multiline(char *line)
 	if (complete) {
 		line = multiline;
 		multiline = NULL;
-		rl_restore_prompt();
+		nft_rl_prompt_restore();
 	}
 	return line;
 }
@@ -142,7 +162,7 @@ static char **cli_completion(const char *text, int start, int end)
 int cli_init(struct nft_ctx *nft)
 {
 	cli_nft = nft;
-	rl_readline_name = "nft";
+	rl_readline_name = (char *)"nft";
 	rl_instream  = stdin;
 	rl_outstream = stdout;
 
@@ -166,7 +186,7 @@ void cli_exit(void)
 	write_history(histfile);
 }
 
-#else /* !HAVE_LIBREADLINE */
+#else /* HAVE_LINENOISE */
 
 int cli_init(struct nft_ctx *nft)
 {
@@ -195,4 +215,4 @@ void cli_exit(void)
 	linenoiseHistorySave(histfile);
 }
 
-#endif /* HAVE_LIBREADLINE */
+#endif /* HAVE_LINENOISE */

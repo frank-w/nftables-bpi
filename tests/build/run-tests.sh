@@ -2,7 +2,7 @@
 
 log_file="`pwd`/tests.log"
 dir=../..
-argument=( --without-cli --with-cli=linenoise --enable-debug --with-mini-gmp
+argument=( --without-cli --with-cli=linenoise --with-cli=editline --enable-debug --with-mini-gmp
 	   --enable-man-doc --with-xtables --with-json)
 ok=0
 failed=0

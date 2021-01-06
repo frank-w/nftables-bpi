@@ -568,6 +568,18 @@ static void segtree_linearize(struct list_head *list, const struct set *set,
 	mpz_clear(q);
 }
 
+static void interval_expr_copy(struct expr *dst, struct expr *src)
+{
+	if (src->comment)
+		dst->comment = xstrdup(src->comment);
+	if (src->timeout)
+		dst->timeout = src->timeout;
+	if (src->expiration)
+		dst->expiration = src->expiration;
+
+	list_splice_init(&src->stmt_list, &dst->stmt_list);
+}
+
 static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 				const struct elementary_interval *ei)
 {
@@ -580,17 +592,11 @@ static void set_insert_interval(struct expr *set, struct seg_tree *tree,
 
 	if (ei->expr != NULL) {
 		if (ei->expr->etype == EXPR_MAPPING) {
-			if (ei->expr->left->comment)
-				expr->comment = xstrdup(ei->expr->left->comment);
-			if (ei->expr->left->timeout)
-				expr->timeout = ei->expr->left->timeout;
+			interval_expr_copy(expr, ei->expr->left);
 			expr = mapping_expr_alloc(&ei->expr->location, expr,
 						  expr_get(ei->expr->right));
 		} else {
-			if (ei->expr->comment)
-				expr->comment = xstrdup(ei->expr->comment);
-			if (ei->expr->timeout)
-				expr->timeout = ei->expr->timeout;
+			interval_expr_copy(expr, ei->expr);
 		}
 	}
 
@@ -925,18 +931,6 @@ next:
 		expr_free(start);
 		start = NULL;
 	}
-}
-
-static void interval_expr_copy(struct expr *dst, struct expr *src)
-{
-	if (src->comment)
-		dst->comment = xstrdup(src->comment);
-	if (src->timeout)
-		dst->timeout = src->timeout;
-	if (src->expiration)
-		dst->expiration = src->expiration;
-
-	list_splice_init(&src->stmt_list, &dst->stmt_list);
 }
 
 void interval_map_decompose(struct expr *set)

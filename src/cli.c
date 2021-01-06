@@ -154,6 +154,16 @@ static void cli_complete(char *line)
 	free(line);
 }
 
+void cli_exit(void)
+{
+	rl_callback_handler_remove();
+	rl_deprep_terminal();
+	write_history(histfile);
+}
+#endif
+
+#if defined(HAVE_LIBREADLINE)
+
 static char **cli_completion(const char *text, int start, int end)
 {
 	return NULL;
@@ -179,11 +189,32 @@ int cli_init(struct nft_ctx *nft)
 	return 0;
 }
 
-void cli_exit(void)
+#elif defined(HAVE_LIBEDIT)
+
+int cli_init(struct nft_ctx *nft)
 {
-	rl_callback_handler_remove();
-	rl_deprep_terminal();
-	write_history(histfile);
+	char *line;
+
+	cli_nft = nft;
+	rl_readline_name = (char *)"nft";
+	rl_instream  = stdin;
+	rl_outstream = stdout;
+
+	init_histfile();
+
+	read_history(histfile);
+	history_set_pos(history_length);
+
+	rl_set_prompt(CMDLINE_PROMPT);
+	while ((line = readline(rl_prompt)) != NULL) {
+		line = cli_append_multiline(line);
+		if (!line)
+			continue;
+
+		cli_complete(line);
+	}
+
+	return 0;
 }
 
 #else /* HAVE_LINENOISE */

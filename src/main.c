@@ -227,7 +227,7 @@ static void show_version(void)
 {
 	const char *cli, *minigmp, *json, *xt;
 
-#if defined(HAVE_READLINE)
+#if defined(HAVE_LIBREADLINE)
 	cli = "readline";
 #elif defined(HAVE_LIBEDIT)
 	cli = "editline";

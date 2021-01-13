@@ -1,5 +1,5 @@
-AC_INIT([nftables], [0.9.7], [netfilter-devel@vger.kernel.org])
-AC_DEFINE([RELEASE_NAME], ["Anyface"], [Release name])
+AC_INIT([nftables], [0.9.8], [netfilter-devel@vger.kernel.org])
+AC_DEFINE([RELEASE_NAME], ["E.D.S."], [Release name])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
@@ -57,7 +57,7 @@ AS_IF([test "x$enable_man_doc" = "xyes"], [
 ])
 
 PKG_CHECK_MODULES([LIBMNL], [libmnl >= 1.0.4])
-PKG_CHECK_MODULES([LIBNFTNL], [libnftnl >= 1.1.8])
+PKG_CHECK_MODULES([LIBNFTNL], [libnftnl >= 1.1.9])
 
 AC_ARG_WITH([mini-gmp], [AS_HELP_STRING([--with-mini-gmp],
             [Use builtin mini-gmp (for embedded builds)])],

@@ -21,3 +21,6 @@ ct original protocol 17 ct reply proto-src 53;ok;ct protocol 17 ct reply proto-s
 
 # wrong address family
 ct reply ip daddr dead::beef;fail
+
+meta mark set ct original daddr map { 1.1.1.1 : 0x00000011 };fail
+meta mark set ct original ip daddr map { 1.1.1.1 : 0x00000011 };ok

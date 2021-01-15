@@ -1472,6 +1472,12 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 	const struct datatype *dtype;
 	struct expr *key, *data;
 
+	if (map->map->etype == EXPR_CT &&
+	    (map->map->ct.key == NFT_CT_SRC ||
+	     map->map->ct.key == NFT_CT_DST))
+		return expr_error(ctx->msgs, map->map,
+				  "specify either ip or ip6 for address matching");
+
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &map->map) < 0)
 		return -1;

@@ -24,3 +24,7 @@ ct reply ip daddr dead::beef;fail
 
 meta mark set ct original daddr map { 1.1.1.1 : 0x00000011 };fail
 meta mark set ct original ip daddr map { 1.1.1.1 : 0x00000011 };ok
+meta mark set ct original saddr . meta mark map { 1.1.1.1 . 0x00000014 : 0x0000001e };fail
+meta mark set ct original ip saddr . meta mark map { 1.1.1.1 . 0x00000014 : 0x0000001e };ok
+ct original saddr . meta mark { 1.1.1.1 . 0x00000014 };fail
+ct original ip saddr . meta mark { 1.1.1.1 . 0x00000014 };ok

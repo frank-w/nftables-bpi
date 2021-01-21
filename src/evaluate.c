@@ -1266,6 +1266,12 @@ static int expr_evaluate_concat(struct eval_ctx *ctx, struct expr **expr,
 	list_for_each_entry_safe(i, next, &(*expr)->expressions, list) {
 		unsigned dsize_bytes;
 
+		if (i->etype == EXPR_CT &&
+		    (i->ct.key == NFT_CT_SRC ||
+		     i->ct.key == NFT_CT_DST))
+			return expr_error(ctx->msgs, i,
+					  "specify either ip or ip6 for address matching");
+
 		if (expr_is_constant(*expr) && dtype && off == 0)
 			return expr_binary_error(ctx->msgs, i, *expr,
 						 "unexpected concat component, "
@@ -1477,6 +1483,17 @@ static int expr_evaluate_map(struct eval_ctx *ctx, struct expr **expr)
 	     map->map->ct.key == NFT_CT_DST))
 		return expr_error(ctx->msgs, map->map,
 				  "specify either ip or ip6 for address matching");
+	else if (map->map->etype == EXPR_CONCAT) {
+		struct expr *i;
+
+		list_for_each_entry(i, &map->map->expressions, list) {
+			if (i->etype == EXPR_CT &&
+			    (i->ct.key == NFT_CT_SRC ||
+			     i->ct.key == NFT_CT_DST))
+				return expr_error(ctx->msgs, i,
+					  "specify either ip or ip6 for address matching");
+		}
+	}
 
 	expr_set_context(&ctx->ectx, NULL, 0);
 	if (expr_evaluate(ctx, &map->map) < 0)

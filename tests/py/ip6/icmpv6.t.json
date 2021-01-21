@@ -1185,7 +1185,7 @@
             "left": {
                 "payload": {
                     "field": "max-delay",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
 	    "op": "==",
@@ -1203,7 +1203,7 @@
             "left": {
                 "payload": {
                     "field": "max-delay",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -1221,7 +1221,7 @@
             "left": {
                 "payload": {
                     "field": "max-delay",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
 	    "op": "==",
@@ -1244,7 +1244,7 @@
             "left": {
                 "payload": {
                     "field": "max-delay",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -1267,7 +1267,7 @@
             "left": {
                 "payload": {
                     "field": "max-delay",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
 	    "op": "==",
@@ -1287,7 +1287,7 @@
             "left": {
                 "payload": {
                     "field": "max-delay",
-                    "name": "icmpv6"
+                    "protocol": "icmpv6"
                 }
             },
             "op": "!=",
@@ -1300,3 +1300,18 @@
     }
 ]
 
+# icmpv6 type packet-too-big icmpv6 mtu 1280
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "mtu",
+                    "protocol": "icmpv6"
+                }
+            },
+            "op": "==",
+            "right": 1280
+        }
+    }
+]

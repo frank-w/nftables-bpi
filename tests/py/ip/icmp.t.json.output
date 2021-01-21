@@ -1,40 +1,3 @@
-# icmp type {echo-reply, destination-unreachable, source-quench, redirect, echo-request, time-exceeded, parameter-problem, timestamp-request, timestamp-reply, info-request, info-reply, address-mask-request, address-mask-reply, router-advertisement, router-solicitation} accept
-[
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "icmp"
-                }
-            },
-	    "op": "==",
-            "right": {
-                "set": [
-                    "echo-reply",
-                    "destination-unreachable",
-                    "source-quench",
-                    "redirect",
-                    "echo-request",
-                    "router-advertisement",
-                    "router-solicitation",
-                    "time-exceeded",
-                    "parameter-problem",
-                    "timestamp-request",
-                    "timestamp-reply",
-                    "info-request",
-                    "info-reply",
-                    "address-mask-request",
-                    "address-mask-reply"
-                ]
-            }
-        }
-    },
-    {
-        "accept": null
-    }
-]
-
 # icmp code { 2, 4, 54, 33, 56}
 [
     {
@@ -59,53 +22,148 @@
     }
 ]
 
-# icmp checksum { 1111, 222, 343} accept
+# icmp id 1245 log
 [
     {
         "match": {
             "left": {
                 "payload": {
-                    "field": "checksum",
+                    "field": "type",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    222,
-                    343,
-                    1111
+                    "echo-reply",
+                    "echo-request"
                 ]
             }
         }
     },
     {
-        "accept": null
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": 1245
+        }
+    },
+    {
+        "log": null
     }
 ]
 
-# icmp checksum != { 1111, 222, 343} accept
+# icmp id 22
 [
     {
         "match": {
             "left": {
                 "payload": {
-                    "field": "checksum",
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": 22
+        }
+    }
+]
+
+# icmp id != 233
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
                     "protocol": "icmp"
                 }
             },
             "op": "!=",
+            "right": 233
+        }
+    }
+]
+
+# icmp id { 33-55}
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
             "right": {
                 "set": [
-                    222,
-                    343,
-                    1111
+                    "echo-reply",
+                    "echo-request"
                 ]
             }
         }
     },
     {
-        "accept": null
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
+                ]
+            }
+        }
     }
 ]
+
 

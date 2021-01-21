@@ -485,8 +485,8 @@
             "op": "==",
             "right": {
                 "set": [
-                    "prot-unreachable",
-                    "frag-needed",
+                    2,
+                    4,
                     33,
                     54,
                     56
@@ -718,23 +718,6 @@
         "match": {
             "left": {
                 "payload": {
-                    "field": "type",
-                    "protocol": "icmp"
-                }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    "echo-reply",
-                    "echo-request"
-                ]
-            }
-        }
-    },
-    {
-        "match": {
-            "left": {
-                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
@@ -754,23 +737,6 @@
         "match": {
             "left": {
                 "payload": {
-                    "field": "type",
-                    "protocol": "icmp"
-                }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    "echo-reply",
-                    "echo-request"
-                ]
-            }
-        }
-    },
-    {
-        "match": {
-            "left": {
-                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
@@ -783,23 +749,6 @@
 
 # icmp id != 233
 [
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "icmp"
-                }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    "echo-reply",
-                    "echo-request"
-                ]
-            }
-        }
-    },
     {
         "match": {
             "left": {
@@ -892,23 +841,6 @@
 
 # icmp id { 33-55}
 [
-    {
-        "match": {
-            "left": {
-                "payload": {
-                    "field": "type",
-                    "protocol": "icmp"
-                }
-            },
-            "op": "==",
-            "right": {
-                "set": [
-                    "echo-reply",
-                    "echo-request"
-                ]
-            }
-        }
-    },
     {
         "match": {
             "left": {
@@ -1911,4 +1843,3 @@
         }
     }
 ]
-

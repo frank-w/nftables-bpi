@@ -8,7 +8,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "echo-reply"
         }
     },
@@ -27,7 +27,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "destination-unreachable"
         }
     },
@@ -46,7 +46,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "source-quench"
         }
     },
@@ -65,7 +65,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "redirect"
         }
     },
@@ -84,7 +84,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "echo-request"
         }
     },
@@ -103,7 +103,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "time-exceeded"
         }
     },
@@ -122,7 +122,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "parameter-problem"
         }
     },
@@ -141,7 +141,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "timestamp-request"
         }
     },
@@ -160,7 +160,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "timestamp-reply"
         }
     },
@@ -179,7 +179,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "info-request"
         }
     },
@@ -198,7 +198,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "info-reply"
         }
     },
@@ -217,7 +217,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "address-mask-request"
         }
     },
@@ -236,7 +236,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "address-mask-reply"
         }
     },
@@ -255,7 +255,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "router-advertisement"
         }
     },
@@ -274,7 +274,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": "router-solicitation"
         }
     },
@@ -293,7 +293,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
                     "echo-reply",
@@ -301,6 +301,8 @@
                     "source-quench",
                     "redirect",
                     "echo-request",
+                    "router-advertisement",
+                    "router-solicitation",
                     "time-exceeded",
                     "parameter-problem",
                     "timestamp-request",
@@ -308,9 +310,7 @@
                     "info-request",
                     "info-reply",
                     "address-mask-request",
-                    "address-mask-reply",
-                    "router-advertisement",
-                    "router-solicitation"
+                    "address-mask-reply"
                 ]
             }
         }
@@ -352,7 +352,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 111
         }
     },
@@ -390,9 +390,12 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
-                "range": [ 33, 55 ]
+                "range": [
+                    33,
+                    55
+                ]
             }
         }
     }
@@ -410,7 +413,10 @@
             },
             "op": "!=",
             "right": {
-                "range": [ 33, 55 ]
+                "range": [
+                    33,
+                    55
+                ]
             }
         }
     }
@@ -426,10 +432,15 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }
@@ -449,7 +460,12 @@
             "op": "!=",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }
@@ -466,11 +482,11 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    2,
-                    4,
+                    "prot-unreachable",
+                    "frag-needed",
                     33,
                     54,
                     56
@@ -514,7 +530,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 12343
         }
     },
@@ -552,9 +568,12 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
-                "range": [ 11, 343 ]
+                "range": [
+                    11,
+                    343
+                ]
             }
         }
     },
@@ -575,7 +594,10 @@
             },
             "op": "!=",
             "right": {
-                "range": [ 11, 343 ]
+                "range": [
+                    11,
+                    343
+                ]
             }
         }
     },
@@ -594,10 +616,15 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    { "range": [ 11, 343 ] }
+                    {
+                        "range": [
+                            11,
+                            343
+                        ]
+                    }
                 ]
             }
         }
@@ -620,7 +647,12 @@
             "op": "!=",
             "right": {
                 "set": [
-                    { "range": [ 11, 343 ] }
+                    {
+                        "range": [
+                            11,
+                            343
+                        ]
+                    }
                 ]
             }
         }
@@ -640,12 +672,12 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    1111,
                     222,
-                    343
+                    343,
+                    1111
                 ]
             }
         }
@@ -668,9 +700,9 @@
             "op": "!=",
             "right": {
                 "set": [
-                    1111,
                     222,
-                    343
+                    343,
+                    1111
                 ]
             }
         }
@@ -686,11 +718,28 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 1245
         }
     },
@@ -705,11 +754,28 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 22
         }
     }
@@ -717,6 +783,23 @@
 
 # icmp id != 233
 [
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
     {
         "match": {
             "left": {
@@ -737,13 +820,33 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
-                "range": [ 33, 45 ]
+                "range": [
+                    33,
+                    45
+                ]
             }
         }
     }
@@ -755,13 +858,33 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
             },
             "op": "!=",
             "right": {
-                "range": [ 33, 45 ]
+                "range": [
+                    33,
+                    45
+                ]
             }
         }
     }
@@ -773,14 +896,36 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }
@@ -793,6 +938,23 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
@@ -800,7 +962,12 @@
             "op": "!=",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }
@@ -813,11 +980,28 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "id",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
                     22,
@@ -831,6 +1015,23 @@
 
 # icmp id != { 22, 34, 333}
 [
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
     {
         "match": {
             "left": {
@@ -857,11 +1058,28 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "sequence",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 22
         }
     }
@@ -869,6 +1087,23 @@
 
 # icmp sequence != 233
 [
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
     {
         "match": {
             "left": {
@@ -889,13 +1124,33 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "sequence",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
-                "range": [ 33, 45 ]
+                "range": [
+                    33,
+                    45
+                ]
             }
         }
     }
@@ -907,13 +1162,33 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "sequence",
                     "protocol": "icmp"
                 }
             },
             "op": "!=",
             "right": {
-                "range": [ 33, 45 ]
+                "range": [
+                    33,
+                    45
+                ]
             }
         }
     }
@@ -925,11 +1200,28 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "sequence",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
                     33,
@@ -944,6 +1236,23 @@
 
 # icmp sequence != { 33, 55, 67, 88}
 [
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
     {
         "match": {
             "left": {
@@ -971,14 +1280,36 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "sequence",
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }
@@ -991,6 +1322,23 @@
         "match": {
             "left": {
                 "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
                     "field": "sequence",
                     "protocol": "icmp"
                 }
@@ -998,9 +1346,104 @@
             "op": "!=",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
+        }
+    }
+]
+
+# icmp id 1 icmp sequence 2
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": 2
+        }
+    }
+]
+
+# icmp type { echo-reply, echo-request} icmp id 1 icmp sequence 2
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    "echo-reply",
+                    "echo-request"
+                ]
+            }
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "sequence",
+                    "protocol": "icmp"
+                }
+            },
+            "op": "==",
+            "right": 2
         }
     }
 ]
@@ -1015,7 +1458,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 33
         }
     }
@@ -1031,9 +1474,12 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
-                "range": [ 22, 33 ]
+                "range": [
+                    22,
+                    33
+                ]
             }
         }
     }
@@ -1049,10 +1495,15 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    { "range": [ 22, 33 ] }
+                    {
+                        "range": [
+                            22,
+                            33
+                        ]
+                    }
                 ]
             }
         }
@@ -1072,7 +1523,12 @@
             "op": "!=",
             "right": {
                 "set": [
-                    { "range": [ 22, 33 ] }
+                    {
+                        "range": [
+                            22,
+                            33
+                        ]
+                    }
                 ]
             }
         }
@@ -1089,7 +1545,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 22
         }
     }
@@ -1121,9 +1577,12 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
-                "range": [ 33, 45 ]
+                "range": [
+                    33,
+                    45
+                ]
             }
         }
     }
@@ -1141,7 +1600,10 @@
             },
             "op": "!=",
             "right": {
-                "range": [ 33, 45 ]
+                "range": [
+                    33,
+                    45
+                ]
             }
         }
     }
@@ -1157,7 +1619,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
                     33,
@@ -1203,10 +1665,15 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }
@@ -1226,7 +1693,12 @@
             "op": "!=",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }
@@ -1243,7 +1715,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": 22
         }
     }
@@ -1275,9 +1747,12 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
-                "range": [ 33, 45 ]
+                "range": [
+                    33,
+                    45
+                ]
             }
         }
     }
@@ -1295,7 +1770,10 @@
             },
             "op": "!=",
             "right": {
-                "range": [ 33, 45 ]
+                "range": [
+                    33,
+                    45
+                ]
             }
         }
     }
@@ -1311,7 +1789,7 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
                     33,
@@ -1357,10 +1835,15 @@
                     "protocol": "icmp"
                 }
             },
-	    "op": "==",
+            "op": "==",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }
@@ -1380,7 +1863,12 @@
             "op": "!=",
             "right": {
                 "set": [
-                    { "range": [ 33, 55 ] }
+                    {
+                        "range": [
+                            33,
+                            55
+                        ]
+                    }
                 ]
             }
         }

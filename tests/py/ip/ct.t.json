@@ -216,3 +216,33 @@
     }
 ]
 
+# meta mark set ct original ip daddr map { 1.1.1.1 : 0x00000011 }
+[
+    {
+        "mangle": {
+            "key": {
+                "meta": {
+                    "key": "mark"
+                }
+            },
+            "value": {
+                "map": {
+                    "data": {
+                        "set": [
+                            [
+                                "1.1.1.1",
+                                17
+                            ]
+                        ]
+                    },
+                    "key": {
+                        "ct": {
+                            "dir": "original",
+                            "key": "ip daddr"
+                        }
+                    }
+                }
+            }
+        }
+    }
+]

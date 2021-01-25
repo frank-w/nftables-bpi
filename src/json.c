@@ -1168,19 +1168,17 @@ json_t *limit_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 		burst_unit = get_rate(stmt->limit.burst, &burst);
 	}
 
-	root = json_pack("{s:I, s:s}",
+	root = json_pack("{s:I, s:I, s:s}",
 			 "rate", rate,
+			 "burst", burst,
 			 "per", get_unit(stmt->limit.unit));
 	if (inv)
 		json_object_set_new(root, "inv", json_boolean(inv));
 	if (rate_unit)
 		json_object_set_new(root, "rate_unit", json_string(rate_unit));
-	if (burst && burst != 5) {
-		json_object_set_new(root, "burst", json_integer(burst));
-		if (burst_unit)
-			json_object_set_new(root, "burst_unit",
-					    json_string(burst_unit));
-	}
+	if (burst_unit)
+		json_object_set_new(root, "burst_unit",
+				    json_string(burst_unit));
 
 	return json_pack("{s:o}", "limit", root);
 }

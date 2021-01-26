@@ -38,7 +38,8 @@ void erec_add_location(struct error_record *erec, const struct location *loc)
 {
 	assert(erec->num_locations < EREC_LOCATIONS_MAX);
 	erec->locations[erec->num_locations] = *loc;
-	erec->locations[erec->num_locations].indesc = loc->indesc;
+	erec->locations[erec->num_locations].indesc = loc->indesc ?
+						    : &internal_indesc;
 	erec->num_locations++;
 }
 

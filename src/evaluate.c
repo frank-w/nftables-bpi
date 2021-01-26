@@ -3789,8 +3789,8 @@ static bool evaluate_priority(struct eval_ctx *ctx, struct prio_spec *prio,
 	int prio_snd;
 	char op;
 
-	ctx->ectx.dtype = &priority_type;
-	ctx->ectx.len = NFT_NAME_MAXLEN * BITS_PER_BYTE;
+	expr_set_context(&ctx->ectx, &priority_type, NFT_NAME_MAXLEN * BITS_PER_BYTE);
+
 	if (expr_evaluate(ctx, &prio->expr) < 0)
 		return false;
 	if (prio->expr->etype != EXPR_VALUE) {

@@ -246,3 +246,82 @@
         }
     }
 ]
+
+# meta mark set ct original ip saddr . meta mark map { 1.1.1.1 . 0x00000014 : 0x0000001e }
+[
+    {
+        "mangle": {
+            "key": {
+                "meta": {
+                    "key": "mark"
+                }
+            },
+            "value": {
+                "map": {
+                    "data": {
+                        "set": [
+                            [
+                                {
+                                    "concat": [
+                                        "1.1.1.1",
+                                        20
+                                    ]
+                                },
+                                30
+                            ]
+                        ]
+                    },
+                    "key": {
+                        "concat": [
+                            {
+                                "ct": {
+                                    "dir": "original",
+                                    "key": "ip saddr"
+                                }
+                            },
+                            {
+                                "meta": {
+                                    "key": "mark"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
+
+# ct original ip saddr . meta mark { 1.1.1.1 . 0x00000014 }
+[
+    {
+        "match": {
+            "left": {
+                "concat": [
+                    {
+                        "ct": {
+                            "dir": "original",
+                            "key": "ip saddr"
+                        }
+                    },
+                    {
+                        "meta": {
+                            "key": "mark"
+                        }
+                    }
+                ]
+            },
+            "op": "==",
+            "right": {
+                "set": [
+                    {
+                        "concat": [
+                            "1.1.1.1",
+                            20
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+]

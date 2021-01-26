@@ -2491,6 +2491,7 @@ static void stmt_reject_postprocess(struct rule_pp_ctx *rctx)
 		stmt->reject.family = protocol;
 		break;
 	case NFPROTO_BRIDGE:
+	case NFPROTO_NETDEV:
 		if (stmt->reject.type == NFT_REJECT_ICMPX_UNREACH) {
 			datatype_set(stmt->reject.expr, &icmpx_code_type);
 			break;

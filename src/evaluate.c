@@ -2718,7 +2718,7 @@ static int stmt_evaluate_reject_bridge(struct eval_ctx *ctx, struct stmt *stmt,
 	const struct proto_desc *desc;
 
 	desc = ctx->pctx.protocol[PROTO_BASE_LL_HDR].desc;
-	if (desc != &proto_eth && desc != &proto_vlan)
+	if (desc != &proto_eth && desc != &proto_vlan && desc != &proto_netdev)
 		return stmt_binary_error(ctx,
 					 &ctx->pctx.protocol[PROTO_BASE_LL_HDR],
 					 stmt, "unsupported link layer protocol");
@@ -2758,6 +2758,7 @@ static int stmt_evaluate_reject_family(struct eval_ctx *ctx, struct stmt *stmt,
 		}
 		break;
 	case NFPROTO_BRIDGE:
+	case NFPROTO_NETDEV:
 		if (stmt_evaluate_reject_bridge(ctx, stmt, expr) < 0)
 			return -1;
 		break;

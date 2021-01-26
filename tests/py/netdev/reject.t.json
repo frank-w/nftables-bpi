@@ -1,0 +1,137 @@
+# reject with icmp type host-unreachable
+[
+    {
+        "reject": {
+            "expr": "host-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type net-unreachable
+[
+    {
+        "reject": {
+            "expr": "net-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type prot-unreachable
+[
+    {
+        "reject": {
+            "expr": "prot-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type port-unreachable
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type net-prohibited
+[
+    {
+        "reject": {
+            "expr": "net-prohibited",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type host-prohibited
+[
+    {
+        "reject": {
+            "expr": "host-prohibited",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmp type admin-prohibited
+[
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmp"
+        }
+    }
+]
+
+# reject with icmpv6 type no-route
+[
+    {
+        "reject": {
+            "expr": "no-route",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type admin-prohibited
+[
+    {
+        "reject": {
+            "expr": "admin-prohibited",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type addr-unreachable
+[
+    {
+        "reject": {
+            "expr": "addr-unreachable",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type port-unreachable
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type policy-fail
+[
+    {
+        "reject": {
+            "expr": "policy-fail",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject with icmpv6 type reject-route
+[
+    {
+        "reject": {
+            "expr": "reject-route",
+            "type": "icmpv6"
+        }
+    }
+]
+
+# reject
+[
+    {
+        "reject": null
+    }
+]
+

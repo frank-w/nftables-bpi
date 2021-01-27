@@ -19,7 +19,7 @@ if [ ! -d $testdir ]; then
 	echo "Failed to create test directory" >&2
 	exit 1
 fi
-trap "rm -rf $testdir; $nft flush ruleset" EXIT
+trap 'rm -rf $testdir; $nft flush ruleset' EXIT
 
 command_file=$(mktemp -p $testdir)
 output_file=$(mktemp -p $testdir)

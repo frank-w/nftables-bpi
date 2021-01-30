@@ -22,6 +22,10 @@ EXPECTED="table inet t {
 			     2.3.4.5 . 6.7.8.9 : 0x00000002 }
 	}
 
+	map m4 {
+		typeof        iifname . ip protocol . th dport : verdict
+	}
+
 	chain c {
 		ct mark set osf name map @m1
 		ether type vlan meta mark set vlan id map @m2

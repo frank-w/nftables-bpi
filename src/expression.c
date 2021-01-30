@@ -252,6 +252,21 @@ static void verdict_expr_destroy(struct expr *expr)
 	expr_free(expr->chain);
 }
 
+static int verdict_expr_build_udata(struct nftnl_udata_buf *udbuf,
+				    const struct expr *expr)
+{
+	return 0;
+}
+
+static struct expr *verdict_expr_parse_udata(const struct nftnl_udata *attr)
+{
+	struct expr *e = verdict_expr_alloc(&internal_location, 0, NULL);
+
+	e = symbol_expr_alloc(&internal_location, SYMBOL_VALUE, NULL, "verdict");
+	e->len = NFT_REG_SIZE * BITS_PER_BYTE;
+	return e;
+}
+
 static const struct expr_ops verdict_expr_ops = {
 	.type		= EXPR_VERDICT,
 	.name		= "verdict",
@@ -260,6 +275,8 @@ static const struct expr_ops verdict_expr_ops = {
 	.cmp		= verdict_expr_cmp,
 	.clone		= verdict_expr_clone,
 	.destroy	= verdict_expr_destroy,
+	.build_udata	= verdict_expr_build_udata,
+	.parse_udata	= verdict_expr_parse_udata,
 };
 
 struct expr *verdict_expr_alloc(const struct location *loc,

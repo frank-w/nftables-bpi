@@ -1315,3 +1315,31 @@
         }
     }
 ]
+
+# icmpv6 type parameter-problem icmpv6 code no-route
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "icmpv6"
+                }
+            },
+            "op": "==",
+            "right": "parameter-problem"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "code",
+                    "protocol": "icmpv6"
+                }
+            },
+            "op": "==",
+            "right": "no-route"
+        }
+    }
+]

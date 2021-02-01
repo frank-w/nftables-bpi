@@ -92,3 +92,5 @@ icmpv6 max-delay {33, 55, 67, 88};ok
 icmpv6 max-delay != {33, 55, 67, 88};ok
 icmpv6 max-delay {33-55};ok
 icmpv6 max-delay != {33-55};ok
+
+icmpv6 type parameter-problem icmpv6 code no-route;ok

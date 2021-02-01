@@ -86,3 +86,5 @@ icmp gateway != { 33-55};ok
 icmp gateway != 34;ok
 icmp gateway != { 333, 334};ok
 
+icmp code 1 icmp type 2;ok;icmp type 2 icmp code host-unreachable
+icmp code != 1 icmp type 2 icmp mtu 5;fail

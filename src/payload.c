@@ -627,6 +627,40 @@ void payload_dependency_release(struct payload_dep_ctx *ctx)
 	ctx->pdep  = NULL;
 }
 
+static uint8_t icmp_dep_to_type(enum icmp_hdr_field_type t)
+{
+	switch (t) {
+	case PROTO_ICMP_ANY:
+		BUG("Invalid map for simple dependency");
+	case PROTO_ICMP_ECHO: return ICMP_ECHO;
+	case PROTO_ICMP6_ECHO: return ICMP6_ECHO_REQUEST;
+	case PROTO_ICMP_MTU: return ICMP_DEST_UNREACH;
+	case PROTO_ICMP_ADDRESS: return ICMP_REDIRECT;
+	case PROTO_ICMP6_MTU: return ICMP6_PACKET_TOO_BIG;
+	case PROTO_ICMP6_MGMQ: return MLD_LISTENER_QUERY;
+	case PROTO_ICMP6_PPTR: return ICMP6_PARAM_PROB;
+	}
+
+	BUG("Missing icmp type mapping");
+}
+
+static bool payload_may_dependency_kill_icmp(struct payload_dep_ctx *ctx, struct expr *expr)
+{
+	const struct expr *dep = ctx->pdep->expr;
+	uint8_t icmp_type;
+
+	icmp_type = expr->payload.tmpl->icmp_dep;
+	if (icmp_type == PROTO_ICMP_ANY)
+		return false;
+
+	if (dep->left->payload.desc != expr->payload.desc)
+		return false;
+
+	icmp_type = icmp_dep_to_type(expr->payload.tmpl->icmp_dep);
+
+	return ctx->icmp_type == icmp_type;
+}
+
 static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
 					unsigned int family, struct expr *expr)
 {
@@ -661,6 +695,14 @@ static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
 		break;
 	}
 
+	if (expr->payload.base == PROTO_BASE_TRANSPORT_HDR &&
+	    dep->left->payload.base == PROTO_BASE_TRANSPORT_HDR) {
+		if (dep->left->payload.desc == &proto_icmp)
+			return payload_may_dependency_kill_icmp(ctx, expr);
+		if (dep->left->payload.desc == &proto_icmp6)
+			return payload_may_dependency_kill_icmp(ctx, expr);
+	}
+
 	return true;
 }
 
@@ -680,10 +722,6 @@ void payload_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 	if (payload_dependency_exists(ctx, expr->payload.base) &&
 	    payload_may_dependency_kill(ctx, family, expr))
 		payload_dependency_release(ctx);
-	else if (ctx->icmp_type && ctx->pdep) {
-		fprintf(stderr, "Did not kill \n");
-		payload_dependency_release(ctx);
-	}
 }
 
 void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
@@ -705,23 +743,6 @@ void exthdr_dependency_kill(struct payload_dep_ctx *ctx, struct expr *expr,
 	default:
 		break;
 	}
-}
-
-static uint8_t icmp_dep_to_type(enum icmp_hdr_field_type t)
-{
-	switch (t) {
-	case PROTO_ICMP_ANY:
-		BUG("Invalid map for simple dependency");
-	case PROTO_ICMP_ECHO: return ICMP_ECHO;
-	case PROTO_ICMP6_ECHO: return ICMP6_ECHO_REQUEST;
-	case PROTO_ICMP_MTU: return ICMP_DEST_UNREACH;
-	case PROTO_ICMP_ADDRESS: return ICMP_REDIRECT;
-	case PROTO_ICMP6_MTU: return ICMP6_PACKET_TOO_BIG;
-	case PROTO_ICMP6_MGMQ: return MLD_LISTENER_QUERY;
-	case PROTO_ICMP6_PPTR: return ICMP6_PARAM_PROB;
-	}
-
-	BUG("Missing icmp type mapping");
 }
 
 /**

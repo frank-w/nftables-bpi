@@ -93,6 +93,7 @@ enum ops {
 	OP_GT,
 	OP_LTE,
 	OP_GTE,
+	OP_NEG,
 	__OP_MAX
 };
 #define OP_MAX		(__OP_MAX - 1)

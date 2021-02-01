@@ -4639,6 +4639,7 @@ relational_op		:	EQ		{ $$ = OP_EQ; }
 			|	GT		{ $$ = OP_GT; }
 			|	GTE		{ $$ = OP_GTE; }
 			|	LTE		{ $$ = OP_LTE; }
+			|	NOT		{ $$ = OP_NEG; }
 			;
 
 verdict_expr		:	ACCEPT

@@ -560,6 +560,7 @@ const char *expr_op_symbols[] = {
 	[OP_GT]		= ">",
 	[OP_LTE]	= "<=",
 	[OP_GTE]	= ">=",
+	[OP_NEG]	= "!",
 };
 
 static void unary_expr_print(const struct expr *expr, struct output_ctx *octx)

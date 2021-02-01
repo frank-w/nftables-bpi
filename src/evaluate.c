@@ -1958,6 +1958,14 @@ static int expr_evaluate_relational(struct eval_ctx *ctx, struct expr **expr)
 
 		/* fall through */
 	case OP_NEQ:
+	case OP_NEG:
+		if (rel->op == OP_NEG &&
+		    (right->etype != EXPR_VALUE ||
+		     right->dtype->basetype == NULL ||
+		     right->dtype->basetype->type != TYPE_BITMASK))
+			return expr_binary_error(ctx->msgs, left, right,
+						 "negation can only be used with singleton bitmask values");
+
 		switch (right->etype) {
 		case EXPR_RANGE:
 			if (byteorder_conversion(ctx, &rel->left, BYTEORDER_BIG_ENDIAN) < 0)

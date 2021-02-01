@@ -2167,7 +2167,7 @@ static void relational_binop_postprocess(struct rule_pp_ctx *ctx, struct expr *e
 {
 	struct expr *binop = expr->left, *value = expr->right;
 
-	if (binop->op == OP_AND && expr->op == OP_NEQ &&
+	if (binop->op == OP_AND && (expr->op == OP_NEQ || expr->op == OP_EQ) &&
 	    value->dtype->basetype &&
 	    value->dtype->basetype->type == TYPE_BITMASK &&
 	    !mpz_cmp_ui(value->value, 0)) {
@@ -2180,8 +2180,16 @@ static void relational_binop_postprocess(struct rule_pp_ctx *ctx, struct expr *e
 
 		expr->left  = expr_get(binop->left);
 		expr->right = binop_tree_to_list(NULL, binop->right);
-		expr->op    = OP_IMPLICIT;
-
+		switch (expr->op) {
+		case OP_NEQ:
+			expr->op = OP_IMPLICIT;
+			break;
+		case OP_EQ:
+			expr->op = OP_NEG;
+			break;
+		default:
+			BUG("unknown operation type %d\n", expr->op);
+		}
 		expr_free(binop);
 	} else if (binop->left->dtype->flags & DTYPE_F_PREFIX &&
 		   binop->op == OP_AND && expr->right->etype == EXPR_VALUE &&

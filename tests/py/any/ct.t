@@ -30,6 +30,7 @@ ct status != {expected, seen-reply, assured, confirmed, dying};ok
 ct status expected,seen-reply,assured,confirmed,snat,dnat,dying;ok
 ct status snat;ok
 ct status dnat;ok
+ct status ! dnat;ok
 ct status xxx;fail
 
 ct mark 0;ok;ct mark 0x00000000

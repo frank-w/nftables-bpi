@@ -490,7 +490,11 @@ static void netlink_gen_flagcmp(struct netlink_linearize_ctx *ctx,
 
 	nle = alloc_nft_expr("cmp");
 	netlink_put_register(nle, NFTNL_EXPR_CMP_SREG, sreg);
-	nftnl_expr_set_u32(nle, NFTNL_EXPR_CMP_OP, NFT_CMP_NEQ);
+	if (expr->op == OP_NEG)
+		nftnl_expr_set_u32(nle, NFTNL_EXPR_CMP_OP, NFT_CMP_EQ);
+	else
+		nftnl_expr_set_u32(nle, NFTNL_EXPR_CMP_OP, NFT_CMP_NEQ);
+
 	nftnl_expr_set(nle, NFTNL_EXPR_CMP_DATA, nld.value, nld.len);
 	nft_rule_add_expr(ctx, nle, &expr->location);
 
@@ -518,6 +522,7 @@ static void netlink_gen_relational(struct netlink_linearize_ctx *ctx,
 	case OP_GT:
 	case OP_LTE:
 	case OP_GTE:
+	case OP_NEG:
 		break;
 	default:
 		BUG("invalid relational operation %u\n", expr->op);
@@ -547,7 +552,7 @@ static void netlink_gen_relational(struct netlink_linearize_ctx *ctx,
 		}
 		break;
 	default:
-		if (expr->op == OP_IMPLICIT &&
+		if ((expr->op == OP_IMPLICIT || expr->op == OP_NEG) &&
 		    expr->right->dtype->basetype != NULL &&
 		    expr->right->dtype->basetype->type == TYPE_BITMASK)
 			return netlink_gen_flagcmp(ctx, expr, dreg);

@@ -1,103 +1,3 @@
-# reject with icmp type host-unreachable
-[
-    {
-        "reject": {
-            "expr": "host-unreachable",
-            "type": "icmp"
-        }
-    }
-]
-
-# reject with icmp type net-unreachable
-[
-    {
-        "reject": {
-            "expr": "net-unreachable",
-            "type": "icmp"
-        }
-    }
-]
-
-# reject with icmp type prot-unreachable
-[
-    {
-        "reject": {
-            "expr": "prot-unreachable",
-            "type": "icmp"
-        }
-    }
-]
-
-# reject with icmp type net-prohibited
-[
-    {
-        "reject": {
-            "expr": "net-prohibited",
-            "type": "icmp"
-        }
-    }
-]
-
-# reject with icmp type host-prohibited
-[
-    {
-        "reject": {
-            "expr": "host-prohibited",
-            "type": "icmp"
-        }
-    }
-]
-
-# reject with icmp type admin-prohibited
-[
-    {
-        "reject": {
-            "expr": "admin-prohibited",
-            "type": "icmp"
-        }
-    }
-]
-
-# reject with icmpv6 type no-route
-[
-    {
-        "reject": {
-            "expr": "no-route",
-            "type": "icmpv6"
-        }
-    }
-]
-
-# reject with icmpv6 type admin-prohibited
-[
-    {
-        "reject": {
-            "expr": "admin-prohibited",
-            "type": "icmpv6"
-        }
-    }
-]
-
-# reject with icmpv6 type addr-unreachable
-[
-    {
-        "reject": {
-            "expr": "addr-unreachable",
-            "type": "icmpv6"
-        }
-    }
-]
-
-# reject with icmpv6 type port-unreachable
-[
-    {
-         "reject": {
-            "expr": "port-unreachable",
-            "type": "icmpv6"
-        }
-    }
-]
-
 # mark 12345 ip protocol tcp reject with tcp reset
 [
     {
@@ -130,10 +30,13 @@
     }
 ]
 
-# reject with icmpx type port-unreachable
+# reject
 [
     {
-        "reject": null
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpx"
+        }
     }
 ]
 
@@ -156,3 +59,26 @@
         }
     }
 ]
+
+# ether type vlan reject
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "vlan"
+        }
+    },
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpx"
+        }
+    }
+]
+

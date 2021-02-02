@@ -25,6 +25,16 @@
     }
 ]
 
+# reject
+[
+    {
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmpx"
+        }
+    }
+]
+
 # meta nfproto ipv4 reject
 [
     {
@@ -42,13 +52,6 @@
             "expr": "port-unreachable",
             "type": "icmpv6"
         }
-    }
-]
-
-# reject with icmpx type port-unreachable
-[
-    {
-        "reject": null
     }
 ]
 

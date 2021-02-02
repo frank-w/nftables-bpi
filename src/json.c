@@ -1380,24 +1380,16 @@ json_t *reject_stmt_json(const struct stmt *stmt, struct output_ctx *octx)
 		type = "tcp reset";
 		break;
 	case NFT_REJECT_ICMPX_UNREACH:
-		if (stmt->reject.icmp_code == NFT_REJECT_ICMPX_PORT_UNREACH)
-			break;
 		type = "icmpx";
 		jexpr = expr_print_json(stmt->reject.expr, octx);
 		break;
 	case NFT_REJECT_ICMP_UNREACH:
 		switch (stmt->reject.family) {
 		case NFPROTO_IPV4:
-			if (!stmt->reject.verbose_print &&
-			    stmt->reject.icmp_code == ICMP_PORT_UNREACH)
-				break;
 			type = "icmp";
 			jexpr = expr_print_json(stmt->reject.expr, octx);
 			break;
 		case NFPROTO_IPV6:
-			if (!stmt->reject.verbose_print &&
-			    stmt->reject.icmp_code == ICMP6_DST_UNREACH_NOPORT)
-				break;
 			type = "icmpv6";
 			jexpr = expr_print_json(stmt->reject.expr, octx);
 			break;

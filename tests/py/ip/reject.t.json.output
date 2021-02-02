@@ -1,7 +1,10 @@
-# reject with icmp type port-unreachable
+# reject
 [
     {
-        "reject": null
+        "reject": {
+            "expr": "port-unreachable",
+            "type": "icmp"
+        }
     }
 ]
 

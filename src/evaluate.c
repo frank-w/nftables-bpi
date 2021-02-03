@@ -1393,8 +1393,15 @@ static int expr_evaluate_set_elem(struct eval_ctx *ctx, struct expr **expr)
 {
 	struct expr *elem = *expr;
 
-	if (ctx->set && __expr_evaluate_set_elem(ctx, elem) < 0)
-		return -1;
+	if (ctx->set) {
+		const struct expr *key;
+
+		if (__expr_evaluate_set_elem(ctx, elem) < 0)
+			return -1;
+
+		key = ctx->set->key;
+		__expr_set_context(&ctx->ectx, key->dtype, key->byteorder, key->len, 0);
+	}
 
 	if (expr_evaluate(ctx, &elem->key) < 0)
 		return -1;

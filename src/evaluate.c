@@ -1598,7 +1598,7 @@ static int expr_evaluate_mapping(struct eval_ctx *ctx, struct expr **expr)
 		else
 			datalen = set->data->len;
 
-		expr_set_context(&ctx->ectx, set->data->dtype, datalen);
+		__expr_set_context(&ctx->ectx, set->data->dtype, set->data->byteorder, datalen, 0);
 	} else {
 		assert((set->flags & NFT_SET_MAP) == 0);
 	}

@@ -81,7 +81,7 @@ inet test-inet input
 # tcp dport vmap { 22 : accept, 23 : drop }
 __map%d test-inet b
 __map%d test-inet 0
-	element 00001600  : 0 [end]	element 00001700  : 0 [end]
+	element 00001600  : accept 0 [end]	element 00001700  : drop 0 [end]
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
@@ -91,7 +91,7 @@ inet test-inet input
 # tcp dport vmap { 25:accept, 28:drop }
 __map%d test-inet b
 __map%d test-inet 0
-	element 00001900  : 0 [end]	element 00001c00  : 0 [end]
+	element 00001900  : accept 0 [end]	element 00001c00  : drop 0 [end]
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]
@@ -190,7 +190,7 @@ inet test-inet input
 # tcp sport vmap { 25:accept, 28:drop }
 __map%d test-inet b
 __map%d test-inet 0
-	element 00001900  : 0 [end]	element 00001c00  : 0 [end]
+	element 00001900  : accept 0 [end]	element 00001c00  : drop 0 [end]
 inet test-inet input
   [ meta load l4proto => reg 1 ]
   [ cmp eq reg 1 0x00000006 ]

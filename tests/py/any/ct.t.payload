@@ -485,7 +485,7 @@ ip test-ip4 output
 # ct state . ct mark vmap { new . 0x12345678 : drop, established . 0x87654321 : accept}
 __map%d test-ip4 b size 2
 __map%d test-ip4 0
-	element 00000008 12345678  : 0 [end]	element 00000002 87654321  : 0 [end]
+	element 00000008 12345678  : drop 0 [end]	element 00000002 87654321  : accept 0 [end]
 ip test-ip4 output 
   [ ct load state => reg 1 ]
   [ ct load mark => reg 9 ]

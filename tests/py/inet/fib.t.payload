@@ -16,7 +16,7 @@ ip test-ip prerouting
 # fib daddr . iif type vmap { blackhole : drop, prohibit : drop, unicast : accept }
 __map%d test-ip b
 __map%d test-ip 0
-        element 00000006  : 0 [end]     element 00000008  : 0 [end]     element 00000001  : 0 [end]
+	element 00000006  : drop 0 [end]	element 00000008  : drop 0 [end]	element 00000001  : accept 0 [end]
 ip test-ip prerouting
   [ fib daddr . iif type => reg 1 ]
   [ lookup reg 1 set __map%d dreg 0 ]

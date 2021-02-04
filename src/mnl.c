@@ -1544,6 +1544,9 @@ int mnl_nft_setelem_add(struct netlink_ctx *ctx, const struct set *set,
 	nftnl_set_set_str(nls, NFTNL_SET_NAME, h->set.name);
 	if (h->set_id)
 		nftnl_set_set_u32(nls, NFTNL_SET_ID, h->set_id);
+	if (set_is_datamap(set->flags))
+		nftnl_set_set_u32(nls, NFTNL_SET_DATA_TYPE,
+				  dtype_map_to_kernel(set->data->dtype));
 
 	alloc_setelem_cache(expr, nls);
 	netlink_dump_set(nls, ctx);

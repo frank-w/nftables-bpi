@@ -44,7 +44,7 @@ inet test-inet input
 # ip6 dscp vmap { 0x04 : accept, 0x3f : continue } counter
 __map%d test-inet b size 2
 __map%d test-inet 0
-	element 00000001  : 0 [end]	element 0000c00f  : 0 [end]
+	element 00000001  : accept 0 [end]	element 0000c00f  : continue 0 [end]
 ip6 test-ip6 input
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]
@@ -116,7 +116,7 @@ inet test-inet input
 # ip6 flowlabel vmap { 0 : accept, 2 : continue }
 __map%d test-inet b size 2
 __map%d test-inet 0
-	element 00000000  : 0 [end]	element 00020000  : 0 [end]
+	element 00000000  : accept 0 [end]	element 00020000  : continue 0 [end]
 inet test-inet input 
   [ meta load nfproto => reg 1 ]
   [ cmp eq reg 1 0x0000000a ]

@@ -55,7 +55,7 @@ bridge test-bridge input
 # ip dscp vmap { cs1 : continue , cs4 : accept } counter
 __map%d test-bridge b size 2
 __map%d test-bridge 0
-	element 00000020  : 0 [end]	element 00000080  : 0 [end]
+	element 00000020  : continue 0 [end]	element 00000080  : accept 0 [end]
 bridge test-bridge input 
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]
@@ -686,7 +686,7 @@ bridge test-bridge input
 # ip hdrlength vmap { 0-4 : drop, 5 : accept, 6 : continue } counter
 __map%d test-bridge f size 4
 __map%d test-bridge 0
-	element 00000000  : 0 [end]	element 00000005  : 0 [end]	element 00000006  : 0 [end]	element 00000007  : 1 [end]
+	element 00000000  : drop 0 [end]	element 00000005  : accept 0 [end]	element 00000006  : continue 0 [end]	element 00000007  : drop 1 [end]
 bridge test-bridge input 
   [ meta load protocol => reg 1 ]
   [ cmp eq reg 1 0x00000008 ]

@@ -112,7 +112,7 @@ ip test-ip4 postrouting
 # iifname "eth0" ct state established,new tcp dport vmap {22 : drop, 222 : drop } masquerade
 __map%d test-ip4 b
 __map%d test-ip4 0
-	element 00001600  : 0 [end]	element 0000de00  : 0 [end]
+	element 00001600  : drop 0 [end]	element 0000de00  : drop 0 [end]
 ip test-ip4 postrouting
   [ meta load iifname => reg 1 ]
   [ cmp eq reg 1 0x30687465 0x00000000 0x00000000 0x00000000 ]

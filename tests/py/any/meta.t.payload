@@ -728,7 +728,7 @@ ip test-ip4 output
 # meta iif . meta oif vmap { "lo" . "lo" : drop }
 __map%d test-ip4 b
 __map%d test-ip4 0
-	element 00000001 00000001  : 0 [end]
+	element 00000001 00000001  : drop 0 [end]
 ip test-ip4 output
   [ meta load iif => reg 1 ]
   [ meta load oif => reg 9 ]

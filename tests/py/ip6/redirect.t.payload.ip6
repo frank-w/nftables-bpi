@@ -178,7 +178,7 @@ ip6 test-ip6 output
 # iifname "eth0" ct state established,new tcp dport vmap {22 : drop, 222 : drop } redirect
 __map%d test-ip6 b
 __map%d test-ip6 0
-	element 00001600  : 0 [end]	element 0000de00  : 0 [end]
+	element 00001600  : drop 0 [end]	element 0000de00  : drop 0 [end]
 ip6 test-ip6 output
   [ meta load iifname => reg 1 ]
   [ cmp eq reg 1 0x30687465 0x00000000 0x00000000 0x00000000 ]

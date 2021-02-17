@@ -842,6 +842,9 @@ static int netlink_events_newgen_cb(const struct nlmsghdr *nlh, int type,
 	char name[256] = "";
 	int genid = -1, pid = -1;
 
+	if (monh->format != NFTNL_OUTPUT_DEFAULT)
+		return MNL_CB_OK;
+
 	mnl_attr_for_each(attr, nlh, sizeof(struct nfgenmsg)) {
 		switch (mnl_attr_get_type(attr)) {
 		case NFTA_GEN_ID:

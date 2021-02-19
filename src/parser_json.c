@@ -3893,6 +3893,7 @@ int nft_parse_json_buffer(struct nft_ctx *nft, const char *buf,
 	};
 	int ret;
 
+	parser_init(nft, nft->state, msgs, cmds, nft->top_scope);
 	nft->json_root = json_loads(buf, 0, NULL);
 	if (!nft->json_root)
 		return -EINVAL;
@@ -3921,6 +3922,7 @@ int nft_parse_json_filename(struct nft_ctx *nft, const char *filename,
 	json_error_t err;
 	int ret;
 
+	parser_init(nft, nft->state, msgs, cmds, nft->top_scope);
 	nft->json_root = json_load_file(filename, 0, &err);
 	if (!nft->json_root)
 		return -EINVAL;

@@ -25,6 +25,7 @@
 #include <misspell.h>
 #include <json.h>
 #include <cache.h>
+#include <owner.h>
 
 #include <libnftnl/common.h>
 #include <libnftnl/ruleset.h>
@@ -1407,6 +1408,7 @@ struct table *table_lookup_fuzzy(const struct handle *h,
 
 static const char *table_flags_name[TABLE_FLAGS_MAX] = {
 	"dormant",
+	"owner",
 };
 
 const char *table_flag_name(uint32_t flag)
@@ -1451,8 +1453,13 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 	const char *family = family2str(table->handle.family);
 
 	nft_print(octx, "table %s %s {", family, table->handle.table.name);
+	if (nft_output_handle(octx) || table->flags & TABLE_F_OWNER)
+		nft_print(octx, " #");
 	if (nft_output_handle(octx))
-		nft_print(octx, " # handle %" PRIu64, table->handle.handle.id);
+		nft_print(octx, " handle %" PRIu64, table->handle.handle.id);
+	if (table->flags & TABLE_F_OWNER)
+		nft_print(octx, " progname %s", get_progname(table->owner));
+
 	nft_print(octx, "\n");
 	table_print_flags(table, &delim, octx);
 

@@ -1553,7 +1553,10 @@ table_block_alloc	:	/* empty */
 table_options		:	FLAGS		STRING
 			{
 				if (strcmp($2, "dormant") == 0) {
-					$<table>0->flags = TABLE_F_DORMANT;
+					$<table>0->flags |= TABLE_F_DORMANT;
+					xfree($2);
+				} else if (strcmp($2, "owner") == 0) {
+					$<table>0->flags |= TABLE_F_OWNER;
 					xfree($2);
 				} else {
 					erec_queue(error(&@2, "unknown table option %s", $2),

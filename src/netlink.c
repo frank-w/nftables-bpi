@@ -614,6 +614,7 @@ struct table *netlink_delinearize_table(struct netlink_ctx *ctx,
 	table->handle.table.name = xstrdup(nftnl_table_get_str(nlt, NFTNL_TABLE_NAME));
 	table->flags	     = nftnl_table_get_u32(nlt, NFTNL_TABLE_FLAGS);
 	table->handle.handle.id = nftnl_table_get_u64(nlt, NFTNL_TABLE_HANDLE);
+	table->owner	     = nftnl_table_get_u32(nlt, NFTNL_TABLE_OWNER);
 
 	if (nftnl_table_is_set(nlt, NFTNL_TABLE_USERDATA)) {
 		udata = nftnl_table_get_data(nlt, NFTNL_TABLE_USERDATA, &ulen);

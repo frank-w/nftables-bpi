@@ -131,8 +131,9 @@ struct symbol *symbol_get(const struct scope *scope, const char *identifier);
 
 enum table_flags {
 	TABLE_F_DORMANT		= (1 << 0),
+	TABLE_F_OWNER		= (1 << 1),
 };
-#define TABLE_FLAGS_MAX 1
+#define TABLE_FLAGS_MAX		2
 
 const char *table_flag_name(uint32_t flag);
 
@@ -162,6 +163,7 @@ struct table {
 	struct list_head	chain_bindings;
 	enum table_flags 	flags;
 	unsigned int		refcnt;
+	uint32_t		owner;
 	const char		*comment;
 };
 

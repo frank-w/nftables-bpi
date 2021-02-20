@@ -61,6 +61,7 @@ libnftables_la_SOURCES =			\
 		netlink_delinearize.c		\
 		misspell.c			\
 		monitor.c			\
+		owner.c				\
 		segtree.c			\
 		rbtree.c			\
 		gmputil.c			\

@@ -444,7 +444,7 @@ static json_t *table_flags_json(const struct table *table)
 
 	while (flags) {
 		if (flags & 0x1) {
-			tmp = json_string(table_flags_name[i]);
+			tmp = json_string(table_flag_name(i));
 			json_array_append_new(root, tmp);
 		}
 		flags >>= 1;

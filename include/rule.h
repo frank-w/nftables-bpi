@@ -134,7 +134,7 @@ enum table_flags {
 };
 #define TABLE_FLAGS_MAX 1
 
-extern const char *table_flags_name[TABLE_FLAGS_MAX];
+const char *table_flag_name(uint32_t flag);
 
 /**
  * struct table - nftables table

@@ -1405,29 +1405,40 @@ struct table *table_lookup_fuzzy(const struct handle *h,
 	return st.obj;
 }
 
-const char *table_flags_name[TABLE_FLAGS_MAX] = {
+static const char *table_flags_name[TABLE_FLAGS_MAX] = {
 	"dormant",
 };
 
-static void table_print_options(const struct table *table, const char **delim,
-				struct output_ctx *octx)
+const char *table_flag_name(uint32_t flag)
+{
+	if (flag >= TABLE_FLAGS_MAX)
+		return "unknown";
+
+	return table_flags_name[flag];
+}
+
+static void table_print_flags(const struct table *table, const char **delim,
+			      struct output_ctx *octx)
 {
 	uint32_t flags = table->flags;
+	bool comma = false;
 	int i;
 
-	if (flags) {
-		nft_print(octx, "\tflags ");
+	if (!table->flags)
+		return;
 
-		for (i = 0; i < TABLE_FLAGS_MAX; i++) {
-			if (flags & 0x1)
-				nft_print(octx, "%s", table_flags_name[i]);
-			flags >>= 1;
-			if (flags)
+	nft_print(octx, "\tflags ");
+	for (i = 0; i < TABLE_FLAGS_MAX; i++) {
+		if (flags & (1 << i)) {
+			if (comma)
 				nft_print(octx, ",");
+
+			nft_print(octx, "%s", table_flag_name(i));
+			comma = true;
 		}
-		nft_print(octx, "\n");
-		*delim = "\n";
 	}
+	nft_print(octx, "\n");
+	*delim = "\n";
 }
 
 static void table_print(const struct table *table, struct output_ctx *octx)
@@ -1443,7 +1454,7 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 	if (nft_output_handle(octx))
 		nft_print(octx, " # handle %" PRIu64, table->handle.handle.id);
 	nft_print(octx, "\n");
-	table_print_options(table, &delim, octx);
+	table_print_flags(table, &delim, octx);
 
 	if (table->comment)
 		nft_print(octx, "\tcomment \"%s\"\n", table->comment);

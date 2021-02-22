@@ -130,7 +130,7 @@ semicolon (;). +
 A hash sign (#) begins a comment. All following characters on the same line are
 ignored. +
 
-Identifiers begin with an alphabetic character (a-z,A-Z), followed zero or more
+Identifiers begin with an alphabetic character (a-z,A-Z), followed by zero or more
 alphanumeric characters (a-z,A-Z,0-9) and the characters slash (/), backslash
 (\), underscore (_) and dot (.). Identifiers using different characters or
 clashing with a keyword need to be enclosed in double quotes (").
@@ -148,9 +148,9 @@ relative path) or / for file location expressed as an absolute path. +
 
 If *-I*/*--includepath* is not specified, then nft relies on the default
 directory that is specified at compile time. You can retrieve this default
-directory via *-h*/*--help* option. +
+directory via the *-h*/*--help* option. +
 
-Include statements support the usual shell wildcard symbols (\*,?,[]). Having no
+Include statements support the usual shell wildcard symbols (*,?,[]). Having no
 matches for an include statement is not an error, if wildcard symbols are used
 in the include statement. This allows having potentially empty include
 directories for statements like **include "/etc/firewall/rules/"**. The wildcard
@@ -164,7 +164,7 @@ SYMBOLIC VARIABLES
 *$variable*
 
 Symbolic variables can be defined using the *define* statement. Variable
-references are expressions and can be used initialize other variables. The scope
+references are expressions and can be used to initialize other variables. The scope
 of a definition is the current block and all blocks contained within.
 
 .Using symbolic variables
@@ -396,7 +396,7 @@ further quirks worth noticing:
   hook.
 
 The *priority* parameter accepts a signed integer value or a standard priority
-name which specifies the order in which chains with same *hook* value are
+name which specifies the order in which chains with the same *hook* value are
 traversed. The ordering is ascending, i.e. lower priority values have precedence
 over higher ones.
 
@@ -435,7 +435,7 @@ the others. See the following tables that describe the values and compatibility.
 Basic arithmetic expressions (addition and subtraction) can also be achieved
 with these standard names to ease relative prioritizing, e.g. *mangle - 5* stands
 for *-155*.  Values will also be printed like this until the value is not
-further than 10 form the standard value.
+further than 10 from the standard value.
 
 Base chains also allow to set the chain's *policy*, i.e.  what happens to
 packets not explicitly accepted or refused in contained rules. Supported policy
@@ -492,7 +492,7 @@ table inet filter {
 		ip saddr 10.1.1.1 tcp dport ssh accept # handle 5
 	  ...
 # delete the rule with handle 5
-# nft delete rule inet filter input handle 5
+nft delete rule inet filter input handle 5
 -------------------------
 
 SETS
@@ -534,7 +534,7 @@ identified by a user-defined name and attached to tables. Their behaviour can
 be tuned with the flags that can be specified at set creation time.
 
 [horizontal]
-*add*:: Add a new set in the specified table. See the Set specification table below for more information about how to specify a sets properties.
+*add*:: Add a new set in the specified table. See the Set specification table below for more information about how to specify properties of a set.
 *delete*:: Delete the specified set.
 *list*:: Display the elements in the specified set.
 *flush*:: Remove all elements from the specified set.
@@ -553,7 +553,7 @@ expression to derive the data type from
 set flags |
 string: constant, dynamic, interval, timeout
 |timeout |
-time an element stays in the set, mandatory if set is added to from the packet path (ruleset).|
+time an element stays in the set, mandatory if set is added to from the packet path (ruleset)|
 string, decimal followed by unit. Units are: d, h, m, s
 |gc-interval |
 garbage collection interval, only available when timeout or flag timeout are
@@ -563,7 +563,7 @@ string, decimal followed by unit. Units are: d, h, m, s
 elements contained by the set |
 set data type
 |size |
-maximum number of elements in the set, mandatory if set is added to from the packet path (ruleset).|
+maximum number of elements in the set, mandatory if set is added to from the packet path (ruleset)|
 unsigned integer (64 bit)
 |policy |
 set policy |
@@ -628,7 +628,7 @@ ____
 Element-related commands allow to change contents of named sets and maps.
 'key_expression' is typically a value matching the set type.
 'value_expression' is not allowed in sets but mandatory when adding to maps, where it
-matches the data part in it's type definition. When deleting from maps, it may
+matches the data part in its type definition. When deleting from maps, it may
 be specified but is optional as 'key_expression' uniquely identifies the
 element.
 

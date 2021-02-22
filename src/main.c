@@ -175,16 +175,17 @@ static const struct option *get_options(void)
 
 static void print_option(const struct nft_opt *opt)
 {
-	char optbuf[33] = "";
+	char optbuf[35] = "";
 	int i;
 
 	i = snprintf(optbuf, sizeof(optbuf), "  -%c", opt->val);
 	if (opt->name)
-		i += snprintf(optbuf + i, sizeof(optbuf) - i, ", %s", opt->name);
+		i += snprintf(optbuf + i, sizeof(optbuf) - i, ", --%s",
+			      opt->name);
 	if (opt->arg)
 		i += snprintf(optbuf + i, sizeof(optbuf) - i, " %s", opt->arg);
 
-	printf("%-32s%s\n", optbuf, opt->help);
+	printf("%-34s%s\n", optbuf, opt->help);
 }
 
 static void show_help(const char *name)

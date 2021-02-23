@@ -1760,6 +1760,15 @@ typeof_data_expr	:	primary_expr
 				}
 				$$ = e;
 			}
+			|	typeof_expr		DOT		primary_expr
+			{
+				struct location rhs[] = {
+					[1]	= @2,
+					[2]	= @3,
+				};
+
+				$$ = handle_concat_expr(&@$, $$, $1, $3, rhs);
+			}
 			;
 
 typeof_expr		:	primary_expr

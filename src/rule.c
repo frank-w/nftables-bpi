@@ -292,10 +292,9 @@ replay:
 	ret = cache_init(&ctx, flags);
 	if (ret < 0) {
 		cache_release(cache);
-		if (errno == EINTR) {
-			nft->nf_sock = nft_mnl_socket_reopen(nft->nf_sock);
+		if (errno == EINTR)
 			goto replay;
-		}
+
 		return -1;
 	}
 

@@ -52,13 +52,6 @@ struct mnl_socket *nft_mnl_socket_open(void)
 	return nf_sock;
 }
 
-struct mnl_socket *nft_mnl_socket_reopen(struct mnl_socket *nf_sock)
-{
-	mnl_socket_close(nf_sock);
-
-	return nft_mnl_socket_open();
-}
-
 uint32_t mnl_seqnum_alloc(unsigned int *seqnum)
 {
 	return (*seqnum)++;
@@ -77,20 +70,31 @@ nft_mnl_recv(struct netlink_ctx *ctx, uint32_t portid,
 	     int (*cb)(const struct nlmsghdr *nlh, void *data), void *cb_data)
 {
 	char buf[NFT_NLMSG_MAXSIZE];
+	bool eintr = false;
 	int ret;
 
 	ret = mnl_socket_recvfrom(ctx->nft->nf_sock, buf, sizeof(buf));
 	while (ret > 0) {
 		ret = mnl_cb_run(buf, ret, ctx->seqnum, portid, cb, cb_data);
-		if (ret <= 0)
-			goto out;
+		if (ret == 0)
+			break;
+		if (ret < 0) {
+			if (errno == EAGAIN) {
+				ret = 0;
+				break;
+			}
+			if (errno != EINTR)
+				break;
 
+			/* process all pending messages before reporting EINTR */
+			eintr = true;
+		}
 		ret = mnl_socket_recvfrom(ctx->nft->nf_sock, buf, sizeof(buf));
 	}
-out:
-	if (ret < 0 && errno == EAGAIN)
-		return 0;
-
+	if (eintr) {
+		ret = -1;
+		errno = EINTR;
+	}
 	return ret;
 }
 

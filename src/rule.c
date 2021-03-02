@@ -170,32 +170,42 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 		if (flags & NFT_CACHE_SET_BIT) {
 			ret = netlink_list_sets(ctx, &table->handle);
 			list_splice_tail_init(&ctx->list, &table->sets);
-			if (ret < 0)
-				return -1;
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
 		}
 		if (flags & NFT_CACHE_SETELEM_BIT) {
 			list_for_each_entry(set, &table->sets, list) {
 				ret = netlink_list_setelems(ctx, &set->handle,
 							    set);
-				if (ret < 0)
-					return -1;
+				if (ret < 0) {
+					ret = -1;
+					goto cache_fails;
+				}
 			}
 		}
 		if (flags & NFT_CACHE_CHAIN_BIT) {
 			ret = chain_cache_init(ctx, table, chain_list);
-			if (ret < 0)
-				return -1;
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
 		}
 		if (flags & NFT_CACHE_FLOWTABLE_BIT) {
 			ret = netlink_list_flowtables(ctx, &table->handle);
-			if (ret < 0)
-				return -1;
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
 			list_splice_tail_init(&ctx->list, &table->flowtables);
 		}
 		if (flags & NFT_CACHE_OBJECT_BIT) {
 			ret = netlink_list_objs(ctx, &table->handle);
-			if (ret < 0)
-				return -1;
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
 			list_splice_tail_init(&ctx->list, &table->objs);
 		}
 
@@ -208,15 +218,18 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 							rule->handle.chain.name);
 				list_move_tail(&rule->list, &chain->rules);
 			}
-			if (ret < 0)
-				return -1;
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
 		}
 	}
 
+cache_fails:
 	if (flags & NFT_CACHE_CHAIN_BIT)
 		nftnl_chain_list_free(chain_list);
 
-	return 0;
+	return ret;
 }
 
 static int cache_init(struct netlink_ctx *ctx, unsigned int flags)

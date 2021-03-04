@@ -588,10 +588,20 @@ int nft_lex(void *, void *, void *);
 %type <cmd>			base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd get_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 %destructor { cmd_free($$); }	base_cmd add_cmd replace_cmd create_cmd insert_cmd delete_cmd get_cmd list_cmd reset_cmd flush_cmd rename_cmd export_cmd monitor_cmd describe_cmd import_cmd
 
-%type <handle>			table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec index_spec
-%destructor { handle_free(&$$); } table_spec tableid_spec chain_spec chainid_spec flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec index_spec
-%type <handle>			set_spec setid_spec set_identifier flowtableid_spec flowtable_identifier obj_spec objid_spec obj_identifier
-%destructor { handle_free(&$$); } set_spec setid_spec set_identifier flowtableid_spec obj_spec objid_spec obj_identifier
+%type <handle>			table_spec tableid_spec table_or_id_spec
+%destructor { handle_free(&$$); } table_spec tableid_spec table_or_id_spec
+%type <handle>			chain_spec chainid_spec chain_or_id_spec
+%destructor { handle_free(&$$); } chain_spec chainid_spec chain_or_id_spec
+
+%type <handle>			flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec index_spec
+%destructor { handle_free(&$$); } flowtable_spec chain_identifier ruleid_spec handle_spec position_spec rule_position ruleset_spec index_spec
+%type <handle>			set_spec setid_spec set_or_id_spec
+%destructor { handle_free(&$$); } set_spec setid_spec set_or_id_spec
+%type <handle>			obj_spec objid_spec obj_or_id_spec
+%destructor { handle_free(&$$); } obj_spec objid_spec obj_or_id_spec
+
+%type <handle>			set_identifier flowtableid_spec flowtable_identifier obj_identifier
+%destructor { handle_free(&$$); } set_identifier flowtableid_spec obj_identifier
 %type <val>			family_spec family_spec_explicit
 %type <val32>			int_num	chain_policy
 %type <prio_spec>		extended_prio_spec prio_spec
@@ -1167,19 +1177,27 @@ insert_cmd		:	RULE		rule_position	rule
 			}
 			;
 
-delete_cmd		:	TABLE		table_spec
+table_or_id_spec	:	table_spec
+			|	tableid_spec
+			;
+
+chain_or_id_spec	:	chain_spec
+			|	chainid_spec
+			;
+
+set_or_id_spec		:	set_spec
+			|	setid_spec
+			;
+
+obj_or_id_spec		:	obj_spec
+			|	objid_spec
+			;
+
+delete_cmd		:	TABLE		table_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_TABLE, &$2, &@$, NULL);
 			}
-			|	TABLE 		tableid_spec
-			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_TABLE, &$2, &@$, NULL);
-			}
-			|	CHAIN		chain_spec
-			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_CHAIN, &$2, &@$, NULL);
-			}
-			| 	CHAIN 		chainid_spec
+			|	CHAIN		chain_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_CHAIN, &$2, &@$, NULL);
 			}
@@ -1187,11 +1205,7 @@ delete_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_RULE, &$2, &@$, NULL);
 			}
-			|	SET		set_spec
-			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SET, &$2, &@$, NULL);
-			}
-			| 	SET 		setid_spec
+			|	SET		set_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SET, &$2, &@$, NULL);
 			}
@@ -1218,19 +1232,11 @@ delete_cmd		:	TABLE		table_spec
 				handle_merge(&$3->handle, &$2);
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_FLOWTABLE, &$2, &@$, $5);
 			}
-			|	COUNTER		obj_spec
+			|	COUNTER		obj_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_COUNTER, &$2, &@$, NULL);
 			}
-			|  	COUNTER 	objid_spec
-			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_COUNTER, &$2, &@$, NULL);
-			}
-			|	QUOTA		obj_spec
-			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_QUOTA, &$2, &@$, NULL);
-			}
-			| 	QUOTA 		objid_spec
+			|	QUOTA		obj_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_QUOTA, &$2, &@$, NULL);
 			}
@@ -1238,27 +1244,15 @@ delete_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc_obj_ct(CMD_DELETE, $2, &$3, &@$, $4);
 			}
-			|	LIMIT		obj_spec
+			|	LIMIT		obj_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_LIMIT, &$2, &@$, NULL);
 			}
-			| 	LIMIT 		objid_spec
-			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_LIMIT, &$2, &@$, NULL);
-			}
-			|	SECMARK		obj_spec
+			|	SECMARK		obj_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SECMARK, &$2, &@$, NULL);
 			}
-			| 	SECMARK		objid_spec
-			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SECMARK, &$2, &@$, NULL);
-			}
-			|	SYNPROXY	obj_spec
-			{
-				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SYNPROXY, &$2, &@$, NULL);
-			}
-			|	SYNPROXY	objid_spec
+			|	SYNPROXY	obj_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SYNPROXY, &$2, &@$, NULL);
 			}

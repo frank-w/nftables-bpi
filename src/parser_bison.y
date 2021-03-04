@@ -627,6 +627,7 @@ int nft_lex(void *, void *, void *);
 
 %type <set>			map_block_alloc map_block
 %destructor { set_free($$); }	map_block_alloc
+%type <val>			map_block_obj_type
 
 %type <flowtable>		flowtable_block_alloc flowtable_block
 %destructor { flowtable_free($$); }	flowtable_block_alloc
@@ -1877,6 +1878,12 @@ map_block_alloc		:	/* empty */
 			}
 			;
 
+map_block_obj_type	:	COUNTER	{ $$ = NFT_OBJECT_COUNTER; }
+			|	QUOTA { $$ = NFT_OBJECT_QUOTA; }
+			|	LIMIT { $$ = NFT_OBJECT_LIMIT; }
+			|	SECMARK { $$ = NFT_OBJECT_SECMARK; }
+			;
+
 map_block		:	/* empty */	{ $$ = $<set>-1; }
 			|	map_block	common_block
 			|	map_block	stmt_separator
@@ -1930,38 +1937,11 @@ map_block		:	/* empty */	{ $$ = $<set>-1; }
 				$$ = $1;
 			}
 			|	map_block	TYPE
-						data_type_expr	COLON	COUNTER
+						data_type_expr	COLON	map_block_obj_type
 						stmt_separator
 			{
 				$1->key = $3;
-				$1->objtype = NFT_OBJECT_COUNTER;
-				$1->flags  |= NFT_SET_OBJECT;
-				$$ = $1;
-			}
-			|	map_block	TYPE
-						data_type_expr	COLON	QUOTA
-						stmt_separator
-			{
-				$1->key = $3;
-				$1->objtype = NFT_OBJECT_QUOTA;
-				$1->flags  |= NFT_SET_OBJECT;
-				$$ = $1;
-			}
-			|	map_block	TYPE
-						data_type_expr	COLON	LIMIT
-						stmt_separator
-			{
-				$1->key = $3;
-				$1->objtype = NFT_OBJECT_LIMIT;
-				$1->flags  |= NFT_SET_OBJECT;
-				$$ = $1;
-			}
-			|	map_block	TYPE
-						data_type_expr	COLON	SECMARK
-						stmt_separator
-			{
-				$1->key = $3;
-				$1->objtype = NFT_OBJECT_SECMARK;
+				$1->objtype = $5;
 				$1->flags  |= NFT_SET_OBJECT;
 				$$ = $1;
 			}

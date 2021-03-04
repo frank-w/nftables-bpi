@@ -838,7 +838,7 @@ int nft_lex(void *, void *, void *);
 %destructor { expr_free($$); }	exthdr_exists_expr
 %type <val>			exthdr_key
 
-%type <val>			ct_l4protoname ct_obj_type
+%type <val>			ct_l4protoname ct_obj_type ct_cmd_type
 
 %type <list>			timeout_states timeout_state
 %destructor { xfree($$); }	timeout_states timeout_state
@@ -1393,17 +1393,9 @@ list_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc_obj_ct(CMD_LIST, $2, &$3, &@$, NULL);
 			}
-			|       CT		HELPERS		TABLE   table_spec
+			|       CT		ct_cmd_type 	TABLE   table_spec
 			{
-				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_CT_HELPERS, &$4, &@$, NULL);
-			}
-			|	CT		TIMEOUT		TABLE		table_spec
-			{
-				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_CT_TIMEOUT, &$4, &@$, NULL);
-			}
-			|	CT		EXPECTATION		TABLE		table_spec
-			{
-				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_CT_EXPECT, &$4, &@$, NULL);
+				$$ = cmd_alloc(CMD_LIST, $2, &$4, &@$, NULL);
 			}
 			;
 
@@ -4290,6 +4282,11 @@ secmark_obj		:	/* empty */
 ct_obj_type		:	HELPER		{ $$ = NFT_OBJECT_CT_HELPER; }
 			|	TIMEOUT		{ $$ = NFT_OBJECT_CT_TIMEOUT; }
 			|	EXPECTATION	{ $$ = NFT_OBJECT_CT_EXPECT; }
+			;
+
+ct_cmd_type		:	HELPERS		{ $$ = CMD_OBJ_CT_HELPERS; }
+			|	TIMEOUT		{ $$ = CMD_OBJ_CT_TIMEOUT; }
+			|	EXPECTATION	{ $$ = CMD_OBJ_CT_EXPECT; }
 			;
 
 ct_l4protoname		:	TCP	{ $$ = IPPROTO_TCP; }

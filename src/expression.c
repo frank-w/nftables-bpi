@@ -260,7 +260,7 @@ static int verdict_expr_build_udata(struct nftnl_udata_buf *udbuf,
 
 static struct expr *verdict_expr_parse_udata(const struct nftnl_udata *attr)
 {
-	struct expr *e = verdict_expr_alloc(&internal_location, 0, NULL);
+	struct expr *e;
 
 	e = symbol_expr_alloc(&internal_location, SYMBOL_VALUE, NULL, "verdict");
 	e->len = NFT_REG_SIZE * BITS_PER_BYTE;

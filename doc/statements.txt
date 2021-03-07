@@ -567,28 +567,13 @@ drop incorrect cookies. Flags combinations not expected during  3WHS will not
 match and continue (e.g. SYN+FIN, SYN+ACK). Finally, drop invalid packets, this
 will be out-of-flow packets that were not matched by SYNPROXY.
 
-    table ip foo {
+    table ip x {
             chain z {
                     type filter hook input priority filter; policy accept;
                     ct state { invalid, untracked } synproxy mss 1460 wscale 9 timestamp sack-perm
                     ct state invalid drop
             }
     }
-
-The outcome ruleset of the steps above should be similar to the one below.
-
-	table ip x {
-		chain y {
-			type filter hook prerouting priority raw; policy accept;
-	                tcp flags syn notrack
-		}
-
-		chain z {
-			type filter hook input priority filter; policy accept;
-	                ct state { invalid, untracked } synproxy mss 1460 wscale 9 timestamp sack-perm
-		        ct state invalid drop
-	        }
-	}
 ---------------------------------------
 
 FLOW STATEMENT

@@ -712,7 +712,8 @@ nft add rule ip filter input ip saddr @blackhole counter drop
 # requests occurred per second and ip address.
 nft add rule ip filter input tcp flags syn tcp dport ssh \
     add @flood { ip saddr limit rate over 10/second } \
-    add @blackhole { ip saddr } drop
+    add @blackhole { ip saddr } \
+    drop
 
 # inspect state of the sets.
 nft list set ip filter flood

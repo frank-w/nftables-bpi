@@ -153,7 +153,7 @@ directory via the *-h*/*--help* option. +
 Include statements support the usual shell wildcard symbols (*,?,[]). Having no
 matches for an include statement is not an error, if wildcard symbols are used
 in the include statement. This allows having potentially empty include
-directories for statements like **include "/etc/firewall/rules/"**. The wildcard
+directories for statements like **include "/etc/firewall/rules/*"**. The wildcard
 matches are loaded in alphabetical order. Files beginning with dot (.) are not
 matched by include statements.
 

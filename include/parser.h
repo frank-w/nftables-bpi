@@ -26,6 +26,12 @@ struct parser_state {
 	struct list_head		*cmds;
 };
 
+enum startcond_type {
+	PARSER_SC_BEGIN,
+	PARSER_SC_EXPR_HASH,
+	PARSER_SC_EXPR_NUMGEN,
+};
+
 struct mnl_socket;
 
 extern void parser_init(struct nft_ctx *nft, struct parser_state *state,
@@ -44,5 +50,7 @@ extern int scanner_include_file(struct nft_ctx *ctx, void *scanner,
 extern void scanner_push_buffer(void *scanner,
 				const struct input_descriptor *indesc,
 				const char *buffer);
+
+extern void scanner_pop_start_cond(void *scanner, enum startcond_type sc);
 
 #endif /* NFTABLES_PARSER_H */

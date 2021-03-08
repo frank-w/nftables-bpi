@@ -98,6 +98,8 @@ static void reset_pos(struct parser_state *state, struct location *loc)
 	state->indesc->column		= 1;
 }
 
+static void scanner_push_start_cond(void *scanner, enum startcond_type type);
+
 #define YY_USER_ACTION {					\
 	update_pos(yyget_extra(yyscanner), yylloc, yyleng);	\
 	update_offset(yyget_extra(yyscanner), yylloc, yyleng);	\
@@ -193,6 +195,9 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %option yylineno
 %option nodefault
 %option warn
+%option stack
+%s SCANSTATE_EXPR_HASH
+%s SCANSTATE_EXPR_NUMGEN
 
 %%
 
@@ -548,15 +553,21 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "state"			{ return STATE; }
 "status"		{ return STATUS; }
 
-"numgen"		{ return NUMGEN; }
-"inc"			{ return INC; }
-"mod"			{ return MOD; }
-"offset"		{ return OFFSET; }
+"numgen"		{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_NUMGEN); return NUMGEN; }
+<SCANSTATE_EXPR_NUMGEN>{
+	"inc"		{ return INC; }
+}
 
-"jhash"			{ return JHASH; }
-"symhash"		{ return SYMHASH; }
-"seed"			{ return SEED; }
+"jhash"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_HASH); return JHASH; }
+"symhash"		{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_HASH); return SYMHASH; }
 
+<SCANSTATE_EXPR_HASH>{
+	"seed"		{ return SEED; }
+}
+<SCANSTATE_EXPR_HASH,SCANSTATE_EXPR_NUMGEN>{
+	"mod"		{ return MOD; }
+	"offset"	{ return OFFSET; }
+}
 "dup"			{ return DUP; }
 "fwd"			{ return FWD; }
 
@@ -966,4 +977,15 @@ void scanner_destroy(struct nft_ctx *nft)
 
 	input_descriptor_list_destroy(state);
 	yylex_destroy(nft->scanner);
+}
+
+static void scanner_push_start_cond(void *scanner, enum startcond_type type)
+{
+	yy_push_state((int)type, scanner);
+}
+
+void scanner_pop_start_cond(void *scanner, enum startcond_type t)
+{
+	yy_pop_state(scanner);
+	(void)yy_top_state(scanner); /* suppress gcc warning wrt. unused function */
 }

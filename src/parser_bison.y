@@ -861,6 +861,9 @@ opt_newline		:	NEWLINE
 		 	|	/* empty */
 			;
 
+close_scope_hash	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_HASH); };
+close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGEN); };
+
 common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
 			{
 				if (scanner_include_file(nft, scanner, $2, &@$) < 0) {
@@ -4811,7 +4814,7 @@ numgen_type		:	INC		{ $$ = NFT_NG_INCREMENTAL; }
 			|	RANDOM		{ $$ = NFT_NG_RANDOM; }
 			;
 
-numgen_expr		:	NUMGEN	numgen_type	MOD	NUM	offset_opt
+numgen_expr		:	NUMGEN	numgen_type	MOD	NUM	offset_opt	close_scope_numgen
 			{
 				$$ = numgen_expr_alloc(&@$, $2, $4, $5);
 			}
@@ -4868,17 +4871,17 @@ xfrm_expr		:	IPSEC	xfrm_dir	xfrm_spnum	xfrm_state_key
 			}
 			;
 
-hash_expr		:	JHASH		expr	MOD	NUM	SEED	NUM	offset_opt
+hash_expr		:	JHASH		expr	MOD	NUM	SEED	NUM	offset_opt	close_scope_hash
 			{
 				$$ = hash_expr_alloc(&@$, $4, true, $6, $7, NFT_HASH_JENKINS);
 				$$->hash.expr = $2;
 			}
-			|	JHASH		expr	MOD	NUM	offset_opt
+			|	JHASH		expr	MOD	NUM	offset_opt	close_scope_hash
 			{
 				$$ = hash_expr_alloc(&@$, $4, false, 0, $5, NFT_HASH_JENKINS);
 				$$->hash.expr = $2;
 			}
-			|	SYMHASH		MOD	NUM	offset_opt
+			|	SYMHASH		MOD	NUM	offset_opt	close_scope_hash
 			{
 				$$ = hash_expr_alloc(&@$, $3, false, 0, $4, NFT_HASH_SYM);
 			}

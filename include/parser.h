@@ -29,6 +29,7 @@ struct parser_state {
 enum startcond_type {
 	PARSER_SC_BEGIN,
 	PARSER_SC_EXPR_HASH,
+	PARSER_SC_EXPR_IPSEC,
 	PARSER_SC_EXPR_NUMGEN,
 	PARSER_SC_EXPR_QUEUE,
 };

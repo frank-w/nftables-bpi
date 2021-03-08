@@ -197,6 +197,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %option warn
 %option stack
 %s SCANSTATE_EXPR_HASH
+%s SCANSTATE_EXPR_IPSEC
 %s SCANSTATE_EXPR_NUMGEN
 %s SCANSTATE_EXPR_QUEUE
 
@@ -594,12 +595,14 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "exthdr"		{ return EXTHDR; }
 
-"ipsec"			{ return IPSEC; }
-"reqid"			{ return REQID; }
-"spnum"			{ return SPNUM; }
+"ipsec"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_IPSEC); return IPSEC; }
+<SCANSTATE_EXPR_IPSEC>{
+	"reqid"			{ return REQID; }
+	"spnum"			{ return SPNUM; }
 
-"in"			{ return IN; }
-"out"			{ return OUT; }
+	"in"			{ return IN; }
+	"out"			{ return OUT; }
+}
 
 "secmark"		{ return SECMARK; }
 "secmarks"		{ return SECMARKS; }

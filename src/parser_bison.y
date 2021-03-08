@@ -862,6 +862,7 @@ opt_newline		:	NEWLINE
 			;
 
 close_scope_hash	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_HASH); };
+close_scope_ipsec	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_IPSEC); };
 close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGEN); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
 
@@ -4738,7 +4739,7 @@ meta_key_unqualified	:	MARK		{ $$ = NFT_META_MARK; }
 			|       IIFGROUP	{ $$ = NFT_META_IIFGROUP; }
 			|       OIFGROUP	{ $$ = NFT_META_OIFGROUP; }
 			|       CGROUP		{ $$ = NFT_META_CGROUP; }
-			|       IPSEC		{ $$ = NFT_META_SECPATH; }
+			|       IPSEC	close_scope_ipsec { $$ = NFT_META_SECPATH; }
 			|       TIME		{ $$ = NFT_META_TIME_NS; }
 			|       DAY		{ $$ = NFT_META_TIME_DAY; }
 			|       HOUR		{ $$ = NFT_META_TIME_HOUR; }
@@ -4837,7 +4838,7 @@ xfrm_state_proto_key	:	DADDR		{ $$ = NFT_XFRM_KEY_DADDR_IP4; }
 			|	SADDR		{ $$ = NFT_XFRM_KEY_SADDR_IP4; }
 			;
 
-xfrm_expr		:	IPSEC	xfrm_dir	xfrm_spnum	xfrm_state_key
+xfrm_expr		:	IPSEC	xfrm_dir	xfrm_spnum	xfrm_state_key	close_scope_ipsec
 			{
 				if ($3 > 255) {
 					erec_queue(error(&@3, "value too large"), state->msgs);
@@ -4845,7 +4846,7 @@ xfrm_expr		:	IPSEC	xfrm_dir	xfrm_spnum	xfrm_state_key
 				}
 				$$ = xfrm_expr_alloc(&@$, $2, $3, $4);
 			}
-			|	IPSEC	xfrm_dir	xfrm_spnum	nf_key_proto	xfrm_state_proto_key
+			|	IPSEC	xfrm_dir	xfrm_spnum	nf_key_proto	xfrm_state_proto_key	close_scope_ipsec
 			{
 				enum nft_xfrm_keys xfrmk = $5;
 
@@ -4919,7 +4920,7 @@ rt_expr			:	RT	rt_key
 rt_key			:	CLASSID		{ $$ = NFT_RT_CLASSID; }
 			|	NEXTHOP		{ $$ = NFT_RT_NEXTHOP4; }
 			|	MTU		{ $$ = NFT_RT_TCPMSS; }
-			|	IPSEC		{ $$ = NFT_RT_XFRM; }
+			|	IPSEC	close_scope_ipsec { $$ = NFT_RT_XFRM; }
 			;
 
 ct_expr			: 	CT	ct_key

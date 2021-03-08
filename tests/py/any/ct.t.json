@@ -387,6 +387,21 @@
     }
 ]
 
+# ct status ! dnat
+[
+    {
+        "match": {
+            "left": {
+                "ct": {
+                    "key": "status"
+                }
+            },
+            "op": "!",
+            "right": "dnat"
+        }
+    }
+]
+
 # ct mark 0
 [
     {

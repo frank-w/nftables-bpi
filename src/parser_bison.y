@@ -863,6 +863,7 @@ opt_newline		:	NEWLINE
 
 close_scope_hash	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_HASH); };
 close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGEN); };
+close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
 
 common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
 			{
@@ -3635,8 +3636,8 @@ nf_nat_flag		:	RANDOM		{ $$ = NF_NAT_RANGE_PROTO_RANDOM; }
 			|	PERSISTENT 	{ $$ = NF_NAT_RANGE_PERSISTENT; }
 			;
 
-queue_stmt		:	queue_stmt_alloc
-			|	queue_stmt_alloc	queue_stmt_args
+queue_stmt		:	queue_stmt_alloc	close_scope_queue
+			|	queue_stmt_alloc	queue_stmt_args	close_scope_queue
 			;
 
 queue_stmt_alloc	:	QUEUE

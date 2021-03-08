@@ -198,6 +198,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %option stack
 %s SCANSTATE_EXPR_HASH
 %s SCANSTATE_EXPR_NUMGEN
+%s SCANSTATE_EXPR_QUEUE
 
 %%
 
@@ -346,11 +347,12 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "queue-threshold"	{ return QUEUE_THRESHOLD; }
 "level"			{ return LEVEL; }
 
-"queue"			{ return QUEUE;}
-"num"			{ return QUEUENUM;}
-"bypass"		{ return BYPASS;}
-"fanout"		{ return FANOUT;}
-
+"queue"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_QUEUE); return QUEUE;}
+<SCANSTATE_EXPR_QUEUE>{
+	"num"		{ return QUEUENUM;}
+	"bypass"	{ return BYPASS;}
+	"fanout"	{ return FANOUT;}
+}
 "limit"			{ return LIMIT; }
 "rate"			{ return RATE; }
 "burst"			{ return BURST; }

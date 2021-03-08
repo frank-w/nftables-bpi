@@ -201,6 +201,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_EXPR_NUMGEN
 %s SCANSTATE_EXPR_QUEUE
 %s SCANSTATE_EXPR_RT
+%s SCANSTATE_EXPR_SOCKET
 
 %%
 
@@ -274,10 +275,11 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "ruleset"		{ return RULESET; }
 "trace"			{ return TRACE; }
 
-"socket"		{ return SOCKET; }
-"transparent"		{ return TRANSPARENT; }
-"wildcard"		{ return WILDCARD; }
-
+"socket"		{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_SOCKET); return SOCKET; }
+<SCANSTATE_EXPR_SOCKET>{
+	"transparent"		{ return TRANSPARENT; }
+	"wildcard"		{ return WILDCARD; }
+}
 "tproxy"		{ return TPROXY; }
 
 "accept"		{ return ACCEPT; }

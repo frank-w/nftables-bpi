@@ -866,6 +866,7 @@ close_scope_ipsec	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_IPSEC)
 close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGEN); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
 close_scope_rt		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_RT); };
+close_scope_socket	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_SOCKET); }
 
 common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
 			{
@@ -4798,7 +4799,7 @@ meta_stmt		:	META	meta_key	SET	stmt_expr
 			}
 			;
 
-socket_expr		:	SOCKET	socket_key
+socket_expr		:	SOCKET	socket_key	close_scope_socket
 			{
 				$$ = socket_expr_alloc(&@$, $2);
 			}

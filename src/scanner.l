@@ -200,6 +200,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_EXPR_IPSEC
 %s SCANSTATE_EXPR_NUMGEN
 %s SCANSTATE_EXPR_QUEUE
+%s SCANSTATE_EXPR_RT
 
 %%
 
@@ -494,7 +495,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "sctp"			{ return SCTP; }
 "vtag"			{ return VTAG; }
 
-"rt"			{ return RT; }
+"rt"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_RT); return RT; }
 "rt0"			{ return RT0; }
 "rt2"			{ return RT2; }
 "srh"			{ return RT4; }
@@ -536,8 +537,10 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "oifgroup"		{ return OIFGROUP; }
 "cgroup"		{ return CGROUP; }
 
-"classid"		{ return CLASSID; }
-"nexthop"		{ return NEXTHOP; }
+<SCANSTATE_EXPR_RT>{
+	"classid"		{ return CLASSID; }
+	"nexthop"		{ return NEXTHOP; }
+}
 
 "ct"			{ return CT; }
 "l3proto"		{ return L3PROTOCOL; }

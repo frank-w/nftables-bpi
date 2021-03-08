@@ -32,6 +32,7 @@ enum startcond_type {
 	PARSER_SC_EXPR_IPSEC,
 	PARSER_SC_EXPR_NUMGEN,
 	PARSER_SC_EXPR_QUEUE,
+	PARSER_SC_EXPR_RT,
 };
 
 struct mnl_socket;

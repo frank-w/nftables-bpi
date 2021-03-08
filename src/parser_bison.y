@@ -865,6 +865,7 @@ close_scope_hash	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_HASH); 
 close_scope_ipsec	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_IPSEC); };
 close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGEN); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
+close_scope_rt		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_RT); };
 
 common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
 			{
@@ -4893,11 +4894,11 @@ nf_key_proto		:	IP		{ $$ = NFPROTO_IPV4; }
 			|	IP6		{ $$ = NFPROTO_IPV6; }
 			;
 
-rt_expr			:	RT	rt_key
+rt_expr			:	RT	rt_key	close_scope_rt
 			{
 				$$ = rt_expr_alloc(&@$, $2, true);
 			}
-			|	RT	nf_key_proto	rt_key
+			|	RT	nf_key_proto	rt_key	close_scope_rt
 			{
 				enum nft_rt_keys rtk = $3;
 
@@ -5391,7 +5392,7 @@ hbh_hdr_field		:	NEXTHDR		{ $$ = HBHHDR_NEXTHDR; }
 			|	HDRLENGTH	{ $$ = HBHHDR_HDRLENGTH; }
 			;
 
-rt_hdr_expr		:	RT	rt_hdr_field
+rt_hdr_expr		:	RT	rt_hdr_field	close_scope_rt
 			{
 				$$ = exthdr_expr_alloc(&@$, &exthdr_rt, $2);
 			}

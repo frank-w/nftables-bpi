@@ -511,9 +511,6 @@ int nft_lex(void *, void *, void *);
 %token SECMARK			"secmark"
 %token SECMARKS			"secmarks"
 
-%token NANOSECOND		"nanosecond"
-%token MICROSECOND		"microsecond"
-%token MILLISECOND		"millisecond"
 %token SECOND			"second"
 %token MINUTE			"minute"
 %token HOUR			"hour"
@@ -565,11 +562,8 @@ int nft_lex(void *, void *, void *);
 %token EXTHDR			"exthdr"
 
 %token IPSEC		"ipsec"
-%token MODE			"mode"
 %token REQID		"reqid"
 %token SPNUM		"spnum"
-%token TRANSPORT	"transport"
-%token TUNNEL		"tunnel"
 
 %token IN			"in"
 %token OUT			"out"

@@ -355,9 +355,6 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "quota"			{ return QUOTA; }
 "used"			{ return USED; }
 
-"nanosecond"		{ return NANOSECOND; }
-"microsecond"		{ return MICROSECOND; }
-"millisecond"		{ return MILLISECOND; }
 "second"		{ return SECOND; }
 "minute"		{ return MINUTE; }
 "hour"			{ return HOUR; }
@@ -585,11 +582,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "exthdr"		{ return EXTHDR; }
 
 "ipsec"			{ return IPSEC; }
-"mode"			{ return MODE; }
 "reqid"			{ return REQID; }
 "spnum"			{ return SPNUM; }
-"transport"		{ return TRANSPORT; }
-"tunnel"		{ return TUNNEL; }
 
 "in"			{ return IN; }
 "out"			{ return OUT; }

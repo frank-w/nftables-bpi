@@ -216,7 +216,7 @@ The conntrack statement can be used to set the conntrack mark and conntrack labe
 The ct statement sets meta data associated with a connection. The zone id
 has to be assigned before a conntrack lookup takes place, i.e. this has to be
 done in prerouting and possibly output (if locally generated packets need to be
-placed in a distinct zone), with a hook priority of -300.
+placed in a distinct zone), with a hook priority of *raw* (-300).
 
 Unlike iptables, where the helper assignment happens in the raw table,
 the helper needs to be assigned after a conntrack entry has been
@@ -253,11 +253,11 @@ ct mark set meta mark
 ------------------------------
 table inet raw {
   chain prerouting {
-      type filter hook prerouting priority -300;
+      type filter hook prerouting priority raw;
       ct zone set iif map { "eth1" : 1, "veth1" : 2 }
   }
   chain output {
-      type filter hook output priority -300;
+      type filter hook output priority raw;
       ct zone set oif map { "eth1" : 1, "veth1" : 2 }
   }
 }
@@ -278,7 +278,7 @@ packets.
 
 Note that for this statement to be effective, it has to be applied to packets
 before a conntrack lookup happens. Therefore, it needs to sit in a chain with
-either prerouting or output hook and a hook priority of -300 or less.
+either prerouting or output hook and a hook priority of -300 (*raw*) or less.
 
 See SYNPROXY STATEMENT for an example usage.
 
@@ -420,8 +420,8 @@ If used then port mapping is generated based on a 32-bit pseudo-random algorithm
 ---------------------
 # create a suitable table/chain setup for all further examples
 add table nat
-add chain nat prerouting { type nat hook prerouting priority 0; }
-add chain nat postrouting { type nat hook postrouting priority 100; }
+add chain nat prerouting { type nat hook prerouting priority dstnat; }
+add chain nat postrouting { type nat hook postrouting priority srcnat; }
 
 # translate source addresses of all packets leaving via eth0 to address 1.2.3.4
 add rule nat postrouting oif eth0 snat to 1.2.3.4
@@ -482,21 +482,21 @@ this case the rule will match for both families.
 -------------------------------------
 table ip x {
     chain y {
-        type filter hook prerouting priority -150; policy accept;
+        type filter hook prerouting priority mangle; policy accept;
         tcp dport ntp tproxy to 1.1.1.1
         udp dport ssh tproxy to :2222
     }
 }
 table ip6 x {
     chain y {
-       type filter hook prerouting priority -150; policy accept;
+       type filter hook prerouting priority mangle; policy accept;
        tcp dport ntp tproxy to [dead::beef]
        udp dport ssh tproxy to :2222
     }
 }
 table inet x {
     chain y {
-        type filter hook prerouting priority -150; policy accept;
+        type filter hook prerouting priority mangle; policy accept;
         tcp dport 321 tproxy to :ssh
         tcp dport 99 tproxy ip to 1.1.1.1:999
         udp dport 155 tproxy ip6 to [dead::beef]:smux

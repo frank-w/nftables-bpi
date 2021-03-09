@@ -319,7 +319,7 @@ nft --interactive
 create table inet mytable
 
 # add a new base chain: get input packets
-add chain inet mytable myin { type filter hook input priority 0; }
+add chain inet mytable myin { type filter hook input priority filter; }
 
 # add a single counter to the chain
 add rule inet mytable myin counter
@@ -487,7 +487,7 @@ nft add rule ip filter output ip daddr 192.168.0.0/24 accept
 # nft -a list ruleset
 table inet filter {
 	chain input {
-		type filter hook input priority 0; policy accept;
+		type filter hook input priority filter; policy accept;
 		ct state established,related accept # handle 4
 		ip saddr 10.1.1.1 tcp dport ssh accept # handle 5
 	  ...

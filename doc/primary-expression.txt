@@ -221,7 +221,7 @@ boolean (1 bit)
 # exactly what you want).
 table inet x {
     chain y {
-	type filter hook prerouting priority -150; policy accept;
+        type filter hook prerouting priority mangle; policy accept;
         socket transparent 1 socket wildcard 0 mark set 0x00000001 accept
     }
 }
@@ -229,7 +229,7 @@ table inet x {
 # Trace packets that corresponds to a socket with a mark value of 15
 table inet x {
     chain y {
-        type filter hook prerouting priority -150; policy accept;
+        type filter hook prerouting priority mangle; policy accept;
         socket mark 0x0000000f nftrace set 1
     }
 }
@@ -237,7 +237,7 @@ table inet x {
 # Set packet mark to socket mark
 table inet x {
     chain y {
-        type filter hook prerouting priority -150; policy accept;
+        type filter hook prerouting priority mangle; policy accept;
         tcp dport 8080 mark set socket mark
     }
 }
@@ -280,7 +280,7 @@ If no TTL attribute is passed, make a true IP header and fingerprint TTL true co
 # Accept packets that match the "Linux" OS genre signature without comparing TTL.
 table inet x {
     chain y {
-	type filter hook input priority 0; policy accept;
+        type filter hook input priority filter; policy accept;
         osf ttl skip name "Linux"
     }
 }

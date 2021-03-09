@@ -321,7 +321,7 @@ static int nft_xt_compatible_revision(const char *name, uint8_t rev, int opt)
 	struct nfgenmsg *nfg;
 	int ret = 0;
 
-	switch (rev) {
+	switch (opt) {
 	case IPT_SO_GET_REVISION_MATCH:
 		family = NFPROTO_IPV4;
 		type = 0;

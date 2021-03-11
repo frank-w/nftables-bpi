@@ -196,6 +196,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %option nodefault
 %option warn
 %option stack
+%s SCANSTATE_CT
 %s SCANSTATE_EXPR_HASH
 %s SCANSTATE_EXPR_IPSEC
 %s SCANSTATE_EXPR_NUMGEN
@@ -337,7 +338,6 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "name"			{ return NAME; }
 "packets"		{ return PACKETS; }
 "bytes"			{ return BYTES; }
-"avgpkt"		{ return AVGPKT; }
 
 "counters"		{ return COUNTERS; }
 "quotas"		{ return QUOTAS; }
@@ -544,22 +544,25 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 	"nexthop"		{ return NEXTHOP; }
 }
 
-"ct"			{ return CT; }
-"l3proto"		{ return L3PROTOCOL; }
-"proto-src"		{ return PROTO_SRC; }
-"proto-dst"		{ return PROTO_DST; }
-"zone"			{ return ZONE; }
-"original"		{ return ORIGINAL; }
-"reply"			{ return REPLY; }
-"direction"		{ return DIRECTION; }
-"event"			{ return EVENT; }
-"expectation"		{ return EXPECTATION; }
-"expiration"		{ return EXPIRATION; }
-"helper"		{ return HELPER; }
-"helpers"		{ return HELPERS; }
-"label"			{ return LABEL; }
-"state"			{ return STATE; }
-"status"		{ return STATUS; }
+"ct"			{ scanner_push_start_cond(yyscanner, SCANSTATE_CT); return CT; }
+<SCANSTATE_CT>{
+	"avgpkt"		{ return AVGPKT; }
+	"l3proto"		{ return L3PROTOCOL; }
+	"proto-src"		{ return PROTO_SRC; }
+	"proto-dst"		{ return PROTO_DST; }
+	"zone"			{ return ZONE; }
+	"original"		{ return ORIGINAL; }
+	"reply"			{ return REPLY; }
+	"direction"		{ return DIRECTION; }
+	"event"			{ return EVENT; }
+	"expectation"		{ return EXPECTATION; }
+	"expiration"		{ return EXPIRATION; }
+	"helper"		{ return HELPER; }
+	"helpers"		{ return HELPERS; }
+	"label"			{ return LABEL; }
+	"state"			{ return STATE; }
+	"status"		{ return STATUS; }
+}
 
 "numgen"		{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_NUMGEN); return NUMGEN; }
 <SCANSTATE_EXPR_NUMGEN>{

@@ -872,6 +872,7 @@ close_scope_vlan	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_VLAN); };
 close_scope_ipsec	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_IPSEC); };
 close_scope_limit	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_LIMIT); };
 close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGEN); };
+close_scope_quota	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_QUOTA); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
 close_scope_rt		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_RT); };
 close_scope_socket	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_SOCKET); }
@@ -1038,11 +1039,11 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_COUNTER, &$2, &@$, $3);
 			}
-			|	QUOTA		obj_spec	quota_obj	quota_config
+			|	QUOTA		obj_spec	quota_obj	quota_config	close_scope_quota
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
-			|	QUOTA		obj_spec	quota_obj	'{' quota_block	'}'
+			|	QUOTA		obj_spec	quota_obj	'{' quota_block	'}'	close_scope_quota
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
@@ -1151,7 +1152,7 @@ create_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_COUNTER, &$2, &@$, $3);
 			}
-			|	QUOTA		obj_spec	quota_obj	quota_config
+			|	QUOTA		obj_spec	quota_obj	quota_config	close_scope_quota
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_QUOTA, &$2, &@$, $3);
 			}
@@ -1246,7 +1247,7 @@ delete_cmd		:	TABLE		table_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_COUNTER, &$2, &@$, NULL);
 			}
-			|	QUOTA		obj_or_id_spec
+			|	QUOTA		obj_or_id_spec	close_scope_quota
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_QUOTA, &$2, &@$, NULL);
 			}
@@ -1322,7 +1323,7 @@ list_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_QUOTAS, &$3, &@$, NULL);
 			}
-			|	QUOTA		obj_spec
+			|	QUOTA		obj_spec	close_scope_quota
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_QUOTA, &$2, &@$, NULL);
 			}
@@ -1428,7 +1429,7 @@ reset_cmd		:	COUNTERS	ruleset_spec
 			{
 				$$ = cmd_alloc(CMD_RESET, CMD_OBJ_QUOTAS, &$3, &@$, NULL);
 			}
-			|       QUOTA           obj_spec
+			|       QUOTA           obj_spec	close_scope_quota
 			{
 				$$ = cmd_alloc(CMD_RESET, CMD_OBJ_QUOTA, &$2, &@$, NULL);
 			}
@@ -1630,7 +1631,7 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 			}
 			|	table_block	QUOTA		obj_identifier
 					obj_block_alloc	'{'	quota_block	'}'
-					stmt_separator
+					stmt_separator	close_scope_quota
 			{
 				$4->location = @3;
 				$4->type = NFT_OBJECT_QUOTA;
@@ -1880,7 +1881,7 @@ map_block_alloc		:	/* empty */
 			;
 
 map_block_obj_type	:	COUNTER	{ $$ = NFT_OBJECT_COUNTER; }
-			|	QUOTA { $$ = NFT_OBJECT_QUOTA; }
+			|	QUOTA	close_scope_quota { $$ = NFT_OBJECT_QUOTA; }
 			|	LIMIT	close_scope_limit { $$ = NFT_OBJECT_LIMIT; }
 			|	SECMARK { $$ = NFT_OBJECT_SECMARK; }
 			;
@@ -3118,7 +3119,7 @@ quota_used		:	/* empty */	{ $$ = 0; }
 			}
 			;
 
-quota_stmt		:	QUOTA	quota_mode NUM quota_unit quota_used
+quota_stmt		:	QUOTA	quota_mode NUM quota_unit quota_used	close_scope_quota
 			{
 				struct error_record *erec;
 				uint64_t rate;
@@ -3134,7 +3135,7 @@ quota_stmt		:	QUOTA	quota_mode NUM quota_unit quota_used
 				$$->quota.used = $5;
 				$$->quota.flags	= $2;
 			}
-			|	QUOTA	NAME	stmt_expr
+			|	QUOTA	NAME	stmt_expr	close_scope_quota
 			{
 				$$ = objref_stmt_alloc(&@$);
 				$$->objref.type = NFT_OBJECT_QUOTA;

@@ -202,6 +202,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_IP
 %s SCANSTATE_IP6
 %s SCANSTATE_LIMIT
+%s SCANSTATE_QUOTA
 %s SCANSTATE_VLAN
 %s SCANSTATE_EXPR_FIB
 %s SCANSTATE_EXPR_HASH
@@ -372,8 +373,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "until"			{ return UNTIL; }
 "over"			{ return OVER; }
 
-"quota"			{ return QUOTA; }
-"used"			{ return USED; }
+"quota"			{ scanner_push_start_cond(yyscanner, SCANSTATE_QUOTA); return QUOTA; }
+<SCANSTATE_QUOTA>"used"	{ return USED; }
 
 "second"		{ return SECOND; }
 "minute"		{ return MINUTE; }

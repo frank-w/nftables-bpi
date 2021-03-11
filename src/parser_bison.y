@@ -861,6 +861,7 @@ opt_newline		:	NEWLINE
 		 	|	/* empty */
 			;
 
+close_scope_arp		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_ARP); };
 close_scope_ct		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_CT); };
 close_scope_eth		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_ETH); };
 close_scope_fib		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_FIB); };
@@ -2431,7 +2432,7 @@ family_spec		:	/* empty */		{ $$ = NFPROTO_IPV4; }
 family_spec_explicit	:	IP	close_scope_ip 	{ $$ = NFPROTO_IPV4; }
 			|	IP6	close_scope_ip6 { $$ = NFPROTO_IPV6; }
 			|	INET			{ $$ = NFPROTO_INET; }
-			|	ARP			{ $$ = NFPROTO_ARP; }
+			|	ARP	close_scope_arp { $$ = NFPROTO_ARP; }
 			|	BRIDGE			{ $$ = NFPROTO_BRIDGE; }
 			|	NETDEV			{ $$ = NFPROTO_NETDEV; }
 			;
@@ -4544,7 +4545,7 @@ keyword_expr		:	ETHER   close_scope_eth { $$ = symbol_value(&@$, "ether"); }
 			|	IP	close_scope_ip  { $$ = symbol_value(&@$, "ip"); }
 			|	IP6	close_scope_ip6 { $$ = symbol_value(&@$, "ip6"); }
 			|	VLAN			{ $$ = symbol_value(&@$, "vlan"); }
-			|	ARP			{ $$ = symbol_value(&@$, "arp"); }
+			|	ARP	close_scope_arp { $$ = symbol_value(&@$, "arp"); }
 			|	DNAT			{ $$ = symbol_value(&@$, "dnat"); }
 			|	SNAT			{ $$ = symbol_value(&@$, "snat"); }
 			|	ECN			{ $$ = symbol_value(&@$, "ecn"); }
@@ -5104,7 +5105,7 @@ vlan_hdr_field		:	ID		{ $$ = VLANHDR_VID; }
 			|	TYPE		{ $$ = VLANHDR_TYPE; }
 			;
 
-arp_hdr_expr		:	ARP	arp_hdr_field
+arp_hdr_expr		:	ARP	arp_hdr_field	close_scope_arp
 			{
 				$$ = payload_expr_alloc(&@$, &proto_arp, $2);
 			}

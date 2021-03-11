@@ -196,6 +196,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %option nodefault
 %option warn
 %option stack
+%s SCANSTATE_ARP
 %s SCANSTATE_CT
 %s SCANSTATE_ETH
 %s SCANSTATE_IP
@@ -405,12 +406,14 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "cfi"			{ return CFI; }
 "pcp"			{ return PCP; }
 
-"arp"			{ return ARP; }
-"htype"			{ return HTYPE; }
-"ptype"			{ return PTYPE; }
-"hlen"			{ return HLEN; }
-"plen"			{ return PLEN; }
-"operation"		{ return OPERATION; }
+"arp"			{ scanner_push_start_cond(yyscanner, SCANSTATE_ARP); return ARP; }
+<SCANSTATE_ARP>{
+	"htype"			{ return HTYPE; }
+	"ptype"			{ return PTYPE; }
+	"hlen"			{ return HLEN; }
+	"plen"			{ return PLEN; }
+	"operation"		{ return OPERATION; }
+}
 
 "ip"			{ scanner_push_start_cond(yyscanner, SCANSTATE_IP); return IP; }
 "version"		{ return HDRVERSION; }

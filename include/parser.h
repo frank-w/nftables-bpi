@@ -28,6 +28,7 @@ struct parser_state {
 
 enum startcond_type {
 	PARSER_SC_BEGIN,
+	PARSER_SC_ARP,
 	PARSER_SC_CT,
 	PARSER_SC_ETH,
 	PARSER_SC_IP,

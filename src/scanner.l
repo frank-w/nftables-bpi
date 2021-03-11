@@ -201,6 +201,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_ETH
 %s SCANSTATE_IP
 %s SCANSTATE_IP6
+%s SCANSTATE_LIMIT
 %s SCANSTATE_VLAN
 %s SCANSTATE_EXPR_FIB
 %s SCANSTATE_EXPR_HASH
@@ -363,9 +364,11 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 	"bypass"	{ return BYPASS;}
 	"fanout"	{ return FANOUT;}
 }
-"limit"			{ return LIMIT; }
-"rate"			{ return RATE; }
-"burst"			{ return BURST; }
+"limit"			{ scanner_push_start_cond(yyscanner, SCANSTATE_LIMIT); return LIMIT; }
+<SCANSTATE_LIMIT>{
+	"rate"			{ return RATE; }
+	"burst"			{ return BURST; }
+}
 "until"			{ return UNTIL; }
 "over"			{ return OVER; }
 

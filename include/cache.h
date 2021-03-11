@@ -52,9 +52,11 @@ struct table;
 struct chain;
 struct handle;
 
+int cache_init(struct netlink_ctx *ctx, unsigned int flags);
+int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs);
+void cache_release(struct nft_cache *cache);
+
 struct nftnl_chain_list *chain_cache_dump(struct netlink_ctx *ctx, int *err);
-int chain_cache_init(struct netlink_ctx *ctx, struct table *table,
-		     struct nftnl_chain_list *chain_cache);
 void chain_cache_add(struct chain *chain, struct table *table);
 struct chain *chain_cache_find(const struct table *table,
 			       const struct handle *handle);

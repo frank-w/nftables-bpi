@@ -15,6 +15,7 @@
 #include <netlink.h>
 #include <mnl.h>
 #include <libnftnl/chain.h>
+#include <linux/netfilter.h>
 
 static unsigned int evaluate_cache_add(struct cmd *cmd, unsigned int flags)
 {
@@ -204,8 +205,8 @@ static int chain_cache_cb(struct nftnl_chain *nlc, void *arg)
 	return 0;
 }
 
-int chain_cache_init(struct netlink_ctx *ctx, struct table *table,
-		     struct nftnl_chain_list *chain_list)
+static int chain_cache_init(struct netlink_ctx *ctx, struct table *table,
+			    struct nftnl_chain_list *chain_list)
 {
 	struct chain_cache_dump_ctx dump_ctx = {
 		.nlctx	= ctx,
@@ -255,4 +256,206 @@ struct chain *chain_cache_find(const struct table *table,
 	}
 
 	return NULL;
+}
+
+static int cache_init_tables(struct netlink_ctx *ctx, struct handle *h,
+			     struct nft_cache *cache)
+{
+	int ret;
+
+	ret = netlink_list_tables(ctx, h);
+	if (ret < 0)
+		return -1;
+
+	list_splice_tail_init(&ctx->list, &cache->list);
+
+	return 0;
+}
+
+static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
+{
+	struct nftnl_chain_list *chain_list = NULL;
+	struct rule *rule, *nrule;
+	struct table *table;
+	struct chain *chain;
+	struct set *set;
+	int ret = 0;
+
+	if (flags & NFT_CACHE_CHAIN_BIT) {
+		chain_list = chain_cache_dump(ctx, &ret);
+		if (!chain_list)
+			return ret;
+	}
+
+	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+		if (flags & NFT_CACHE_SET_BIT) {
+			ret = netlink_list_sets(ctx, &table->handle);
+			list_splice_tail_init(&ctx->list, &table->sets);
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
+		}
+		if (flags & NFT_CACHE_SETELEM_BIT) {
+			list_for_each_entry(set, &table->sets, list) {
+				ret = netlink_list_setelems(ctx, &set->handle,
+							    set);
+				if (ret < 0) {
+					ret = -1;
+					goto cache_fails;
+				}
+			}
+		}
+		if (flags & NFT_CACHE_CHAIN_BIT) {
+			ret = chain_cache_init(ctx, table, chain_list);
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
+		}
+		if (flags & NFT_CACHE_FLOWTABLE_BIT) {
+			ret = netlink_list_flowtables(ctx, &table->handle);
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
+			list_splice_tail_init(&ctx->list, &table->flowtables);
+		}
+		if (flags & NFT_CACHE_OBJECT_BIT) {
+			ret = netlink_list_objs(ctx, &table->handle);
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
+			list_splice_tail_init(&ctx->list, &table->objs);
+		}
+
+		if (flags & NFT_CACHE_RULE_BIT) {
+			ret = netlink_list_rules(ctx, &table->handle);
+			list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
+				chain = chain_cache_find(table, &rule->handle);
+				if (!chain)
+					chain = chain_binding_lookup(table,
+							rule->handle.chain.name);
+				list_move_tail(&rule->list, &chain->rules);
+			}
+			if (ret < 0) {
+				ret = -1;
+				goto cache_fails;
+			}
+		}
+	}
+
+cache_fails:
+	if (flags & NFT_CACHE_CHAIN_BIT)
+		nftnl_chain_list_free(chain_list);
+
+	return ret;
+}
+
+int cache_init(struct netlink_ctx *ctx, unsigned int flags)
+{
+	struct handle handle = {
+		.family = NFPROTO_UNSPEC,
+	};
+	int ret;
+
+	if (flags == NFT_CACHE_EMPTY)
+		return 0;
+
+	/* assume NFT_CACHE_TABLE is always set. */
+	ret = cache_init_tables(ctx, &handle, &ctx->nft->cache);
+	if (ret < 0)
+		return ret;
+	ret = cache_init_objects(ctx, flags);
+	if (ret < 0)
+		return ret;
+
+	return 0;
+}
+
+static bool cache_is_complete(struct nft_cache *cache, unsigned int flags)
+{
+	return (cache->flags & flags) == flags;
+}
+
+static bool cache_needs_refresh(struct nft_cache *cache)
+{
+	return cache->flags & NFT_CACHE_REFRESH;
+}
+
+static bool cache_is_updated(struct nft_cache *cache, uint16_t genid)
+{
+	return genid && genid == cache->genid;
+}
+
+bool cache_needs_update(struct nft_cache *cache)
+{
+	return cache->flags & NFT_CACHE_UPDATE;
+}
+
+int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs)
+{
+	struct netlink_ctx ctx = {
+		.list		= LIST_HEAD_INIT(ctx.list),
+		.nft		= nft,
+		.msgs		= msgs,
+	};
+	struct nft_cache *cache = &nft->cache;
+	uint32_t genid, genid_stop, oldflags;
+	int ret;
+replay:
+	ctx.seqnum = cache->seqnum++;
+	genid = mnl_genid_get(&ctx);
+	if (!cache_needs_refresh(cache) &&
+	    cache_is_complete(cache, flags) &&
+	    cache_is_updated(cache, genid))
+		return 0;
+
+	if (cache->genid)
+		cache_release(cache);
+
+	if (flags & NFT_CACHE_FLUSHED) {
+		oldflags = flags;
+		flags = NFT_CACHE_EMPTY;
+		if (oldflags & NFT_CACHE_UPDATE)
+			flags |= NFT_CACHE_UPDATE;
+		goto skip;
+	}
+
+	ret = cache_init(&ctx, flags);
+	if (ret < 0) {
+		cache_release(cache);
+		if (errno == EINTR)
+			goto replay;
+
+		return -1;
+	}
+
+	genid_stop = mnl_genid_get(&ctx);
+	if (genid != genid_stop) {
+		cache_release(cache);
+		goto replay;
+	}
+skip:
+	cache->genid = genid;
+	cache->flags = flags;
+	return 0;
+}
+
+static void __cache_flush(struct list_head *table_list)
+{
+	struct table *table, *next;
+
+	list_for_each_entry_safe(table, next, table_list, list) {
+		list_del(&table->list);
+		table_free(table);
+	}
+}
+
+void cache_release(struct nft_cache *cache)
+{
+	__cache_flush(&cache->list);
+	cache->genid = 0;
+	cache->flags = NFT_CACHE_EMPTY;
 }

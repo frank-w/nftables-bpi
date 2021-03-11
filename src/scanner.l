@@ -201,6 +201,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_ETH
 %s SCANSTATE_IP
 %s SCANSTATE_IP6
+%s SCANSTATE_VLAN
 %s SCANSTATE_EXPR_FIB
 %s SCANSTATE_EXPR_HASH
 %s SCANSTATE_EXPR_IPSEC
@@ -403,10 +404,12 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "type"			{ return TYPE; }
 "typeof"		{ return TYPEOF; }
 
-"vlan"			{ return VLAN; }
+"vlan"			{ scanner_push_start_cond(yyscanner, SCANSTATE_VLAN); return VLAN; }
 "id"			{ return ID; }
-"cfi"			{ return CFI; }
-"pcp"			{ return PCP; }
+<SCANSTATE_VLAN>{
+	"cfi"		{ return CFI; }
+	"pcp"		{ return PCP; }
+}
 
 "arp"			{ scanner_push_start_cond(yyscanner, SCANSTATE_ARP); return ARP; }
 <SCANSTATE_ARP>{

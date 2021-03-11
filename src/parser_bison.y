@@ -868,6 +868,7 @@ close_scope_fib		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_FIB); }
 close_scope_hash	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_HASH); };
 close_scope_ip		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_IP); };
 close_scope_ip6		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_IP6); };
+close_scope_vlan	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_VLAN); };
 close_scope_ipsec	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_IPSEC); };
 close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGEN); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
@@ -4544,7 +4545,7 @@ boolean_expr		:	boolean_keys
 keyword_expr		:	ETHER   close_scope_eth { $$ = symbol_value(&@$, "ether"); }
 			|	IP	close_scope_ip  { $$ = symbol_value(&@$, "ip"); }
 			|	IP6	close_scope_ip6 { $$ = symbol_value(&@$, "ip6"); }
-			|	VLAN			{ $$ = symbol_value(&@$, "vlan"); }
+			|	VLAN	close_scope_vlan { $$ = symbol_value(&@$, "vlan"); }
 			|	ARP	close_scope_arp { $$ = symbol_value(&@$, "arp"); }
 			|	DNAT			{ $$ = symbol_value(&@$, "dnat"); }
 			|	SNAT			{ $$ = symbol_value(&@$, "snat"); }
@@ -5093,7 +5094,7 @@ eth_hdr_field		:	SADDR		{ $$ = ETHHDR_SADDR; }
 			|	TYPE		{ $$ = ETHHDR_TYPE; }
 			;
 
-vlan_hdr_expr		:	VLAN	vlan_hdr_field
+vlan_hdr_expr		:	VLAN	vlan_hdr_field	close_scope_vlan
 			{
 				$$ = payload_expr_alloc(&@$, &proto_vlan, $2);
 			}

@@ -197,6 +197,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %option warn
 %option stack
 %s SCANSTATE_CT
+%s SCANSTATE_ETH
 %s SCANSTATE_IP
 %s SCANSTATE_IP6
 %s SCANSTATE_EXPR_FIB
@@ -393,7 +394,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "bridge"		{ return BRIDGE; }
 
-"ether"			{ return ETHER; }
+"ether"			{ scanner_push_start_cond(yyscanner, SCANSTATE_ETH); return ETHER; }
 "saddr"			{ return SADDR; }
 "daddr"			{ return DADDR; }
 "type"			{ return TYPE; }

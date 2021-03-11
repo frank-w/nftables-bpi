@@ -862,6 +862,7 @@ opt_newline		:	NEWLINE
 			;
 
 close_scope_ct		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_CT); };
+close_scope_eth		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_ETH); };
 close_scope_fib		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_FIB); };
 close_scope_hash	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_HASH); };
 close_scope_ip		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_IP); };
@@ -3015,7 +3016,7 @@ log_flags		:	TCP	log_flags_tcp
 			{
 				$$ = NF_LOG_UID;
 			}
-			|	ETHER
+			|	ETHER	close_scope_eth
 			{
 				$$ = NF_LOG_MACDECODE;
 			}
@@ -4539,7 +4540,7 @@ boolean_expr		:	boolean_keys
 			}
 			;
 
-keyword_expr		:	ETHER                   { $$ = symbol_value(&@$, "ether"); }
+keyword_expr		:	ETHER   close_scope_eth { $$ = symbol_value(&@$, "ether"); }
 			|	IP	close_scope_ip  { $$ = symbol_value(&@$, "ip"); }
 			|	IP6	close_scope_ip6 { $$ = symbol_value(&@$, "ip6"); }
 			|	VLAN			{ $$ = symbol_value(&@$, "vlan"); }
@@ -5080,7 +5081,7 @@ payload_base_spec	:	LL_HDR		{ $$ = PROTO_BASE_LL_HDR; }
 			|	TRANSPORT_HDR	{ $$ = PROTO_BASE_TRANSPORT_HDR; }
 			;
 
-eth_hdr_expr		:	ETHER	eth_hdr_field
+eth_hdr_expr		:	ETHER	eth_hdr_field	close_scope_eth
 			{
 				$$ = payload_expr_alloc(&@$, &proto_eth, $2);
 			}
@@ -5114,8 +5115,8 @@ arp_hdr_field		:	HTYPE		{ $$ = ARPHDR_HRD; }
 			|	HLEN		{ $$ = ARPHDR_HLN; }
 			|	PLEN		{ $$ = ARPHDR_PLN; }
 			|	OPERATION	{ $$ = ARPHDR_OP; }
-			|	SADDR ETHER	{ $$ = ARPHDR_SADDR_ETHER; }
-			|	DADDR ETHER	{ $$ = ARPHDR_DADDR_ETHER; }
+			|	SADDR ETHER	close_scope_eth	{ $$ = ARPHDR_SADDR_ETHER; }
+			|	DADDR ETHER	close_scope_eth { $$ = ARPHDR_DADDR_ETHER; }
 			|	SADDR IP	close_scope_ip	{ $$ = ARPHDR_SADDR_IP; }
 			|	DADDR IP	close_scope_ip	{ $$ = ARPHDR_DADDR_IP; }
 			;

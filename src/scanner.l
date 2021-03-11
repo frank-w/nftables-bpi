@@ -203,6 +203,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_IP6
 %s SCANSTATE_LIMIT
 %s SCANSTATE_QUOTA
+%s SCANSTATE_SECMARK
 %s SCANSTATE_VLAN
 %s SCANSTATE_EXPR_FIB
 %s SCANSTATE_EXPR_HASH
@@ -634,7 +635,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 	"out"			{ return OUT; }
 }
 
-"secmark"		{ return SECMARK; }
+"secmark"		{ scanner_push_start_cond(yyscanner, SCANSTATE_SECMARK); return SECMARK; }
 "secmarks"		{ return SECMARKS; }
 
 {addrstring}		{

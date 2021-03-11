@@ -875,6 +875,7 @@ close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGE
 close_scope_quota	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_QUOTA); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
 close_scope_rt		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_RT); };
+close_scope_secmark	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_SECMARK); };
 close_scope_socket	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_SOCKET); }
 
 common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
@@ -1067,11 +1068,11 @@ add_cmd			:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_LIMIT, &$2, &@$, $3);
 			}
-			|	SECMARK		obj_spec	secmark_obj	secmark_config
+			|	SECMARK		obj_spec	secmark_obj	secmark_config	close_scope_secmark
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SECMARK, &$2, &@$, $3);
 			}
-			|	SECMARK		obj_spec	secmark_obj	'{' secmark_block '}'
+			|	SECMARK		obj_spec	secmark_obj	'{' secmark_block '}'	close_scope_secmark
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_SECMARK, &$2, &@$, $3);
 			}
@@ -1172,7 +1173,7 @@ create_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_LIMIT, &$2, &@$, $3);
 			}
-			|	SECMARK		obj_spec	secmark_obj	secmark_config
+			|	SECMARK		obj_spec	secmark_obj	secmark_config	close_scope_secmark
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_SECMARK, &$2, &@$, $3);
 			}
@@ -1259,7 +1260,7 @@ delete_cmd		:	TABLE		table_or_id_spec
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_LIMIT, &$2, &@$, NULL);
 			}
-			|	SECMARK		obj_or_id_spec
+			|	SECMARK		obj_or_id_spec	close_scope_secmark
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_SECMARK, &$2, &@$, NULL);
 			}
@@ -1347,7 +1348,7 @@ list_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SECMARKS, &$3, &@$, NULL);
 			}
-			|	SECMARK		obj_spec
+			|	SECMARK		obj_spec	close_scope_secmark
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_SECMARK, &$2, &@$, NULL);
 			}
@@ -1680,7 +1681,7 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 			}
 			|	table_block	SECMARK		obj_identifier
 					obj_block_alloc	'{'	secmark_block	'}'
-					stmt_separator
+					stmt_separator	close_scope_secmark
 			{
 				$4->location = @3;
 				$4->type = NFT_OBJECT_SECMARK;
@@ -1883,7 +1884,7 @@ map_block_alloc		:	/* empty */
 map_block_obj_type	:	COUNTER	{ $$ = NFT_OBJECT_COUNTER; }
 			|	QUOTA	close_scope_quota { $$ = NFT_OBJECT_QUOTA; }
 			|	LIMIT	close_scope_limit { $$ = NFT_OBJECT_LIMIT; }
-			|	SECMARK { $$ = NFT_OBJECT_SECMARK; }
+			|	SECMARK close_scope_secmark { $$ = NFT_OBJECT_SECMARK; }
 			;
 
 map_block		:	/* empty */	{ $$ = $<set>-1; }
@@ -4727,7 +4728,7 @@ meta_key_qualified	:	LENGTH		{ $$ = NFT_META_LEN; }
 			|	PROTOCOL	{ $$ = NFT_META_PROTOCOL; }
 			|	PRIORITY	{ $$ = NFT_META_PRIORITY; }
 			|	RANDOM		{ $$ = NFT_META_PRANDOM; }
-			|	SECMARK		{ $$ = NFT_META_SECMARK; }
+			|	SECMARK	close_scope_secmark { $$ = NFT_META_SECMARK; }
 			;
 
 meta_key_unqualified	:	MARK		{ $$ = NFT_META_MARK; }
@@ -4966,7 +4967,7 @@ ct_key			:	L3PROTOCOL	{ $$ = NFT_CT_L3PROTOCOL; }
 			|	PROTO_DST	{ $$ = NFT_CT_PROTO_DST; }
 			|	LABEL		{ $$ = NFT_CT_LABELS; }
 			|	EVENT		{ $$ = NFT_CT_EVENTMASK; }
-			|	SECMARK		{ $$ = NFT_CT_SECMARK; }
+			|	SECMARK	close_scope_secmark { $$ = NFT_CT_SECMARK; }
 			|	ID	 	{ $$ = NFT_CT_ID; }
 			|	ct_key_dir_optional
 			;

@@ -197,6 +197,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %option warn
 %option stack
 %s SCANSTATE_CT
+%s SCANSTATE_IP
 %s SCANSTATE_EXPR_HASH
 %s SCANSTATE_EXPR_IPSEC
 %s SCANSTATE_EXPR_NUMGEN
@@ -408,7 +409,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "plen"			{ return PLEN; }
 "operation"		{ return OPERATION; }
 
-"ip"			{ return IP; }
+"ip"			{ scanner_push_start_cond(yyscanner, SCANSTATE_IP); return IP; }
 "version"		{ return HDRVERSION; }
 "hdrlength"		{ return HDRLENGTH; }
 "dscp"			{ return DSCP; }
@@ -419,13 +420,15 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "protocol"		{ return PROTOCOL; }
 "checksum"		{ return CHECKSUM; }
 
-"lsrr"			{ return LSRR; }
-"rr"			{ return RR; }
-"ssrr"			{ return SSRR; }
-"ra"			{ return RA; }
+<SCANSTATE_IP>{
+	"lsrr"			{ return LSRR; }
+	"rr"			{ return RR; }
+	"ssrr"			{ return SSRR; }
+	"ra"			{ return RA; }
 
-"value"			{ return VALUE; }
-"ptr"			{ return PTR; }
+	"ptr"			{ return PTR; }
+	"value"			{ return VALUE; }
+}
 
 "echo"			{ return ECHO; }
 "eol"			{ return EOL; }

@@ -863,6 +863,7 @@ opt_newline		:	NEWLINE
 
 close_scope_ct		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_CT); };
 close_scope_hash	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_HASH); };
+close_scope_ip		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_IP); };
 close_scope_ipsec	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_IPSEC); };
 close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGEN); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
@@ -2424,7 +2425,7 @@ family_spec		:	/* empty */		{ $$ = NFPROTO_IPV4; }
 			|	family_spec_explicit
 			;
 
-family_spec_explicit	:	IP		{ $$ = NFPROTO_IPV4; }
+family_spec_explicit	:	IP	close_scope_ip 	{ $$ = NFPROTO_IPV4; }
 			|	IP6		{ $$ = NFPROTO_IPV6; }
 			|	INET		{ $$ = NFPROTO_INET; }
 			|	ARP		{ $$ = NFPROTO_ARP; }
@@ -3004,7 +3005,7 @@ log_flags		:	TCP	log_flags_tcp
 			{
 				$$ = $2;
 			}
-			|	IP	OPTIONS
+			|	IP	OPTIONS	close_scope_ip
 			{
 				$$ = NF_LOG_IPOPT;
 			}
@@ -4537,7 +4538,7 @@ boolean_expr		:	boolean_keys
 			;
 
 keyword_expr		:	ETHER                   { $$ = symbol_value(&@$, "ether"); }
-			|	IP			{ $$ = symbol_value(&@$, "ip"); }
+			|	IP	close_scope_ip  { $$ = symbol_value(&@$, "ip"); }
 			|	IP6			{ $$ = symbol_value(&@$, "ip6"); }
 			|	VLAN			{ $$ = symbol_value(&@$, "vlan"); }
 			|	ARP			{ $$ = symbol_value(&@$, "arp"); }
@@ -4892,7 +4893,7 @@ hash_expr		:	JHASH		expr	MOD	NUM	SEED	NUM	offset_opt	close_scope_hash
 			}
 			;
 
-nf_key_proto		:	IP		{ $$ = NFPROTO_IPV4; }
+nf_key_proto		:	IP	close_scope_ip { $$ = NFPROTO_IPV4; }
 			|	IP6		{ $$ = NFPROTO_IPV6; }
 			;
 
@@ -4972,8 +4973,8 @@ ct_key_dir		:	SADDR		{ $$ = NFT_CT_SRC; }
 			|	ct_key_dir_optional
 			;
 
-ct_key_proto_field	:	IP	SADDR	{ $$ = NFT_CT_SRC_IP; }
-			|	IP	DADDR	{ $$ = NFT_CT_DST_IP; }
+ct_key_proto_field	:	IP	SADDR	close_scope_ip { $$ = NFT_CT_SRC_IP; }
+			|	IP	DADDR	close_scope_ip { $$ = NFT_CT_DST_IP; }
 			|	IP6	SADDR	{ $$ = NFT_CT_SRC_IP6; }
 			|	IP6	DADDR	{ $$ = NFT_CT_DST_IP6; }
 			;
@@ -5113,19 +5114,19 @@ arp_hdr_field		:	HTYPE		{ $$ = ARPHDR_HRD; }
 			|	OPERATION	{ $$ = ARPHDR_OP; }
 			|	SADDR ETHER	{ $$ = ARPHDR_SADDR_ETHER; }
 			|	DADDR ETHER	{ $$ = ARPHDR_DADDR_ETHER; }
-			|	SADDR IP	{ $$ = ARPHDR_SADDR_IP; }
-			|	DADDR IP	{ $$ = ARPHDR_DADDR_IP; }
+			|	SADDR IP	close_scope_ip	{ $$ = ARPHDR_SADDR_IP; }
+			|	DADDR IP	close_scope_ip	{ $$ = ARPHDR_DADDR_IP; }
 			;
 
-ip_hdr_expr		:	IP	ip_hdr_field
+ip_hdr_expr		:	IP	ip_hdr_field	close_scope_ip
 			{
 				$$ = payload_expr_alloc(&@$, &proto_ip, $2);
 			}
-			|	IP	OPTION	ip_option_type ip_option_field
+			|	IP	OPTION	ip_option_type ip_option_field	close_scope_ip
 			{
 				$$ = ipopt_expr_alloc(&@$, $3, $4, 0);
 			}
-			|	IP	OPTION	ip_option_type
+			|	IP	OPTION	ip_option_type close_scope_ip
 			{
 				$$ = ipopt_expr_alloc(&@$, $3, IPOPT_FIELD_TYPE, 0);
 				$$->exthdr.flags = NFT_EXTHDR_F_PRESENT;

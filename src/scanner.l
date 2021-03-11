@@ -199,6 +199,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_CT
 %s SCANSTATE_IP
 %s SCANSTATE_IP6
+%s SCANSTATE_EXPR_FIB
 %s SCANSTATE_EXPR_HASH
 %s SCANSTATE_EXPR_IPSEC
 %s SCANSTATE_EXPR_NUMGEN
@@ -588,7 +589,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "dup"			{ return DUP; }
 "fwd"			{ return FWD; }
 
-"fib"			{ return FIB; }
+"fib"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_FIB); return FIB; }
 
 "osf"			{ return OSF; }
 

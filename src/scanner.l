@@ -370,11 +370,13 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 	"rate"			{ return RATE; }
 	"burst"			{ return BURST; }
 }
-"until"			{ return UNTIL; }
-"over"			{ return OVER; }
+<SCANSTATE_CT,SCANSTATE_LIMIT,SCANSTATE_QUOTA>"over"		{ return OVER; }
 
 "quota"			{ scanner_push_start_cond(yyscanner, SCANSTATE_QUOTA); return QUOTA; }
-<SCANSTATE_QUOTA>"used"	{ return USED; }
+<SCANSTATE_QUOTA>{
+	"used"		{ return USED; }
+	"until"		{ return UNTIL; }
+}
 
 "second"		{ return SECOND; }
 "minute"		{ return MINUTE; }

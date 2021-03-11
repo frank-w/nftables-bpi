@@ -396,8 +396,10 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "bridge"		{ return BRIDGE; }
 
 "ether"			{ scanner_push_start_cond(yyscanner, SCANSTATE_ETH); return ETHER; }
-"saddr"			{ return SADDR; }
-"daddr"			{ return DADDR; }
+<SCANSTATE_ARP,SCANSTATE_CT,SCANSTATE_ETH,SCANSTATE_IP,SCANSTATE_IP6,SCANSTATE_EXPR_FIB,SCANSTATE_EXPR_IPSEC>{
+	"saddr"			{ return SADDR; }
+	"daddr"			{ return DADDR; }
+}
 "type"			{ return TYPE; }
 "typeof"		{ return TYPEOF; }
 

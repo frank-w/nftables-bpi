@@ -1017,11 +1017,29 @@ void scanner_destroy(struct nft_ctx *nft)
 
 static void scanner_push_start_cond(void *scanner, enum startcond_type type)
 {
+	struct parser_state *state = yyget_extra(scanner);
+
+	state->startcond_type = type;
+
 	yy_push_state((int)type, scanner);
 }
 
 void scanner_pop_start_cond(void *scanner, enum startcond_type t)
 {
-	(void)yy_top_state(scanner); /* suppress gcc warning wrt. unused function */
+	struct parser_state *state = yyget_extra(scanner);
+
+	if (state->startcond_type != t) {
+		state->flex_state_pop++;
+		return; /* Can't pop just yet! */
+	}
+
+	while (state->flex_state_pop) {
+		state->flex_state_pop--;
+		state->startcond_type = yy_top_state(scanner);
+		yy_pop_state(scanner);
+	}
+
+	state->startcond_type = yy_top_state(scanner);
+
 	yy_pop_state(scanner);
 }

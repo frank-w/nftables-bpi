@@ -23,6 +23,8 @@ struct parser_state {
 	struct scope			*scopes[SCOPE_NEST_MAX];
 	unsigned int			scope;
 
+	unsigned int			flex_state_pop;
+	unsigned int			startcond_type;
 	struct list_head		*cmds;
 };
 

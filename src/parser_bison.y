@@ -863,6 +863,7 @@ opt_newline		:	NEWLINE
 
 close_scope_arp		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_ARP); };
 close_scope_ct		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_CT); };
+close_scope_counter	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_COUNTER); };
 close_scope_eth		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_ETH); };
 close_scope_fib		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_FIB); };
 close_scope_hash	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_HASH); };
@@ -1023,7 +1024,7 @@ add_cmd			:	TABLE		table_spec
 				handle_merge(&$3->handle, &$2);
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_FLOWTABLE, &$2, &@$, $5);
 			}
-			|	COUNTER		obj_spec
+			|	COUNTER		obj_spec	close_scope_counter
 			{
 				struct obj *obj;
 
@@ -1032,11 +1033,11 @@ add_cmd			:	TABLE		table_spec
 				handle_merge(&obj->handle, &$2);
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_COUNTER, &$2, &@$, obj);
 			}
-			|	COUNTER		obj_spec	counter_obj	counter_config
+			|	COUNTER		obj_spec	counter_obj	counter_config	close_scope_counter
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_COUNTER, &$2, &@$, $3);
 			}
-			|	COUNTER		obj_spec	counter_obj	'{' counter_block '}'
+			|	COUNTER		obj_spec	counter_obj	'{' counter_block '}'	close_scope_counter
 			{
 				$$ = cmd_alloc(CMD_ADD, CMD_OBJ_COUNTER, &$2, &@$, $3);
 			}
@@ -1140,7 +1141,7 @@ create_cmd		:	TABLE		table_spec
 				handle_merge(&$3->handle, &$2);
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_FLOWTABLE, &$2, &@$, $5);
 			}
-			|	COUNTER		obj_spec
+			|	COUNTER		obj_spec	close_scope_counter
 			{
 				struct obj *obj;
 
@@ -1149,7 +1150,7 @@ create_cmd		:	TABLE		table_spec
 				handle_merge(&obj->handle, &$2);
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_COUNTER, &$2, &@$, obj);
 			}
-			|	COUNTER		obj_spec	counter_obj	counter_config
+			|	COUNTER		obj_spec	counter_obj	counter_config	close_scope_counter
 			{
 				$$ = cmd_alloc(CMD_CREATE, CMD_OBJ_COUNTER, &$2, &@$, $3);
 			}
@@ -1244,7 +1245,7 @@ delete_cmd		:	TABLE		table_or_id_spec
 				handle_merge(&$3->handle, &$2);
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_FLOWTABLE, &$2, &@$, $5);
 			}
-			|	COUNTER		obj_or_id_spec
+			|	COUNTER		obj_or_id_spec	close_scope_counter
 			{
 				$$ = cmd_alloc(CMD_DELETE, CMD_OBJ_COUNTER, &$2, &@$, NULL);
 			}
@@ -1312,7 +1313,7 @@ list_cmd		:	TABLE		table_spec
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_COUNTERS, &$3, &@$, NULL);
 			}
-			|	COUNTER		obj_spec
+			|	COUNTER		obj_spec	close_scope_counter
 			{
 				$$ = cmd_alloc(CMD_LIST, CMD_OBJ_COUNTER, &$2, &@$, NULL);
 			}
@@ -1418,7 +1419,7 @@ reset_cmd		:	COUNTERS	ruleset_spec
 			{
 				$$ = cmd_alloc(CMD_RESET, CMD_OBJ_COUNTERS, &$3, &@$, NULL);
 			}
-			|       COUNTER         obj_spec
+			|       COUNTER         obj_spec	close_scope_counter
 			{
 				$$ = cmd_alloc(CMD_RESET, CMD_OBJ_COUNTER, &$2,&@$, NULL);
 			}
@@ -1621,7 +1622,7 @@ table_block		:	/* empty */	{ $$ = $<table>-1; }
 			}
 			|	table_block	COUNTER		obj_identifier
 					obj_block_alloc	'{'	counter_block	'}'
-					stmt_separator
+					stmt_separator	close_scope_counter
 			{
 				$4->location = @3;
 				$4->type = NFT_OBJECT_COUNTER;
@@ -1881,7 +1882,7 @@ map_block_alloc		:	/* empty */
 			}
 			;
 
-map_block_obj_type	:	COUNTER	{ $$ = NFT_OBJECT_COUNTER; }
+map_block_obj_type	:	COUNTER	close_scope_counter { $$ = NFT_OBJECT_COUNTER; }
 			|	QUOTA	close_scope_quota { $$ = NFT_OBJECT_QUOTA; }
 			|	LIMIT	close_scope_limit { $$ = NFT_OBJECT_LIMIT; }
 			|	SECMARK close_scope_secmark { $$ = NFT_OBJECT_SECMARK; }
@@ -2011,7 +2012,7 @@ flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 			{
 				$$->dev_expr = $4;
 			}
-			|	flowtable_block COUNTER
+			|	flowtable_block COUNTER	close_scope_counter
 			{
 				$$->flags |= NFT_FLOWTABLE_COUNTER;
 			}
@@ -2782,11 +2783,11 @@ connlimit_stmt		:	CT	COUNT	NUM	close_scope_ct
 counter_stmt		:	counter_stmt_alloc
 			|	counter_stmt_alloc	counter_args
 
-counter_stmt_alloc	:	COUNTER
+counter_stmt_alloc	:	COUNTER	close_scope_counter
 			{
 				$$ = counter_stmt_alloc(&@$);
 			}
-			|	COUNTER		NAME	stmt_expr
+			|	COUNTER		NAME	stmt_expr	close_scope_counter
 			{
 				$$ = objref_stmt_alloc(&@$);
 				$$->objref.type = NFT_OBJECT_COUNTER;
@@ -4133,11 +4134,11 @@ set_elem_stmt_list	:	set_elem_stmt
 			}
 			;
 
-set_elem_stmt		:	COUNTER
+set_elem_stmt		:	COUNTER	close_scope_counter
 			{
 				$$ = counter_stmt_alloc(&@$);
 			}
-			|	COUNTER	PACKETS	NUM	BYTES	NUM
+			|	COUNTER	PACKETS	NUM	BYTES	NUM	close_scope_counter
 			{
 				$$ = counter_stmt_alloc(&@$);
 				$$->counter.packets = $3;

@@ -198,6 +198,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %option stack
 %s SCANSTATE_ARP
 %s SCANSTATE_CT
+%s SCANSTATE_COUNTER
 %s SCANSTATE_ETH
 %s SCANSTATE_IP
 %s SCANSTATE_IP6
@@ -343,10 +344,10 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "flowtables"		{ return FLOWTABLES; }
 
-"counter"		{ return COUNTER; }
+"counter"		{ scanner_push_start_cond(yyscanner, SCANSTATE_COUNTER); return COUNTER; }
 "name"			{ return NAME; }
-"packets"		{ return PACKETS; }
-"bytes"			{ return BYTES; }
+<SCANSTATE_COUNTER,SCANSTATE_CT,SCANSTATE_LIMIT>"packets"		{ return PACKETS; }
+<SCANSTATE_COUNTER,SCANSTATE_CT,SCANSTATE_LIMIT,SCANSTATE_QUOTA>"bytes"	{ return BYTES; }
 
 "counters"		{ return COUNTERS; }
 "quotas"		{ return QUOTAS; }

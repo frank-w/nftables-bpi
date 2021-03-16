@@ -210,6 +210,12 @@ static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
 			ei = lei;
 			goto err;
 		}
+		/* single element contained in an existing interval */
+		if (mpz_cmp(new->left, new->right) == 0) {
+			ei_destroy(new);
+			goto out;
+		}
+
 		/*
 		 * The new interval is entirely contained in the same interval,
 		 * split it into two parts:
@@ -277,7 +283,7 @@ static int ei_insert(struct list_head *msgs, struct seg_tree *tree,
 	}
 
 	__ei_insert(tree, new);
-
+out:
 	mpz_clear(p);
 
 	return 0;

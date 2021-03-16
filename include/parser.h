@@ -47,6 +47,8 @@ enum startcond_type {
 	PARSER_SC_EXPR_QUEUE,
 	PARSER_SC_EXPR_RT,
 	PARSER_SC_EXPR_SOCKET,
+
+	PARSER_SC_STMT_LOG,
 };
 
 struct mnl_socket;

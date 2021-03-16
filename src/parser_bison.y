@@ -879,6 +879,8 @@ close_scope_rt		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_RT); };
 close_scope_secmark	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_SECMARK); };
 close_scope_socket	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_SOCKET); }
 
+close_scope_log		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_STMT_LOG); }
+
 common_block		:	INCLUDE		QUOTED_STRING	stmt_separator
 			{
 				if (scanner_include_file(nft, scanner, $2, &@$) < 0) {
@@ -2695,7 +2697,7 @@ stmt			:	verdict_stmt
 			|	payload_stmt
 			|	stateful_stmt
 			|	meta_stmt
-			|	log_stmt
+			|	log_stmt	close_scope_log
 			|	reject_stmt
 			|	nat_stmt
 			|	tproxy_stmt

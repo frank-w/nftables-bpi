@@ -214,6 +214,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_EXPR_RT
 %s SCANSTATE_EXPR_SOCKET
 
+%s SCANSTATE_STMT_LOG
+
 %%
 
 "=="			{ return EQ; }
@@ -354,12 +356,14 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "limits"		{ return LIMITS; }
 "synproxys"		{ return SYNPROXYS; }
 
-"log"			{ return LOG; }
+"log"			{ scanner_push_start_cond(yyscanner, SCANSTATE_STMT_LOG); return LOG; }
 "prefix"		{ return PREFIX; }
 "group"			{ return GROUP; }
-"snaplen"		{ return SNAPLEN; }
-"queue-threshold"	{ return QUEUE_THRESHOLD; }
-"level"			{ return LEVEL; }
+<SCANSTATE_STMT_LOG>{
+	"snaplen"		{ return SNAPLEN; }
+	"queue-threshold"	{ return QUEUE_THRESHOLD; }
+	"level"			{ return LEVEL; }
+}
 
 "queue"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_QUEUE); return QUEUE;}
 <SCANSTATE_EXPR_QUEUE>{

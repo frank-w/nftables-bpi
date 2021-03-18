@@ -1022,6 +1022,6 @@ static void scanner_push_start_cond(void *scanner, enum startcond_type type)
 
 void scanner_pop_start_cond(void *scanner, enum startcond_type t)
 {
-	yy_pop_state(scanner);
 	(void)yy_top_state(scanner); /* suppress gcc warning wrt. unused function */
+	yy_pop_state(scanner);
 }

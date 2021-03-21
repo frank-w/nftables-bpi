@@ -2223,6 +2223,9 @@ static void flowtable_print_declaration(const struct flowtable *flowtable,
 		nft_print(octx, " }%s", opts->stmt_separator);
 	}
 
+	if (flowtable->flags & NFT_FLOWTABLE_HW_OFFLOAD)
+		nft_print(octx, " flags offload;");
+
 	if (flowtable->flags & NFT_FLOWTABLE_COUNTER)
 		nft_print(octx, "%s%scounter%s", opts->tab, opts->tab,
 			  opts->stmt_separator);

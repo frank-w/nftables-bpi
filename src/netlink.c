@@ -1598,6 +1598,8 @@ netlink_delinearize_flowtable(struct netlink_ctx *ctx,
 		xstrdup(nftnl_flowtable_get_str(nlo, NFTNL_FLOWTABLE_NAME));
 	flowtable->handle.handle.id =
 		nftnl_flowtable_get_u64(nlo, NFTNL_FLOWTABLE_HANDLE);
+	if (nftnl_flowtable_is_set(nlo, NFTNL_FLOWTABLE_FLAGS))
+		flowtable->flags = nftnl_flowtable_get_u32(nlo, NFTNL_FLOWTABLE_FLAGS);
 	dev_array = nftnl_flowtable_get(nlo, NFTNL_FLOWTABLE_DEVICES);
 	while (dev_array[len])
 		len++;

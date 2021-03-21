@@ -188,6 +188,14 @@ enum chain_flags {
 };
 
 /**
+ * enum flowtable_flags - flowtable flags
+ *
+ */
+enum flowtable_flags {
+	FLOWTABLE_F_HW_OFFLOAD	= 0x1, /* NF_FLOWTABLE_HW_OFFLOAD in linux nf_flow_table.h */
+};
+
+/**
  * struct prio_spec - extendend priority specification for mixed
  *                    textual/numerical parsing.
  *

@@ -6,6 +6,7 @@ fork from git://git.netfilter.org/nftables
 
 ## native compilation
 
+apt-get install --no-install-recommends git make gcc dh-autoreconf bison flex asciidoc libmnl-dev pkg-config libgmp-dev libreadline-dev libreadline-dev docbook-xsl xsltproc libxml2-utils
 
 run rebuild.sh
 
@@ -16,6 +17,8 @@ run rebuild.sh
 just for documenting my steps :)
 
 ```
+apt-get install --no-install-recommends git make gcc dh-autoreconf bison flex asciidoc pkg-config docbook-xsl xsltproc libxml2-utils
+
 git clone https://git.netfilter.org/libmnl
 git clone git://git.netfilter.org/libnftnl
 #git clone git://git.netfilter.org/nftables

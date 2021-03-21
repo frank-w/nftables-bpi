@@ -1996,6 +1996,7 @@ flowtable_block_alloc	:	/* empty */
 flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 			|	flowtable_block	common_block
 			|	flowtable_block	stmt_separator
+			|	flowtable_block	ft_flags_spec	stmt_separator
 			|	flowtable_block	HOOK		STRING	prio_spec	stmt_separator
 			{
 				$$->hook.loc = @3;
@@ -2375,6 +2376,12 @@ dev_spec		:	DEVICE	string
 flags_spec		:	FLAGS		OFFLOAD
 			{
 				$<chain>0->flags |= CHAIN_F_HW_OFFLOAD;
+			}
+			;
+
+ft_flags_spec		:	FLAGS		OFFLOAD
+			{
+				$<flowtable>0->flags |= FLOWTABLE_F_HW_OFFLOAD;
 			}
 			;
 

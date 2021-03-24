@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 RULESET="table ip foo {
 	        set inflows {

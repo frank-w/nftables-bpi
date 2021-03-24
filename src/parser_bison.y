@@ -5506,7 +5506,7 @@ exthdr_exists_expr	:	EXTHDR	exthdr_key
 			;
 
 exthdr_key		:	HBH	{ $$ = IPPROTO_HOPOPTS; }
-			|	RT	{ $$ = IPPROTO_ROUTING; }
+			|	RT	close_scope_rt	{ $$ = IPPROTO_ROUTING; }
 			|	FRAG	{ $$ = IPPROTO_FRAGMENT; }
 			|	DST	{ $$ = IPPROTO_DSTOPTS; }
 			|	MH	{ $$ = IPPROTO_MH; }

@@ -570,7 +570,7 @@ will be out-of-flow packets that were not matched by SYNPROXY.
     table ip x {
             chain z {
                     type filter hook input priority filter; policy accept;
-                    ct state { invalid, untracked } synproxy mss 1460 wscale 9 timestamp sack-perm
+                    ct state invalid, untracked synproxy mss 1460 wscale 9 timestamp sack-perm
                     ct state invalid drop
             }
     }

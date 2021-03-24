@@ -172,6 +172,8 @@ void expr_describe(const struct expr *expr, struct output_ctx *octx)
 			nft_print(octx, "(in hexadecimal):\n");
 		symbol_table_print(edtype->sym_tbl, edtype,
 				   expr->byteorder, octx);
+	} else if (edtype->describe) {
+		edtype->describe(octx);
 	}
 }
 

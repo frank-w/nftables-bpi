@@ -619,6 +619,20 @@ static void inet_protocol_type_print(const struct expr *expr,
 	integer_type_print(expr, octx);
 }
 
+static void inet_protocol_type_describe(struct output_ctx *octx)
+{
+	struct protoent *p;
+	uint8_t protonum;
+
+	for (protonum = 0; protonum < UINT8_MAX; protonum++) {
+		p = getprotobynumber(protonum);
+		if (!p)
+			continue;
+
+		nft_print(octx, "\t%-30s\t%u\n", p->p_name, protonum);
+	}
+}
+
 static struct error_record *inet_protocol_type_parse(struct parse_ctx *ctx,
 						     const struct expr *sym,
 						     struct expr **res)
@@ -658,6 +672,7 @@ const struct datatype inet_protocol_type = {
 	.print		= inet_protocol_type_print,
 	.json		= inet_protocol_type_json,
 	.parse		= inet_protocol_type_parse,
+	.describe	= inet_protocol_type_describe,
 };
 
 static void inet_service_print(const struct expr *expr, struct output_ctx *octx)

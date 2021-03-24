@@ -164,6 +164,7 @@ struct datatype {
 	struct error_record		*(*parse)(struct parse_ctx *ctx,
 						  const struct expr *sym,
 						  struct expr **res);
+	void				(*describe)(struct output_ctx *octx);
 	const struct symbol_table	*sym_tbl;
 	unsigned int			refcnt;
 };

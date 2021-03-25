@@ -2692,7 +2692,7 @@ stateful_stmt_list	:	stateful_stmt
 			}
 			;
 
-stateful_stmt		:	counter_stmt
+stateful_stmt		:	counter_stmt	close_scope_counter
 			|	limit_stmt
 			|	quota_stmt
 			|	connlimit_stmt
@@ -2792,11 +2792,11 @@ connlimit_stmt		:	CT	COUNT	NUM	close_scope_ct
 counter_stmt		:	counter_stmt_alloc
 			|	counter_stmt_alloc	counter_args
 
-counter_stmt_alloc	:	COUNTER	close_scope_counter
+counter_stmt_alloc	:	COUNTER
 			{
 				$$ = counter_stmt_alloc(&@$);
 			}
-			|	COUNTER		NAME	stmt_expr	close_scope_counter
+			|	COUNTER		NAME	stmt_expr
 			{
 				$$ = objref_stmt_alloc(&@$);
 				$$->objref.type = NFT_OBJECT_COUNTER;

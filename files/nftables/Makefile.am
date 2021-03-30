@@ -1,5 +1,4 @@
-pkgsysconfdir = ${sysconfdir}/nftables
-dist_pkgsysconf_DATA =	all-in-one.nft		\
+dist_pkgdata_DATA =	all-in-one.nft		\
 			arp-filter.nft		\
 			bridge-filter.nft	\
 			inet-filter.nft		\

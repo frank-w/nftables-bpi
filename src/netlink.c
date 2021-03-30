@@ -120,6 +120,9 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 	} else {
 		elem = expr;
 	}
+	if (elem->etype != EXPR_SET_ELEM)
+		BUG("Unexpected expression type: got %d\n", elem->etype);
+
 	key = elem->key;
 
 	netlink_gen_data(key, &nld);

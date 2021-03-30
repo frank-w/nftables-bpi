@@ -3787,6 +3787,9 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 				   set->key->byteorder, set->key->len, 0);
 		if (expr_evaluate(ctx, &set->init) < 0)
 			return -1;
+		if (set->init->etype != EXPR_SET)
+			return expr_error(ctx->msgs, set->init, "Set %s: Unexpected initial type %s, missing { }?",
+					  set->handle.set.name, expr_name(set->init));
 	}
 	ctx->set = NULL;
 

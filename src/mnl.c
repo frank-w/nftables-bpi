@@ -1779,11 +1779,6 @@ int mnl_nft_flowtable_add(struct netlink_ctx *ctx, struct cmd *cmd,
 		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_PRIO, 0);
 	}
 
-	if (cmd->flowtable->flags & FLOWTABLE_F_HW_OFFLOAD) {
-		nftnl_flowtable_set_u32(flo, NFTNL_FLOWTABLE_FLAGS,
-				    NFT_FLOWTABLE_HW_OFFLOAD);
-	}
-
 	if (cmd->flowtable->dev_expr) {
 		dev_array = nft_flowtable_dev_array(cmd);
 		nftnl_flowtable_set_data(flo, NFTNL_FLOWTABLE_DEVICES,

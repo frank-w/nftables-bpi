@@ -1996,7 +1996,6 @@ flowtable_block_alloc	:	/* empty */
 flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 			|	flowtable_block	common_block
 			|	flowtable_block	stmt_separator
-			|	flowtable_block	ft_flags_spec	stmt_separator
 			|	flowtable_block	HOOK		STRING	prio_spec	stmt_separator
 			{
 				$$->hook.loc = @3;
@@ -2018,6 +2017,10 @@ flowtable_block		:	/* empty */	{ $$ = $<flowtable>-1; }
 			|	flowtable_block COUNTER	close_scope_counter
 			{
 				$$->flags |= NFT_FLOWTABLE_COUNTER;
+			}
+			|	flowtable_block	FLAGS	OFFLOAD	stmt_separator
+			{
+				$$->flags |= FLOWTABLE_F_HW_OFFLOAD;
 			}
 			;
 
@@ -2376,12 +2379,6 @@ dev_spec		:	DEVICE	string
 flags_spec		:	FLAGS		OFFLOAD
 			{
 				$<chain>0->flags |= CHAIN_F_HW_OFFLOAD;
-			}
-			;
-
-ft_flags_spec		:	FLAGS		OFFLOAD
-			{
-				$<flowtable>0->flags |= FLOWTABLE_F_HW_OFFLOAD;
 			}
 			;
 

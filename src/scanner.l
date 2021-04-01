@@ -422,6 +422,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 	"cfi"		{ return CFI; }
 	"pcp"		{ return PCP; }
 }
+"8021ad"		{ yylval->string = xstrdup(yytext); return STRING; }
 
 "arp"			{ scanner_push_start_cond(yyscanner, SCANSTATE_ARP); return ARP; }
 <SCANSTATE_ARP>{

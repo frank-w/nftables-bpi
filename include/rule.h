@@ -156,6 +156,7 @@ struct table {
 	struct location		location;
 	struct scope		scope;
 	struct list_head	*cache_chain_ht;
+	struct list_head	cache_chain;
 	struct list_head	chains;
 	struct list_head	sets;
 	struct list_head	objs;
@@ -231,6 +232,7 @@ struct hook_spec {
 struct chain {
 	struct list_head	list;
 	struct list_head	cache_hlist;
+	struct list_head	cache_list;
 	struct handle		handle;
 	struct location		location;
 	unsigned int		refcnt;

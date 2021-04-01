@@ -1584,7 +1584,7 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 		tmp = flowtable_print_json(flowtable);
 		json_array_append_new(root, tmp);
 	}
-	list_for_each_entry(chain, &table->chains, list) {
+	list_for_each_entry(chain, &table->cache_chain, cache_list) {
 		tmp = chain_print_json(chain);
 		json_array_append_new(root, tmp);
 
@@ -1646,7 +1646,7 @@ static json_t *do_list_chain_json(struct netlink_ctx *ctx,
 	struct chain *chain;
 	struct rule *rule;
 
-	list_for_each_entry(chain, &table->chains, list) {
+	list_for_each_entry(chain, &table->cache_chain, cache_list) {
 		if (chain->handle.family != cmd->handle.family ||
 		    strcmp(cmd->handle.chain.name, chain->handle.chain.name))
 			continue;
@@ -1674,7 +1674,7 @@ static json_t *do_list_chains_json(struct netlink_ctx *ctx, struct cmd *cmd)
 		    cmd->handle.family != table->handle.family)
 			continue;
 
-		list_for_each_entry(chain, &table->chains, list) {
+		list_for_each_entry(chain, &table->cache_chain, cache_list) {
 			json_t *tmp = chain_print_json(chain);
 
 			json_array_append_new(root, tmp);

@@ -193,10 +193,10 @@ static int chain_cache_cb(struct nftnl_chain *nlc, void *arg)
 	chain = netlink_delinearize_chain(ctx->nlctx, nlc);
 
 	if (chain->flags & CHAIN_F_BINDING) {
-		list_add_tail(&chain->list, &ctx->table->chain_bindings);
+		list_add_tail(&chain->cache_list, &ctx->table->chain_bindings);
 	} else {
 		list_add_tail(&chain->cache_hlist, &ctx->table->cache_chain_ht[hash]);
-		list_add_tail(&chain->list, &ctx->table->chains);
+		list_add_tail(&chain->cache_list, &ctx->table->cache_chain);
 	}
 
 	nftnl_chain_list_del(nlc);
@@ -240,7 +240,7 @@ void chain_cache_add(struct chain *chain, struct table *table)
 
 	hash = djb_hash(chain->handle.chain.name) % NFT_CACHE_HSIZE;
 	list_add_tail(&chain->cache_hlist, &table->cache_chain_ht[hash]);
-	list_add_tail(&chain->list, &table->chains);
+	list_add_tail(&chain->cache_list, &table->cache_chain);
 }
 
 struct chain *chain_cache_find(const struct table *table,

@@ -217,7 +217,8 @@ static int chain_cache_init(struct netlink_ctx *ctx, struct table *table,
 	return 0;
 }
 
-struct nftnl_chain_list *chain_cache_dump(struct netlink_ctx *ctx, int *err)
+static struct nftnl_chain_list *chain_cache_dump(struct netlink_ctx *ctx,
+						 int *err)
 {
 	struct nftnl_chain_list *chain_list;
 

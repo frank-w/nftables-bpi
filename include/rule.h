@@ -259,8 +259,6 @@ extern const char *chain_hookname_lookup(const char *name);
 extern struct chain *chain_alloc(const char *name);
 extern struct chain *chain_get(struct chain *chain);
 extern void chain_free(struct chain *chain);
-extern struct chain *chain_lookup(const struct table *table,
-				  const struct handle *h);
 extern struct chain *chain_lookup_fuzzy(const struct handle *h,
 					const struct nft_cache *cache,
 					const struct table **table);

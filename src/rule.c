@@ -761,17 +761,6 @@ void chain_free(struct chain *chain)
 	xfree(chain);
 }
 
-struct chain *chain_lookup(const struct table *table, const struct handle *h)
-{
-	struct chain *chain;
-
-	list_for_each_entry(chain, &table->cache_chain, cache_list) {
-		if (!strcmp(chain->handle.chain.name, h->chain.name))
-			return chain;
-	}
-	return NULL;
-}
-
 struct chain *chain_binding_lookup(const struct table *table,
 				   const char *chain_name)
 {
@@ -2625,7 +2614,7 @@ static int do_command_rename(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
-		chain = chain_lookup(table, &cmd->handle);
+		chain = chain_cache_find(table, &cmd->handle);
 
 		return mnl_nft_chain_rename(ctx, cmd, chain);
 	default:

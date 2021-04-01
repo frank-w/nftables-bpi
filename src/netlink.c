@@ -1749,7 +1749,7 @@ static struct rule *trace_lookup_rule(const struct nftnl_trace *nlt,
 	if (!table)
 		return NULL;
 
-	chain = chain_lookup(table, &h);
+	chain = chain_cache_find(table, &h);
 	if (!chain)
 		return NULL;
 

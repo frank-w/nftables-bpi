@@ -661,6 +661,24 @@ static bool payload_may_dependency_kill_icmp(struct payload_dep_ctx *ctx, struct
 	return ctx->icmp_type == icmp_type;
 }
 
+static bool payload_may_dependency_kill_ll(struct payload_dep_ctx *ctx, struct expr *expr)
+{
+	const struct expr *dep = ctx->pdep->expr;
+
+	/* Never remove a 'vlan type 0x...' expression, they are never added implicitly */
+	if (dep->left->payload.desc == &proto_vlan)
+		return false;
+
+	/* 'vlan id 2' implies 'ether type 8021Q'. If a different protocol is
+	 * tested, this is not a redundant expression.
+	 */
+	if (dep->left->payload.desc == &proto_eth &&
+	    dep->right->etype == EXPR_VALUE && dep->right->len == 16)
+		return mpz_get_uint16(dep->right->value) == ETH_P_8021Q;
+
+	return true;
+}
+
 static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
 					unsigned int family, struct expr *expr)
 {
@@ -689,9 +707,14 @@ static bool payload_may_dependency_kill(struct payload_dep_ctx *ctx,
 		 * for stacked protocols if we only have protcol type matches.
 		 */
 		if (dep->left->etype == EXPR_PAYLOAD && dep->op == OP_EQ &&
-		    expr->flags & EXPR_F_PROTOCOL &&
-		    expr->payload.base == dep->left->payload.base)
-			return false;
+		    expr->payload.base == dep->left->payload.base) {
+			if (expr->flags & EXPR_F_PROTOCOL)
+				return false;
+
+			if (expr->payload.base == PROTO_BASE_LL_HDR)
+				return payload_may_dependency_kill_ll(ctx, expr);
+		}
+
 		break;
 	}
 

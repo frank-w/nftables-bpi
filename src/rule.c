@@ -1140,10 +1140,10 @@ struct table *table_alloc(void)
 	init_list_head(&table->scope.symbols);
 	table->refcnt = 1;
 
-	table->chain_htable =
+	table->cache_chain_ht =
 		xmalloc(sizeof(struct list_head) * NFT_CACHE_HSIZE);
 	for (i = 0; i < NFT_CACHE_HSIZE; i++)
-		init_list_head(&table->chain_htable[i]);
+		init_list_head(&table->cache_chain_ht[i]);
 
 	return table;
 }
@@ -1171,7 +1171,7 @@ void table_free(struct table *table)
 		obj_free(obj);
 	handle_free(&table->handle);
 	scope_release(&table->scope);
-	xfree(table->chain_htable);
+	xfree(table->cache_chain_ht);
 	xfree(table);
 }
 

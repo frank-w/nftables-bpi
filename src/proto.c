@@ -1027,6 +1027,7 @@ const struct proto_desc proto_vlan = {
 		PROTO_LINK(__constant_htons(ETH_P_ARP),		&proto_arp),
 		PROTO_LINK(__constant_htons(ETH_P_IPV6),	&proto_ip6),
 		PROTO_LINK(__constant_htons(ETH_P_8021Q),	&proto_vlan),
+		PROTO_LINK(__constant_htons(ETH_P_8021AD),	&proto_vlan),
 
 	},
 	.templates	= {
@@ -1099,6 +1100,7 @@ const struct proto_desc proto_eth = {
 		PROTO_LINK(__constant_htons(ETH_P_ARP),		&proto_arp),
 		PROTO_LINK(__constant_htons(ETH_P_IPV6),	&proto_ip6),
 		PROTO_LINK(__constant_htons(ETH_P_8021Q),	&proto_vlan),
+		PROTO_LINK(__constant_htons(ETH_P_8021AD),	&proto_vlan),
 	},
 	.templates	= {
 		[ETHHDR_DADDR]		= ETHHDR_ADDR("daddr", ether_dhost),
@@ -1124,6 +1126,7 @@ const struct proto_desc proto_netdev = {
 		PROTO_LINK(__constant_htons(ETH_P_ARP),		&proto_arp),
 		PROTO_LINK(__constant_htons(ETH_P_IPV6),	&proto_ip6),
 		PROTO_LINK(__constant_htons(ETH_P_8021Q),	&proto_vlan),
+		PROTO_LINK(__constant_htons(ETH_P_8021AD),	&proto_vlan),
 	},
 	.templates	= {
 		[0]	= PROTO_META_TEMPLATE("protocol", &ethertype_type, NFT_META_PROTOCOL, 16),

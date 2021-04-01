@@ -530,3 +530,179 @@
     }
 ]
 
+# ether type 8021ad vlan id 1 ip protocol 6 accept
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "8021ad"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "vlan"
+                }
+            },
+            "op": "==",
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "protocol",
+                    "protocol": "ip"
+                }
+            },
+            "op": "==",
+            "right": "tcp"
+        }
+    },
+    {
+        "accept": null
+    }
+]
+
+# ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip counter
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "8021ad"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "vlan"
+                }
+            },
+            "op": "==",
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "vlan"
+                }
+            },
+            "op": "==",
+            "right": "vlan"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "vlan"
+                }
+            },
+            "op": "==",
+            "right": 2
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "vlan"
+                }
+            },
+            "op": "==",
+            "right": "ip"
+        }
+    },
+    {
+        "counter": {
+            "bytes": 0,
+            "packets": 0
+        }
+    }
+]
+
+# ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip ip protocol 6
+[
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "ether"
+                }
+            },
+            "op": "==",
+            "right": "8021ad"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "vlan"
+                }
+            },
+            "op": "==",
+            "right": 1
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "type",
+                    "protocol": "vlan"
+                }
+            },
+            "op": "==",
+            "right": "vlan"
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "id",
+                    "protocol": "vlan"
+                }
+            },
+            "op": "==",
+            "right": 2
+        }
+    },
+    {
+        "match": {
+            "left": {
+                "payload": {
+                    "field": "protocol",
+                    "protocol": "ip"
+                }
+            },
+            "op": "==",
+            "right": "tcp"
+        }
+    }
+]

@@ -34,6 +34,11 @@ vlan id { 1, 2, 4, 100, 4096 };fail
 
 ether type vlan ip protocol 1 accept;ok
 
+# IEEE 802.1AD
+ether type 8021ad vlan id 1 ip protocol 6 accept;ok
+ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip counter;ok
+ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip ip protocol 6;ok;ether type 8021ad vlan id 1 vlan type vlan vlan id 2 ip protocol 6
+
 # illegal dependencies
 ether type ip vlan id 1;fail
 ether type ip vlan id 1 ip saddr 10.0.0.1;fail

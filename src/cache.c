@@ -338,6 +338,11 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 				if (!chain)
 					chain = chain_binding_lookup(table,
 							rule->handle.chain.name);
+				if (!chain) {
+					ret = -1;
+					goto cache_fails;
+				}
+
 				list_move_tail(&rule->list, &chain->rules);
 			}
 			if (ret < 0) {

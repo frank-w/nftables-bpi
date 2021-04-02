@@ -365,7 +365,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 	if (flags & NFT_CACHE_CHAIN_BIT) {
 		chain_list = chain_cache_dump(ctx, &ret);
 		if (!chain_list)
-			return ret;
+			return -1;
 	}
 
 	list_for_each_entry(table, &ctx->nft->cache.list, list) {

@@ -199,7 +199,7 @@
     }
 ]
 
-# meta protocol != {ip, arp, ip6, vlan}
+# meta protocol != {ip, arp, ip6, 8021q}
 [
     {
         "match": {
@@ -212,7 +212,7 @@
                     "ip",
                     "arp",
                     "ip6",
-                    "vlan"
+                    "8021q"
                 ]
             }
         }

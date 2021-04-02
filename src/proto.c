@@ -1057,8 +1057,11 @@ static const struct symbol_table ethertype_tbl = {
 		SYMBOL("ip",		__constant_htons(ETH_P_IP)),
 		SYMBOL("arp",		__constant_htons(ETH_P_ARP)),
 		SYMBOL("ip6",		__constant_htons(ETH_P_IPV6)),
-		SYMBOL("vlan",		__constant_htons(ETH_P_8021Q)),
+		SYMBOL("8021q",		__constant_htons(ETH_P_8021Q)),
 		SYMBOL("8021ad",	__constant_htons(ETH_P_8021AD)),
+
+		/* for compatibility with older versions */
+		SYMBOL("vlan",		__constant_htons(ETH_P_8021Q)),
 		SYMBOL_LIST_END
 	},
 };

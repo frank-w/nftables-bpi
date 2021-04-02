@@ -132,7 +132,7 @@ bridge
   [ cmp eq reg 1 0x00000081 ]
   [ reject type 1 code 0 ]
 
-# ether type vlan reject with icmpx type admin-prohibited
+# ether type 8021q reject with icmpx type admin-prohibited
 bridge
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x00000081 ]

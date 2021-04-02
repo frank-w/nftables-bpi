@@ -68,7 +68,7 @@ ip test-ip4 input
   [ meta load protocol => reg 1 ]
   [ lookup reg 1 set __set%d ]
 
-# meta protocol != {ip, arp, ip6, vlan}
+# meta protocol != {ip, arp, ip6, 8021q}
 __set%d test-ip4 3
 __set%d test-ip4 0
 	element 00000008  : 0 [end]	element 00000608  : 0 [end]	element 0000dd86  : 0 [end]	element 00000081  : 0 [end]

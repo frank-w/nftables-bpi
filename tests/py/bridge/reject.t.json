@@ -289,7 +289,7 @@
                 }
             },
             "op": "==",
-            "right": "vlan"
+            "right": "8021q"
         }
     },
     {
@@ -318,7 +318,7 @@
     }
 ]
 
-# ether type vlan reject with icmpx type admin-prohibited
+# ether type 8021q reject with icmpx type admin-prohibited
 [
     {
         "match": {
@@ -329,7 +329,7 @@
                 }
             },
             "op": "==",
-            "right": "vlan"
+            "right": "8021q"
         }
     },
     {

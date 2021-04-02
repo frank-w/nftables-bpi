@@ -573,7 +573,7 @@
     }
 ]
 
-# ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip counter
+# ether type 8021ad vlan id 1 vlan type 8021q vlan id 2 vlan type ip counter
 [
     {
         "match": {
@@ -608,7 +608,7 @@
                 }
             },
             "op": "==",
-            "right": "vlan"
+            "right": "8021q"
         }
     },
     {
@@ -643,7 +643,7 @@
     }
 ]
 
-# ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip ip protocol 6
+# ether type 8021ad vlan id 1 vlan type 8021q vlan id 2 vlan type ip ip protocol 6
 [
     {
         "match": {
@@ -678,7 +678,7 @@
                 }
             },
             "op": "==",
-            "right": "vlan"
+            "right": "8021q"
         }
     },
     {

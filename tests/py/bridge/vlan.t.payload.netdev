@@ -260,7 +260,7 @@ netdev
   [ cmp eq reg 1 0x00000006 ]
   [ immediate reg 0 accept ]
 
-# ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip counter
+# ether type 8021ad vlan id 1 vlan type 8021q vlan id 2 vlan type ip counter
 netdev
   [ meta load iiftype => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]
@@ -278,7 +278,7 @@ netdev
   [ cmp eq reg 1 0x00000008 ]
   [ counter pkts 0 bytes 0 ]
 
-# ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip ip protocol 6
+# ether type 8021ad vlan id 1 vlan type 8021q vlan id 2 vlan type ip ip protocol 6
 netdev
   [ meta load iiftype => reg 1 ]
   [ cmp eq reg 1 0x00000001 ]

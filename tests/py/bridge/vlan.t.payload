@@ -222,7 +222,7 @@ bridge
   [ cmp eq reg 1 0x00000006 ]
   [ immediate reg 0 accept ]
 
-# ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip counter
+# ether type 8021ad vlan id 1 vlan type 8021q vlan id 2 vlan type ip counter
 bridge
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x0000a888 ]
@@ -238,7 +238,7 @@ bridge
   [ cmp eq reg 1 0x00000008 ]
   [ counter pkts 0 bytes 0 ]
 
-# ether type 8021ad vlan id 1 vlan type vlan vlan id 2 vlan type ip ip protocol 6
+# ether type 8021ad vlan id 1 vlan type 8021q vlan id 2 vlan type ip ip protocol 6
 bridge
   [ payload load 2b @ link header + 12 => reg 1 ]
   [ cmp eq reg 1 0x0000a888 ]

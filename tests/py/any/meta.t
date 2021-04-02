@@ -20,8 +20,8 @@ meta length != { 33, 55, 67, 88};ok
 meta length { 33-55, 66-88};ok
 meta length != { 33-55, 66-88};ok
 
-meta protocol { ip, arp, ip6, vlan };ok;meta protocol { ip6, ip, vlan, arp}
-meta protocol != {ip, arp, ip6, vlan};ok
+meta protocol { ip, arp, ip6, vlan };ok;meta protocol { ip6, ip, 8021q, arp}
+meta protocol != {ip, arp, ip6, 8021q};ok
 meta protocol ip;ok
 meta protocol != ip;ok
 

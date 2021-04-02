@@ -10,7 +10,7 @@
                 "set": [
                     "ip",
                     "arp",
-                    "vlan",
+                    "8021q",
                     "ip6"
                 ]
             }
@@ -18,7 +18,7 @@
     }
 ]
 
-# meta protocol != {ip, arp, ip6, vlan}
+# meta protocol != {ip, arp, ip6, 8021q}
 [
     {
         "match": {
@@ -30,7 +30,7 @@
                 "set": [
                     "ip",
                     "arp",
-                    "vlan",
+                    "8021q",
                     "ip6"
                 ]
             }

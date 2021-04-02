@@ -32,7 +32,7 @@
                 "meta": { "key": "ibrvproto" }
             },
 	    "op": "==",
-            "right": "vlan"
+            "right": "8021q"
         }
     }
 ]

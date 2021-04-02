@@ -974,37 +974,6 @@ struct set *netlink_delinearize_set(struct netlink_ctx *ctx,
 	return set;
 }
 
-static int list_set_cb(struct nftnl_set *nls, void *arg)
-{
-	struct netlink_ctx *ctx = arg;
-	struct set *set;
-
-	set = netlink_delinearize_set(ctx, nls);
-	if (set == NULL)
-		return -1;
-	list_add_tail(&set->list, &ctx->list);
-	return 0;
-}
-
-int netlink_list_sets(struct netlink_ctx *ctx, const struct handle *h)
-{
-	struct nftnl_set_list *set_cache;
-	int err;
-
-	set_cache = mnl_nft_set_dump(ctx, h->family, h->table.name);
-	if (set_cache == NULL) {
-		if (errno == EINTR)
-			return -1;
-
-		return 0;
-	}
-
-	ctx->data = h;
-	err = nftnl_set_list_foreach(set_cache, list_set_cb, ctx);
-	nftnl_set_list_free(set_cache);
-	return err;
-}
-
 void alloc_setelem_cache(const struct expr *set, struct nftnl_set *nls)
 {
 	struct nftnl_set_elem *nlse;

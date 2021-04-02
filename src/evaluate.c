@@ -273,7 +273,7 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		set = set_lookup(table, (*expr)->identifier);
+		set = set_cache_find(table, (*expr)->identifier);
 		if (set == NULL)
 			return set_not_found(ctx, &(*expr)->location,
 					     (*expr)->identifier);
@@ -3677,7 +3677,7 @@ static int setelem_evaluate(struct eval_ctx *ctx, struct cmd *cmd)
 	if (table == NULL)
 		return table_not_found(ctx);
 
-	set = set_lookup(table, ctx->cmd->handle.set.name);
+	set = set_cache_find(table, ctx->cmd->handle.set.name);
 	if (set == NULL)
 		return set_not_found(ctx, &ctx->cmd->handle.set.location,
 				     ctx->cmd->handle.set.name);
@@ -3793,8 +3793,8 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 	}
 	ctx->set = NULL;
 
-	if (set_lookup(table, set->handle.set.name) == NULL)
-		set_add_hash(set_get(set), table);
+	if (set_cache_find(table, set->handle.set.name) == NULL)
+		set_cache_add(set_get(set), table);
 
 	return 0;
 }
@@ -4401,7 +4401,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		set = set_lookup(table, cmd->handle.set.name);
+		set = set_cache_find(table, cmd->handle.set.name);
 		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
@@ -4415,7 +4415,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		set = set_lookup(table, cmd->handle.set.name);
+		set = set_cache_find(table, cmd->handle.set.name);
 		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
@@ -4429,7 +4429,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		set = set_lookup(table, cmd->handle.set.name);
+		set = set_cache_find(table, cmd->handle.set.name);
 		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
@@ -4544,7 +4544,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		set = set_lookup(table, cmd->handle.set.name);
+		set = set_cache_find(table, cmd->handle.set.name);
 		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
@@ -4560,7 +4560,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		set = set_lookup(table, cmd->handle.set.name);
+		set = set_cache_find(table, cmd->handle.set.name);
 		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);
@@ -4576,7 +4576,7 @@ static int cmd_evaluate_flush(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		set = set_lookup(table, cmd->handle.set.name);
+		set = set_cache_find(table, cmd->handle.set.name);
 		if (set == NULL)
 			return set_not_found(ctx, &ctx->cmd->handle.set.location,
 					     ctx->cmd->handle.set.name);

@@ -59,5 +59,7 @@ void cache_release(struct nft_cache *cache);
 void chain_cache_add(struct chain *chain, struct table *table);
 struct chain *chain_cache_find(const struct table *table,
 			       const struct handle *handle);
+void set_cache_add(struct set *set, struct table *table);
+struct set *set_cache_find(const struct table *table, const char *name);
 
 #endif /* _NFT_CACHE_H_ */

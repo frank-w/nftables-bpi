@@ -356,7 +356,7 @@ static void netlink_parse_lookup(struct netlink_parse_ctx *ctx,
 	uint32_t flag;
 
 	name = nftnl_expr_get_str(nle, NFTNL_EXPR_LOOKUP_SET);
-	set  = set_lookup(ctx->table, name);
+	set  = set_cache_find(ctx->table, name);
 	if (set == NULL)
 		return netlink_error(ctx, loc,
 				     "Unknown set '%s' in lookup expression",
@@ -1531,7 +1531,7 @@ static void netlink_parse_dynset(struct netlink_parse_ctx *ctx,
 	init_list_head(&dynset_parse_ctx.stmt_list);
 
 	name = nftnl_expr_get_str(nle, NFTNL_EXPR_DYNSET_SET_NAME);
-	set  = set_lookup(ctx->table, name);
+	set  = set_cache_find(ctx->table, name);
 	if (set == NULL)
 		return netlink_error(ctx, loc,
 				     "Unknown set '%s' in dynset statement",
@@ -1640,7 +1640,7 @@ static void netlink_parse_objref(struct netlink_parse_ctx *ctx,
 		struct set *set;
 
 		name = nftnl_expr_get_str(nle, NFTNL_EXPR_OBJREF_SET_NAME);
-		set  = set_lookup(ctx->table, name);
+		set  = set_cache_find(ctx->table, name);
 		if (set == NULL)
 			return netlink_error(ctx, loc,
 					     "Unknown set '%s' in objref expression",

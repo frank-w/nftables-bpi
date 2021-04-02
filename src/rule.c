@@ -201,22 +201,6 @@ void set_free(struct set *set)
 	xfree(set);
 }
 
-void set_add_hash(struct set *set, struct table *table)
-{
-	list_add_tail(&set->list, &table->sets);
-}
-
-struct set *set_lookup(const struct table *table, const char *name)
-{
-	struct set *set;
-
-	list_for_each_entry(set, &table->sets, list) {
-		if (!strcmp(set->handle.set.name, name))
-			return set;
-	}
-	return NULL;
-}
-
 struct set *set_lookup_fuzzy(const char *set_name,
 			     const struct nft_cache *cache,
 			     const struct table **t)
@@ -228,7 +212,7 @@ struct set *set_lookup_fuzzy(const char *set_name,
 	string_misspell_init(&st);
 
 	list_for_each_entry(table, &cache->list, list) {
-		list_for_each_entry(set, &table->sets, list) {
+		list_for_each_entry(set, &table->cache_set, cache_list) {
 			if (set_is_anonymous(set->flags))
 				continue;
 			if (!strcmp(set->handle.set.name, set_name)) {
@@ -256,7 +240,7 @@ struct set *set_lookup_global(uint32_t family, const char *table,
 	if (t == NULL)
 		return NULL;
 
-	return set_lookup(t, name);
+	return set_cache_find(t, name);
 }
 
 struct print_fmt_options {
@@ -1124,6 +1108,7 @@ struct table *table_alloc(void)
 	init_list_head(&table->chains);
 	init_list_head(&table->cache_chain);
 	init_list_head(&table->sets);
+	init_list_head(&table->cache_set);
 	init_list_head(&table->objs);
 	init_list_head(&table->flowtables);
 	init_list_head(&table->chain_bindings);
@@ -1134,6 +1119,11 @@ struct table *table_alloc(void)
 		xmalloc(sizeof(struct list_head) * NFT_CACHE_HSIZE);
 	for (i = 0; i < NFT_CACHE_HSIZE; i++)
 		init_list_head(&table->cache_chain_ht[i]);
+
+	table->cache_set_ht =
+		xmalloc(sizeof(struct list_head) * NFT_CACHE_HSIZE);
+	for (i = 0; i < NFT_CACHE_HSIZE; i++)
+		init_list_head(&table->cache_set_ht[i]);
 
 	return table;
 }
@@ -1158,6 +1148,9 @@ void table_free(struct table *table)
 		chain_free(chain);
 	list_for_each_entry_safe(set, nset, &table->sets, list)
 		set_free(set);
+	/* this is implicitly releasing sets in the hashtable cache */
+	list_for_each_entry_safe(set, nset, &table->cache_set, cache_list)
+		set_free(set);
 	list_for_each_entry_safe(ft, nft, &table->flowtables, list)
 		flowtable_free(ft);
 	list_for_each_entry_safe(obj, nobj, &table->objs, list)
@@ -1165,6 +1158,7 @@ void table_free(struct table *table)
 	handle_free(&table->handle);
 	scope_release(&table->scope);
 	xfree(table->cache_chain_ht);
+	xfree(table->cache_set_ht);
 	xfree(table);
 }
 
@@ -1275,7 +1269,7 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 		obj_print(obj, octx);
 		delim = "\n";
 	}
-	list_for_each_entry(set, &table->sets, list) {
+	list_for_each_entry(set, &table->cache_set, cache_list) {
 		if (set_is_anonymous(set->flags))
 			continue;
 		nft_print(octx, "%s", delim);
@@ -1697,7 +1691,7 @@ static int do_list_sets(struct netlink_ctx *ctx, struct cmd *cmd)
 			  family2str(table->handle.family),
 			  table->handle.table.name);
 
-		list_for_each_entry(set, &table->sets, list) {
+		list_for_each_entry(set, &table->cache_set, cache_list) {
 			if (cmd->obj == CMD_OBJ_SETS &&
 			    !set_is_literal(set->flags))
 				continue;
@@ -2435,7 +2429,7 @@ static int do_list_set(struct netlink_ctx *ctx, struct cmd *cmd,
 {
 	struct set *set;
 
-	set = set_lookup(table, cmd->handle.set.name);
+	set = set_cache_find(table, cmd->handle.set.name);
 	if (set == NULL)
 		return -1;
 

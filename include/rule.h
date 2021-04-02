@@ -158,6 +158,8 @@ struct table {
 	struct list_head	*cache_chain_ht;
 	struct list_head	cache_chain;
 	struct list_head	chains;
+	struct list_head	*cache_set_ht;
+	struct list_head	cache_set;
 	struct list_head	sets;
 	struct list_head	objs;
 	struct list_head	flowtables;
@@ -331,6 +333,8 @@ void rule_stmt_insert_at(struct rule *rule, struct stmt *nstmt,
  */
 struct set {
 	struct list_head	list;
+	struct list_head	cache_hlist;
+	struct list_head	cache_list;
 	struct handle		handle;
 	struct location		location;
 	unsigned int		refcnt;
@@ -359,8 +363,6 @@ extern struct set *set_alloc(const struct location *loc);
 extern struct set *set_get(struct set *set);
 extern void set_free(struct set *set);
 extern struct set *set_clone(const struct set *set);
-extern void set_add_hash(struct set *set, struct table *table);
-extern struct set *set_lookup(const struct table *table, const char *name);
 extern struct set *set_lookup_global(uint32_t family, const char *table,
 				     const char *name, struct nft_cache *cache);
 extern struct set *set_lookup_fuzzy(const char *set_name,

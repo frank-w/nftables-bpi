@@ -632,7 +632,7 @@ static void netlink_events_cache_addset(struct netlink_mon_handler *monh,
 		goto out;
 	}
 
-	set_add_hash(s, t);
+	set_cache_add(s, t);
 out:
 	nftnl_set_free(nls);
 }

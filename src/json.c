@@ -1574,7 +1574,7 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 		tmp = obj_print_json(obj);
 		json_array_append_new(root, tmp);
 	}
-	list_for_each_entry(set, &table->sets, list) {
+	list_for_each_entry(set, &table->cache_set, cache_list) {
 		if (set_is_anonymous(set->flags))
 			continue;
 		tmp = set_print_json(&ctx->nft->output, set);
@@ -1687,7 +1687,7 @@ static json_t *do_list_chains_json(struct netlink_ctx *ctx, struct cmd *cmd)
 static json_t *do_list_set_json(struct netlink_ctx *ctx,
 				struct cmd *cmd, struct table *table)
 {
-	struct set *set = set_lookup(table, cmd->handle.set.name);
+	struct set *set = set_cache_find(table, cmd->handle.set.name);
 
 	if (set == NULL)
 		return json_null();
@@ -1707,7 +1707,7 @@ static json_t *do_list_sets_json(struct netlink_ctx *ctx, struct cmd *cmd)
 		    cmd->handle.family != table->handle.family)
 			continue;
 
-		list_for_each_entry(set, &table->sets, list) {
+		list_for_each_entry(set, &table->cache_set, cache_list) {
 			if (cmd->obj == CMD_OBJ_SETS &&
 			    !set_is_literal(set->flags))
 				continue;

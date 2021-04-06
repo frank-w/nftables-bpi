@@ -2971,12 +2971,48 @@ static int evaluate_addr(struct eval_ctx *ctx, struct stmt *stmt,
 				 expr);
 }
 
+static bool nat_evaluate_addr_has_th_expr(const struct expr *map)
+{
+	const struct expr *i, *concat;
+
+	if (!map || map->etype != EXPR_MAP)
+		return false;
+
+	concat = map->map;
+	if (concat ->etype != EXPR_CONCAT)
+		return false;
+
+	list_for_each_entry(i, &concat->expressions, list) {
+		enum proto_bases base;
+
+		if ((i->flags & EXPR_F_PROTOCOL) == 0)
+			continue;
+
+		switch (i->etype) {
+		case EXPR_META:
+			base = i->meta.base;
+			break;
+		case EXPR_PAYLOAD:
+			base = i->payload.base;
+			break;
+		default:
+			return false;
+		}
+
+		if (base == PROTO_BASE_NETWORK_HDR)
+			return true;
+	}
+
+	return false;
+}
+
 static int nat_evaluate_transport(struct eval_ctx *ctx, struct stmt *stmt,
 				  struct expr **expr)
 {
 	struct proto_ctx *pctx = &ctx->pctx;
 
-	if (pctx->protocol[PROTO_BASE_TRANSPORT_HDR].desc == NULL)
+	if (pctx->protocol[PROTO_BASE_TRANSPORT_HDR].desc == NULL &&
+	    !nat_evaluate_addr_has_th_expr(stmt->nat.addr))
 		return stmt_binary_error(ctx, *expr, stmt,
 					 "transport protocol mapping is only "
 					 "valid after transport protocol match");

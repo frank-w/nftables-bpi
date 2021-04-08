@@ -51,3 +51,11 @@ make clean
 make
 make install
 ```
+
+## install
+### In Debian:
+
+Just unpack content of lib-folders to folder
+/usr/local/lib/arm-linux-gnueabihf on r2 (create first) or
+/usr/local/lib/aarch64-linux-gnu on r64 and 
+nft binary to folder in PATH of root-user (/usr/local/sbin seems to be not by default)

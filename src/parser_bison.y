@@ -4188,6 +4188,17 @@ set_elem_stmt		:	COUNTER	close_scope_counter
 				$$->limit.type  = NFT_LIMIT_PKT_BYTES;
 				$$->limit.flags = $3;
                         }
+			|	CT	COUNT	NUM	close_scope_ct
+			{
+				$$ = connlimit_stmt_alloc(&@$);
+				$$->connlimit.count	= $3;
+			}
+			|	CT	COUNT	OVER	NUM	close_scope_ct
+			{
+				$$ = connlimit_stmt_alloc(&@$);
+				$$->connlimit.count = $4;
+				$$->connlimit.flags = NFT_CONNLIMIT_F_INV;
+			}
 			;
 
 set_elem_expr_option	:	TIMEOUT			time_spec

@@ -3961,6 +3961,9 @@ static int flowtable_evaluate(struct eval_ctx *ctx, struct flowtable *ft)
 	if (table == NULL)
 		return table_not_found(ctx);
 
+	if (!ft_cache_find(table, ft->handle.flowtable.name))
+		ft_cache_add(flowtable_get(ft), table);
+
 	if (ft->hook.name) {
 		ft->hook.num = str2hooknum(NFPROTO_NETDEV, ft->hook.name);
 		if (ft->hook.num == NF_INET_NUMHOOKS)

@@ -319,6 +319,11 @@ void set_cache_add(struct set *set, struct table *table)
 	cache_add(&set->cache, &table->set_cache, hash);
 }
 
+void set_cache_del(struct set *set)
+{
+	cache_del(&set->cache);
+}
+
 struct set *set_cache_find(const struct table *table, const char *name)
 {
 	struct set *set;

@@ -687,7 +687,7 @@ out:
 static void netlink_events_cache_delset_cb(struct set *s,
 					   void *data)
 {
-	list_del(&s->list);
+	set_cache_del(s);
 	set_free(s);
 }
 

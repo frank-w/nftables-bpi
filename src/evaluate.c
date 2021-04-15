@@ -4246,6 +4246,15 @@ static int ct_timeout_evaluate(struct eval_ctx *ctx, struct obj *obj)
 
 static int obj_evaluate(struct eval_ctx *ctx, struct obj *obj)
 {
+	struct table *table;
+
+	table = table_lookup_global(ctx);
+	if (!table)
+		return table_not_found(ctx);
+
+	if (!obj_cache_find(table, obj->handle.obj.name, obj->type))
+		obj_cache_add(obj_get(obj), table);
+
 	switch (obj->type) {
 	case NFT_OBJECT_CT_TIMEOUT:
 		return ct_timeout_evaluate(ctx, obj);
@@ -4332,6 +4341,7 @@ static int cmd_evaluate_add(struct eval_ctx *ctx, struct cmd *cmd)
 	case CMD_OBJ_SECMARK:
 	case CMD_OBJ_CT_EXPECT:
 	case CMD_OBJ_SYNPROXY:
+		handle_merge(&cmd->object->handle, &cmd->handle);
 		return obj_evaluate(ctx, cmd->object);
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);

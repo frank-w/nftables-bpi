@@ -3754,6 +3754,10 @@ static int set_evaluate(struct eval_ctx *ctx, struct set *set)
 	if (table == NULL)
 		return table_not_found(ctx);
 
+	if (!(set->flags & NFT_SET_ANONYMOUS) &&
+	    !set_cache_find(table, set->handle.set.name))
+		set_cache_add(set_get(set), table);
+
 	if (!(set->flags & NFT_SET_INTERVAL) && set->automerge)
 		return set_error(ctx, set, "auto-merge only works with interval sets");
 

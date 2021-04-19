@@ -81,6 +81,7 @@ tcp flags & (syn|fin) == (syn|fin);ok;tcp flags & (fin | syn) == fin | syn
 tcp flags & (fin | syn | rst | psh | ack | urg | ecn | cwr) == fin | syn | rst | psh | ack | urg | ecn | cwr;ok;tcp flags == 0xff
 tcp flags { syn, syn | ack };ok
 tcp flags & (fin | syn | rst | psh | ack | urg) == { fin, ack, psh | ack, fin | psh | ack };ok
+tcp flags ! fin,rst;ok
 
 tcp window 22222;ok
 tcp window 22;ok

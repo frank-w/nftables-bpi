@@ -1730,3 +1730,22 @@
         }
     }
 ]
+
+# tcp flags ! fin,rst
+[
+    {
+        "match": {
+            "op": "!",
+            "left": {
+                "payload": {
+                    "protocol": "tcp",
+                    "field": "flags"
+                }
+            },
+            "right": [
+                "fin",
+                "rst"
+            ]
+        }
+    }
+]

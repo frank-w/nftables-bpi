@@ -32,21 +32,31 @@ const struct socket_template socket_templates[] = {
 		.len		= BITS_PER_BYTE,
 		.byteorder	= BYTEORDER_HOST_ENDIAN,
 	},
+	[NFT_SOCKET_CGROUPV2] = {
+		.token		= "cgroupv2",
+		.dtype		= &cgroupv2_type,
+		.len		= 8 * BITS_PER_BYTE,
+		.byteorder	= BYTEORDER_HOST_ENDIAN,
+	},
 };
 
 static void socket_expr_print(const struct expr *expr, struct output_ctx *octx)
 {
 	nft_print(octx, "socket %s", socket_templates[expr->socket.key].token);
+	if (expr->socket.key == NFT_SOCKET_CGROUPV2)
+		nft_print(octx, " level %u", expr->socket.level);
 }
 
 static bool socket_expr_cmp(const struct expr *e1, const struct expr *e2)
 {
-	return e1->socket.key == e2->socket.key;
+	return e1->socket.key == e2->socket.key &&
+	       e1->socket.level == e2->socket.level;
 }
 
 static void socket_expr_clone(struct expr *new, const struct expr *expr)
 {
 	new->socket.key = expr->socket.key;
+	new->socket.level = expr->socket.level;
 }
 
 #define NFTNL_UDATA_SOCKET_KEY 0
@@ -95,7 +105,7 @@ static struct expr *socket_expr_parse_udata(const struct nftnl_udata *attr)
 
 	key = nftnl_udata_get_u32(ud[NFTNL_UDATA_SOCKET_KEY]);
 
-	return socket_expr_alloc(&internal_location, key);
+	return socket_expr_alloc(&internal_location, key, 0);
 }
 
 const struct expr_ops socket_expr_ops = {
@@ -109,7 +119,8 @@ const struct expr_ops socket_expr_ops = {
 	.parse_udata	= socket_expr_parse_udata,
 };
 
-struct expr *socket_expr_alloc(const struct location *loc, enum nft_socket_keys key)
+struct expr *socket_expr_alloc(const struct location *loc,
+			       enum nft_socket_keys key, uint32_t level)
 {
 	const struct socket_template *tmpl = &socket_templates[key];
 	struct expr *expr;
@@ -117,6 +128,7 @@ struct expr *socket_expr_alloc(const struct location *loc, enum nft_socket_keys 
 	expr = expr_alloc(loc, EXPR_SOCKET, tmpl->dtype,
 			  tmpl->byteorder, tmpl->len);
 	expr->socket.key = key;
+	expr->socket.level = level;
 
 	return expr;
 }

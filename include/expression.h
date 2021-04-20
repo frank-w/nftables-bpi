@@ -325,6 +325,7 @@ struct expr {
 		struct {
 			/* SOCKET */
 			enum nft_socket_keys	key;
+			uint32_t		level;
 		} socket;
 		struct {
 			/* EXPR_RT */

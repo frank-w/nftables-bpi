@@ -18,6 +18,8 @@
 #include <linux/types.h>
 #include <linux/netfilter.h>
 #include <linux/icmpv6.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 #include <nftables.h>
 #include <datatype.h>
@@ -74,6 +76,7 @@ static const struct datatype *datatypes[TYPE_MAX + 1] = {
 	[TYPE_TIME_DATE]	= &date_type,
 	[TYPE_TIME_HOUR]	= &hour_type,
 	[TYPE_TIME_DAY]		= &day_type,
+	[TYPE_CGROUPV2]		= &cgroupv2_type,
 };
 
 const struct datatype *datatype_lookup(enum datatypes type)
@@ -1330,4 +1333,92 @@ const struct datatype policy_type = {
 	.name		= "policy",
 	.desc		= "policy type",
 	.parse		= policy_type_parse,
+};
+
+#define SYSFS_CGROUPSV2_PATH	"/sys/fs/cgroup"
+
+static const char *cgroupv2_get_path(const char *path, uint64_t id)
+{
+	const char *cgroup_path = NULL;
+	char dent_name[PATH_MAX + 1];
+	struct dirent *dent;
+	struct stat st;
+	DIR *d;
+
+	d = opendir(path);
+	if (!d)
+		return NULL;
+
+	while ((dent = readdir(d)) != NULL) {
+		if (!strcmp(dent->d_name, ".") ||
+		    !strcmp(dent->d_name, ".."))
+			continue;
+
+		snprintf(dent_name, sizeof(dent_name), "%s/%s",
+			 path, dent->d_name);
+		dent_name[sizeof(dent_name) - 1] = '\0';
+
+		if (dent->d_ino == id) {
+			cgroup_path = xstrdup(dent_name);
+			break;
+		}
+
+		if (stat(dent_name, &st) >= 0 && S_ISDIR(st.st_mode)) {
+			cgroup_path = cgroupv2_get_path(dent_name, id);
+			if (cgroup_path)
+				break;
+		}
+	}
+	closedir(d);
+
+	return cgroup_path;
+}
+
+static void cgroupv2_type_print(const struct expr *expr,
+				struct output_ctx *octx)
+{
+	uint64_t id = mpz_get_uint64(expr->value);
+	const char *cgroup_path;
+
+	cgroup_path = cgroupv2_get_path(SYSFS_CGROUPSV2_PATH, id);
+	if (cgroup_path)
+		nft_print(octx, "\"%s\"", cgroup_path);
+	else
+		nft_print(octx, "%lu", id);
+
+	xfree(cgroup_path);
+}
+
+static struct error_record *cgroupv2_type_parse(struct parse_ctx *ctx,
+						const struct expr *sym,
+						struct expr **res)
+{
+	char cgroupv2_path[PATH_MAX + 1];
+	struct stat st;
+	uint64_t ino;
+
+	snprintf(cgroupv2_path, sizeof(cgroupv2_path), "%s/%s",
+		 SYSFS_CGROUPSV2_PATH, sym->identifier);
+	cgroupv2_path[sizeof(cgroupv2_path) - 1] = '\0';
+
+	if (stat(cgroupv2_path, &st) < 0)
+		return error(&sym->location, "cgroupv2 path fails: %s",
+			     strerror(errno));
+
+	ino = st.st_ino;
+	*res = constant_expr_alloc(&sym->location, &cgroupv2_type,
+				   BYTEORDER_HOST_ENDIAN,
+				   sizeof(ino) * BITS_PER_BYTE, &ino);
+	return NULL;
+}
+
+const struct datatype cgroupv2_type = {
+	.type		= TYPE_CGROUPV2,
+	.name		= "cgroupsv2",
+	.desc		= "cgroupsv2 path",
+	.byteorder	= BYTEORDER_HOST_ENDIAN,
+	.size		= 8 * BITS_PER_BYTE,
+	.basetype	= &integer_type,
+	.print		= cgroupv2_type_print,
+	.parse		= cgroupv2_type_parse,
 };

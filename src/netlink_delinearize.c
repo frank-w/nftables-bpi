@@ -731,11 +731,12 @@ static void netlink_parse_socket(struct netlink_parse_ctx *ctx,
 				      const struct nftnl_expr *nle)
 {
 	enum nft_registers dreg;
-	uint32_t key;
+	uint32_t key, level;
 	struct expr * expr;
 
 	key = nftnl_expr_get_u32(nle, NFTNL_EXPR_SOCKET_KEY);
-	expr = socket_expr_alloc(loc, key);
+	level = nftnl_expr_get_u32(nle, NFTNL_EXPR_SOCKET_LEVEL);
+	expr = socket_expr_alloc(loc, key, level);
 
 	dreg = netlink_parse_register(nle, NFTNL_EXPR_SOCKET_DREG);
 	netlink_set_register(ctx, dreg, expr);

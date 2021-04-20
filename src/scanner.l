@@ -292,6 +292,8 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 <SCANSTATE_EXPR_SOCKET>{
 	"transparent"		{ return TRANSPARENT; }
 	"wildcard"		{ return WILDCARD; }
+	"cgroupv2"		{ return CGROUPV2; }
+	"level"			{ return LEVEL; }
 }
 "tproxy"		{ return TPROXY; }
 

@@ -435,7 +435,7 @@ static struct expr *json_parse_socket_expr(struct json_ctx *ctx,
 		return NULL;
 	}
 
-	return socket_expr_alloc(int_loc, keyval);
+	return socket_expr_alloc(int_loc, keyval, 0);
 }
 
 static int json_parse_payload_field(const struct proto_desc *desc,

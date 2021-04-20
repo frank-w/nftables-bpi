@@ -248,6 +248,7 @@ static void netlink_gen_socket(struct netlink_linearize_ctx *ctx,
 	nle = alloc_nft_expr("socket");
 	netlink_put_register(nle, NFTNL_EXPR_SOCKET_DREG, dreg);
 	nftnl_expr_set_u32(nle, NFTNL_EXPR_SOCKET_KEY, expr->socket.key);
+	nftnl_expr_set_u32(nle, NFTNL_EXPR_SOCKET_LEVEL, expr->socket.level);
 	nft_rule_add_expr(ctx, nle, &expr->location);
 }
 

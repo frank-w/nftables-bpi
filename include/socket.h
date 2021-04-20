@@ -19,6 +19,6 @@ struct socket_template {
 extern const struct socket_template socket_templates[];
 
 extern struct expr *socket_expr_alloc(const struct location *loc,
-				    enum nft_socket_keys key);
+				      enum nft_socket_keys key, uint32_t level);
 
 #endif /* NFTABLES_SOCKET_H */

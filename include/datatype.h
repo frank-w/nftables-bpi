@@ -48,6 +48,7 @@
  * @TYPE_TIME_DATA	Date type (integer subtype)
  * @TYPE_TIME_HOUR	Hour type (integer subtype)
  * @TYPE_TIME_DAY	Day type (integer subtype)
+ * @TYPE_CGROUPV2	cgroups v2 (integer subtype)
  */
 enum datatypes {
 	TYPE_INVALID,
@@ -96,6 +97,7 @@ enum datatypes {
 	TYPE_TIME_DATE,
 	TYPE_TIME_HOUR,
 	TYPE_TIME_DAY,
+	TYPE_CGROUPV2,
 	__TYPE_MAX
 };
 #define TYPE_MAX		(__TYPE_MAX - 1)
@@ -271,6 +273,7 @@ extern const struct datatype time_type;
 extern const struct datatype boolean_type;
 extern const struct datatype priority_type;
 extern const struct datatype policy_type;
+extern const struct datatype cgroupv2_type;
 
 void inet_service_type_print(const struct expr *expr, struct output_ctx *octx);
 

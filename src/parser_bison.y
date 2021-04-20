@@ -224,6 +224,7 @@ int nft_lex(void *, void *, void *);
 %token SOCKET			"socket"
 %token TRANSPARENT		"transparent"
 %token WILDCARD			"wildcard"
+%token CGROUPV2			"cgroupv2"
 
 %token TPROXY			"tproxy"
 
@@ -4833,7 +4834,11 @@ meta_stmt		:	META	meta_key	SET	stmt_expr
 
 socket_expr		:	SOCKET	socket_key	close_scope_socket
 			{
-				$$ = socket_expr_alloc(&@$, $2);
+				$$ = socket_expr_alloc(&@$, $2, 0);
+			}
+			|	SOCKET	CGROUPV2	LEVEL	NUM	close_scope_socket
+			{
+				$$ = socket_expr_alloc(&@$, NFT_SOCKET_CGROUPV2, $4);
 			}
 			;
 

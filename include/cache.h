@@ -72,4 +72,19 @@ struct chain *chain_cache_find(const struct table *table, const char *name);
 void set_cache_add(struct set *set, struct table *table);
 struct set *set_cache_find(const struct table *table, const char *name);
 
+struct cache {
+	struct list_head	*ht;
+	struct list_head	list;
+};
+
+struct cache_item {
+	struct list_head	hlist;
+	struct list_head	list;
+};
+
+void cache_init(struct cache *cache);
+void cache_free(struct cache *cache);
+void cache_add(struct cache_item *item, struct cache *cache, uint32_t hash);
+void cache_del(struct cache_item *item);
+
 #endif /* _NFT_CACHE_H_ */

@@ -155,11 +155,9 @@ struct table {
 	struct handle		handle;
 	struct location		location;
 	struct scope		scope;
-	struct list_head	*cache_chain_ht;
-	struct list_head	cache_chain;
+	struct cache		chain_cache;
+	struct cache		set_cache;
 	struct list_head	chains;
-	struct list_head	*cache_set_ht;
-	struct list_head	cache_set;
 	struct list_head	sets;
 	struct list_head	objs;
 	struct list_head	flowtables;
@@ -233,8 +231,7 @@ struct hook_spec {
  */
 struct chain {
 	struct list_head	list;
-	struct list_head	cache_hlist;
-	struct list_head	cache_list;
+	struct cache_item	cache;
 	struct handle		handle;
 	struct location		location;
 	unsigned int		refcnt;
@@ -333,8 +330,7 @@ void rule_stmt_insert_at(struct rule *rule, struct stmt *nstmt,
  */
 struct set {
 	struct list_head	list;
-	struct list_head	cache_hlist;
-	struct list_head	cache_list;
+	struct cache_item	cache;
 	struct handle		handle;
 	struct location		location;
 	unsigned int		refcnt;

@@ -1574,7 +1574,7 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 		tmp = obj_print_json(obj);
 		json_array_append_new(root, tmp);
 	}
-	list_for_each_entry(set, &table->cache_set, cache_list) {
+	list_for_each_entry(set, &table->set_cache.list, cache.list) {
 		if (set_is_anonymous(set->flags))
 			continue;
 		tmp = set_print_json(&ctx->nft->output, set);
@@ -1584,7 +1584,7 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 		tmp = flowtable_print_json(flowtable);
 		json_array_append_new(root, tmp);
 	}
-	list_for_each_entry(chain, &table->cache_chain, cache_list) {
+	list_for_each_entry(chain, &table->chain_cache.list, cache.list) {
 		tmp = chain_print_json(chain);
 		json_array_append_new(root, tmp);
 
@@ -1646,7 +1646,7 @@ static json_t *do_list_chain_json(struct netlink_ctx *ctx,
 	struct chain *chain;
 	struct rule *rule;
 
-	list_for_each_entry(chain, &table->cache_chain, cache_list) {
+	list_for_each_entry(chain, &table->chain_cache.list, cache.list) {
 		if (chain->handle.family != cmd->handle.family ||
 		    strcmp(cmd->handle.chain.name, chain->handle.chain.name))
 			continue;
@@ -1674,7 +1674,7 @@ static json_t *do_list_chains_json(struct netlink_ctx *ctx, struct cmd *cmd)
 		    cmd->handle.family != table->handle.family)
 			continue;
 
-		list_for_each_entry(chain, &table->cache_chain, cache_list) {
+		list_for_each_entry(chain, &table->chain_cache.list, cache.list) {
 			json_t *tmp = chain_print_json(chain);
 
 			json_array_append_new(root, tmp);
@@ -1707,7 +1707,7 @@ static json_t *do_list_sets_json(struct netlink_ctx *ctx, struct cmd *cmd)
 		    cmd->handle.family != table->handle.family)
 			continue;
 
-		list_for_each_entry(set, &table->cache_set, cache_list) {
+		list_for_each_entry(set, &table->set_cache.list, cache.list) {
 			if (cmd->obj == CMD_OBJ_SETS &&
 			    !set_is_literal(set->flags))
 				continue;

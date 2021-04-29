@@ -193,10 +193,9 @@ static int chain_cache_cb(struct nftnl_chain *nlc, void *arg)
 	chain = netlink_delinearize_chain(ctx->nlctx, nlc);
 
 	if (chain->flags & CHAIN_F_BINDING) {
-		list_add_tail(&chain->cache_list, &ctx->table->chain_bindings);
+		list_add_tail(&chain->cache.list, &ctx->table->chain_bindings);
 	} else {
-		list_add_tail(&chain->cache_hlist, &ctx->table->cache_chain_ht[hash]);
-		list_add_tail(&chain->cache_list, &ctx->table->cache_chain);
+		cache_add(&chain->cache, &ctx->table->chain_cache, hash);
 	}
 
 	nftnl_chain_list_del(nlc);
@@ -240,8 +239,7 @@ void chain_cache_add(struct chain *chain, struct table *table)
 	uint32_t hash;
 
 	hash = djb_hash(chain->handle.chain.name) % NFT_CACHE_HSIZE;
-	list_add_tail(&chain->cache_hlist, &table->cache_chain_ht[hash]);
-	list_add_tail(&chain->cache_list, &table->cache_chain);
+	cache_add(&chain->cache, &table->chain_cache, hash);
 }
 
 struct chain *chain_cache_find(const struct table *table, const char *name)
@@ -250,7 +248,7 @@ struct chain *chain_cache_find(const struct table *table, const char *name)
 	uint32_t hash;
 
 	hash = djb_hash(name) % NFT_CACHE_HSIZE;
-	list_for_each_entry(chain, &table->cache_chain_ht[hash], cache_hlist) {
+	list_for_each_entry(chain, &table->chain_cache.ht[hash], cache.hlist) {
 		if (!strcmp(chain->handle.chain.name, name))
 			return chain;
 	}
@@ -276,8 +274,7 @@ static int set_cache_cb(struct nftnl_set *nls, void *arg)
 
 	set_name = nftnl_set_get_str(nls, NFTNL_SET_NAME);
 	hash = djb_hash(set_name) % NFT_CACHE_HSIZE;
-	list_add_tail(&set->cache_hlist, &ctx->table->cache_set_ht[hash]);
-	list_add_tail(&set->cache_list, &ctx->table->cache_set);
+	cache_add(&set->cache, &ctx->table->set_cache, hash);
 
 	return 0;
 }
@@ -319,8 +316,7 @@ void set_cache_add(struct set *set, struct table *table)
 	uint32_t hash;
 
 	hash = djb_hash(set->handle.set.name) % NFT_CACHE_HSIZE;
-	list_add_tail(&set->cache_hlist, &table->cache_set_ht[hash]);
-	list_add_tail(&set->cache_list, &table->cache_set);
+	cache_add(&set->cache, &table->set_cache, hash);
 }
 
 struct set *set_cache_find(const struct table *table, const char *name)
@@ -329,7 +325,7 @@ struct set *set_cache_find(const struct table *table, const char *name)
 	uint32_t hash;
 
 	hash = djb_hash(name) % NFT_CACHE_HSIZE;
-	list_for_each_entry(set, &table->cache_set_ht[hash], cache_hlist) {
+	list_for_each_entry(set, &table->set_cache.ht[hash], cache.hlist) {
 		if (!strcmp(set->handle.set.name, name))
 			return set;
 	}
@@ -384,7 +380,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 			}
 		}
 		if (flags & NFT_CACHE_SETELEM_BIT) {
-			list_for_each_entry(set, &table->cache_set, cache_list) {
+			list_for_each_entry(set, &table->set_cache.list, cache.list) {
 				ret = netlink_list_setelems(ctx, &set->handle,
 							    set);
 				if (ret < 0) {
@@ -551,4 +547,32 @@ void nft_cache_release(struct nft_cache *cache)
 	nft_cache_flush(&cache->list);
 	cache->genid = 0;
 	cache->flags = NFT_CACHE_EMPTY;
+}
+
+void cache_init(struct cache *cache)
+{
+	int i;
+
+	cache->ht = xmalloc(sizeof(struct list_head) * NFT_CACHE_HSIZE);
+	for (i = 0; i < NFT_CACHE_HSIZE; i++)
+		init_list_head(&cache->ht[i]);
+
+	init_list_head(&cache->list);
+}
+
+void cache_free(struct cache *cache)
+{
+	xfree(cache->ht);
+}
+
+void cache_add(struct cache_item *item, struct cache *cache, uint32_t hash)
+{
+	list_add_tail(&item->hlist, &cache->ht[hash]);
+	list_add_tail(&item->list, &cache->list);
+}
+
+void cache_del(struct cache_item *item)
+{
+	list_del(&item->hlist);
+	list_del(&item->list);
 }

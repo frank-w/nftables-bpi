@@ -4389,12 +4389,36 @@ static void chain_del_cache(struct eval_ctx *ctx, struct cmd *cmd)
 	chain_free(chain);
 }
 
+static void set_del_cache(struct eval_ctx *ctx, struct cmd *cmd)
+{
+	struct table *table;
+	struct set *set;
+
+	if (!cmd->handle.set.name)
+		return;
+
+	table = table_cache_find(&ctx->nft->cache.table_cache,
+				 cmd->handle.table.name,
+				 cmd->handle.family);
+	if (!table)
+		return;
+
+	set = set_cache_find(table, cmd->handle.set.name);
+	if (!set)
+		return;
+
+	set_cache_del(set);
+	set_free(set);
+}
+
 static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
 	case CMD_OBJ_ELEMENTS:
 		return setelem_evaluate(ctx, cmd);
 	case CMD_OBJ_SET:
+		set_del_cache(ctx, cmd);
+		return 0;
 	case CMD_OBJ_RULE:
 		return 0;
 	case CMD_OBJ_CHAIN:

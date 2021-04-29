@@ -14,6 +14,9 @@ static int nft_cmd_enoent_table(struct netlink_ctx *ctx, const struct cmd *cmd,
 {
 	struct table *table;
 
+	if (!cmd->handle.table.name)
+		return 0;
+
 	table = table_lookup_fuzzy(&cmd->handle, &ctx->nft->cache);
 	if (!table)
 		return 0;
@@ -29,6 +32,9 @@ static int nft_cmd_enoent_chain(struct netlink_ctx *ctx, const struct cmd *cmd,
 {
 	const struct table *table;
 	struct chain *chain;
+
+	if (!cmd->handle.chain.name)
+		return 0;
 
 	chain = chain_lookup_fuzzy(&cmd->handle, &ctx->nft->cache, &table);
 	if (!chain)
@@ -81,6 +87,9 @@ static int nft_cmd_enoent_set(struct netlink_ctx *ctx, const struct cmd *cmd,
 	const struct table *table;
 	struct set *set;
 
+	if (!cmd->handle.set.name)
+		return 0;
+
 	set = set_lookup_fuzzy(cmd->handle.set.name, &ctx->nft->cache, &table);
 	if (!set)
 		return 0;
@@ -100,6 +109,9 @@ static int nft_cmd_enoent_obj(struct netlink_ctx *ctx, const struct cmd *cmd,
 	const struct table *table;
 	struct obj *obj;
 
+	if (!cmd->handle.obj.name)
+		return 0;
+
 	obj = obj_lookup_fuzzy(cmd->handle.obj.name, &ctx->nft->cache, &table);
 	if (!obj)
 		return 0;
@@ -117,6 +129,9 @@ static int nft_cmd_enoent_flowtable(struct netlink_ctx *ctx,
 {
 	const struct table *table;
 	struct flowtable *ft;
+
+	if (!cmd->handle.flowtable.name)
+		return 0;
 
 	ft = flowtable_lookup_fuzzy(cmd->handle.flowtable.name,
 				    &ctx->nft->cache, &table);

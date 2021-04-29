@@ -1,6 +1,8 @@
 #ifndef _NFT_CACHE_H_
 #define _NFT_CACHE_H_
 
+#include <string.h>
+
 enum cache_level_bits {
 	NFT_CACHE_TABLE_BIT	= (1 << 0),
 	NFT_CACHE_CHAIN_BIT	= (1 << 1),
@@ -35,6 +37,21 @@ enum cache_level_flags {
 	NFT_CACHE_FLUSHED	= (1 << 31),
 };
 
+struct nft_cache {
+	uint32_t		genid;
+	struct list_head	list;
+	uint32_t		seqnum;
+	uint32_t		flags;
+};
+
+enum cmd_ops;
+
+unsigned int nft_cache_evaluate(struct nft_ctx *nft, struct list_head *cmds);
+int nft_cache_update(struct nft_ctx *ctx, enum cmd_ops cmd,
+		     struct list_head *msgs);
+bool nft_cache_needs_update(struct nft_cache *cache);
+void nft_cache_release(struct nft_cache *cache);
+
 static inline uint32_t djb_hash(const char *key)
 {
 	uint32_t i, hash = 5381;
@@ -47,14 +64,8 @@ static inline uint32_t djb_hash(const char *key)
 
 #define NFT_CACHE_HSIZE 8192
 
-struct netlink_ctx;
 struct table;
 struct chain;
-struct handle;
-
-int cache_init(struct netlink_ctx *ctx, unsigned int flags);
-int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs);
-void cache_release(struct nft_cache *cache);
 
 void chain_cache_add(struct chain *chain, struct table *table);
 struct chain *chain_cache_find(const struct table *table, const char *name);

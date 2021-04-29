@@ -113,7 +113,7 @@ static unsigned int evaluate_cache_rename(struct cmd *cmd, unsigned int flags)
 	return flags;
 }
 
-unsigned int cache_evaluate(struct nft_ctx *nft, struct list_head *cmds)
+unsigned int nft_cache_evaluate(struct nft_ctx *nft, struct list_head *cmds)
 {
 	unsigned int flags = NFT_CACHE_EMPTY;
 	struct cmd *cmd;
@@ -445,7 +445,7 @@ cache_fails:
 	return ret;
 }
 
-int cache_init(struct netlink_ctx *ctx, unsigned int flags)
+static int nft_cache_init(struct netlink_ctx *ctx, unsigned int flags)
 {
 	struct handle handle = {
 		.family = NFPROTO_UNSPEC,
@@ -466,27 +466,28 @@ int cache_init(struct netlink_ctx *ctx, unsigned int flags)
 	return 0;
 }
 
-static bool cache_is_complete(struct nft_cache *cache, unsigned int flags)
+static bool nft_cache_is_complete(struct nft_cache *cache, unsigned int flags)
 {
 	return (cache->flags & flags) == flags;
 }
 
-static bool cache_needs_refresh(struct nft_cache *cache)
+static bool nft_cache_needs_refresh(struct nft_cache *cache)
 {
 	return cache->flags & NFT_CACHE_REFRESH;
 }
 
-static bool cache_is_updated(struct nft_cache *cache, uint16_t genid)
+static bool nft_cache_is_updated(struct nft_cache *cache, uint16_t genid)
 {
 	return genid && genid == cache->genid;
 }
 
-bool cache_needs_update(struct nft_cache *cache)
+bool nft_cache_needs_update(struct nft_cache *cache)
 {
 	return cache->flags & NFT_CACHE_UPDATE;
 }
 
-int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs)
+int nft_cache_update(struct nft_ctx *nft, unsigned int flags,
+		     struct list_head *msgs)
 {
 	struct netlink_ctx ctx = {
 		.list		= LIST_HEAD_INIT(ctx.list),
@@ -499,13 +500,13 @@ int cache_update(struct nft_ctx *nft, unsigned int flags, struct list_head *msgs
 replay:
 	ctx.seqnum = cache->seqnum++;
 	genid = mnl_genid_get(&ctx);
-	if (!cache_needs_refresh(cache) &&
-	    cache_is_complete(cache, flags) &&
-	    cache_is_updated(cache, genid))
+	if (!nft_cache_needs_refresh(cache) &&
+	    nft_cache_is_complete(cache, flags) &&
+	    nft_cache_is_updated(cache, genid))
 		return 0;
 
 	if (cache->genid)
-		cache_release(cache);
+		nft_cache_release(cache);
 
 	if (flags & NFT_CACHE_FLUSHED) {
 		oldflags = flags;
@@ -515,9 +516,9 @@ replay:
 		goto skip;
 	}
 
-	ret = cache_init(&ctx, flags);
+	ret = nft_cache_init(&ctx, flags);
 	if (ret < 0) {
-		cache_release(cache);
+		nft_cache_release(cache);
 		if (errno == EINTR)
 			goto replay;
 
@@ -526,7 +527,7 @@ replay:
 
 	genid_stop = mnl_genid_get(&ctx);
 	if (genid != genid_stop) {
-		cache_release(cache);
+		nft_cache_release(cache);
 		goto replay;
 	}
 skip:
@@ -535,7 +536,7 @@ skip:
 	return 0;
 }
 
-static void __cache_flush(struct list_head *table_list)
+static void nft_cache_flush(struct list_head *table_list)
 {
 	struct table *table, *next;
 
@@ -545,9 +546,9 @@ static void __cache_flush(struct list_head *table_list)
 	}
 }
 
-void cache_release(struct nft_cache *cache)
+void nft_cache_release(struct nft_cache *cache)
 {
-	__cache_flush(&cache->list);
+	nft_cache_flush(&cache->list);
 	cache->genid = 0;
 	cache->flags = NFT_CACHE_EMPTY;
 }

@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <utils.h>
+#include <cache.h>
 #include <nftables/libnftables.h>
 
 struct cookie {
@@ -94,13 +95,6 @@ static inline bool nft_output_terse(const struct output_ctx *octx)
 {
 	return octx->flags & NFT_CTX_OUTPUT_TERSE;
 }
-
-struct nft_cache {
-	uint32_t		genid;
-	struct list_head	list;
-	uint32_t		seqnum;
-	uint32_t		flags;
-};
 
 struct mnl_socket;
 struct parser_state;

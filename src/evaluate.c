@@ -4086,7 +4086,7 @@ static int rule_evaluate(struct eval_ctx *ctx, struct rule *rule,
 		return -1;
 	}
 
-	if (cache_needs_update(&ctx->nft->cache))
+	if (nft_cache_needs_update(&ctx->nft->cache))
 		return rule_cache_update(ctx, op);
 
 	return 0;

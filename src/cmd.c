@@ -55,7 +55,7 @@ static int nft_cmd_enoent_rule(struct netlink_ctx *ctx, const struct cmd *cmd,
 	const struct table *table;
 	struct chain *chain;
 
-	if (cache_update(ctx->nft, flags, ctx->msgs) < 0)
+	if (nft_cache_update(ctx->nft, flags, ctx->msgs) < 0)
 		return 0;
 
 	table = table_lookup_fuzzy(&cmd->handle, &ctx->nft->cache);

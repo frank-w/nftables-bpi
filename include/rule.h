@@ -771,12 +771,6 @@ extern struct error_record *rule_postprocess(struct rule *rule);
 struct netlink_ctx;
 extern int do_command(struct netlink_ctx *ctx, struct cmd *cmd);
 
-extern unsigned int cache_evaluate(struct nft_ctx *nft, struct list_head *cmds);
-extern int cache_update(struct nft_ctx *ctx, enum cmd_ops cmd,
-			struct list_head *msgs);
-extern bool cache_needs_update(struct nft_cache *cache);
-extern void cache_release(struct nft_cache *cache);
-
 struct timeout_protocol {
 	uint32_t array_size;
 	const char *const *state_to_name;

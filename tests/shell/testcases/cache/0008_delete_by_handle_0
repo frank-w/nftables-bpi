@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+$NFT add table t
+$NFT delete table handle 1
+
+$NFT add table t
+
+$NFT add chain t c
+$NFT delete chain t handle 1
+
+$NFT add set t s { type ipv4_addr\; }
+$NFT delete set t handle 2
+
+$NFT add flowtable t f { hook ingress priority 0\; }
+$NFT delete flowtable t handle 4
+
+$NFT add counter t x
+$NFT delete counter t handle 5

@@ -4335,6 +4335,9 @@ static void table_del_cache(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table;
 
+	if (!cmd->handle.table.name)
+		return;
+
 	table = table_lookup(&cmd->handle, &ctx->nft->cache);
 	if (!table)
 		return;

@@ -960,7 +960,7 @@ int mnl_nft_table_del(struct netlink_ctx *ctx, struct cmd *cmd)
 		mnl_attr_put_strz(nlh, NFTA_TABLE_NAME, cmd->handle.table.name);
 	} else if (cmd->handle.handle.id) {
 		cmd_add_loc(cmd, nlh->nlmsg_len, &cmd->handle.handle.location);
-		mnl_attr_put_u64(nlh, NFTA_TABLE_NAME,
+		mnl_attr_put_u64(nlh, NFTA_TABLE_HANDLE,
 				 htobe64(cmd->handle.handle.id));
 	}
 	nftnl_table_nlmsg_build_payload(nlh, nlt);

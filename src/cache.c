@@ -278,6 +278,11 @@ void chain_cache_add(struct chain *chain, struct table *table)
 	cache_add(&chain->cache, &table->chain_cache, hash);
 }
 
+void chain_cache_del(struct chain *chain)
+{
+	cache_del(&chain->cache);
+}
+
 struct chain *chain_cache_find(const struct table *table, const char *name)
 {
 	struct chain *chain;

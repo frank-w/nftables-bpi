@@ -62,7 +62,9 @@ struct table;
 struct chain;
 
 void chain_cache_add(struct chain *chain, struct table *table);
+void chain_cache_del(struct chain *chain);
 struct chain *chain_cache_find(const struct table *table, const char *name);
+
 void set_cache_add(struct set *set, struct table *table);
 void set_cache_del(struct set *set);
 struct set *set_cache_find(const struct table *table, const char *name);

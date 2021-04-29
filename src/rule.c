@@ -211,7 +211,7 @@ struct set *set_lookup_fuzzy(const char *set_name,
 
 	string_misspell_init(&st);
 
-	list_for_each_entry(table, &cache->list, list) {
+	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
 		list_for_each_entry(set, &table->set_cache.list, cache.list) {
 			if (set_is_anonymous(set->flags))
 				continue;
@@ -230,13 +230,9 @@ struct set *set_lookup_fuzzy(const char *set_name,
 struct set *set_lookup_global(uint32_t family, const char *table,
 			      const char *name, struct nft_cache *cache)
 {
-	struct handle h;
 	struct table *t;
 
-	h.family = family;
-	h.table.name = table;
-
-	t = table_lookup(&h, cache);
+	t = table_cache_find(&cache->table_cache, table, family);
 	if (t == NULL)
 		return NULL;
 
@@ -767,7 +763,7 @@ struct chain *chain_lookup_fuzzy(const struct handle *h,
 
 	string_misspell_init(&st);
 
-	list_for_each_entry(table, &cache->list, list) {
+	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
 		list_for_each_entry(chain, &table->chain_cache.list, cache.list) {
 			if (!strcmp(chain->handle.chain.name, h->chain.name)) {
 				*t = table;
@@ -1169,24 +1165,6 @@ struct table *table_get(struct table *table)
 	return table;
 }
 
-void table_add_hash(struct table *table, struct nft_cache *cache)
-{
-	list_add_tail(&table->list, &cache->list);
-}
-
-struct table *table_lookup(const struct handle *h,
-			   const struct nft_cache *cache)
-{
-	struct table *table;
-
-	list_for_each_entry(table, &cache->list, list) {
-		if (table->handle.family == h->family &&
-		    !strcmp(table->handle.table.name, h->table.name))
-			return table;
-	}
-	return NULL;
-}
-
 struct table *table_lookup_fuzzy(const struct handle *h,
 				 const struct nft_cache *cache)
 {
@@ -1195,7 +1173,7 @@ struct table *table_lookup_fuzzy(const struct handle *h,
 
 	string_misspell_init(&st);
 
-	list_for_each_entry(table, &cache->list, list) {
+	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
 		if (!strcmp(table->handle.table.name, h->table.name))
 			return table;
 
@@ -1683,7 +1661,7 @@ static int do_list_sets(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct table *table;
 	struct set *set;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -1748,7 +1726,7 @@ struct obj *obj_lookup_fuzzy(const char *obj_name,
 
 	string_misspell_init(&st);
 
-	list_for_each_entry(table, &cache->list, list) {
+	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
 		list_for_each_entry(obj, &table->obj_cache.list, cache.list) {
 			if (!strcmp(obj->handle.obj.name, obj_name)) {
 				*t = table;
@@ -2085,7 +2063,7 @@ static int do_list_obj(struct netlink_ctx *ctx, struct cmd *cmd, uint32_t type)
 	struct table *table;
 	struct obj *obj;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -2226,7 +2204,7 @@ struct flowtable *flowtable_lookup_fuzzy(const char *ft_name,
 
 	string_misspell_init(&st);
 
-	list_for_each_entry(table, &cache->list, list) {
+	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
 		list_for_each_entry(ft, &table->ft_cache.list, cache.list) {
 			if (!strcmp(ft->handle.flowtable.name, ft_name)) {
 				*t = table;
@@ -2269,7 +2247,7 @@ static int do_list_flowtables(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct flowtable *flowtable;
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -2293,7 +2271,7 @@ static int do_list_ruleset(struct netlink_ctx *ctx, struct cmd *cmd)
 	unsigned int family = cmd->handle.family;
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (family != NFPROTO_UNSPEC &&
 		    table->handle.family != family)
 			continue;
@@ -2314,7 +2292,7 @@ static int do_list_tables(struct netlink_ctx *ctx, struct cmd *cmd)
 {
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -2360,7 +2338,7 @@ static int do_list_chains(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct table *table;
 	struct chain *chain;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -2413,8 +2391,9 @@ static int do_command_list(struct netlink_ctx *ctx, struct cmd *cmd)
 		return do_command_list_json(ctx, cmd);
 
 	if (cmd->handle.table.name != NULL)
-		table = table_lookup(&cmd->handle, &ctx->nft->cache);
-
+		table = table_cache_find(&ctx->nft->cache.table_cache,
+					 cmd->handle.table.name,
+					 cmd->handle.family);
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:
 		if (!cmd->handle.table.name)
@@ -2540,7 +2519,9 @@ static int do_command_reset(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	ret = netlink_reset_objs(ctx, cmd, type, dump);
 	list_for_each_entry_safe(obj, next, &ctx->list, list) {
-		table = table_lookup(&obj->handle, &ctx->nft->cache);
+		table = table_cache_find(&ctx->nft->cache.table_cache,
+					 obj->handle.table.name,
+					 obj->handle.family);
 		if (!obj_cache_find(table, obj->handle.obj.name, obj->type)) {
 			list_del(&obj->list);
 			obj_cache_add(obj, table);
@@ -2572,7 +2553,9 @@ static int do_command_flush(struct netlink_ctx *ctx, struct cmd *cmd)
 
 static int do_command_rename(struct netlink_ctx *ctx, struct cmd *cmd)
 {
-	struct table *table = table_lookup(&cmd->handle, &ctx->nft->cache);
+	struct table *table = table_cache_find(&ctx->nft->cache.table_cache,
+					       cmd->handle.table.name,
+					       cmd->handle.family);
 	const struct chain *chain;
 
 	switch (cmd->obj) {

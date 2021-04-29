@@ -152,6 +152,7 @@ const char *table_flag_name(uint32_t flag);
  */
 struct table {
 	struct list_head	list;
+	struct cache_item	cache;
 	struct handle		handle;
 	struct location		location;
 	struct scope		scope;
@@ -173,9 +174,6 @@ struct table {
 extern struct table *table_alloc(void);
 extern struct table *table_get(struct table *table);
 extern void table_free(struct table *table);
-extern void table_add_hash(struct table *table, struct nft_cache *cache);
-extern struct table *table_lookup(const struct handle *h,
-				  const struct nft_cache *cache);
 extern struct table *table_lookup_fuzzy(const struct handle *h,
 					const struct nft_cache *cache);
 

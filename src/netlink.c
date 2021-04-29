@@ -1695,7 +1695,7 @@ static struct rule *trace_lookup_rule(const struct nftnl_trace *nlt,
 	if (!h.table.name)
 		return NULL;
 
-	table = table_lookup(&h, cache);
+	table = table_cache_find(&cache->table_cache, h.table.name, h.family);
 	if (!table)
 		return NULL;
 

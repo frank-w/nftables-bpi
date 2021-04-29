@@ -1792,7 +1792,9 @@ struct stmt *netlink_parse_set_expr(const struct set *set,
 
 	handle_merge(&h, &set->handle);
 	pctx->rule = rule_alloc(&netlink_location, &h);
-	pctx->table = table_lookup(&set->handle, cache);
+	pctx->table = table_cache_find(&cache->table_cache,
+				       set->handle.table.name,
+				       set->handle.family);
 	assert(pctx->table != NULL);
 
 	if (netlink_parse_expr(nle, pctx) < 0)
@@ -2938,7 +2940,8 @@ struct rule *netlink_delinearize_rule(struct netlink_ctx *ctx,
 		h.position.id = nftnl_rule_get_u64(nlr, NFTNL_RULE_POSITION);
 
 	pctx->rule = rule_alloc(&netlink_location, &h);
-	pctx->table = table_lookup(&h, &ctx->nft->cache);
+	pctx->table = table_cache_find(&ctx->nft->cache.table_cache,
+				       h.table.name, h.family);
 	assert(pctx->table != NULL);
 
 	pctx->rule->comment = nftnl_rule_get_comment(nlr);

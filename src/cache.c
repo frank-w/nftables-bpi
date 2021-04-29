@@ -173,6 +173,38 @@ unsigned int nft_cache_evaluate(struct nft_ctx *nft, struct list_head *cmds)
 	return flags;
 }
 
+void table_cache_add(struct table *table, struct nft_cache *cache)
+{
+	uint32_t hash;
+
+	hash = djb_hash(table->handle.table.name) % NFT_CACHE_HSIZE;
+	cache_add(&table->cache, &cache->table_cache, hash);
+}
+
+void table_cache_del(struct table *table)
+{
+	cache_del(&table->cache);
+}
+
+struct table *table_cache_find(const struct cache *cache,
+			       const char *name, uint32_t family)
+{
+	struct table *table;
+	uint32_t hash;
+
+	if (!name)
+		return NULL;
+
+	hash = djb_hash(name) % NFT_CACHE_HSIZE;
+	list_for_each_entry(table, &cache->ht[hash], cache.hlist) {
+		if (table->handle.family == family &&
+		    !strcmp(table->handle.table.name, name))
+			return table;
+	}
+
+	return NULL;
+}
+
 struct chain_cache_dump_ctx {
 	struct netlink_ctx	*nlctx;
 	struct table		*table;
@@ -507,13 +539,17 @@ struct flowtable *ft_cache_find(const struct table *table, const char *name)
 static int cache_init_tables(struct netlink_ctx *ctx, struct handle *h,
 			     struct nft_cache *cache)
 {
+	struct table *table, *next;
 	int ret;
 
 	ret = netlink_list_tables(ctx, h);
 	if (ret < 0)
 		return -1;
 
-	list_splice_tail_init(&ctx->list, &cache->list);
+	list_for_each_entry_safe(table, next, &ctx->list, list) {
+		list_del(&table->list);
+		table_cache_add(table, cache);
+	}
 
 	return 0;
 }
@@ -536,7 +572,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 			return -1;
 	}
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (flags & NFT_CACHE_SET_BIT) {
 			set_list = set_cache_dump(ctx, table, &ret);
 			if (!set_list) {
@@ -719,19 +755,19 @@ skip:
 	return 0;
 }
 
-static void nft_cache_flush(struct list_head *table_list)
+static void nft_cache_flush(struct cache *table_cache)
 {
 	struct table *table, *next;
 
-	list_for_each_entry_safe(table, next, table_list, list) {
-		list_del(&table->list);
+	list_for_each_entry_safe(table, next, &table_cache->list, cache.list) {
+		table_cache_del(table);
 		table_free(table);
 	}
 }
 
 void nft_cache_release(struct nft_cache *cache)
 {
-	nft_cache_flush(&cache->list);
+	nft_cache_flush(&cache->table_cache);
 	cache->genid = 0;
 	cache->flags = NFT_CACHE_EMPTY;
 }

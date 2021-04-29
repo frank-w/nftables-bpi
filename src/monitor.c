@@ -575,7 +575,7 @@ static void netlink_events_cache_addtable(struct netlink_mon_handler *monh,
 	t = netlink_delinearize_table(monh->ctx, nlt);
 	nftnl_table_free(nlt);
 
-	table_add_hash(t, &monh->ctx->nft->cache);
+	table_cache_add(t, &monh->ctx->nft->cache);
 }
 
 static void netlink_events_cache_deltable(struct netlink_mon_handler *monh,
@@ -589,11 +589,12 @@ static void netlink_events_cache_deltable(struct netlink_mon_handler *monh,
 	h.family = nftnl_table_get_u32(nlt, NFTNL_TABLE_FAMILY);
 	h.table.name  = nftnl_table_get_str(nlt, NFTNL_TABLE_NAME);
 
-	t = table_lookup(&h, &monh->ctx->nft->cache);
+	t = table_cache_find(&monh->ctx->nft->cache.table_cache,
+			     h.table.name, h.family);
 	if (t == NULL)
 		goto out;
 
-	list_del(&t->list);
+	table_cache_del(t);
 	table_free(t);
 out:
 	nftnl_table_free(nlt);
@@ -619,7 +620,8 @@ static void netlink_events_cache_addset(struct netlink_mon_handler *monh,
 		goto out;
 	s->init = set_expr_alloc(monh->loc, s);
 
-	t = table_lookup(&s->handle, &monh->ctx->nft->cache);
+	t = table_cache_find(&monh->ctx->nft->cache.table_cache,
+			     s->handle.table.name, s->handle.family);
 	if (t == NULL) {
 		fprintf(stderr, "W: Unable to cache set: table not found.\n");
 		set_free(s);
@@ -720,7 +722,8 @@ static void netlink_events_cache_addobj(struct netlink_mon_handler *monh,
 	if (obj == NULL)
 		goto out;
 
-	t = table_lookup(&obj->handle, &monh->ctx->nft->cache);
+	t = table_cache_find(&monh->ctx->nft->cache.table_cache,
+			     obj->handle.table.name, obj->handle.family);
 	if (t == NULL) {
 		fprintf(stderr, "W: Unable to cache object: table not found.\n");
 		obj_free(obj);
@@ -750,7 +753,8 @@ static void netlink_events_cache_delobj(struct netlink_mon_handler *monh,
 	type	 = nftnl_obj_get_u32(nlo, NFTNL_OBJ_TYPE);
 	h.handle.id	= nftnl_obj_get_u64(nlo, NFTNL_OBJ_HANDLE);
 
-	t = table_lookup(&h, &monh->ctx->nft->cache);
+	t = table_cache_find(&monh->ctx->nft->cache.table_cache,
+			     h.table.name, h.family);
 	if (t == NULL) {
 		fprintf(stderr, "W: Unable to cache object: table not found.\n");
 		goto out;

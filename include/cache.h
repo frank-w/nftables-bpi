@@ -37,13 +37,7 @@ enum cache_level_flags {
 	NFT_CACHE_FLUSHED	= (1 << 31),
 };
 
-struct nft_cache {
-	uint32_t		genid;
-	struct list_head	list;
-	uint32_t		seqnum;
-	uint32_t		flags;
-};
-
+struct nft_cache;
 enum cmd_ops;
 
 unsigned int nft_cache_evaluate(struct nft_ctx *nft, struct list_head *cmds);
@@ -88,6 +82,11 @@ void cache_free(struct cache *cache);
 void cache_add(struct cache_item *item, struct cache *cache, uint32_t hash);
 void cache_del(struct cache_item *item);
 
+void table_cache_add(struct table *table, struct nft_cache *cache);
+void table_cache_del(struct table *table);
+struct table *table_cache_find(const struct cache *cache, const char *name,
+			       uint32_t family);
+
 void obj_cache_add(struct obj *obj, struct table *table);
 void obj_cache_del(struct obj *obj);
 struct obj *obj_cache_find(const struct table *table, const char *name,
@@ -96,5 +95,12 @@ struct obj *obj_cache_find(const struct table *table, const char *name,
 struct flowtable;
 void ft_cache_add(struct flowtable *ft, struct table *table);
 struct flowtable *ft_cache_find(const struct table *table, const char *name);
+
+struct nft_cache {
+	uint32_t		genid;
+	struct cache		table_cache;
+	uint32_t		seqnum;
+	uint32_t		flags;
+};
 
 #endif /* _NFT_CACHE_H_ */

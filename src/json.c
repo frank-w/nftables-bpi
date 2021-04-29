@@ -1603,7 +1603,7 @@ static json_t *do_list_ruleset_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	json_t *root = json_array(), *tmp;
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (family != NFPROTO_UNSPEC &&
 		    table->handle.family != family)
 			continue;
@@ -1622,7 +1622,7 @@ static json_t *do_list_tables_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	json_t *root = json_array();
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (family != NFPROTO_UNSPEC &&
 		    table->handle.family != family)
 			continue;
@@ -1669,7 +1669,7 @@ static json_t *do_list_chains_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct table *table;
 	struct chain *chain;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -1702,7 +1702,7 @@ static json_t *do_list_sets_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct table *table;
 	struct set *set;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -1731,7 +1731,7 @@ static json_t *do_list_obj_json(struct netlink_ctx *ctx,
 	struct table *table;
 	struct obj *obj;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -1774,7 +1774,7 @@ static json_t *do_list_flowtables_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	struct flowtable *flowtable;
 	struct table *table;
 
-	list_for_each_entry(table, &ctx->nft->cache.list, list) {
+	list_for_each_entry(table, &ctx->nft->cache.table_cache.list, cache.list) {
 		if (cmd->handle.family != NFPROTO_UNSPEC &&
 		    cmd->handle.family != table->handle.family)
 			continue;
@@ -1802,7 +1802,9 @@ int do_command_list_json(struct netlink_ctx *ctx, struct cmd *cmd)
 	json_t *root;
 
 	if (cmd->handle.table.name)
-		table = table_lookup(&cmd->handle, &ctx->nft->cache);
+		table = table_cache_find(&ctx->nft->cache.table_cache,
+					 cmd->handle.table.name,
+					 cmd->handle.family);
 
 	switch (cmd->obj) {
 	case CMD_OBJ_TABLE:

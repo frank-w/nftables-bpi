@@ -105,6 +105,7 @@ static void nft_init(struct nft_ctx *ctx)
 
 static void nft_exit(struct nft_ctx *ctx)
 {
+	cache_free(&ctx->cache.table_cache);
 	expr_handler_exit();
 	ct_label_table_exit(ctx);
 	realm_table_rt_exit(ctx);
@@ -166,7 +167,7 @@ struct nft_ctx *nft_ctx_new(uint32_t flags)
 	ctx->state = xzalloc(sizeof(struct parser_state));
 	nft_ctx_add_include_path(ctx, DEFAULT_INCLUDE_PATH);
 	ctx->parser_max_errors	= 10;
-	init_list_head(&ctx->cache.list);
+	cache_init(&ctx->cache.table_cache);
 	ctx->top_scope = scope_alloc();
 	ctx->flags = flags;
 	ctx->output.output_fp = stdout;

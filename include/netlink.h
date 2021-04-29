@@ -163,6 +163,8 @@ extern struct obj *netlink_delinearize_obj(struct netlink_ctx *ctx,
 
 extern int netlink_list_flowtables(struct netlink_ctx *ctx,
 				   const struct handle *h);
+extern struct flowtable *netlink_delinearize_flowtable(struct netlink_ctx *ctx,
+						       struct nftnl_flowtable *nlo);
 
 extern void netlink_dump_chain(const struct nftnl_chain *nlc,
 			       struct netlink_ctx *ctx);

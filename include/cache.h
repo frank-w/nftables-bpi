@@ -92,4 +92,8 @@ void obj_cache_del(struct obj *obj);
 struct obj *obj_cache_find(const struct table *table, const char *name,
 			   uint32_t obj_type);
 
+struct flowtable;
+void ft_cache_add(struct flowtable *ft, struct table *table);
+struct flowtable *ft_cache_find(const struct table *table, const char *name);
+
 #endif /* _NFT_CACHE_H_ */

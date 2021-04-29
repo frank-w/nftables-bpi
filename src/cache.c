@@ -418,6 +418,82 @@ struct obj *obj_cache_find(const struct table *table, const char *name,
 	return NULL;
 }
 
+struct ft_cache_dump_ctx {
+	struct netlink_ctx	*nlctx;
+	struct table		*table;
+};
+
+static int ft_cache_cb(struct nftnl_flowtable *nlf, void *arg)
+{
+	struct ft_cache_dump_ctx *ctx = arg;
+	const char *ft_name;
+	struct flowtable *ft;
+	uint32_t hash;
+
+	ft = netlink_delinearize_flowtable(ctx->nlctx, nlf);
+	if (!ft)
+		return -1;
+
+	ft_name = nftnl_flowtable_get_str(nlf, NFTNL_FLOWTABLE_NAME);
+	hash = djb_hash(ft_name) % NFT_CACHE_HSIZE;
+	cache_add(&ft->cache, &ctx->table->ft_cache, hash);
+
+	return 0;
+}
+
+static int ft_cache_init(struct netlink_ctx *ctx, struct table *table,
+			 struct nftnl_flowtable_list *ft_list)
+{
+	struct ft_cache_dump_ctx dump_ctx = {
+		.nlctx	= ctx,
+		.table	= table,
+	};
+	nftnl_flowtable_list_foreach(ft_list, ft_cache_cb, &dump_ctx);
+
+	return 0;
+}
+
+static struct nftnl_flowtable_list *ft_cache_dump(struct netlink_ctx *ctx,
+						  const struct table *table,
+						  int *err)
+{
+	struct nftnl_flowtable_list *ft_list;
+
+	ft_list = mnl_nft_flowtable_dump(ctx, table->handle.family,
+					 table->handle.table.name);
+	if (!ft_list) {
+                if (errno == EINTR) {
+			*err = -1;
+			return NULL;
+		}
+		*err = 0;
+		return NULL;
+	}
+
+	return ft_list;
+}
+
+void ft_cache_add(struct flowtable *ft, struct table *table)
+{
+	uint32_t hash;
+
+	hash = djb_hash(ft->handle.flowtable.name) % NFT_CACHE_HSIZE;
+	cache_add(&ft->cache, &table->ft_cache, hash);
+}
+
+struct flowtable *ft_cache_find(const struct table *table, const char *name)
+{
+	struct flowtable *ft;
+	uint32_t hash;
+
+	hash = djb_hash(name) % NFT_CACHE_HSIZE;
+	list_for_each_entry(ft, &table->ft_cache.ht[hash], cache.hlist) {
+		if (!strcmp(ft->handle.flowtable.name, name))
+			return ft;
+	}
+
+	return NULL;
+}
 
 static int cache_init_tables(struct netlink_ctx *ctx, struct handle *h,
 			     struct nft_cache *cache)
@@ -435,6 +511,7 @@ static int cache_init_tables(struct netlink_ctx *ctx, struct handle *h,
 
 static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 {
+	struct nftnl_flowtable_list *ft_list = NULL;
 	struct nftnl_chain_list *chain_list = NULL;
 	struct nftnl_set_list *set_list = NULL;
 	struct nftnl_obj_list *obj_list;
@@ -484,12 +561,19 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 			}
 		}
 		if (flags & NFT_CACHE_FLOWTABLE_BIT) {
-			ret = netlink_list_flowtables(ctx, &table->handle);
+			ft_list = ft_cache_dump(ctx, table, &ret);
+			if (!ft_list) {
+				ret = -1;
+				goto cache_fails;
+			}
+			ret = ft_cache_init(ctx, table, ft_list);
+
+			nftnl_flowtable_list_free(ft_list);
+
 			if (ret < 0) {
 				ret = -1;
 				goto cache_fails;
 			}
-			list_splice_tail_init(&ctx->list, &table->flowtables);
 		}
 		if (flags & NFT_CACHE_OBJECT_BIT) {
 			obj_list = obj_cache_dump(ctx, table, &ret);

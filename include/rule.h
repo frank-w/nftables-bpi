@@ -158,6 +158,7 @@ struct table {
 	struct cache		chain_cache;
 	struct cache		set_cache;
 	struct cache		obj_cache;
+	struct cache		ft_cache;
 	struct list_head	chains;
 	struct list_head	sets;
 	struct list_head	objs;
@@ -516,6 +517,7 @@ uint32_t obj_type_to_cmd(uint32_t type);
 
 struct flowtable {
 	struct list_head	list;
+	struct cache_item	cache;
 	struct handle		handle;
 	struct scope		scope;
 	struct location		location;
@@ -531,8 +533,6 @@ struct flowtable {
 extern struct flowtable *flowtable_alloc(const struct location *loc);
 extern struct flowtable *flowtable_get(struct flowtable *flowtable);
 extern void flowtable_free(struct flowtable *flowtable);
-extern void flowtable_add_hash(struct flowtable *flowtable, struct table *table);
-extern struct flowtable *flowtable_lookup(const struct table *table, const char *name);
 extern struct flowtable *flowtable_lookup_fuzzy(const char *ft_name,
 						const struct nft_cache *cache,
 						const struct table **table);

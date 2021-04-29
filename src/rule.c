@@ -1115,6 +1115,7 @@ struct table *table_alloc(void)
 	cache_init(&table->chain_cache);
 	cache_init(&table->set_cache);
 	cache_init(&table->obj_cache);
+	cache_init(&table->ft_cache);
 
 	return table;
 }
@@ -1144,6 +1145,9 @@ void table_free(struct table *table)
 		set_free(set);
 	list_for_each_entry_safe(ft, nft, &table->flowtables, list)
 		flowtable_free(ft);
+	/* this is implicitly releasing flowtables in the hashtable cache */
+	list_for_each_entry_safe(ft, nft, &table->ft_cache.list, cache.list)
+		flowtable_free(ft);
 	list_for_each_entry_safe(obj, nobj, &table->objs, list)
 		obj_free(obj);
 	/* this is implicitly releasing objs in the hashtable cache */
@@ -1155,6 +1159,7 @@ void table_free(struct table *table)
 	cache_free(&table->chain_cache);
 	cache_free(&table->set_cache);
 	cache_free(&table->obj_cache);
+	cache_free(&table->ft_cache);
 	xfree(table);
 }
 
@@ -1272,7 +1277,7 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 		set_print(set, octx);
 		delim = "\n";
 	}
-	list_for_each_entry(flowtable, &table->flowtables, list) {
+	list_for_each_entry(flowtable, &table->ft_cache.list, cache.list) {
 		nft_print(octx, "%s", delim);
 		flowtable_print(flowtable, octx);
 		delim = "\n";
@@ -2146,11 +2151,6 @@ void flowtable_free(struct flowtable *flowtable)
 	xfree(flowtable);
 }
 
-void flowtable_add_hash(struct flowtable *flowtable, struct table *table)
-{
-	list_add_tail(&flowtable->list, &table->flowtables);
-}
-
 static void flowtable_print_declaration(const struct flowtable *flowtable,
 					struct print_fmt_options *opts,
 					struct output_ctx *octx)
@@ -2216,17 +2216,6 @@ void flowtable_print(const struct flowtable *s, struct output_ctx *octx)
 	do_flowtable_print(s, &opts, octx);
 }
 
-struct flowtable *flowtable_lookup(const struct table *table, const char *name)
-{
-	struct flowtable *ft;
-
-	list_for_each_entry(ft, &table->flowtables, list) {
-		if (!strcmp(ft->handle.flowtable.name, name))
-			return ft;
-	}
-	return NULL;
-}
-
 struct flowtable *flowtable_lookup_fuzzy(const char *ft_name,
 					 const struct nft_cache *cache,
 					 const struct table **t)
@@ -2238,7 +2227,7 @@ struct flowtable *flowtable_lookup_fuzzy(const char *ft_name,
 	string_misspell_init(&st);
 
 	list_for_each_entry(table, &cache->list, list) {
-		list_for_each_entry(ft, &table->flowtables, list) {
+		list_for_each_entry(ft, &table->ft_cache.list, cache.list) {
 			if (!strcmp(ft->handle.flowtable.name, ft_name)) {
 				*t = table;
 				return ft;
@@ -2256,8 +2245,8 @@ static int do_list_flowtable(struct netlink_ctx *ctx, struct cmd *cmd,
 {
 	struct flowtable *ft;
 
-	ft = flowtable_lookup(table, cmd->handle.flowtable.name);
-	if (ft == NULL)
+	ft = ft_cache_find(table, cmd->handle.flowtable.name);
+	if (!ft)
 		return -1;
 
 	nft_print(&ctx->nft->output, "table %s %s {\n",
@@ -2289,7 +2278,7 @@ static int do_list_flowtables(struct netlink_ctx *ctx, struct cmd *cmd)
 			  family2str(table->handle.family),
 			  table->handle.table.name);
 
-		list_for_each_entry(flowtable, &table->flowtables, list) {
+		list_for_each_entry(flowtable, &table->ft_cache.list, cache.list) {
 			flowtable_print_declaration(flowtable, &opts, &ctx->nft->output);
 			nft_print(&ctx->nft->output, "%s}%s", opts.tab, opts.nl);
 		}

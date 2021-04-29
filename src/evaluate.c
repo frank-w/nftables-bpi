@@ -238,7 +238,7 @@ static int flowtable_not_found(struct eval_ctx *ctx, const struct location *loc,
 	struct flowtable *ft;
 
 	ft = flowtable_lookup_fuzzy(ft_name, &ctx->nft->cache, &table);
-	if (ft == NULL)
+	if (!ft)
 		return cmd_error(ctx, loc, "%s", strerror(ENOENT));
 
 	return cmd_error(ctx, loc,
@@ -4491,8 +4491,8 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		ft = flowtable_lookup(table, cmd->handle.flowtable.name);
-		if (ft == NULL)
+		ft = ft_cache_find(table, cmd->handle.flowtable.name);
+		if (!ft)
 			return flowtable_not_found(ctx, &ctx->cmd->handle.flowtable.location,
 						   ctx->cmd->handle.flowtable.name);
 

@@ -1580,7 +1580,7 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 		tmp = set_print_json(&ctx->nft->output, set);
 		json_array_append_new(root, tmp);
 	}
-	list_for_each_entry(flowtable, &table->flowtables, list) {
+	list_for_each_entry(flowtable, &table->ft_cache.list, cache.list) {
 		tmp = flowtable_print_json(flowtable);
 		json_array_append_new(root, tmp);
 	}
@@ -1759,8 +1759,8 @@ static json_t *do_list_flowtable_json(struct netlink_ctx *ctx,
 	json_t *root = json_array();
 	struct flowtable *ft;
 
-	ft = flowtable_lookup(table, cmd->handle.flowtable.name);
-	if (ft == NULL)
+	ft = ft_cache_find(table, cmd->handle.flowtable.name);
+	if (!ft)
 		return json_null();
 
 	json_array_append_new(root, flowtable_print_json(ft));
@@ -1779,7 +1779,7 @@ static json_t *do_list_flowtables_json(struct netlink_ctx *ctx, struct cmd *cmd)
 		    cmd->handle.family != table->handle.family)
 			continue;
 
-		list_for_each_entry(flowtable, &table->flowtables, list) {
+		list_for_each_entry(flowtable, &table->ft_cache.list, cache.list) {
 			tmp = flowtable_print_json(flowtable);
 			json_array_append_new(root, tmp);
 		}

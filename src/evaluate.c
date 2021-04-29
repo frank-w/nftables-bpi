@@ -4411,6 +4411,28 @@ static void set_del_cache(struct eval_ctx *ctx, struct cmd *cmd)
 	set_free(set);
 }
 
+static void ft_del_cache(struct eval_ctx *ctx, struct cmd *cmd)
+{
+	struct flowtable *ft;
+	struct table *table;
+
+	if (!cmd->handle.flowtable.name)
+		return;
+
+	table = table_cache_find(&ctx->nft->cache.table_cache,
+				 cmd->handle.table.name,
+				 cmd->handle.family);
+	if (!table)
+		return;
+
+	ft = ft_cache_find(table, cmd->handle.flowtable.name);
+	if (!ft)
+		return;
+
+	ft_cache_del(ft);
+	flowtable_free(ft);
+}
+
 static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
@@ -4428,6 +4450,8 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 		table_del_cache(ctx, cmd);
 		return 0;
 	case CMD_OBJ_FLOWTABLE:
+		ft_del_cache(ctx, cmd);
+		return 0;
 	case CMD_OBJ_COUNTER:
 	case CMD_OBJ_QUOTA:
 	case CMD_OBJ_CT_HELPER:

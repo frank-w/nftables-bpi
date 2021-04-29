@@ -527,6 +527,11 @@ void ft_cache_add(struct flowtable *ft, struct table *table)
 	cache_add(&ft->cache, &table->ft_cache, hash);
 }
 
+void ft_cache_del(struct flowtable *ft)
+{
+	cache_del(&ft->cache);
+}
+
 struct flowtable *ft_cache_find(const struct table *table, const char *name)
 {
 	struct flowtable *ft;

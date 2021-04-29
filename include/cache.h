@@ -96,6 +96,7 @@ struct obj *obj_cache_find(const struct table *table, const char *name,
 
 struct flowtable;
 void ft_cache_add(struct flowtable *ft, struct table *table);
+void ft_cache_del(struct flowtable *ft);
 struct flowtable *ft_cache_find(const struct table *table, const char *name);
 
 struct nft_cache {

@@ -4433,6 +4433,28 @@ static void ft_del_cache(struct eval_ctx *ctx, struct cmd *cmd)
 	flowtable_free(ft);
 }
 
+static void obj_del_cache(struct eval_ctx *ctx, struct cmd *cmd, int type)
+{
+	struct table *table;
+	struct obj *obj;
+
+	if (!cmd->handle.obj.name)
+		return;
+
+	table = table_cache_find(&ctx->nft->cache.table_cache,
+				 cmd->handle.table.name,
+				 cmd->handle.family);
+	if (!table)
+		return;
+
+	obj = obj_cache_find(table, cmd->handle.obj.name, type);
+	if (!obj)
+		return;
+
+	obj_cache_del(obj);
+	obj_free(obj);
+}
+
 static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 {
 	switch (cmd->obj) {
@@ -4453,13 +4475,28 @@ static int cmd_evaluate_delete(struct eval_ctx *ctx, struct cmd *cmd)
 		ft_del_cache(ctx, cmd);
 		return 0;
 	case CMD_OBJ_COUNTER:
+		obj_del_cache(ctx, cmd, NFT_OBJECT_COUNTER);
+		return 0;
 	case CMD_OBJ_QUOTA:
+		obj_del_cache(ctx, cmd, NFT_OBJECT_QUOTA);
+		return 0;
 	case CMD_OBJ_CT_HELPER:
+		obj_del_cache(ctx, cmd, NFT_OBJECT_CT_HELPER);
+		return 0;
 	case CMD_OBJ_CT_TIMEOUT:
+		obj_del_cache(ctx, cmd, NFT_OBJECT_CT_TIMEOUT);
+		return 0;
 	case CMD_OBJ_LIMIT:
+		obj_del_cache(ctx, cmd, NFT_OBJECT_LIMIT);
+		return 0;
 	case CMD_OBJ_SECMARK:
+		obj_del_cache(ctx, cmd, NFT_OBJECT_SECMARK);
+		return 0;
 	case CMD_OBJ_CT_EXPECT:
+		obj_del_cache(ctx, cmd, NFT_OBJECT_CT_EXPECT);
+		return 0;
 	case CMD_OBJ_SYNPROXY:
+		obj_del_cache(ctx, cmd, NFT_OBJECT_SYNPROXY);
 		return 0;
 	default:
 		BUG("invalid command object type %u\n", cmd->obj);

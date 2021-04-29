@@ -90,10 +90,11 @@ kernel_cleanup() {
 	nft_chain_nat \
 	nft_chain_route_ipv4 nft_chain_route_ipv6 \
 	nft_dup_netdev nft_fwd_netdev \
-	nft_reject nft_reject_inet \
+	nft_reject nft_reject_inet nft_reject_netdev \
 	nf_tables_set nf_tables \
 	nf_flow_table nf_flow_table_ipv4 nf_flow_tables_ipv6 \
-	nf_flow_table_inet nft_flow_offload
+	nf_flow_table_inet nft_flow_offload \
+	nft_xfrm
 }
 
 find_tests() {

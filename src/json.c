@@ -1570,7 +1570,7 @@ static json_t *table_print_json_full(struct netlink_ctx *ctx,
 	tmp = table_print_json(table);
 	json_array_append_new(root, tmp);
 
-	list_for_each_entry(obj, &table->objs, list) {
+	list_for_each_entry(obj, &table->obj_cache.list, cache.list) {
 		tmp = obj_print_json(obj);
 		json_array_append_new(root, tmp);
 	}
@@ -1740,7 +1740,7 @@ static json_t *do_list_obj_json(struct netlink_ctx *ctx,
 		    strcmp(cmd->handle.table.name, table->handle.table.name))
 			continue;
 
-		list_for_each_entry(obj, &table->objs, list) {
+		list_for_each_entry(obj, &table->obj_cache.list, cache.list) {
 			if (obj->type != type ||
 			    (cmd->handle.obj.name &&
 			     strcmp(cmd->handle.obj.name, obj->handle.obj.name)))

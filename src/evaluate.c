@@ -4412,7 +4412,7 @@ static int cmd_evaluate_list_obj(struct eval_ctx *ctx, const struct cmd *cmd,
 	if (table == NULL)
 		return table_not_found(ctx);
 
-	if (obj_lookup(table, cmd->handle.obj.name, obj_type) == NULL)
+	if (!obj_cache_find(table, cmd->handle.obj.name, obj_type))
 		return obj_not_found(ctx, &cmd->handle.obj.location,
 				     cmd->handle.obj.name);
 

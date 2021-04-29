@@ -477,7 +477,7 @@ static int netlink_events_obj_cb(const struct nlmsghdr *nlh, int type,
 	nlo = netlink_obj_alloc(nlh);
 
 	obj = netlink_delinearize_obj(monh->ctx, nlo);
-	if (obj == NULL) {
+	if (!obj) {
 		nftnl_obj_free(nlo);
 		return MNL_CB_ERROR;
 	}
@@ -727,7 +727,7 @@ static void netlink_events_cache_addobj(struct netlink_mon_handler *monh,
 		goto out;
 	}
 
-	obj_add_hash(obj, t);
+	obj_cache_add(obj, t);
 out:
 	nftnl_obj_free(nlo);
 }
@@ -756,13 +756,13 @@ static void netlink_events_cache_delobj(struct netlink_mon_handler *monh,
 		goto out;
 	}
 
-	obj = obj_lookup(t, name, type);
+	obj = obj_cache_find(t, name, type);
 	if (obj == NULL) {
 		fprintf(stderr, "W: Unable to find object in cache\n");
 		goto out;
 	}
 
-	list_del(&obj->list);
+	obj_cache_del(obj);
 	obj_free(obj);
 out:
 	nftnl_obj_free(nlo);

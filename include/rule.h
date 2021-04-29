@@ -157,6 +157,7 @@ struct table {
 	struct scope		scope;
 	struct cache		chain_cache;
 	struct cache		set_cache;
+	struct cache		obj_cache;
 	struct list_head	chains;
 	struct list_head	sets;
 	struct list_head	objs;
@@ -484,6 +485,7 @@ struct secmark {
  */
 struct obj {
 	struct list_head		list;
+	struct cache_item		cache;
 	struct location			location;
 	struct handle			handle;
 	uint32_t			type;
@@ -504,9 +506,6 @@ struct obj {
 struct obj *obj_alloc(const struct location *loc);
 extern struct obj *obj_get(struct obj *obj);
 void obj_free(struct obj *obj);
-void obj_add_hash(struct obj *obj, struct table *table);
-struct obj *obj_lookup(const struct table *table, const char *name,
-		       uint32_t type);
 struct obj *obj_lookup_fuzzy(const char *obj_name,
 			     const struct nft_cache *cache,
 			     const struct table **t);

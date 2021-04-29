@@ -87,4 +87,9 @@ void cache_free(struct cache *cache);
 void cache_add(struct cache_item *item, struct cache *cache, uint32_t hash);
 void cache_del(struct cache_item *item);
 
+void obj_cache_add(struct obj *obj, struct table *table);
+void obj_cache_del(struct obj *obj);
+struct obj *obj_cache_find(const struct table *table, const char *name,
+			   uint32_t obj_type);
+
 #endif /* _NFT_CACHE_H_ */

@@ -1517,25 +1517,6 @@ static int list_obj_cb(struct nftnl_obj *nls, void *arg)
 	return 0;
 }
 
-int netlink_list_objs(struct netlink_ctx *ctx, const struct handle *h)
-{
-	struct nftnl_obj_list *obj_cache;
-	int err;
-
-	obj_cache = mnl_nft_obj_dump(ctx, h->family,
-				     h->table.name, NULL, 0, true, false);
-	if (obj_cache == NULL) {
-		if (errno == EINTR)
-			return -1;
-
-		return 0;
-	}
-
-	err = nftnl_obj_list_foreach(obj_cache, list_obj_cb, ctx);
-	nftnl_obj_list_free(obj_cache);
-	return err;
-}
-
 int netlink_reset_objs(struct netlink_ctx *ctx, const struct cmd *cmd,
 		       uint32_t type, bool dump)
 {

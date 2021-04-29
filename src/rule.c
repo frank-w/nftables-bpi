@@ -1114,6 +1114,7 @@ struct table *table_alloc(void)
 
 	cache_init(&table->chain_cache);
 	cache_init(&table->set_cache);
+	cache_init(&table->obj_cache);
 
 	return table;
 }
@@ -1145,10 +1146,15 @@ void table_free(struct table *table)
 		flowtable_free(ft);
 	list_for_each_entry_safe(obj, nobj, &table->objs, list)
 		obj_free(obj);
+	/* this is implicitly releasing objs in the hashtable cache */
+	list_for_each_entry_safe(obj, nobj, &table->obj_cache.list, cache.list)
+		obj_free(obj);
+
 	handle_free(&table->handle);
 	scope_release(&table->scope);
 	cache_free(&table->chain_cache);
 	cache_free(&table->set_cache);
+	cache_free(&table->obj_cache);
 	xfree(table);
 }
 
@@ -1254,7 +1260,7 @@ static void table_print(const struct table *table, struct output_ctx *octx)
 	if (table->comment)
 		nft_print(octx, "\tcomment \"%s\"\n", table->comment);
 
-	list_for_each_entry(obj, &table->objs, list) {
+	list_for_each_entry(obj, &table->obj_cache.list, cache.list) {
 		nft_print(octx, "%s", delim);
 		obj_print(obj, octx);
 		delim = "\n";
@@ -1727,24 +1733,6 @@ void obj_free(struct obj *obj)
 	xfree(obj);
 }
 
-void obj_add_hash(struct obj *obj, struct table *table)
-{
-	list_add_tail(&obj->list, &table->objs);
-}
-
-struct obj *obj_lookup(const struct table *table, const char *name,
-		       uint32_t type)
-{
-	struct obj *obj;
-
-	list_for_each_entry(obj, &table->objs, list) {
-		if (!strcmp(obj->handle.obj.name, name) &&
-		    obj->type == type)
-			return obj;
-	}
-	return NULL;
-}
-
 struct obj *obj_lookup_fuzzy(const char *obj_name,
 			     const struct nft_cache *cache,
 			     const struct table **t)
@@ -1756,7 +1744,7 @@ struct obj *obj_lookup_fuzzy(const char *obj_name,
 	string_misspell_init(&st);
 
 	list_for_each_entry(table, &cache->list, list) {
-		list_for_each_entry(obj, &table->objs, list) {
+		list_for_each_entry(obj, &table->obj_cache.list, cache.list) {
 			if (!strcmp(obj->handle.obj.name, obj_name)) {
 				*t = table;
 				return obj;
@@ -2101,14 +2089,14 @@ static int do_list_obj(struct netlink_ctx *ctx, struct cmd *cmd, uint32_t type)
 		    strcmp(cmd->handle.table.name, table->handle.table.name))
 			continue;
 
-		if (list_empty(&table->objs))
+		if (list_empty(&table->obj_cache.list))
 			continue;
 
 		nft_print(&ctx->nft->output, "table %s %s {\n",
 			  family2str(table->handle.family),
 			  table->handle.table.name);
 
-		list_for_each_entry(obj, &table->objs, list) {
+		list_for_each_entry(obj, &table->obj_cache.list, cache.list) {
 			if (obj->type != type ||
 			    (cmd->handle.obj.name != NULL &&
 			     strcmp(cmd->handle.obj.name, obj->handle.obj.name)))
@@ -2564,8 +2552,10 @@ static int do_command_reset(struct netlink_ctx *ctx, struct cmd *cmd)
 	ret = netlink_reset_objs(ctx, cmd, type, dump);
 	list_for_each_entry_safe(obj, next, &ctx->list, list) {
 		table = table_lookup(&obj->handle, &ctx->nft->cache);
-		if (!obj_lookup(table, obj->handle.obj.name, obj->type))
-			list_move(&obj->list, &table->objs);
+		if (!obj_cache_find(table, obj->handle.obj.name, obj->type)) {
+			list_del(&obj->list);
+			obj_cache_add(obj, table);
+		}
 	}
 	if (ret < 0)
 		return ret;

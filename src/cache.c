@@ -244,15 +244,14 @@ void chain_cache_add(struct chain *chain, struct table *table)
 	list_add_tail(&chain->cache_list, &table->cache_chain);
 }
 
-struct chain *chain_cache_find(const struct table *table,
-			       const struct handle *handle)
+struct chain *chain_cache_find(const struct table *table, const char *name)
 {
 	struct chain *chain;
 	uint32_t hash;
 
-	hash = djb_hash(handle->chain.name) % NFT_CACHE_HSIZE;
+	hash = djb_hash(name) % NFT_CACHE_HSIZE;
 	list_for_each_entry(chain, &table->cache_chain_ht[hash], cache_hlist) {
-		if (!strcmp(chain->handle.chain.name, handle->chain.name))
+		if (!strcmp(chain->handle.chain.name, name))
 			return chain;
 	}
 
@@ -421,7 +420,7 @@ static int cache_init_objects(struct netlink_ctx *ctx, unsigned int flags)
 		if (flags & NFT_CACHE_RULE_BIT) {
 			ret = netlink_list_rules(ctx, &table->handle);
 			list_for_each_entry_safe(rule, nrule, &ctx->list, list) {
-				chain = chain_cache_find(table, &rule->handle);
+				chain = chain_cache_find(table, rule->handle.chain.name);
 				if (!chain)
 					chain = chain_binding_lookup(table,
 							rule->handle.chain.name);

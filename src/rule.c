@@ -2608,7 +2608,7 @@ static int do_command_rename(struct netlink_ctx *ctx, struct cmd *cmd)
 
 	switch (cmd->obj) {
 	case CMD_OBJ_CHAIN:
-		chain = chain_cache_find(table, &cmd->handle);
+		chain = chain_cache_find(table, cmd->handle.chain.name);
 
 		return mnl_nft_chain_rename(ctx, cmd, chain);
 	default:

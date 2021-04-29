@@ -4002,7 +4002,7 @@ static int rule_cache_update(struct eval_ctx *ctx, enum cmd_ops op)
 	if (!table)
 		return table_not_found(ctx);
 
-	chain = chain_cache_find(table, &rule->handle);
+	chain = chain_cache_find(table, rule->handle.chain.name);
 	if (!chain)
 		return chain_not_found(ctx);
 
@@ -4145,14 +4145,14 @@ static int chain_evaluate(struct eval_ctx *ctx, struct chain *chain)
 		return table_not_found(ctx);
 
 	if (chain == NULL) {
-		if (chain_cache_find(table, &ctx->cmd->handle) == NULL) {
+		if (!chain_cache_find(table, ctx->cmd->handle.chain.name)) {
 			chain = chain_alloc(NULL);
 			handle_merge(&chain->handle, &ctx->cmd->handle);
 			chain_cache_add(chain, table);
 		}
 		return 0;
 	} else if (!(chain->flags & CHAIN_F_BINDING)) {
-		if (chain_cache_find(table, &chain->handle) == NULL)
+		if (!chain_cache_find(table, chain->handle.chain.name))
 			chain_cache_add(chain_get(chain), table);
 	}
 
@@ -4482,7 +4482,7 @@ static int cmd_evaluate_list(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		if (chain_cache_find(table, &cmd->handle) == NULL)
+		if (!chain_cache_find(table, cmd->handle.chain.name))
 			return chain_not_found(ctx);
 
 		return 0;
@@ -4642,7 +4642,7 @@ static int cmd_evaluate_rename(struct eval_ctx *ctx, struct cmd *cmd)
 		if (table == NULL)
 			return table_not_found(ctx);
 
-		if (chain_cache_find(table, &ctx->cmd->handle) == NULL)
+		if (!chain_cache_find(table, ctx->cmd->handle.chain.name))
 			return chain_not_found(ctx);
 
 		break;

@@ -711,21 +711,17 @@ json_t *exthdr_expr_json(const struct expr *expr, struct output_ctx *octx)
 
 		return json_pack("{s:o}", "tcp option", root);
 	}
-	if (expr->exthdr.op == NFT_EXTHDR_OP_IPV4) {
-		root = json_pack("{s:s}", "name", desc);
 
-		if (!is_exists)
-			json_object_set_new(root, "field", json_string(field));
-
-		return json_pack("{s:o}", "ip option", root);
-	}
-
-	root = json_pack("{s:s}",
-			 "name", desc);
+	root = json_pack("{s:s}", "name", desc);
 	if (!is_exists)
 		json_object_set_new(root, "field", json_string(field));
 
-	return json_pack("{s:o}", "exthdr", root);
+	switch (expr->exthdr.op) {
+	case NFT_EXTHDR_OP_IPV4:
+		return json_pack("{s:o}", "ip option", root);
+	default:
+		return json_pack("{s:o}", "exthdr", root);
+	}
 }
 
 json_t *verdict_expr_json(const struct expr *expr, struct output_ctx *octx)

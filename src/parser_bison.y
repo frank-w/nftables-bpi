@@ -880,6 +880,7 @@ close_scope_numgen	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_NUMGE
 close_scope_quota	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_QUOTA); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
 close_scope_rt		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_RT); };
+close_scope_sctp	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_SCTP); };
 close_scope_secmark	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_SECMARK); };
 close_scope_socket	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_SOCKET); }
 
@@ -4665,7 +4666,7 @@ primary_rhs_expr	:	symbol_expr		{ $$ = $1; }
 							 BYTEORDER_HOST_ENDIAN,
 							 sizeof(data) * BITS_PER_BYTE, &data);
 			}
-			|	SCTP
+			|	SCTP	close_scope_sctp
 			{
 				uint8_t data = IPPROTO_SCTP;
 				$$ = constant_expr_alloc(&@$, &inet_protocol_type,
@@ -5395,7 +5396,7 @@ dccp_hdr_field		:	SPORT		{ $$ = DCCPHDR_SPORT; }
 			|	TYPE		{ $$ = DCCPHDR_TYPE; }
 			;
 
-sctp_hdr_expr		:	SCTP	sctp_hdr_field
+sctp_hdr_expr		:	SCTP	sctp_hdr_field	close_scope_sctp
 			{
 				$$ = payload_expr_alloc(&@$, &proto_sctp, $2);
 			}

@@ -204,6 +204,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_IP6
 %s SCANSTATE_LIMIT
 %s SCANSTATE_QUOTA
+%s SCANSTATE_SCTP
 %s SCANSTATE_SECMARK
 %s SCANSTATE_VLAN
 %s SCANSTATE_EXPR_FIB
@@ -526,8 +527,11 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 
 "dccp"			{ return DCCP; }
 
-"sctp"			{ return SCTP; }
-"vtag"			{ return VTAG; }
+"sctp"			{ scanner_push_start_cond(yyscanner, SCANSTATE_SCTP); return SCTP; }
+
+<SCANSTATE_SCTP>{
+	"vtag"			{ return VTAG; }
+}
 
 "rt"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_RT); return RT; }
 "rt0"			{ return RT0; }

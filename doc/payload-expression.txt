@@ -369,7 +369,33 @@ integer (16 bit)
 SCTP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~~
 [verse]
+____
 *sctp* {*sport* | *dport* | *vtag* | *checksum*}
+*sctp chunk* 'CHUNK' [ 'FIELD' ]
+
+'CHUNK' := *data* | *init* | *init-ack* | *sack* | *heartbeat* |
+	   *heartbeat-ack* | *abort* | *shutdown* | *shutdown-ack* | *error* |
+	   *cookie-echo* | *cookie-ack* | *ecne* | *cwr* | *shutdown-complete*
+	   | *asconf-ack* | *forward-tsn* | *asconf*
+
+'FIELD' := 'COMMON_FIELD' | 'DATA_FIELD' | 'INIT_FIELD' | 'INIT_ACK_FIELD' |
+	   'SACK_FIELD' | 'SHUTDOWN_FIELD' | 'ECNE_FIELD' | 'CWR_FIELD' |
+	   'ASCONF_ACK_FIELD' | 'FORWARD_TSN_FIELD' | 'ASCONF_FIELD'
+
+'COMMON_FIELD' := *type* | *flags* | *length*
+'DATA_FIELD' := *tsn* | *stream* | *ssn* | *ppid*
+'INIT_FIELD' := *init-tag* | *a-rwnd* | *num-outbound-streams* |
+		*num-inbound-streams* | *initial-tsn*
+'INIT_ACK_FIELD' := 'INIT_FIELD'
+'SACK_FIELD' := *cum-tsn-ack* | *a-rwnd* | *num-gap-ack-blocks* |
+		*num-dup-tsns*
+'SHUTDOWN_FIELD' := *cum-tsn-ack*
+'ECNE_FIELD' := *lowest-tsn*
+'CWR_FIELD' := *lowest-tsn*
+'ASCONF_ACK_FIELD' := *seqno*
+'FORWARD_TSN_FIELD' := *new-cum-tsn*
+'ASCONF_FIELD' := *seqno*
+____
 
 .SCTP header expression
 [options="header"]
@@ -387,7 +413,34 @@ integer (32 bit)
 |checksum|
 Checksum|
 integer (32 bit)
+|chunk|
+Search chunk in packet|
+without 'FIELD', boolean indicating existence
 |================
+
+.SCTP chunk fields
+[options="header"]
+|==================
+|Name| Width in bits | Chunk | Notes
+|type| 8 | all | not useful, defined by chunk type
+|flags| 8 | all | semantics defined on per-chunk basis
+|length| 16 | all | length of this chunk in bytes excluding padding
+|tsn| 32 | data | transmission sequence number
+|stream| 16 | data | stream identifier
+|ssn| 16 | data | stream sequence number
+|ppid| 32 | data | payload protocol identifier
+|init-tag| 32 | init, init-ack | initiate tag
+|a-rwnd| 32 | init, init-ack, sack | advertised receiver window credit
+|num-outbound-streams| 16 | init, init-ack | number of outbound streams
+|num-inbound-streams| 16 | init, init-ack | number of inbound streams
+|initial-tsn| 32 | init, init-ack | initial transmit sequence number
+|cum-tsn-ack| 32 | sack, shutdown | cumulative transmission sequence number acknowledged
+|num-gap-ack-blocks| 16 | sack | number of Gap Ack Blocks included
+|num-dup-tsns| 16 | sack | number of duplicate transmission sequence numbers received
+|lowest-tsn| 32 | ecne, cwr | lowest transmission sequence number
+|seqno| 32 | asconf-ack, asconf | sequence number
+|new-cum-tsn| 32 | forward-tsn | new cumulative transmission sequence number
+|==================
 
 DCCP HEADER EXPRESSION
 ~~~~~~~~~~~~~~~~~~~~~~

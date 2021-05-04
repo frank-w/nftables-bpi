@@ -38,6 +38,7 @@
 #include <utils.h>
 #include <parser.h>
 #include <erec.h>
+#include <sctp_chunk.h>
 
 #include "parser_bison.h"
 
@@ -417,6 +418,40 @@ int nft_lex(void *, void *, void *);
 %token DCCP			"dccp"
 
 %token SCTP			"sctp"
+%token CHUNK			"chunk"
+%token DATA			"data"
+%token INIT			"init"
+%token INIT_ACK			"init-ack"
+%token HEARTBEAT		"heartbeat"
+%token HEARTBEAT_ACK		"heartbeat-ack"
+%token ABORT			"abort"
+%token SHUTDOWN			"shutdown"
+%token SHUTDOWN_ACK		"shutdown-ack"
+%token ERROR			"error"
+%token COOKIE_ECHO		"cookie-echo"
+%token COOKIE_ACK		"cookie-ack"
+%token ECNE			"ecne"
+%token CWR			"cwr"
+%token SHUTDOWN_COMPLETE	"shutdown-complete"
+%token ASCONF_ACK		"asconf-ack"
+%token FORWARD_TSN		"forward-tsn"
+%token ASCONF			"asconf"
+%token TSN			"tsn"
+%token STREAM			"stream"
+%token SSN			"ssn"
+%token PPID			"ppid"
+%token INIT_TAG			"init-tag"
+%token A_RWND			"a-rwnd"
+%token NUM_OSTREAMS		"num-outbound-streams"
+%token NUM_ISTREAMS		"num-inbound-streams"
+%token INIT_TSN			"initial-tsn"
+%token CUM_TSN_ACK		"cum-tsn-ack"
+%token NUM_GACK_BLOCKS		"num-gap-ack-blocks"
+%token NUM_DUP_TSNS		"num-dup-tsns"
+%token LOWEST_TSN		"lowest-tsn"
+%token SEQNO			"seqno"
+%token NEW_CUM_TSN		"new-cum-tsn"
+
 %token VTAG			"vtag"
 
 %token RT			"rt"
@@ -768,9 +803,12 @@ int nft_lex(void *, void *, void *);
 %type <expr>			udp_hdr_expr	udplite_hdr_expr
 %destructor { expr_free($$); }	udp_hdr_expr	udplite_hdr_expr
 %type <val>			udp_hdr_field	udplite_hdr_field
-%type <expr>			dccp_hdr_expr	sctp_hdr_expr
-%destructor { expr_free($$); }	dccp_hdr_expr	sctp_hdr_expr
+%type <expr>			dccp_hdr_expr	sctp_hdr_expr sctp_chunk_alloc
+%destructor { expr_free($$); }	dccp_hdr_expr	sctp_hdr_expr sctp_chunk_alloc
 %type <val>			dccp_hdr_field	sctp_hdr_field
+%type <val>			sctp_chunk_type sctp_chunk_common_field
+%type <val>			sctp_chunk_data_field sctp_chunk_init_field
+%type <val>			sctp_chunk_sack_field
 %type <expr>			th_hdr_expr
 %destructor { expr_free($$); }	th_hdr_expr
 %type <val>			th_hdr_field
@@ -881,6 +919,7 @@ close_scope_quota	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_QUOTA); };
 close_scope_queue	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_QUEUE); };
 close_scope_rt		: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_RT); };
 close_scope_sctp	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_SCTP); };
+close_scope_sctp_chunk	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_SCTP_CHUNK); };
 close_scope_secmark	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_SECMARK); };
 close_scope_socket	: { scanner_pop_start_cond(nft->scanner, PARSER_SC_EXPR_SOCKET); }
 
@@ -5396,9 +5435,114 @@ dccp_hdr_field		:	SPORT		{ $$ = DCCPHDR_SPORT; }
 			|	TYPE		{ $$ = DCCPHDR_TYPE; }
 			;
 
+sctp_chunk_type		:	DATA		{ $$ = SCTP_CHUNK_TYPE_DATA; }
+			|	INIT		{ $$ = SCTP_CHUNK_TYPE_INIT; }
+			|	INIT_ACK	{ $$ = SCTP_CHUNK_TYPE_INIT_ACK; }
+			|	SACK		{ $$ = SCTP_CHUNK_TYPE_SACK; }
+			|	HEARTBEAT	{ $$ = SCTP_CHUNK_TYPE_HEARTBEAT; }
+			|	HEARTBEAT_ACK	{ $$ = SCTP_CHUNK_TYPE_HEARTBEAT_ACK; }
+			|	ABORT		{ $$ = SCTP_CHUNK_TYPE_ABORT; }
+			|	SHUTDOWN	{ $$ = SCTP_CHUNK_TYPE_SHUTDOWN; }
+			|	SHUTDOWN_ACK	{ $$ = SCTP_CHUNK_TYPE_SHUTDOWN_ACK; }
+			|	ERROR		{ $$ = SCTP_CHUNK_TYPE_ERROR; }
+			|	COOKIE_ECHO	{ $$ = SCTP_CHUNK_TYPE_COOKIE_ECHO; }
+			|	COOKIE_ACK	{ $$ = SCTP_CHUNK_TYPE_COOKIE_ACK; }
+			|	ECNE		{ $$ = SCTP_CHUNK_TYPE_ECNE; }
+			|	CWR		{ $$ = SCTP_CHUNK_TYPE_CWR; }
+			|	SHUTDOWN_COMPLETE { $$ = SCTP_CHUNK_TYPE_SHUTDOWN_COMPLETE; }
+			|	ASCONF_ACK	{ $$ = SCTP_CHUNK_TYPE_ASCONF_ACK; }
+			|	FORWARD_TSN	{ $$ = SCTP_CHUNK_TYPE_FORWARD_TSN; }
+			|	ASCONF		{ $$ = SCTP_CHUNK_TYPE_ASCONF; }
+			;
+
+sctp_chunk_common_field	:	TYPE	{ $$ = SCTP_CHUNK_COMMON_TYPE; }
+			|	FLAGS	{ $$ = SCTP_CHUNK_COMMON_FLAGS; }
+			|	LENGTH	{ $$ = SCTP_CHUNK_COMMON_LENGTH; }
+			;
+
+sctp_chunk_data_field	:	TSN	{ $$ = SCTP_CHUNK_DATA_TSN; }
+			|	STREAM	{ $$ = SCTP_CHUNK_DATA_STREAM; }
+			|	SSN	{ $$ = SCTP_CHUNK_DATA_SSN; }
+			|	PPID	{ $$ = SCTP_CHUNK_DATA_PPID; }
+			;
+
+sctp_chunk_init_field	:	INIT_TAG	{ $$ = SCTP_CHUNK_INIT_TAG; }
+			|	A_RWND		{ $$ = SCTP_CHUNK_INIT_RWND; }
+			|	NUM_OSTREAMS	{ $$ = SCTP_CHUNK_INIT_OSTREAMS; }
+			|	NUM_ISTREAMS	{ $$ = SCTP_CHUNK_INIT_ISTREAMS; }
+			|	INIT_TSN	{ $$ = SCTP_CHUNK_INIT_TSN; }
+			;
+
+sctp_chunk_sack_field	:	CUM_TSN_ACK	{ $$ = SCTP_CHUNK_SACK_CTSN_ACK; }
+			|	A_RWND		{ $$ = SCTP_CHUNK_SACK_RWND; }
+			|	NUM_GACK_BLOCKS	{ $$ = SCTP_CHUNK_SACK_GACK_BLOCKS; }
+			|	NUM_DUP_TSNS	{ $$ = SCTP_CHUNK_SACK_DUP_TSNS; }
+			;
+
+sctp_chunk_alloc	:	sctp_chunk_type
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, $1, SCTP_CHUNK_COMMON_TYPE);
+				$$->exthdr.flags = NFT_EXTHDR_F_PRESENT;
+			}
+			|	sctp_chunk_type	sctp_chunk_common_field
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, $1, $2);
+			}
+			|	DATA	sctp_chunk_data_field
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_DATA, $2);
+			}
+			|	INIT	sctp_chunk_init_field
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_INIT, $2);
+			}
+			|	INIT_ACK	sctp_chunk_init_field
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_INIT_ACK, $2);
+			}
+			|	SACK	sctp_chunk_sack_field
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_SACK, $2);
+			}
+			|	SHUTDOWN	CUM_TSN_ACK
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_SHUTDOWN,
+							   SCTP_CHUNK_SHUTDOWN_CTSN_ACK);
+			}
+			|	ECNE	LOWEST_TSN
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_ECNE,
+							   SCTP_CHUNK_ECNE_CWR_MIN_TSN);
+			}
+			|	CWR	LOWEST_TSN
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_CWR,
+							   SCTP_CHUNK_ECNE_CWR_MIN_TSN);
+			}
+			|	ASCONF_ACK	SEQNO
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_ASCONF_ACK,
+							   SCTP_CHUNK_ASCONF_SEQNO);
+			}
+			|	FORWARD_TSN	NEW_CUM_TSN
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_FORWARD_TSN,
+							   SCTP_CHUNK_FORWARD_TSN_NCTSN);
+			}
+			|	ASCONF	SEQNO
+			{
+				$$ = sctp_chunk_expr_alloc(&@$, SCTP_CHUNK_TYPE_ASCONF,
+							   SCTP_CHUNK_ASCONF_SEQNO);
+			}
+			;
+
 sctp_hdr_expr		:	SCTP	sctp_hdr_field	close_scope_sctp
 			{
 				$$ = payload_expr_alloc(&@$, &proto_sctp, $2);
+			}
+			|	SCTP	CHUNK	sctp_chunk_alloc close_scope_sctp_chunk close_scope_sctp
+			{
+				$$ = $3;
 			}
 			;
 

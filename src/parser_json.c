@@ -11,6 +11,7 @@
 #include <netlink.h>
 #include <parser.h>
 #include <rule.h>
+#include <sctp_chunk.h>
 #include <socket.h>
 
 #include <netdb.h>
@@ -705,6 +706,53 @@ static struct expr *json_parse_ip_option_expr(struct json_ctx *ctx,
 		return NULL;
 	}
 	return ipopt_expr_alloc(int_loc, descval, fieldval, 0);
+}
+
+static int json_parse_sctp_chunk_field(const struct exthdr_desc *desc,
+				       const char *name, int *val)
+{
+	unsigned int i;
+
+	for (i = 0; i < array_size(desc->templates); i++) {
+		if (desc->templates[i].token &&
+		    !strcmp(desc->templates[i].token, name)) {
+			if (val)
+				*val = i;
+			return 0;
+		}
+	}
+	return 1;
+}
+
+static struct expr *json_parse_sctp_chunk_expr(struct json_ctx *ctx,
+					       const char *type, json_t *root)
+{
+	const struct exthdr_desc *desc;
+	const char *name, *field;
+	struct expr *expr;
+	int fieldval;
+
+	if (json_unpack_err(ctx, root, "{s:s}", "name", &name))
+		return NULL;
+
+	desc = sctp_chunk_protocol_find(name);
+	if (!desc) {
+		json_error(ctx, "Unknown sctp chunk name '%s'.", name);
+		return NULL;
+	}
+
+	if (json_unpack(root, "{s:s}", "field", &field)) {
+		expr = sctp_chunk_expr_alloc(int_loc, desc->type,
+					     SCTP_CHUNK_COMMON_TYPE);
+		expr->exthdr.flags = NFT_EXTHDR_F_PRESENT;
+
+		return expr;
+	}
+	if (json_parse_sctp_chunk_field(desc, field, &fieldval)) {
+		json_error(ctx, "Unknown sctp chunk field '%s'.", field);
+		return NULL;
+	}
+	return sctp_chunk_expr_alloc(int_loc, desc->type, fieldval);
 }
 
 static const struct exthdr_desc *exthdr_lookup_byname(const char *name)
@@ -1412,6 +1460,7 @@ static struct expr *json_parse_expr(struct json_ctx *ctx, json_t *root)
 		{ "exthdr", json_parse_exthdr_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_SES | CTX_F_MAP | CTX_F_CONCAT },
 		{ "tcp option", json_parse_tcp_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_CONCAT },
 		{ "ip option", json_parse_ip_option_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_CONCAT },
+		{ "sctp chunk", json_parse_sctp_chunk_expr, CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_CONCAT },
 		{ "meta", json_parse_meta_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_SET_RHS | CTX_F_MANGLE | CTX_F_SES | CTX_F_MAP | CTX_F_CONCAT },
 		{ "osf", json_parse_osf_expr, CTX_F_STMT | CTX_F_PRIMARY | CTX_F_MAP | CTX_F_CONCAT },
 		{ "ipsec", json_parse_xfrm_expr, CTX_F_PRIMARY | CTX_F_MAP | CTX_F_CONCAT },

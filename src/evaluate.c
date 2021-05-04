@@ -568,6 +568,7 @@ static int expr_evaluate_exthdr(struct eval_ctx *ctx, struct expr **exprp)
 
 	switch (expr->exthdr.op) {
 	case NFT_EXTHDR_OP_TCPOPT:
+	case NFT_EXTHDR_OP_SCTP:
 		return __expr_evaluate_exthdr(ctx, exprp);
 	case NFT_EXTHDR_OP_IPV4:
 		dependency = &proto_ip;

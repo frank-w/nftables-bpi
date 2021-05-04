@@ -75,6 +75,7 @@ libnftables_la_SOURCES =			\
 		tcpopt.c			\
 		socket.c			\
 		print.c				\
+		sctp_chunk.c			\
 		libnftables.c			\
 		libnftables.map
 

@@ -213,6 +213,7 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 %s SCANSTATE_EXPR_NUMGEN
 %s SCANSTATE_EXPR_QUEUE
 %s SCANSTATE_EXPR_RT
+%s SCANSTATE_EXPR_SCTP_CHUNK
 %s SCANSTATE_EXPR_SOCKET
 
 %s SCANSTATE_STMT_LOG
@@ -530,7 +531,44 @@ addrstring	({macaddr}|{ip4addr}|{ip6addr})
 "sctp"			{ scanner_push_start_cond(yyscanner, SCANSTATE_SCTP); return SCTP; }
 
 <SCANSTATE_SCTP>{
+	"chunk"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_SCTP_CHUNK); return CHUNK; }
 	"vtag"			{ return VTAG; }
+}
+
+<SCANSTATE_EXPR_SCTP_CHUNK>{
+	"data"			{ return DATA; }
+	"init"			{ return INIT; }
+	"init-ack"		{ return INIT_ACK; }
+	"heartbeat"		{ return HEARTBEAT; }
+	"heartbeat-ack"		{ return HEARTBEAT_ACK; }
+	"abort"			{ return ABORT; }
+	"shutdown"		{ return SHUTDOWN; }
+	"shutdown-ack"		{ return SHUTDOWN_ACK; }
+	"error"			{ return ERROR; }
+	"cookie-echo"		{ return COOKIE_ECHO; }
+	"cookie-ack"		{ return COOKIE_ACK; }
+	"ecne"			{ return ECNE; }
+	"cwr"			{ return CWR; }
+	"shutdown-complete"	{ return SHUTDOWN_COMPLETE; }
+	"asconf-ack"		{ return ASCONF_ACK; }
+	"forward-tsn"		{ return FORWARD_TSN; }
+	"asconf"		{ return ASCONF; }
+
+	"tsn"			{ return TSN; }
+	"stream"		{ return STREAM; }
+	"ssn"			{ return SSN; }
+	"ppid"			{ return PPID; }
+	"init-tag"		{ return INIT_TAG; }
+	"a-rwnd"		{ return A_RWND; }
+	"num-outbound-streams"	{ return NUM_OSTREAMS; }
+	"num-inbound-streams"	{ return NUM_ISTREAMS; }
+	"initial-tsn"		{ return INIT_TSN; }
+	"cum-tsn-ack"		{ return CUM_TSN_ACK; }
+	"num-gap-ack-blocks"	{ return NUM_GACK_BLOCKS; }
+	"num-dup-tsns"		{ return NUM_DUP_TSNS; }
+	"lowest-tsn"		{ return LOWEST_TSN; }
+	"seqno"			{ return SEQNO; }
+	"new-cum-tsn"		{ return NEW_CUM_TSN; }
 }
 
 "rt"			{ scanner_push_start_cond(yyscanner, SCANSTATE_EXPR_RT); return RT; }

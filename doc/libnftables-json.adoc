@@ -1200,6 +1200,19 @@ Create a reference to a field (*field*) of a TCP option header (*name*).
 If the *field* property is not given, the expression is to be used as a TCP option
 existence check in a *match* statement with a boolean on the right hand side.
 
+=== SCTP CHUNK
+[verse]
+*{ "sctp chunk": {
+	"name":* 'STRING'*,
+	"field":* 'STRING'
+*}}*
+
+Create a reference to a field (*field*) of an SCTP chunk (*name*).
+
+If the *field* property is not given, the expression is to be used as an SCTP
+chunk existence check in a *match* statement with a boolean on the right hand
+side.
+
 === META
 [verse]
 ____

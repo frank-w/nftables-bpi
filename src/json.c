@@ -719,6 +719,8 @@ json_t *exthdr_expr_json(const struct expr *expr, struct output_ctx *octx)
 	switch (expr->exthdr.op) {
 	case NFT_EXTHDR_OP_IPV4:
 		return json_pack("{s:o}", "ip option", root);
+	case NFT_EXTHDR_OP_SCTP:
+		return json_pack("{s:o}", "sctp chunk", root);
 	default:
 		return json_pack("{s:o}", "exthdr", root);
 	}

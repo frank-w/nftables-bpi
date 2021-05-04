@@ -22,6 +22,7 @@
 #include <headers.h>
 #include <expression.h>
 #include <statement.h>
+#include <sctp_chunk.h>
 
 static const struct exthdr_desc *exthdr_definitions[PROTO_DESC_MAX + 1] = {
 	[EXTHDR_DESC_HBH]	= &exthdr_hbh,
@@ -72,6 +73,11 @@ static void exthdr_expr_print(const struct expr *expr, struct output_ctx *octx)
 		nft_print(octx, " %s", expr->exthdr.tmpl->token);
 	} else if (expr->exthdr.op == NFT_EXTHDR_OP_IPV4) {
 		nft_print(octx, "ip option %s", expr->exthdr.desc->name);
+		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
+			return;
+		nft_print(octx, " %s", expr->exthdr.tmpl->token);
+	} else if (expr->exthdr.op == NFT_EXTHDR_OP_SCTP) {
+		nft_print(octx, "sctp chunk %s", expr->exthdr.desc->name);
 		if (expr->exthdr.flags & NFT_EXTHDR_F_PRESENT)
 			return;
 		nft_print(octx, " %s", expr->exthdr.tmpl->token);
@@ -291,6 +297,8 @@ void exthdr_init_raw(struct expr *expr, uint8_t type,
 		return tcpopt_init_raw(expr, type, offset, len, flags);
 	if (op == NFT_EXTHDR_OP_IPV4)
 		return ipopt_init_raw(expr, type, offset, len, flags, true);
+	if (op == NFT_EXTHDR_OP_SCTP)
+		return sctp_chunk_init_raw(expr, type, offset, len, flags);
 
 	expr->len = len;
 	expr->exthdr.flags = flags;

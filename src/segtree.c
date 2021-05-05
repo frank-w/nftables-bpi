@@ -838,8 +838,8 @@ static int range_mask_len(const mpz_t start, const mpz_t end, unsigned int len)
 	mpz_t tmp_start, tmp_end;
 	int ret;
 
-	mpz_init_set_ui(tmp_start, mpz_get_ui(start));
-	mpz_init_set_ui(tmp_end, mpz_get_ui(end));
+	mpz_init_set(tmp_start, start);
+	mpz_init_set(tmp_end, end);
 
 	while (mpz_cmp(tmp_start, tmp_end) <= 0 &&
 		!mpz_tstbit(tmp_start, 0) && mpz_tstbit(tmp_end, 0) &&

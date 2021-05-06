@@ -343,21 +343,16 @@ NAT STATEMENTS
 ~~~~~~~~~~~~~~
 [verse]
 ____
-*snat to* 'address' [*:*'port'] ['PRF_FLAGS']
-*snat to* 'address' *-* 'address' [*:*'port' *-* 'port'] ['PRF_FLAGS']
-*snat* { *ip* | *ip6* } *to* 'address' *-* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
-*dnat to* 'address' [*:*'port'] ['PRF_FLAGS']
-*dnat to* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
-*dnat* { *ip* | *ip6* } *to* 'address' [*:*'port' *-* 'port'] ['PR_FLAGS']
-*masquerade to* [*:*'port'] ['PRF_FLAGS']
-*masquerade to* [*:*'port' *-* 'port'] ['PRF_FLAGS']
-*redirect to* [*:*'port'] ['PRF_FLAGS']
-*redirect to* [*:*'port' *-* 'port'] ['PRF_FLAGS']
+*snat* [[*ip* | *ip6*] *to*] 'ADDR_SPEC' [*:*'PORT_SPEC'] ['FLAGS']
+*dnat* [[*ip* | *ip6*] *to*] 'ADDR_SPEC' [*:*'PORT_SPEC'] ['FLAGS']
+*masquerade* [*to :*'PORT_SPEC'] ['FLAGS']
+*redirect* [*to :*'PORT_SPEC'] ['FLAGS']
 
-'PRF_FLAGS' := 'PRF_FLAG' [*,* 'PRF_FLAGS']
-'PR_FLAGS'  := 'PR_FLAG' [*,* 'PR_FLAGS']
-'PRF_FLAG'  := 'PR_FLAG' | *fully-random*
-'PR_FLAG'   := *persistent* | *random*
+'ADDR_SPEC' := 'address' | 'address' *-* 'address'
+'PORT_SPEC' := 'port' | 'port' *-* 'port'
+
+'FLAGS'  := 'FLAG' [*,* 'FLAGS']
+'FLAG'  := *persistent* | *random* | *fully-random*
 ____
 
 The nat statements are only valid from nat chain types. +

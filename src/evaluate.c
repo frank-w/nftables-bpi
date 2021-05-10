@@ -262,7 +262,7 @@ static int expr_evaluate_symbol(struct eval_ctx *ctx, struct expr **expr)
 			return table_not_found(ctx);
 
 		set = set_cache_find(table, (*expr)->identifier);
-		if (set == NULL)
+		if (set == NULL || !set->key)
 			return set_not_found(ctx, &(*expr)->location,
 					     (*expr)->identifier);
 

@@ -842,6 +842,9 @@ int nft_lex(void *, void *, void *);
 %type <expr>			xfrm_expr
 %destructor { expr_free($$); }	xfrm_expr
 
+%type <expr>			set_elem_key_expr
+%destructor { expr_free($$); }	set_elem_key_expr
+
 %%
 
 input			:	/* empty */
@@ -4084,13 +4087,16 @@ set_elem_expr		:	set_elem_expr_alloc
 			|	set_elem_expr_alloc		set_elem_expr_options
 			;
 
-set_elem_expr_alloc	:	set_lhs_expr	set_elem_stmt_list
+set_elem_key_expr	:	set_lhs_expr		{ $$ = $1; }
+			;
+
+set_elem_expr_alloc	:	set_elem_key_expr	set_elem_stmt_list
 			{
 				$$ = set_elem_expr_alloc(&@1, $1);
 				list_splice_tail($2, &$$->stmt_list);
 				xfree($2);
 			}
-			|	set_lhs_expr
+			|	set_elem_key_expr
 			{
 				$$ = set_elem_expr_alloc(&@1, $1);
 			}

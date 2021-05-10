@@ -54,3 +54,11 @@ add @set5 { ip saddr . ip daddr };ok
 # test nested anonymous sets
 ip saddr { { 1.1.1.0, 3.3.3.0 }, 2.2.2.0 };ok;ip saddr { 1.1.1.0, 2.2.2.0, 3.3.3.0 }
 ip saddr { { 1.1.1.0/24, 3.3.3.0/24 }, 2.2.2.0/24 };ok;ip saddr { 1.1.1.0/24, 2.2.2.0/24, 3.3.3.0/24 }
+
+!set6 type ipv4_addr;ok
+?set6 192.168.3.5, *;ok
+ip saddr @set6 drop;ok
+
+ip saddr vmap { 1.1.1.1 : drop, * : accept };ok
+meta mark set ip saddr map { 1.1.1.1 : 0x00000001, * : 0x00000002 };ok
+

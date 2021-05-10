@@ -44,6 +44,10 @@ static void expr_msort_value(const struct expr *expr, mpz_t value)
 	case EXPR_CONCAT:
 		concat_expr_msort_value(expr, value);
 		break;
+	case EXPR_SET_ELEM_CATCHALL:
+		/* max value to ensure listing shows it in the last position */
+		mpz_bitmask(value, expr->len);
+		break;
 	default:
 		BUG("Unknown expression %s\n", expr_name(expr));
 	}

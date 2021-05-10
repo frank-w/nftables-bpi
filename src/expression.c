@@ -1328,6 +1328,29 @@ struct expr *set_elem_expr_alloc(const struct location *loc, struct expr *key)
 	return expr;
 }
 
+static void set_elem_catchall_expr_print(const struct expr *expr,
+					 struct output_ctx *octx)
+{
+	nft_print(octx, "*");
+}
+
+static const struct expr_ops set_elem_catchall_expr_ops = {
+	.type		= EXPR_SET_ELEM_CATCHALL,
+	.name		= "catch-all set element",
+	.print		= set_elem_catchall_expr_print,
+};
+
+struct expr *set_elem_catchall_expr_alloc(const struct location *loc)
+{
+	struct expr *expr;
+
+	expr = expr_alloc(loc, EXPR_SET_ELEM_CATCHALL, &invalid_type,
+			  BYTEORDER_INVALID, 0);
+	expr->flags = EXPR_F_CONSTANT | EXPR_F_SINGLETON;
+
+	return expr;
+}
+
 void range_expr_value_low(mpz_t rop, const struct expr *expr)
 {
 	switch (expr->etype) {
@@ -1403,6 +1426,7 @@ static const struct expr_ops *__expr_ops_by_type(enum expr_types etype)
 	case EXPR_RT: return &rt_expr_ops;
 	case EXPR_FIB: return &fib_expr_ops;
 	case EXPR_XFRM: return &xfrm_expr_ops;
+	case EXPR_SET_ELEM_CATCHALL: return &set_elem_catchall_expr_ops;
 	}
 
 	BUG("Unknown expression type %d\n", etype);

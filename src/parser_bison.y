@@ -697,8 +697,8 @@ int nft_lex(void *, void *, void *);
 
 %type <expr>			multiton_stmt_expr
 %destructor { expr_free($$); }	multiton_stmt_expr
-%type <expr>			prefix_stmt_expr range_stmt_expr wildcard_expr
-%destructor { expr_free($$); }	prefix_stmt_expr range_stmt_expr wildcard_expr
+%type <expr>			prefix_stmt_expr range_stmt_expr
+%destructor { expr_free($$); }	prefix_stmt_expr range_stmt_expr
 
 %type <expr>			primary_stmt_expr basic_stmt_expr
 %destructor { expr_free($$); }	primary_stmt_expr basic_stmt_expr
@@ -3470,20 +3470,8 @@ range_stmt_expr		:	basic_stmt_expr	DASH	basic_stmt_expr
 			}
 			;
 
-wildcard_expr		:	ASTERISK
-			{
-				struct expr *expr;
-
-				expr = constant_expr_alloc(&@$, &integer_type,
-							   BYTEORDER_HOST_ENDIAN,
-							   0, NULL);
-				$$ = prefix_expr_alloc(&@$, expr, 0);
-			}
-			;
-
 multiton_stmt_expr	:	prefix_stmt_expr
 			|	range_stmt_expr
-			|	wildcard_expr
 			;
 
 stmt_expr		:	map_stmt_expr
@@ -4088,6 +4076,7 @@ set_elem_expr		:	set_elem_expr_alloc
 			;
 
 set_elem_key_expr	:	set_lhs_expr		{ $$ = $1; }
+			|	ASTERISK		{ $$ = set_elem_catchall_expr_alloc(&@1); }
 			;
 
 set_elem_expr_alloc	:	set_elem_key_expr	set_elem_stmt_list
@@ -4227,7 +4216,6 @@ set_elem_expr_option	:	TIMEOUT			time_spec
 			;
 
 set_lhs_expr		:	concat_rhs_expr
-			|	wildcard_expr
 			;
 
 set_rhs_expr		:	concat_rhs_expr
@@ -4500,7 +4488,6 @@ list_rhs_expr		:	basic_rhs_expr		COMMA		basic_rhs_expr
 			;
 
 rhs_expr		:	concat_rhs_expr		{ $$ = $1; }
-			|	wildcard_expr		{ $$ = $1; }
 			|	set_expr		{ $$ = $1; }
 			|	set_ref_symbol_expr	{ $$ = $1; }
 			;

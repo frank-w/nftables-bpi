@@ -2201,6 +2201,8 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 		return expr_evaluate_hash(ctx, expr);
 	case EXPR_XFRM:
 		return expr_evaluate_xfrm(ctx, expr);
+	case EXPR_SET_ELEM_CATCHALL:
+		return 0;
 	default:
 		BUG("unknown expression type %s\n", expr_name(*expr));
 	}

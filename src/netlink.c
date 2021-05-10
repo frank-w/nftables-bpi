@@ -104,6 +104,7 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 	struct nftnl_set_elem *nlse;
 	struct nft_data_linearize nld;
 	struct nftnl_udata_buf *udbuf = NULL;
+	uint32_t flags = 0;
 	int num_exprs = 0;
 	struct stmt *stmt;
 	struct expr *key;
@@ -125,16 +126,21 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 
 	key = elem->key;
 
-	netlink_gen_data(key, &nld);
-	nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_KEY, &nld.value, nld.len);
-
-	if (set->set_flags & NFT_SET_INTERVAL && key->field_count > 1) {
-		key->flags |= EXPR_F_INTERVAL_END;
+	switch (key->etype) {
+	case EXPR_SET_ELEM_CATCHALL:
+		break;
+	default:
 		netlink_gen_data(key, &nld);
-		key->flags &= ~EXPR_F_INTERVAL_END;
+		nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_KEY, &nld.value, nld.len);
+		if (set->set_flags & NFT_SET_INTERVAL && key->field_count > 1) {
+			key->flags |= EXPR_F_INTERVAL_END;
+			netlink_gen_data(key, &nld);
+			key->flags &= ~EXPR_F_INTERVAL_END;
 
-		nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_KEY_END, &nld.value,
-				   nld.len);
+			nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_KEY_END,
+					   &nld.value, nld.len);
+		}
+		break;
 	}
 
 	if (elem->timeout)
@@ -209,8 +215,12 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
 	}
 
 	if (expr->flags & EXPR_F_INTERVAL_END)
-		nftnl_set_elem_set_u32(nlse, NFTNL_SET_ELEM_FLAGS,
-				       NFT_SET_ELEM_INTERVAL_END);
+		flags |= NFT_SET_ELEM_INTERVAL_END;
+	if (key->etype == EXPR_SET_ELEM_CATCHALL)
+		flags |= NFT_SET_ELEM_CATCHALL;
+
+	if (flags)
+		nftnl_set_elem_set_u32(nlse, NFTNL_SET_ELEM_FLAGS, flags);
 
 	return nlse;
 }
@@ -1133,25 +1143,34 @@ int netlink_delinearize_setelem(struct nftnl_set_elem *nlse,
 
 	init_list_head(&setelem_parse_ctx.stmt_list);
 
-	nld.value =
-		nftnl_set_elem_get(nlse, NFTNL_SET_ELEM_KEY, &nld.len);
+	if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_KEY))
+		nld.value = nftnl_set_elem_get(nlse, NFTNL_SET_ELEM_KEY, &nld.len);
 	if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_FLAGS))
 		flags = nftnl_set_elem_get_u32(nlse, NFTNL_SET_ELEM_FLAGS);
 
 key_end:
-	key = netlink_alloc_value(&netlink_location, &nld);
-	datatype_set(key, set->key->dtype);
-	key->byteorder	= set->key->byteorder;
-	if (set->key->dtype->subtypes)
-		key = netlink_parse_concat_elem(set->key->dtype, key);
+	if (nftnl_set_elem_is_set(nlse, NFTNL_SET_ELEM_KEY)) {
+		key = netlink_alloc_value(&netlink_location, &nld);
+		datatype_set(key, set->key->dtype);
+		key->byteorder	= set->key->byteorder;
+		if (set->key->dtype->subtypes)
+			key = netlink_parse_concat_elem(set->key->dtype, key);
 
-	if (!(set->flags & NFT_SET_INTERVAL) &&
-	    key->byteorder == BYTEORDER_HOST_ENDIAN)
-		mpz_switch_byteorder(key->value, key->len / BITS_PER_BYTE);
+		if (!(set->flags & NFT_SET_INTERVAL) &&
+		    key->byteorder == BYTEORDER_HOST_ENDIAN)
+			mpz_switch_byteorder(key->value, key->len / BITS_PER_BYTE);
 
-	if (key->dtype->basetype != NULL &&
-	    key->dtype->basetype->type == TYPE_BITMASK)
-		key = bitmask_expr_to_binops(key);
+		if (key->dtype->basetype != NULL &&
+		    key->dtype->basetype->type == TYPE_BITMASK)
+			key = bitmask_expr_to_binops(key);
+	} else if (flags & NFT_SET_ELEM_CATCHALL) {
+		key = set_elem_catchall_expr_alloc(&netlink_location);
+		datatype_set(key, set->key->dtype);
+		key->byteorder = set->key->byteorder;
+		key->len = set->key->len;
+	} else {
+		BUG("Unexpected set element with no key\n");
+	}
 
 	expr = set_elem_expr_alloc(&netlink_location, key);
 

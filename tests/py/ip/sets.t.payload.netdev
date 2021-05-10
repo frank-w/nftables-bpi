@@ -66,3 +66,32 @@ netdev test-netdev ingress
   [ cmp eq reg 1 0x00000008 ]
   [ payload load 4b @ network header + 12 => reg 1 ]
   [ lookup reg 1 set __set%d ]
+
+# ip saddr @set6 drop
+netdev
+  [ meta load protocol => reg 1 ]
+  [ cmp eq reg 1 0x00000008 ]
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ lookup reg 1 set set6 ]
+  [ immediate reg 0 drop ]
+
+# ip saddr vmap { 1.1.1.1 : drop, * : accept }
+__map%d test-netdev b
+__map%d test-netdev 0
+        element 01010101  : drop 0 [end]        element  : accept 2 [end]
+netdev
+  [ meta load protocol => reg 1 ]
+  [ cmp eq reg 1 0x00000008 ]
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ lookup reg 1 set __map%d dreg 0 ]
+
+# meta mark set ip saddr map { 1.1.1.1 : 0x00000001, * : 0x00000002 }
+__map%d test-netdev b
+__map%d test-netdev 0
+        element 01010101  : 00000001 0 [end]    element  : 00000002 2 [end]
+netdev
+  [ meta load protocol => reg 1 ]
+  [ cmp eq reg 1 0x00000008 ]
+  [ payload load 4b @ network header + 12 => reg 1 ]
+  [ lookup reg 1 set __map%d dreg 1 ]
+  [ meta set mark with reg 1 ]

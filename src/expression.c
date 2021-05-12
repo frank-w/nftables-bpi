@@ -1351,6 +1351,56 @@ struct expr *set_elem_catchall_expr_alloc(const struct location *loc)
 	return expr;
 }
 
+static void flagcmp_expr_print(const struct expr *expr, struct output_ctx *octx)
+{
+	expr_print(expr->flagcmp.expr, octx);
+	nft_print(octx, " ");
+	expr_print(expr->flagcmp.value, octx);
+	nft_print(octx, " / ");
+	expr_print(expr->flagcmp.mask, octx);
+}
+
+static void flagcmp_expr_clone(struct expr *new, const struct expr *expr)
+{
+	new->flagcmp.expr = expr_clone(expr->flagcmp.expr);
+	new->flagcmp.mask = expr_clone(expr->flagcmp.mask);
+	new->flagcmp.value = expr_clone(expr->flagcmp.value);
+}
+
+static void flagcmp_expr_destroy(struct expr *expr)
+{
+	expr_free(expr->flagcmp.expr);
+	expr_free(expr->flagcmp.mask);
+	expr_free(expr->flagcmp.value);
+}
+
+static const struct expr_ops flagcmp_expr_ops = {
+	.type		= EXPR_FLAGCMP,
+	.name		= "flags comparison",
+	.print		= flagcmp_expr_print,
+	.json		= flagcmp_expr_json,
+	.clone		= flagcmp_expr_clone,
+	.destroy	= flagcmp_expr_destroy,
+};
+
+struct expr *flagcmp_expr_alloc(const struct location *loc, enum ops op,
+				struct expr *match, struct expr *mask,
+				struct expr *value)
+{
+	struct expr *expr;
+
+	expr = expr_alloc(loc, EXPR_FLAGCMP, match->dtype, match->byteorder,
+			  match->len);
+	expr->op = op;
+	expr->flagcmp.expr = match;
+	expr->flagcmp.mask = mask;
+	/* json output needs this operation for compatibility */
+	expr->flagcmp.mask->op = OP_OR;
+	expr->flagcmp.value = value;
+
+	return expr;
+}
+
 void range_expr_value_low(mpz_t rop, const struct expr *expr)
 {
 	switch (expr->etype) {
@@ -1427,6 +1477,7 @@ static const struct expr_ops *__expr_ops_by_type(enum expr_types etype)
 	case EXPR_FIB: return &fib_expr_ops;
 	case EXPR_XFRM: return &xfrm_expr_ops;
 	case EXPR_SET_ELEM_CATCHALL: return &set_elem_catchall_expr_ops;
+	case EXPR_FLAGCMP: return &flagcmp_expr_ops;
 	}
 
 	BUG("Unknown expression type %d\n", etype);

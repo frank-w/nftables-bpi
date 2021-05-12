@@ -479,6 +479,20 @@ static json_t *table_print_json(const struct table *table)
 	return json_pack("{s:o}", "table", root);
 }
 
+json_t *flagcmp_expr_json(const struct expr *expr, struct output_ctx *octx)
+{
+	json_t *left;
+
+	left = json_pack("{s:[o, o]}", expr_op_symbols[OP_AND],
+			 expr_print_json(expr->flagcmp.expr, octx),
+			 expr_print_json(expr->flagcmp.mask, octx));
+
+	return json_pack("{s:{s:s, s:o, s:o}}", "match",
+			 "op", expr_op_symbols[expr->op] ? : "in",
+			 "left", left,
+			 "right", expr_print_json(expr->flagcmp.value, octx));
+}
+
 json_t *binop_expr_json(const struct expr *expr, struct output_ctx *octx)
 {
 	return json_pack("{s:[o, o]}", expr_op_symbols[expr->op],

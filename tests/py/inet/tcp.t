@@ -77,7 +77,7 @@ tcp flags != { fin, urg, ecn, cwr} drop;ok
 tcp flags cwr;ok
 tcp flags != cwr;ok
 tcp flags == syn;ok
-tcp flags & (syn|fin) == (syn|fin);ok;tcp flags & (fin | syn) == fin | syn
+tcp flags fin,syn / fin,syn;ok
 tcp flags & (fin | syn | rst | psh | ack | urg | ecn | cwr) == fin | syn | rst | psh | ack | urg | ecn | cwr;ok;tcp flags == 0xff
 tcp flags { syn, syn | ack };ok
 tcp flags & (fin | syn | rst | psh | ack | urg) == { fin, ack, psh | ack, fin | psh | ack };ok

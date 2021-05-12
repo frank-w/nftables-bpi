@@ -2166,35 +2166,55 @@ static void map_binop_postprocess(struct rule_pp_ctx *ctx, struct expr *expr)
 		binop_postprocess(ctx, expr);
 }
 
-static void relational_binop_postprocess(struct rule_pp_ctx *ctx, struct expr *expr)
+static void relational_binop_postprocess(struct rule_pp_ctx *ctx,
+					 struct expr **exprp)
 {
-	struct expr *binop = expr->left, *value = expr->right;
+	struct expr *expr = *exprp, *binop = expr->left, *value = expr->right;
 
 	if (binop->op == OP_AND && (expr->op == OP_NEQ || expr->op == OP_EQ) &&
 	    value->dtype->basetype &&
-	    value->dtype->basetype->type == TYPE_BITMASK &&
-	    value->etype == EXPR_VALUE &&
-	    !mpz_cmp_ui(value->value, 0)) {
-		/* Flag comparison: data & flags != 0
-		 *
-		 * Split the flags into a list of flag values and convert the
-		 * op to OP_EQ.
-		 */
-		expr_free(value);
+	    value->dtype->basetype->type == TYPE_BITMASK) {
+		switch (value->etype) {
+		case EXPR_VALUE:
+			if (!mpz_cmp_ui(value->value, 0)) {
+				/* Flag comparison: data & flags != 0
+				 *
+				 * Split the flags into a list of flag values and convert the
+				 * op to OP_EQ.
+				 */
+				expr_free(value);
 
-		expr->left  = expr_get(binop->left);
-		expr->right = binop_tree_to_list(NULL, binop->right);
-		switch (expr->op) {
-		case OP_NEQ:
-			expr->op = OP_IMPLICIT;
+				expr->left  = expr_get(binop->left);
+				expr->right = binop_tree_to_list(NULL, binop->right);
+				switch (expr->op) {
+				case OP_NEQ:
+					expr->op = OP_IMPLICIT;
+					break;
+				case OP_EQ:
+					expr->op = OP_NEG;
+					break;
+				default:
+					BUG("unknown operation type %d\n", expr->op);
+				}
+				expr_free(binop);
+			} else {
+				*exprp = flagcmp_expr_alloc(&expr->location, expr->op,
+							    expr_get(binop->left),
+							    binop_tree_to_list(NULL, binop->right),
+							    expr_get(value));
+				expr_free(expr);
+			}
 			break;
-		case OP_EQ:
-			expr->op = OP_NEG;
+		case EXPR_BINOP:
+			*exprp = flagcmp_expr_alloc(&expr->location, expr->op,
+						    expr_get(binop->left),
+						    binop_tree_to_list(NULL, binop->right),
+						    binop_tree_to_list(NULL, value));
+			expr_free(expr);
 			break;
 		default:
-			BUG("unknown operation type %d\n", expr->op);
+			break;
 		}
-		expr_free(binop);
 	} else if (binop->left->dtype->flags & DTYPE_F_PREFIX &&
 		   binop->op == OP_AND && expr->right->etype == EXPR_VALUE &&
 		   expr_mask_is_prefix(binop->right)) {
@@ -2403,7 +2423,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 			meta_match_postprocess(ctx, expr);
 			break;
 		case EXPR_BINOP:
-			relational_binop_postprocess(ctx, expr);
+			relational_binop_postprocess(ctx, exprp);
 			break;
 		default:
 			break;

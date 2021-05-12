@@ -72,6 +72,7 @@ enum expr_types {
 	EXPR_FIB,
 	EXPR_XFRM,
 	EXPR_SET_ELEM_CATCHALL,
+	EXPR_FLAGCMP,
 };
 #define EXPR_MAX EXPR_XFRM
 
@@ -370,6 +371,12 @@ struct expr {
 			uint8_t			ttl;
 			uint32_t		flags;
 		} osf;
+		struct {
+			/* EXPR_FLAGCMP */
+			struct expr		*expr;
+			struct expr		*mask;
+			struct expr		*value;
+		} flagcmp;
 	};
 };
 
@@ -499,6 +506,10 @@ extern struct expr *set_elem_expr_alloc(const struct location *loc,
 					struct expr *key);
 
 struct expr *set_elem_catchall_expr_alloc(const struct location *loc);
+
+struct expr *flagcmp_expr_alloc(const struct location *loc, enum ops op,
+				struct expr *expr, struct expr *mask,
+				struct expr *value);
 
 extern void range_expr_value_low(mpz_t rop, const struct expr *expr);
 extern void range_expr_value_high(mpz_t rop, const struct expr *expr);

@@ -2134,6 +2134,21 @@ static int expr_evaluate_xfrm(struct eval_ctx *ctx, struct expr **exprp)
 	return expr_evaluate_primary(ctx, exprp);
 }
 
+static int expr_evaluate_flagcmp(struct eval_ctx *ctx, struct expr **exprp)
+{
+	struct expr *expr = *exprp, *binop, *rel;
+
+	binop = binop_expr_alloc(&expr->location, OP_AND,
+				 expr_get(expr->flagcmp.expr),
+				 expr_get(expr->flagcmp.mask));
+	rel = relational_expr_alloc(&expr->location, expr->op, binop,
+				    expr_get(expr->flagcmp.value));
+	expr_free(expr);
+	*exprp = rel;
+
+	return expr_evaluate(ctx, exprp);
+}
+
 static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 {
 	if (ctx->nft->debug_mask & NFT_DEBUG_EVALUATION) {
@@ -2203,6 +2218,8 @@ static int expr_evaluate(struct eval_ctx *ctx, struct expr **expr)
 		return expr_evaluate_xfrm(ctx, expr);
 	case EXPR_SET_ELEM_CATCHALL:
 		return 0;
+	case EXPR_FLAGCMP:
+		return expr_evaluate_flagcmp(ctx, expr);
 	default:
 		BUG("unknown expression type %s\n", expr_name(*expr));
 	}

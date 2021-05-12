@@ -4463,6 +4463,22 @@ relational_expr		:	expr	/* implicit */	rhs_expr
 			{
 				$$ = relational_expr_alloc(&@$, OP_IMPLICIT, $1, $2);
 			}
+			|	expr	/* implicit */	basic_rhs_expr	SLASH	list_rhs_expr
+			{
+				$$ = flagcmp_expr_alloc(&@$, OP_EQ, $1, $4, $2);
+			}
+			|	expr	/* implicit */	list_rhs_expr	SLASH	list_rhs_expr
+			{
+				$$ = flagcmp_expr_alloc(&@$, OP_EQ, $1, $4, $2);
+			}
+			|	expr	relational_op	basic_rhs_expr	SLASH	list_rhs_expr
+			{
+				$$ = flagcmp_expr_alloc(&@$, $2, $1, $5, $3);
+			}
+			|	expr	relational_op	list_rhs_expr	SLASH	list_rhs_expr
+			{
+				$$ = flagcmp_expr_alloc(&@$, $2, $1, $5, $3);
+			}
 			|	expr	relational_op	rhs_expr
 			{
 				$$ = relational_expr_alloc(&@2, $2, $1, $3);

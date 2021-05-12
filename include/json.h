@@ -28,6 +28,7 @@ struct list_head;
 
 json_t *binop_expr_json(const struct expr *expr, struct output_ctx *octx);
 json_t *relational_expr_json(const struct expr *expr, struct output_ctx *octx);
+json_t *flagcmp_expr_json(const struct expr *expr, struct output_ctx *octx);
 json_t *range_expr_json(const struct expr *expr, struct output_ctx *octx);
 json_t *meta_expr_json(const struct expr *expr, struct output_ctx *octx);
 json_t *payload_expr_json(const struct expr *expr, struct output_ctx *octx);
@@ -127,6 +128,7 @@ static inline json_t *name##_json(arg1_t arg1, arg2_t arg2) { return NULL; }
 	JSON_PRINT_STUB(name##_stmt, const struct stmt *, struct output_ctx *)
 
 EXPR_PRINT_STUB(binop_expr)
+EXPR_PRINT_STUB(flagcmp_expr)
 EXPR_PRINT_STUB(relational_expr)
 EXPR_PRINT_STUB(range_expr)
 EXPR_PRINT_STUB(meta_expr)

@@ -747,10 +747,12 @@ replay:
 
 	ret = nft_cache_init(&ctx, flags);
 	if (ret < 0) {
-		nft_cache_release(cache);
-		if (errno == EINTR)
+		if (errno == EINTR) {
+			nft_cache_release(cache);
 			goto replay;
+		}
 
+		nft_cache_release(cache);
 		return -1;
 	}
 

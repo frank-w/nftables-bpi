@@ -1,8 +1,13 @@
 #!/bin/bash
 
+board="bpi-r2"
+#board="bpi-r64"
+
 #git clone https://github.com/frank-w/nftables-bpi.git nftables
 
 echo "installing depencies"
+
+CFLAGS=-j$(grep ^processor /proc/cpuinfo  | wc -l)
 
 function check_dep()
 {
@@ -41,12 +46,27 @@ function check_dep()
 check_dep
 #sudo apt-get install --no-install-recommends git make gcc dh-autoreconf bison flex asciidoc pkg-config docbook-xsl xsltproc libxml2-utils
 
-git clone https://git.netfilter.org/libmnl
-git clone git://git.netfilter.org/libnftnl
+#if false; then
+echo "clone/update libmnl..."
+if [[ ! -d libmnl ]];then
+	git clone https://git.netfilter.org/libmnl
+else
+	(
+		cd libmnl
+		git pull
+	)
+fi
+echo "clone/update libnftnl..."
+if [[ ! -d libnftnl ]];then
+	git clone git://git.netfilter.org/libnftnl
+else
+	(
+		cd libnftnl
+		git pull
+	)
+fi
 #git clone git://git.netfilter.org/nftables
-
-board="bpi-r2"
-#board="bpi-r64"
+#fi
 
 if [[ "$board" == "bpi-r64" ]];then
 	hostcc=aarch64-linux-gnu
@@ -56,6 +76,10 @@ fi
 
 BASE="$(pwd)";
 
+#if false; then
+
+exec 3> >(tee build.log)
+
 #build libmnl for armhf
 cd libmnl
 mkdir -p install
@@ -63,8 +87,10 @@ sh autogen.sh
 sh configure --host=$hostcc --prefix=$(pwd)/install
 if [[ $? -eq 0 ]];then
 	make clean
-	make
-	if [[ $? -eq 0 ]];then
+	make ${CFLAGS} 2>&3
+	ret=$?
+	#exec 3>&-
+	if [[ $ret -eq 0 ]];then
 		make install
 	fi
 fi
@@ -80,8 +106,10 @@ sh autogen.sh
 ./configure --host=$hostcc --prefix=$(pwd)/install LIBMNL_LIBS=$BASE/libmnl/install/lib LIBMNL_CFLAGS=$BASE/libmnl/include/
 if [[ $? -eq 0 ]];then
 	make clean
-	make
-	if [[ $? -eq 0 ]];then
+	make ${CFLAGS} 2>&3
+	ret=$?
+	#exec 3>&-
+	if [[ $ret -eq 0 ]];then
 		make install
 	fi
 fi
@@ -97,15 +125,30 @@ sh autogen.sh
 ./configure --host=$hostcc --prefix=$(pwd)/install PKG_CONFIG_PATH="$BASE/libnftnl/install/lib/pkgconfig:$BASE/libmnl/install/lib/pkgconfig" --with-mini-gmp --without-cli --disable-debug --disable-man-doc --disable-python
 if [[ $? -eq 0 ]];then
 	make clean
-	make
-	if [[ $? -eq 0 ]];then
+	make ${CFLAGS} 2>&3
+	ret=$?
+	#exec 3>&-
+	if [[ $ret -eq 0 ]];then
 		make install
 	fi
+	ret=$?
 fi
-if [[ $? -ne 0 ]];then
+#else
+#  ret=0
+#fi #false
+if [[ $ret -ne 0 ]];then
 	echo "building nftables failed"
 	exit 1
 else
 	echo "building nftables done :)"
-	tar -cvf nftables_$board.tar.gz install/* libnftnl/install/* libmnl/install/*
+	tarfile=nftables_$board.tar
+	echo "packing nftables..."
+	tar -cf $tarfile install/*
+	echo "packing libnftl..."
+	tar -uf $tarfile -C libnftnl/ install
+	echo "packing libmnl..."
+	tar -uf $tarfile -C libmnl/ install
+	if [[ $? -eq 0 ]];then
+		gzip -f $tarfile
+	fi
 fi

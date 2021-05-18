@@ -1384,7 +1384,7 @@ static void cgroupv2_type_print(const struct expr *expr,
 	if (cgroup_path)
 		nft_print(octx, "\"%s\"", cgroup_path);
 	else
-		nft_print(octx, "%lu", id);
+		nft_print(octx, "%" PRIu64, id);
 
 	xfree(cgroup_path);
 }

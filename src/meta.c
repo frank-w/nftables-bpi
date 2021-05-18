@@ -408,7 +408,7 @@ static void date_type_print(const struct expr *expr, struct output_ctx *octx)
 	 * Do our own printing. The default print function will print in
 	 * nanoseconds, which is ugly.
 	 */
-	nft_print(octx, "%lu", tstamp);
+	nft_print(octx, "%" PRIu64, tstamp);
 }
 
 static time_t parse_iso_date(const char *sym)

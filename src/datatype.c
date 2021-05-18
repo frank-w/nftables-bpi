@@ -1382,7 +1382,8 @@ static void cgroupv2_type_print(const struct expr *expr,
 
 	cgroup_path = cgroupv2_get_path(SYSFS_CGROUPSV2_PATH, id);
 	if (cgroup_path)
-		nft_print(octx, "\"%s\"", cgroup_path);
+		nft_print(octx, "\"%s\"",
+			  &cgroup_path[strlen(SYSFS_CGROUPSV2_PATH) + 1]);
 	else
 		nft_print(octx, "%" PRIu64, id);
 

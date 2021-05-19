@@ -40,7 +40,7 @@ static int nft_cmd_enoent_chain(struct netlink_ctx *ctx, const struct cmd *cmd,
 	if (!chain)
 		return 0;
 
-	netlink_io_error(ctx, loc, "%s; did you mean table ‘%s’ in family %s?",
+	netlink_io_error(ctx, loc, "%s; did you mean chain ‘%s’ in table %s ‘%s’?",
 			 strerror(ENOENT), chain->handle.chain.name,
 			 family2str(table->handle.family),
 			 table->handle.table.name);

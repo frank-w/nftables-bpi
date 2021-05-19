@@ -181,7 +181,7 @@ extern void netlink_dump_flowtable(struct nftnl_flowtable *flo, struct netlink_c
 	__netlink_abi_error(__FILE__, __LINE__, strerror(errno));
 extern void __noreturn __netlink_abi_error(const char *file, int line, const char *reason);
 extern int netlink_io_error(struct netlink_ctx *ctx,
-			    const struct location *loc, const char *fmt, ...);
+			    const struct location *loc, const char *fmt, ...) __attribute__((format(printf, 3, 4)));
 #define netlink_init_error()	\
 	__netlink_init_error(__FILE__, __LINE__, strerror(errno));
 extern void __noreturn __netlink_init_error(const char *file, int line, const char *reason);

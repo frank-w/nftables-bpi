@@ -730,7 +730,7 @@ void chain_free(struct chain *chain)
 		rule_free(rule);
 	handle_free(&chain->handle);
 	scope_release(&chain->scope);
-	xfree(chain->type);
+	xfree(chain->type.str);
 	expr_free(chain->dev_expr);
 	for (i = 0; i < chain->dev_array_len; i++)
 		xfree(chain->dev_array[i]);
@@ -1024,7 +1024,7 @@ static void chain_print_declaration(const struct chain *chain,
 		nft_print(octx, "\n\t\tcomment \"%s\"", chain->comment);
 	nft_print(octx, "\n");
 	if (chain->flags & CHAIN_F_BASECHAIN) {
-		nft_print(octx, "\t\ttype %s hook %s", chain->type,
+		nft_print(octx, "\t\ttype %s hook %s", chain->type.str,
 			  hooknum2str(chain->handle.family, chain->hook.num));
 		if (chain->dev_array_len == 1) {
 			nft_print(octx, " device \"%s\"", chain->dev_array[0]);
@@ -1085,7 +1085,7 @@ void chain_print_plain(const struct chain *chain, struct output_ctx *octx)
 		mpz_export_data(&policy, chain->policy->value,
 				BYTEORDER_HOST_ENDIAN, sizeof(int));
 		nft_print(octx, " { type %s hook %s priority %s; policy %s; }",
-			  chain->type, chain->hook.name,
+			  chain->type.str, chain->hook.name,
 			  prio2str(octx, priobuf, sizeof(priobuf),
 				   chain->handle.family, chain->hook.num,
 				   chain->priority.expr),

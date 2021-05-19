@@ -2301,7 +2301,8 @@ hook_spec		:	TYPE		STRING		HOOK		STRING		dev_spec	prio_spec
 					xfree($2);
 					YYERROR;
 				}
-				$<chain>0->type		= xstrdup(chain_type);
+				$<chain>0->type.loc = @2;
+				$<chain>0->type.str = xstrdup(chain_type);
 				xfree($2);
 
 				$<chain>0->loc = @$;

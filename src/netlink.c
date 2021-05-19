@@ -552,7 +552,7 @@ struct chain *netlink_delinearize_chain(struct netlink_ctx *ctx,
 						    BYTEORDER_HOST_ENDIAN,
 						    sizeof(int) * BITS_PER_BYTE,
 						    &priority);
-		chain->type          =
+		chain->type.str =
 			xstrdup(nftnl_chain_get_str(nlc, NFTNL_CHAIN_TYPE));
 		policy = nftnl_chain_get_u32(nlc, NFTNL_CHAIN_POLICY);
 		chain->policy = constant_expr_alloc(&netlink_location,

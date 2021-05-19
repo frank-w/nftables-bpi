@@ -213,6 +213,11 @@ struct hook_spec {
 	unsigned int	num;
 };
 
+struct chain_type_spec {
+	struct location	loc;
+	const char	*str;
+};
+
 /**
  * struct chain - nftables chain
  *
@@ -242,7 +247,7 @@ struct chain {
 		struct prio_spec	priority;
 		struct hook_spec	hook;
 		struct expr		*policy;
-		const char		*type;
+		struct chain_type_spec	type;
 		const char		**dev_array;
 		struct expr		*dev_expr;
 		int			dev_array_len;

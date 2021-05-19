@@ -2790,7 +2790,7 @@ static struct cmd *json_parse_cmd_add_chain(struct json_ctx *ctx, json_t *root,
 
 	chain = chain_alloc(NULL);
 	chain->flags |= CHAIN_F_BASECHAIN;
-	chain->type = xstrdup(type);
+	chain->type.str = xstrdup(type);
 	chain->priority.expr = constant_expr_alloc(int_loc, &integer_type,
 						   BYTEORDER_HOST_ENDIAN,
 						   sizeof(int) * BITS_PER_BYTE,

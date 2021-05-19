@@ -215,10 +215,6 @@ struct set *set_lookup_fuzzy(const char *set_name,
 		list_for_each_entry(set, &table->set_cache.list, cache.list) {
 			if (set_is_anonymous(set->flags))
 				continue;
-			if (!strcmp(set->handle.set.name, set_name)) {
-				*t = table;
-				return set;
-			}
 			if (string_misspell_update(set->handle.set.name,
 						   set_name, set, &st))
 				*t = table;
@@ -765,10 +761,6 @@ struct chain *chain_lookup_fuzzy(const struct handle *h,
 
 	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
 		list_for_each_entry(chain, &table->chain_cache.list, cache.list) {
-			if (!strcmp(chain->handle.chain.name, h->chain.name)) {
-				*t = table;
-				return chain;
-			}
 			if (string_misspell_update(chain->handle.chain.name,
 						   h->chain.name, chain, &st))
 				*t = table;
@@ -1174,9 +1166,6 @@ struct table *table_lookup_fuzzy(const struct handle *h,
 	string_misspell_init(&st);
 
 	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
-		if (!strcmp(table->handle.table.name, h->table.name))
-			return table;
-
 		string_misspell_update(table->handle.table.name,
 				       h->table.name, table, &st);
 	}
@@ -1728,10 +1717,6 @@ struct obj *obj_lookup_fuzzy(const char *obj_name,
 
 	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
 		list_for_each_entry(obj, &table->obj_cache.list, cache.list) {
-			if (!strcmp(obj->handle.obj.name, obj_name)) {
-				*t = table;
-				return obj;
-			}
 			if (string_misspell_update(obj->handle.obj.name,
 						   obj_name, obj, &st))
 				*t = table;
@@ -2206,10 +2191,6 @@ struct flowtable *flowtable_lookup_fuzzy(const char *ft_name,
 
 	list_for_each_entry(table, &cache->table_cache.list, cache.list) {
 		list_for_each_entry(ft, &table->ft_cache.list, cache.list) {
-			if (!strcmp(ft->handle.flowtable.name, ft_name)) {
-				*t = table;
-				return ft;
-			}
 			if (string_misspell_update(ft->handle.flowtable.name,
 						   ft_name, ft, &st))
 				*t = table;

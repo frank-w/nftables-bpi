@@ -196,10 +196,14 @@ SOCKET EXPRESSION
 ~~~~~~~~~~~~~~~~~
 [verse]
 *socket* {*transparent* | *mark* | *wildcard*}
+*socket* *cgroupv2* *level* 'NUM'
 
 Socket expression can be used to search for an existing open TCP/UDP socket and
 its attributes that can be associated with a packet. It looks for an established
-or non-zero bound listening socket (possibly with a non-local address).
+or non-zero bound listening socket (possibly with a non-local address). You can
+also use it to match on the socket cgroupv2 at a given ancestor level, e.g. if
+the socket belongs to cgroupv2 'a/b', ancestor level 1 checks for a matching on
+cgroup 'a' and ancestor level 2 checks for a matching on cgroup 'b'.
 
 .Available socket attributes
 [options="header"]
@@ -212,6 +216,9 @@ boolean (1 bit)
 |wildcard|
 Indicates whether the socket is wildcard-bound (e.g. 0.0.0.0 or ::0). |
 boolean (1 bit)
+|cgroupv2|
+cgroup version 2 for this socket (path from /sys/fs/cgroup)|
+cgroupv2
 |==================
 
 .Using socket expression
@@ -239,6 +246,14 @@ table inet x {
     chain y {
         type filter hook prerouting priority mangle; policy accept;
         tcp dport 8080 mark set socket mark
+    }
+}
+
+# Count packets for cgroupv2 "user.slice" at level 1
+table inet x {
+    chain y {
+        type filter hook input priority filter; policy accept;
+        socket cgroupv2 level 1 "user.slice" counter
     }
 }
 ----------------------

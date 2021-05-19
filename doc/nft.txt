@@ -805,13 +805,26 @@ These are some additional commands included in nft.
 MONITOR
 ~~~~~~~~
 The monitor command allows you to listen to Netlink events produced by the
-nf_tables subsystem, related to creation and deletion of objects. When they
+nf_tables subsystem. These are either related to creation and deletion of
+objects or to packets for which *meta nftrace* was enabled. When they
 occur, nft will print to stdout the monitored events in either JSON or
 native nft format. +
 
-To filter events related to a concrete object, use one of the keywords 'tables', 'chains', 'sets', 'rules', 'elements', 'ruleset'. +
+[verse]
+____
+*monitor* [*new* | *destroy*] 'MONITOR_OBJECT'
+*monitor* *trace*
 
-To filter events related to a concrete action, use keyword 'new' or 'destroy'.
+'MONITOR_OBJECT' := *tables* | *chains* | *sets* | *rules* | *elements* | *ruleset*
+____
+
+To filter events related to a concrete object, use one of the keywords in
+'MONITOR_OBJECT'.
+
+To filter events related to a concrete action, use keyword *new* or *destroy*.
+
+The second form of invocation takes no further options and exclusively prints
+events generated for packets with *nftrace* enabled.
 
 Hit ^C to finish the monitor operation.
 
@@ -834,6 +847,12 @@ Hit ^C to finish the monitor operation.
 ----------------------------------------------------------------------------------------------------
 % nft monitor ruleset
 ---------------------
+
+.Trace incoming packets from host 10.0.0.1
+------------------------------------------
+% nft add rule filter input ip saddr 10.0.0.1 meta nftrace set 1
+% nft monitor trace
+------------------------------------------
 
 ERROR REPORTING
 ---------------

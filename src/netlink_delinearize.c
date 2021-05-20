@@ -2450,6 +2450,7 @@ static void expr_postprocess(struct rule_pp_ctx *ctx, struct expr **exprp)
 	case EXPR_RANGE:
 		expr_postprocess(ctx, &expr->left);
 		expr_postprocess(ctx, &expr->right);
+		break;
 	case EXPR_PREFIX:
 		expr_postprocess(ctx, &expr->prefix);
 		break;

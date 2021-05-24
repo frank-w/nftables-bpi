@@ -10,7 +10,7 @@
 
 flush ruleset
 
-table inet filter {
+table inet x {
 	secmark ssh_server {
 		"system_u:object_r:ssh_server_packet_t:s0"
 	}
@@ -57,8 +57,8 @@ table inet filter {
 		elements = { 22 : "ssh_client", 53 : "dns_client", 80 : "http_client", 123 : "ntp_client", 443 : "http_client", 9418 : "git_client" }
 	}
 
-	chain input {
-		type filter hook input priority 0;
+	chain y {
+		type filter hook input priority -225;
 
 		# label new incoming packets and add to connection
 		ct state new meta secmark set tcp dport map @secmapping_in
@@ -71,8 +71,8 @@ table inet filter {
 		ct state established,related meta secmark set ct secmark
 	}
 
-	chain output {
-		type filter hook output priority 0;
+	chain z {
+		type filter hook output priority 225;
 
 		# label new outgoing packets and add to connection
 		ct state new meta secmark set tcp dport map @secmapping_out

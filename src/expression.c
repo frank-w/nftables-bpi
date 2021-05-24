@@ -135,9 +135,12 @@ void expr_describe(const struct expr *expr, struct output_ctx *octx)
 		nft_print(octx, "datatype %s (%s)",
 			  dtype->name, dtype->desc);
 		len = dtype->size;
-	} else {
+	} else if (dtype != &invalid_type) {
 		nft_print(octx, "%s expression, datatype %s (%s)",
 			  expr_name(expr), dtype->name, dtype->desc);
+	} else {
+		nft_print(octx, "datatype %s is invalid\n", expr->identifier);
+		return;
 	}
 
 	if (dtype->basetype != NULL) {

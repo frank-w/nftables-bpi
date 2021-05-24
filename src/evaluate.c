@@ -2139,6 +2139,10 @@ static int expr_evaluate_flagcmp(struct eval_ctx *ctx, struct expr **exprp)
 {
 	struct expr *expr = *exprp, *binop, *rel;
 
+	if (expr->op != OP_EQ &&
+	    expr->op != OP_NEQ)
+		return expr_error(ctx->msgs, expr, "either == or != is allowed");
+
 	binop = binop_expr_alloc(&expr->location, OP_AND,
 				 expr_get(expr->flagcmp.expr),
 				 expr_get(expr->flagcmp.mask));

@@ -32,6 +32,7 @@ noinst_HEADERS = 	cli.h		\
 			owner.h		\
 			parser.h	\
 			proto.h		\
+			sctp_chunk.h	\
 			socket.h	\
 			rule.h		\
 			rt.h		\

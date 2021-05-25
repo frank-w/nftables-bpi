@@ -692,7 +692,7 @@ STATEFUL OBJECTS
 *list counters* ['family']
 *list quotas* ['family']
 
-Stateful objects are attached to tables and are identified by an unique name.
+Stateful objects are attached to tables and are identified by a unique name.
 They group stateful information from rules, to reference them in rules the
 keywords "type name" are used e.g. "counter name".
 

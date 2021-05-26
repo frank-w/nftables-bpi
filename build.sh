@@ -1,7 +1,7 @@
 #!/bin/bash
 
 board="bpi-r2"
-#board="bpi-r64"
+board="bpi-r64"
 
 #git clone https://github.com/frank-w/nftables-bpi.git nftables
 
@@ -22,14 +22,14 @@ function check_dep()
 
     NEEDED_PKGS="git make gcc dh-autoreconf bison flex asciidoc pkg-config docbook-xsl xsltproc libxml2-utils"
 
-    #echo "needed: $NEEDED_PKGS"
+    echo "needed: $NEEDED_PKGS"
 
 #    if [[ $# -ge 1 ]];
 #    then
         if [[ $board == "bpi-r64" ]];then
-            NEEDED_PKGS+="gcc-aarch64-linux-gnu"
+            NEEDED_PKGS+=" gcc-aarch64-linux-gnu"
         elif [[ $board == "bpi-r2" ]];then
-            NEEDED_PKGS+="gcc-arm-linux-gnueabihf"
+            NEEDED_PKGS+=" gcc-arm-linux-gnueabihf"
         fi
 #    fi
 

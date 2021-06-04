@@ -1,7 +1,7 @@
 #!/bin/bash
 
 board="bpi-r2"
-board="bpi-r64"
+#board="bpi-r64"
 
 #git clone https://github.com/frank-w/nftables-bpi.git nftables
 
@@ -70,7 +70,7 @@ fi
 
 if [[ "$board" == "bpi-r64" ]];then
 	hostcc=aarch64-linux-gnu
-else
+elif [[ "$board" == "bpi-r2" ]];then
 	hostcc=arm-linux-gnueabihf
 fi
 
